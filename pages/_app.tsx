@@ -15,6 +15,8 @@ const supabase = createClient ("https://czflihgzksfynoqfilot.supabase.co","eyJhb
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
+  const RenderedComponent = Component as unknown as React.FC;
+
   return (
     <NextUIProvider navigate={router.push}>
       <NextThemesProvider attribute="class"
@@ -22,7 +24,7 @@ export default function App({ Component, pageProps }: AppProps) {
       enableSystem={false}
       forcedTheme="dark">
         <SessionContextProvider supabaseClient={supabase}>
-        <Component {...pageProps} />
+        <RenderedComponent {...pageProps} />
         </SessionContextProvider>
       </NextThemesProvider>
     </NextUIProvider>
