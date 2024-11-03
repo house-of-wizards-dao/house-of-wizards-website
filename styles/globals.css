@@ -3,8 +3,29 @@
 @tailwind utilities;
 
 @font-face {
-    font-family: 'Mona Sans';
-    src: url('/fonts/mona-sans/Mona-Sans.woff2') format('woff2');
-    font-weight: 200 900;
-    font-stretch: 75% 125%;
-  }
+  font-family: 'Mona Sans';
+  src: url('/fonts/mona-sans/Mona-Sans.woff2') format('woff2');
+  font-weight: 200 900;
+  font-stretch: 75% 125%;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: black;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ffffff;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -9,61 +9,61 @@ const teamMembers = [
     image: "/img/council/bambam.png"
   },
   {
-    name: "Nikolas Gibbons",
+    name: "Dotta",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/dotta.png"
   },
   {
-    name: "Sienna Hewitt",
+    name: "Dragonfetus",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/dragonfetus.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Jitcy",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/jitcy.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Madotsuki",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/madotsuki.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Meph",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/meph.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "RYF",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/R Y F.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Reptar",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/r3ptar.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Slickchick",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/Slickchick.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "TV",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/tv.png"
   },
   {
-    name: "Zahra Christensen",
+    name: "Wazir",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/wazir.png"
@@ -122,9 +122,9 @@ export default function IndexPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-8">
+        <div className="flex flex-row flex-wrap gap-6 justify-center">
           {teamMembers.map((member, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="w-[190px] ">
               <div className="aspect-[3/4] mb-4">
                 <img
                   src={member.image}
@@ -139,6 +139,56 @@ export default function IndexPage() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+    </div>
+
+    <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
+        {/* Form Section */}
+        <div className="w-full max-w-md">
+          <form className="space-y-6">
+            <div>
+              <input
+                type="text"
+                placeholder="Your Name"
+                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+              />
+            </div>
+            
+            <div>
+              <input
+                type="email"
+                placeholder="Your Email"
+                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+              />
+            </div>
+            
+            <div>
+              <textarea
+                placeholder="Share your thoughts"
+                rows={4}
+                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors resize-none"
+              />
+            </div>
+            
+            <button
+              type="submit"
+              className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-[#9564b4] hover:te transition-colors"
+            >
+              SEND
+            </button>
+          </form>
+        </div>
+
+        {/* Text Section */}
+        <div className="text-white space-y-16">
+          <div className="">
+            <h2 className="text-5xl font-serif">Contact <i className="font-serif text-[#9564b4]">Us</i></h2>
+          </div>
+          <p className="text-gray-400 max-w-md">
+            It is very important for us to keep in touch with you, so we are always ready to answer any question that interests you. Shoot!
+          </p>
         </div>
       </div>
     </div>

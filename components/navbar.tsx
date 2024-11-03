@@ -5,23 +5,25 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
+  NavbarMenuItem
 } from "@nextui-org/navbar";
 
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownSection,
+  DropdownItem
+} from "@nextui-org/dropdown";
+
+import { Button } from "@nextui-org/button";
 import { Image } from "@nextui-org/image";
 import { FaExternalLinkAlt } from "react-icons/fa";
-
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
-
 import { siteConfig } from "@/config/site";
 import { ThemeSwitch } from "@/components/theme-switch";
-import {
-  TwitterIcon,
-  GithubIcon,
-  DiscordIcon,
-} from "@/components/icons";
-
+import { TwitterIcon, GithubIcon, DiscordIcon } from "@/components/icons";
 import { useTheme } from "next-themes";
 
 export const Navbar = () => {
@@ -32,55 +34,68 @@ export const Navbar = () => {
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-           <Image className="rounded-none" width={200} src={theme === "dark" ? "/img/logo-white.png" : "/img/logo-black.png"}/>
+           <Image className="rounded-none" width={150} src="/img/logo-white.png"/>
           </NextLink>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent>
-      <div className="hidden lg:flex gap-8 justify-start ml-2">
-            <NavbarItem className="font-medium">
-              <NextLink
-                className=""
-                href="/"
-              >
-                About
-              </NextLink>
-            </NavbarItem>
-            <NavbarItem className="font-medium">
-              <NextLink
-                className=""
-                href="/"
+        <div className="hidden lg:flex gap-8 justify-start ml-2">
+          <NavbarItem className="font-medium">
+            <NextLink href="/about">
+              About
+            </NextLink>
+          </NavbarItem>
+          <Dropdown>
+            <DropdownTrigger>
+              <button 
+                className="p-0 bg-transparent data-[hover=true]:bg-transparent"
               >
                 Gallery
-              </NextLink>
-            </NavbarItem>
-            <NavbarItem className="font-medium">
-              <NextLink
-                className=""
-                href="/"
-              >
-                Community
-              </NextLink>
-            </NavbarItem>
-            <NavbarItem className="font-medium">
-              <NextLink
-                className="flex items-center gap-2"
-                href="/"
-              >
-                Vote
-                <FaExternalLinkAlt />
-              </NextLink>
-            </NavbarItem>
-            <NavbarItem className="font-medium">
-              <NextLink
-                className="flex items-center gap-2"
-                href="/"
-              >
-                Discuss
-                <FaExternalLinkAlt />
-              </NextLink>
-            </NavbarItem>
+              </button>
+            </DropdownTrigger>
+            <DropdownMenu 
+              aria-label="Gallery options"
+              className="w-[240px] text-center"
+              itemClasses={{
+                base: "gap-4",
+              }}
+            >
+              <DropdownItem key="artists">
+                <NextLink href="/artists">
+                  Artist
+                </NextLink>
+              </DropdownItem>
+              <DropdownItem key="gallery">
+                <NextLink href="/gallery">
+                  Gallery
+                </NextLink>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <NavbarItem className="font-medium">
+            <NextLink href="/community">
+              Community
+            </NextLink>
+          </NavbarItem>
+          <NavbarItem className="font-medium">
+            <NextLink
+              className="flex items-center gap-2"
+              href="/"
+            >
+              Vote
+              <FaExternalLinkAlt />
+            </NextLink>
+          </NavbarItem>
+          <NavbarItem className="font-medium">
+            <NextLink
+              className="flex items-center gap-2"
+              href="/"
+            >
+              Auction
+              <FaExternalLinkAlt />
+            </NextLink>
+          </NavbarItem>
         </div>
       </NavbarContent>
 
@@ -90,20 +105,15 @@ export const Navbar = () => {
       >
         <NavbarItem className="hidden sm:flex gap-4">
           <Link isExternal href={siteConfig.links.twitter} title="Twitter">
-            <TwitterIcon className={theme === "dark" ? "text-white" : "text-black"} />
+            <TwitterIcon className="text-white" />
           </Link>
           <Link isExternal href={siteConfig.links.discord} title="Discord">
-            <DiscordIcon className={theme === "dark" ? "text-white" : "text-black"} />
+            <DiscordIcon className="text-white" />
           </Link>
-          <ThemeSwitch />
         </NavbarItem>
       </NavbarContent>
 
       <NavbarContent className="sm:hidden basis-1 pl-4" justify="end">
-        <Link isExternal href={siteConfig.links.github}>
-          <GithubIcon className="text-default-500" />
-        </Link>
-        <ThemeSwitch />
         <NavbarMenuToggle />
       </NavbarContent>
 
