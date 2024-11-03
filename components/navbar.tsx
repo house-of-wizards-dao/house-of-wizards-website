@@ -22,7 +22,6 @@ import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import { siteConfig } from "@/config/site";
-import { ThemeSwitch } from "@/components/theme-switch";
 import { TwitterIcon, GithubIcon, DiscordIcon } from "@/components/icons";
 import { useTheme } from "next-themes";
 
