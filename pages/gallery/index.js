@@ -212,7 +212,7 @@ function GalleryPage() {
                     {item.description}
                   </p>
                   <p className="text-foreground sm:text-md text-sm truncate text-center">
-                    Artist: {item.userName}
+                   <i className="text-[#9564b4] font-serif font-bold">{item.userName}</i>
                   </p>
                 </div>
               </div>
