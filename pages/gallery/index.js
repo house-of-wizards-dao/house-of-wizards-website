@@ -51,9 +51,45 @@ function GalleryPage() {
   const modalRef = useRef();
 
   const [isZoomed, setIsZoomed] = useState(false);
+  const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartPosition = useRef({ x: 0, y: 0 });
 
   const handleZoomToggle = () => {
-    setIsZoomed(!isZoomed);
+    if (!isDragging) {
+      setIsZoomed(!isZoomed);
+      setDragPosition({ x: 0, y: 0 });
+    }
+  };
+
+  const handleDragStart = (e) => {
+    if (!isZoomed) return;
+
+    const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+    setIsDragging(true);
+    dragStartPosition.current = {
+      x: clientX - dragPosition.x,
+      y: clientY - dragPosition.y
+    };
+  };
+
+  const handleDragMove = (e) => {
+    if (!isDragging || !isZoomed) return;
+
+    e.preventDefault();
+    const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+    const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+    const newX = clientX - dragStartPosition.current.x;
+    const newY = clientY - dragStartPosition.current.y;
+
+    setDragPosition({ x: newX, y: newY });
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
   };
 
   // Fetch gallery data
@@ -113,6 +149,12 @@ function GalleryPage() {
     fetchAllImages();
   }, [fetchAllImages]);
 
+  useEffect(() => {
+    if (!isZoomed) {
+      setDragPosition({ x: 0, y: 0 });
+    }
+  }, [isZoomed]);
+
   // Modal handlers
   useEffect(() => {
     if (!modalOpen) return;
@@ -121,6 +163,8 @@ function GalleryPage() {
       if (modalRef.current && !modalRef.current.contains(event.target)) {
         setModalOpen(false);
         setSelectedItem(null);
+        setIsZoomed(false);
+        setDragPosition({ x: 0, y: 0 });
       }
     };
 
@@ -128,6 +172,8 @@ function GalleryPage() {
       if (event.key === 'Escape') {
         setModalOpen(false);
         setSelectedItem(null);
+        setIsZoomed(false);
+        setDragPosition({ x: 0, y: 0 });
       }
     };
 
@@ -139,6 +185,22 @@ function GalleryPage() {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [modalOpen]);
+
+  // Add event listeners for drag
+  useEffect(() => {
+    const handleMouseUp = () => handleDragEnd();
+    const handleTouchEnd = () => handleDragEnd();
+
+    if (modalOpen && isZoomed) {
+      window.addEventListener('mouseup', handleMouseUp);
+      window.addEventListener('touchend', handleTouchEnd);
+    }
+
+    return () => {
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [modalOpen, isZoomed]);
 
   if (loading) {
     return <Spinner className="h-screen w-full" color="default" labelColor="foreground"/>;
@@ -158,7 +220,7 @@ function GalleryPage() {
           </h1>
           
           {/* Artist filter */}
-          <div className="w-full ">
+          <div className="w-full">
             <select 
               className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
               value={selectedArtist || ''}
@@ -212,7 +274,7 @@ function GalleryPage() {
                     {item.description}
                   </p>
                   <p className="text-foreground sm:text-md text-sm truncate text-center">
-                   <i className="text-[#9564b4] font-serif font-bold">{item.userName}</i>
+                    <i className="text-[#9564b4] font-serif font-bold">{item.userName}</i>
                   </p>
                 </div>
               </div>
@@ -256,58 +318,90 @@ function GalleryPage() {
 
           {/* Modal */}
           {modalOpen && selectedItem && (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <div 
-        ref={modalRef}
-        className="bg-background border-1.5 border-[#242424] sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative"
-      >
-        <div className="flex justify-end mb-2">
-       
-          
-            <IoIosCloseCircle onClick={() => {
-              setModalOpen(false);
-              setSelectedItem(null);
-              setIsZoomed(false);
-            }} className="sm:text-2xl text-md text-[#9564b4] cursor-pointer" />
-         
-        </div>
-        
-        <div 
-          className={`transition-all duration-300 ease-in-out ${
-            isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
-          }`}
-          onClick={handleZoomToggle}
-        >
-          {selectedItem.bucket === 'files' && selectedItem.name.toLowerCase().endsWith('.mp4') ? (
-            <video 
-              controls 
-              className="w-full aspect-video object-contain rounded-xl"
-              style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
-            >
-              <source src={`${CDNURL}${selectedItem.bucket}/${selectedItem.userId}/${selectedItem.name}`} type="video/mp4" />
-            </video>
-          ) : (
-            <div className={`flex justify-center items-center transition-transform duration-300 ${
-              isZoomed ? 'scale-150 transform-origin-center' : ''
-            }`}>
-              <Image
-                src={`${CDNURL}${selectedItem.bucket}/${selectedItem.userId}/${selectedItem.name}`}
-                alt={selectedItem.description}
-                width={1200}
-                height={800}
-                className={`w-auto rounded-xl transition-all duration-300 ${
-                  isZoomed ? 'max-h-[90vh]' : 'max-h-[70vh]'
-                }`}
-                style={{ objectFit: 'contain' }}
-                unoptimized={selectedItem.name.toLowerCase().endsWith('.gif')}
-              />
+            <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
+              <div 
+                ref={modalRef}
+                className="bg-background border-1.5 border-[#242424] sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex gap-2">
+                    {!selectedItem.name.toLowerCase().endsWith('.mp4') && (
+                      <button
+                        onClick={handleZoomToggle}
+                        className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
+                      >
+                        {isZoomed ? <BiZoomOut size={24} /> : <BiZoomIn size={24} />}
+                      </button>
+                    )}
+                  </div>
+                  <IoIosCloseCircle 
+                    onClick={() => {
+                      setModalOpen(false);
+                      setSelectedItem(null);
+                      setIsZoomed(false);
+                      setDragPosition({ x: 0, y: 0 });
+                    }} 
+                    className="sm:text-2xl text-md text-[#9564b4] cursor-pointer hover:text-[#7d4d9c] transition-colors" 
+                  />
+                </div>
+                
+                <div 
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isZoomed ? 'cursor-move' : 'cursor-zoom-in'
+                  }`}
+                >
+                  {selectedItem.bucket === 'files' && selectedItem.name.toLowerCase().endsWith('.mp4') ? (
+                    <video 
+                      controls 
+                      className="w-full aspect-video object-contain rounded-xl"
+                      style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
+                    >
+                      <source src={`${CDNURL}${selectedItem.bucket}/${selectedItem.userId}/${selectedItem.name}`} type="video/mp4" />
+                    </video>
+                  ) : (
+                    <div 
+                      className="flex justify-center items-center transition-transform duration-300"
+                      onMouseDown={handleDragStart}
+                      onMouseMove={handleDragMove}
+                      onTouchStart={handleDragStart}
+                      onTouchMove={handleDragMove}
+                      style={{
+                        transform: isZoomed ? `scale(1.5) translate(${dragPosition.x}px, ${dragPosition.y}px)` : 'none',
+                        cursor: isDragging ? 'grabbing' : 'grab',
+                        touchAction: 'none'
+                      }}
+                    >
+                      <Image
+                        src={`${CDNURL}${selectedItem.bucket}/${selectedItem.userId}/${selectedItem.name}`}
+                        alt={selectedItem.description}
+                        width={1200}
+                        height={800}
+                        className={`w-auto rounded-xl transition-all duration-300 ${
+                          isZoomed ? 'max-h-[80vh]' : 'max-h-[70vh]'
+                        }`}
+                        style={{ 
+                          objectFit: 'contain',
+                          pointerEvents: isZoomed ? 'none' : 'auto'
+                        }}
+                        unoptimized={selectedItem.name.toLowerCase().endsWith('.gif')}
+                        draggable={false}
+                      />
+                    </div>
+                  )}
+                </div>
+                <div className="mt-4 text-center">
+                  <p className="text-foreground font-medium sm:text-md text-sm font-pop mb-1">
+                    {selectedItem.description}
+                  </p>
+                  <p className="text-[#9564b4] font-serif font-bold italic">
+                    {selectedItem.userName}
+                  </p>
+                </div>
+              </div>
             </div>
           )}
-        </div>
-      </div>
-    </div>
-  )}
-        </Container></Suspense>
+        </Container>
+      </Suspense>
     </DefaultLayout>
   );
 }

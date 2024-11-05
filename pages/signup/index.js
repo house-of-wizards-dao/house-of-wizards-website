@@ -371,7 +371,7 @@ export default function IndexPage() {
       {user === null ?
         <>
         <div className="w-full h-screen flex flex-col items-center justify-center gap-6 ">
-        <h1 className="font-pop font-bold text-foreground text-3xl">Forgotten Artist</h1>
+        <h1 className="font-serif italic text-[#9564b4] text-5xl">Forgotten Artist</h1>
         <div className="flex flex-row gap-6">
           <Button
               className="font-pop font-medium text-white text-md bg-[#242424]" 
@@ -447,7 +447,7 @@ export default function IndexPage() {
       :
         <>
           {/* Your profile */}
-          <div className="w-full flex flex-col">
+          <div className="w-full flex flex-col max-w-7xl mx-auto min-h-screen my-16">
             {/* Avater and Header Profile */}
             <div className="flex flex-row justify-between">
               <div className="flex flex-row gap-6">
@@ -482,7 +482,7 @@ export default function IndexPage() {
                   )}
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h1 className="font-pop text-foreground font-bold sm:text-3xl text-2xl">Your Profile</h1>
+                  <h1 className="font-serif text-[#9564b4] italic sm:text-4xl text-2xl">Your Profile</h1>
                   <p className="text-grey font-pop text-md sm:block hidden">{user.email} {user.name}</p>
                 </div>
               </div>
@@ -564,17 +564,17 @@ export default function IndexPage() {
                   </div>
                   <div className="flex sm:flex-row flex-col sm:space-x-4 mt-1">
                     {twitter && (
-                      <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noopener noreferrer" className="text-[#7d7d7d] font-pop text-md hover:text-foreground flex flex-row items-center gap-1">
+                      <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2">
                         <FaTwitter size={16}  className="text-foreground"/> {twitter}
                       </a>
                     )}
                     {discord && (
-                      <span className="text-[#7d7d7d] font-pop text-md hover:text-foreground flex flex-row items-center gap-1" title={discord}>
+                      <span className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2" title={discord}>
                         <FaDiscord size={16} className="text-foreground"/> {discord}
                       </span>
                     )}
                     {website && (
-                      <a href={website} target="_blank" rel="noopener noreferrer" className="text-[#7d7d7d] font-pop text-md hover:text-foreground flex flex-row items-center gap-1">
+                      <a href={website} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2">
                         <FaGlobe size={16} className="text-foreground"/> {website}
                       </a>
                     )}
@@ -615,7 +615,7 @@ export default function IndexPage() {
                       className="object-cover rounded-xl aspect-square"
                     />
                   </div>
-                    <p className="text-foreground font-pop sm:text-md text-md">{image.description}</p>
+                    <p className="text-[#9564b4] font-serif sm:text-md text-md">{image.description}</p>
                     <div className="p-3">
                       <Button className="text-white font-medium text-sm font-pop" color="danger" onClick={() => deleteContent({...image, bucket: 'images'})}>Delete Image</Button>
                     </div>
@@ -645,7 +645,7 @@ export default function IndexPage() {
                           </video>
                         ) : null}
                       </div>
-                      <p className="text-foreground font-pop sm:text-md text-md mt-2">{file.description}</p>
+                      <p className="text-[#9564b4] font-serif italic sm:text-md text-md mt-2">{file.description}</p>
                       <div className="p-3">
                         <Button className="text-white font-medium text-sm font-pop" color="danger" onClick={() => deleteContent({...file, bucket: 'files'})}>Delete File</Button>
                       </div>

@@ -17,6 +17,7 @@ import {
 } from "@nextui-org/dropdown";
 
 import { Button } from "@nextui-org/button";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { Image } from "@nextui-org/image";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "@nextui-org/link";
@@ -40,7 +41,7 @@ export const Navbar = () => {
 
       <NavbarContent>
         <div className="hidden lg:flex gap-8 justify-start ml-2">
-          <NavbarItem className="font-medium">
+          <NavbarItem className="font-medium hover:text-[#9564b4]">
             <NextLink href="/about">
               About
             </NextLink>
@@ -48,7 +49,7 @@ export const Navbar = () => {
           <Dropdown>
             <DropdownTrigger>
               <button 
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent"
+                className="hover:text-[#9564b4] p-0 bg-transparent data-[hover=true]:bg-transparent"
               >
                 Gallery
               </button>
@@ -72,21 +73,52 @@ export const Navbar = () => {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <NavbarItem className="font-medium">
-            <NextLink href="/community">
-              Community
-            </NextLink>
-          </NavbarItem>
-          <NavbarItem className="font-medium">
+          <Dropdown>
+            <DropdownTrigger>
+              <button 
+                className="hover:text-[#9564b4] p-0 bg-transparent data-[hover=true]:bg-transparent"
+              >
+                Community
+              </button>
+            </DropdownTrigger>
+            <DropdownMenu 
+              aria-label="Gallery options"
+              className="w-[240px] text-center"
+              itemClasses={{
+                base: "gap-4",
+              }}
+            >
+              <DropdownItem key="talent">
+                <NextLink href="/talent">
+                  Talent
+                </NextLink>
+              </DropdownItem>
+              <DropdownItem key="community">
+                <NextLink href="/community">
+                  Community
+                </NextLink>
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+          <NavbarItem className="font-medium hover:text-[#9564b4]">
             <NextLink
               className="flex items-center gap-2"
-              href="/"
+              href="/ministries"
+            >
+              Ministries
+            </NextLink>
+          </NavbarItem>
+          <NavbarItem className="font-medium hover:text-[#9564b4]">
+            <NextLink
+              className="flex items-center gap-2"
+              target="_blank"
+              href="https://snapshot.org/#/forgottengov.eth"
             >
               Vote
               <FaExternalLinkAlt />
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="font-medium">
+          <NavbarItem className="font-medium hover:text-[#9564b4]">
             <NextLink
               className="flex items-center gap-2"
               href="/"
@@ -103,11 +135,11 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-4">
-          <Link isExternal href={siteConfig.links.twitter} title="Twitter">
-            <TwitterIcon className="text-white" />
+          <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
+            <TwitterIcon className="text-white hover:text-[#9564b4]" />
           </Link>
-          <Link isExternal href={siteConfig.links.discord} title="Discord">
-            <DiscordIcon className="text-white" />
+          <Link isExternal href="https://discord.gg/forgottenrunes" title="Discord">
+            <DiscordIcon className="text-white hover:text-[#9564b4]" />
           </Link>
         </NavbarItem>
       </NavbarContent>
