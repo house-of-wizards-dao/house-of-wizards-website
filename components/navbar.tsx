@@ -71,6 +71,7 @@ export const Navbar = () => {
                   Gallery
                 </NextLink>
               </DropdownItem>
+              
             </DropdownMenu>
           </Dropdown>
           <Dropdown>
@@ -96,6 +97,11 @@ export const Navbar = () => {
               <DropdownItem key="community">
                 <NextLink href="/community">
                   Community
+                </NextLink>
+              </DropdownItem>
+              <DropdownItem key="signup">
+                <NextLink href="/signup">
+                    Join
                 </NextLink>
               </DropdownItem>
             </DropdownMenu>
