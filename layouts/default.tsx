@@ -31,7 +31,7 @@ export default function DefaultLayout({
             <Link href="/ministries" className="text-white text-xs cursor-pointer hover:text-[#9564b4]">Ministires</Link>
             <Link href="https://snapshot.org/#/forgottengov.eth" className="text-white text-xs cursor-pointer hover:text-[#9564b4]">Vote</Link>
           </div> */}
-          <div className="flex flex-col items-center w-[700px]">
+          <div className="flex flex-col items-center sm:w-[700px] w-full">
             <p className="text-xs text-white">All right reserved. 2024.</p>
             <p className="text-xs text-white">Forgotten Runes</p>
           </div>
