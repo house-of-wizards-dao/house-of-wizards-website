@@ -75,20 +75,9 @@ export default function IndexPage() {
     <DefaultLayout>
       <div className="bg-[url('/img/banner.png')] h-[500px] bg-center">
       </div>
-      {/* <div className="flex items-center justify-center">
-        <div className="flex flex-row items-center justify-center w-[800px] gap-8">
-          <div className="w-full flex items-center justify-center">
-            <Image className="w-full rounded-none" src="/img/wizard-grid.png"/>
-          </div>
-          <div className="w-full flex flex-col items-center justify-center gap-6">
-            <h1 className="text-[#9564b4] font-black text-3xl">The House of Wizards is a Forgotten Runes Community DAO.</h1>
-            <p className="text-md">Comprised of Forgotten Runes token holders, the House of Wizards funds community proposals centered on art, lore, development, and more.</p>
-            <p className="text-md">Community member looking for funding? Head over to the forum to get started on a proposal. Interested in joining the community? Shop forgotten.market to browse Forgotten Runes collections.</p>
-          </div>
-        </div>
-      </div> */}
-
-      <section className="max-w-7xl mx-auto px-4 py-20 grid grid-cols-1 md:grid-cols-2 gap-12">
+      
+      <section className="p-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="space-y-6">
           <h1 className="text-4xl text-[#9564b4] font-bold">
            The House of Wizards is a <i className="font-serif font-normal">Forgotten Runes</i> Community DAO.
@@ -109,11 +98,12 @@ export default function IndexPage() {
             <div className="bg-purple-100 rounded-lg h-full w-full"/>
           </div>
         </div>
+        </div>
       </section>
 
-      <div className="bg-[#121212] py-16 px-4 sm:px-6 lg:px-8">
+      <div className="bg-[#121212] p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto sm:mb-16 mb-0">
           <h2 className="text-[#9564b4] text-4xl font-serif italic mb-6">
             Forgotten Council
           </h2>
@@ -122,9 +112,9 @@ export default function IndexPage() {
           </p>
         </div>
 
-        <div className="flex flex-row flex-wrap gap-6 justify-center">
+        <div className="flex flex-row flex-wrap sm:gap-6 gap-3 justify-center">
           {teamMembers.map((member, index) => (
-            <div key={index} className="w-[190px] ">
+            <div key={index} className="w-[170px] sm:w-[190px]">
               <div className="aspect-[3/4] mb-4">
                 <img
                   src={member.image}
@@ -141,57 +131,57 @@ export default function IndexPage() {
           ))}
         </div>
       </div>
-    </div>
+      </div>
 
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="max-w-5xl w-full mx-auto grid grid-cols-1 md:grid-cols-2 gap-14 items-center">
-        {/* Form Section */}
-        <div className="w-full max-w-md">
-          <form className="space-y-6">
-            <div>
-              <input
-                type="text"
-                placeholder="Your Name"
-                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
-              />
-            </div>
-            
-            <div>
-              <input
-                type="email"
-                placeholder="Your Email"
-                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
-              />
-            </div>
-            
-            <div>
-              <textarea
-                placeholder="Share your thoughts"
-                rows={4}
-                className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors resize-none"
-              />
-            </div>
-            
-            <button
-              type="submit"
-              className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-[#9564b4] hover:te transition-colors"
-            >
-              SEND
-            </button>
-          </form>
-        </div>
-
-        {/* Text Section */}
-        <div className="text-white space-y-16">
-          <div className="">
-            <h2 className="text-5xl font-serif">Contact <i className="font-serif text-[#9564b4]">Us</i></h2>
+      <div className="sm:min-h-screen flex items-center justify-center p-8">
+        <div className="max-w-5xl w-full mx-auto flex sm:flex-row flex-col-reverse sm:gap-14 gap-8 items-center">
+          {/* Form Section */}
+          <div className="w-full max-w-md">
+            <form className="space-y-6">
+              <div>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+                />
+              </div>
+              
+              <div>
+                <input
+                  type="email"
+                  placeholder="Your Email"
+                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+                />
+              </div>
+              
+              <div>
+                <textarea
+                  placeholder="Share your thoughts"
+                  rows={4}
+                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors resize-none"
+                />
+              </div>
+              
+              <button
+                type="submit"
+                className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-[#9564b4] hover:te transition-colors"
+              >
+                SEND
+              </button>
+            </form>
           </div>
-          <p className="text-gray-400 max-w-md">
-            It is very important for us to keep in touch with you, so we are always ready to answer any question that interests you. Shoot!
-          </p>
+
+          {/* Text Section */}
+          <div className="text-white sm:space-y-16 space-y-8">
+            <div className="">
+              <h2 className="text-5xl font-serif">Contact <i className="font-serif text-[#9564b4]">Us</i></h2>
+            </div>
+            <p className="text-gray-400 max-w-md">
+              It is very important for us to keep in touch with you, so we are always ready to answer any question that interests you. Shoot!
+            </p>
+          </div>
         </div>
       </div>
-    </div>
     </DefaultLayout>
   );
 }

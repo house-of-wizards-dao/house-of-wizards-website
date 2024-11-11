@@ -30,7 +30,7 @@ export const Navbar = () => {
   const { theme } = useTheme();
 
   return (
-    <NextUINavbar className="p-8" maxWidth="xl" position="static">
+    <NextUINavbar className="sm:p-8 p-4" maxWidth="xl" position="static">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
@@ -155,24 +155,55 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarMenu>
-        <div className="mx-4 mt-2 flex flex-col gap-2">
-          {siteConfig.navMenuItems.map((item, index) => (
-            <NavbarMenuItem key={`${item}-${index}`}>
+        <div className="mx-4 mt-14 flex flex-col gap-2">
+            <NavbarMenuItem>
               <Link
-                color={
-                  index === 2
-                    ? "primary"
-                    : index === siteConfig.navMenuItems.length - 1
-                      ? "danger"
-                      : "foreground"
-                }
-                href="#"
-                size="lg"
-              >
-                {item.label}
+                className="text-white" href="/about" size="lg">
+                About
               </Link>
             </NavbarMenuItem>
-          ))}
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/gallery" size="lg">
+                Gallery
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/artists" size="lg">
+                Artists
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/community" size="lg">
+                Community
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/council" size="lg">
+                Council
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/talent" size="lg">
+                Talent
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/ministries" size="lg">
+                Ministries
+              </Link>
+            </NavbarMenuItem>
+            <NavbarMenuItem>
+              <Link
+                className="text-white" href="/vote" size="lg">
+                Vote
+              </Link>
+            </NavbarMenuItem>
         </div>
       </NavbarMenu>
     </NextUINavbar>

@@ -24,7 +24,7 @@ const Bio: FC<BioProps> = ({
   imageName = '',
 }) => {
   return (
-    <div className="border-1 border-[#1d1c1e] bg-[#18181b] w-[49%] items-center justify-start gap-3 flex flex-row p-2 rounded-xl">
+    <div className="border-1 border-[#1d1c1e] bg-[#18181b] sm:w-[49%] w-full items-center justify-start gap-3 flex flex-row p-2 rounded-xl">
       {/* Image Section */}
       <div className="basis-1/4">
         <Image 
@@ -42,7 +42,7 @@ const Bio: FC<BioProps> = ({
           {/* Name and Focus */}
           <div className="flex flex-row gap-3 items-center">
             <div className="text-xs">{name}</div>
-            <div className="bg-[#9564b4] text-sm text-center px-2 rounded-full border-4 border-[#3b2747]">{focus}</div>
+            <div className="bg-[#9564b4] truncate text-sm text-center px-2 rounded-full border-4 border-[#3b2747]">{focus}</div>
           </div>
           {/* Skillset */}
           <div className="text-xs">{skillset}</div>
@@ -440,7 +440,7 @@ const Talent: FC = () => {
 
   return (
     <DefaultLayout>
-      <div className="max-w-5xl mx-auto my-16">
+      <div className="max-w-5xl mx-auto p-4">
         {/* Header Section */}
         <h1 className="font-serif italic text-[#9564b4] text-5xl">Talent</h1>
 

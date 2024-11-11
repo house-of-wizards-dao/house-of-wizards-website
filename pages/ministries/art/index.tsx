@@ -5,7 +5,7 @@ import { Link } from "@nextui-org/link";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <section className="flex min-h-screen flex-col items-center justify-center gap-4 py-8 md:py-10">
+      <section className="flex sm:min-h-screen flex-col items-center justify-center gap-4 p-4">
         <div className="inline-block max-w-7lg text-center justify-center flex flex-col gap-6">
           <h1 className="text-5xl font-serif italic text-[#9564b4]">Ministry of Art</h1>
           <p className="max-w-5xl mx-auto text-lg">The Ministry of Art is a DAO that generously issues grants to create Forgotten Runes art. This can be anything from paintings, comics, sculptures, murals, videogames - any art that contributes to the story of the Runiverse. Anyone can request funding from the ministry to support projects in the scope of the mandate.</p>
