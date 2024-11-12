@@ -11,6 +11,16 @@ import { BiZoomIn, BiZoomOut } from "react-icons/bi";
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
 const IMAGES_PER_PAGE = 40;
 
+// Add image transformation parameters
+const getImageUrl = (bucket, userId, name, isThumb = false) => {
+  const baseUrl = `${CDNURL}${bucket}/${userId}/${name}`;
+  if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
+    return baseUrl; // Don't transform GIFs or videos
+  }
+  // Add Supabase image transformation parameters
+  return isThumb ? `${baseUrl}?width=300&quality=60` : `${baseUrl}?quality=100`;
+};
+
 // Extracted Modal Component for better code splitting
 const ImageModal = React.memo(({ item, onClose, isOpen }) => {
   const [isZoomed, setIsZoomed] = useState(false);
@@ -69,12 +79,16 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
+    document.addEventListener('mouseup', handleDragEnd);
+    document.addEventListener('touchend', handleDragEnd);
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('mouseup', handleDragEnd);
+      document.removeEventListener('touchend', handleDragEnd);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, handleDragEnd]);
 
   if (!item || !isOpen) return null;
 
@@ -105,7 +119,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
               className="w-full aspect-video object-contain rounded-xl"
               style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
             >
-              <source src={`${CDNURL}${item.bucket}/${item.userId}/${item.name}`} type="video/mp4" />
+              <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
             </video>
           ) : (
             <div 
@@ -121,7 +135,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
               }}
             >
               <Image
-                src={`${CDNURL}${item.bucket}/${item.userId}/${item.name}`}
+                src={getImageUrl(item.bucket, item.userId, item.name, false)}
                 alt={item.description}
                 width={1200}
                 height={800}
@@ -130,6 +144,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
                   objectFit: 'contain',
                   pointerEvents: isZoomed ? 'none' : 'auto'
                 }}
+                quality={100}
                 unoptimized={item.name.toLowerCase().endsWith('.gif')}
                 draggable={false}
                 loading="eager"
@@ -162,15 +177,16 @@ const GalleryItem = React.memo(({ item, onClick }) => (
   >
     {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
       <video controls className="w-full aspect-square object-cover rounded-xl">
-        <source src={`${CDNURL}${item.bucket}/${item.userId}/${item.name}`} type="video/mp4" />
+        <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
       </video>
     ) : (
       <Image
-        src={`${CDNURL}${item.bucket}/${item.userId}/${item.name}`}
+        src={getImageUrl(item.bucket, item.userId, item.name, true)}
         alt={item.description}
         width={150}
         height={150}
         className="w-full aspect-square object-cover rounded-xl"
+        quality={60}
         unoptimized={item.name.toLowerCase().endsWith('.gif')}
         placeholder="blur"
         blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AoNxbhL3xvpeNluNyeQ0pwCxJGwA5NCiQ5nZ23P1j+n//2Q=="
@@ -265,149 +281,149 @@ function GalleryPage() {
         setContent(allContent.flat());
       });
     } catch (error) {
-      console.error("Error fetching gallery data:", error);
-    } finally {
-      setLoading(false);
+      console.error("Error fetching gallery data:", error);} finally {
+        setLoading(false);
+      }
+    }, [supabase]);
+  
+    useEffect(() => {
+      fetchAllImages();
+    }, [fetchAllImages]);
+  
+    const handleItemClick = useCallback((item) => {
+      setSelectedItem(item);
+      setModalOpen(true);
+    }, []);
+  
+    const handleCloseModal = useCallback(() => {
+      setModalOpen(false);
+      setSelectedItem(null);
+    }, []);
+  
+    if (loading) {
+      return <Spinner className="h-screen w-full" color="default" labelColor="foreground"/>;
     }
-  }, [supabase]);
-
-  useEffect(() => {
-    fetchAllImages();
-  }, [fetchAllImages]);
-
-  const handleItemClick = useCallback((item) => {
-    setSelectedItem(item);
-    setModalOpen(true);
-  }, []);
-
-  const handleCloseModal = useCallback(() => {
-    setModalOpen(false);
-    setSelectedItem(null);
-  }, []);
-
-  if (loading) {
-    return <Spinner className="h-screen w-full" color="default" labelColor="foreground"/>;
-  }
-
-  return (
-    <DefaultLayout>
-     <Container className="sm:my-16 sm:p-0 p-4 flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-7xl mx-auto">
-        <h1 className="font-serif text-[#9564b4] italic sm:text-5xl text-3xl">
-          Gallery
-        </h1>
-        
-        {/* Artist filter - Optimized with memoized options */}
-        <div className="w-full">
-        <select 
-  className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
-  value={selectedArtist || ''}
-  onChange={(e) => {
-    startTransition(() => {
-      setSelectedArtist(e.target.value || null);
-    });
-  }}
->
-            <option value="">All Artists</option>
-            {allArtists.map(artist => (
-              <option key={artist} value={artist}>{artist}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Gallery grid - Using virtualization for large lists */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full">
-          {currentItems.map((item) => (
-            <GalleryItem
-              key={`${item.bucket}-${item.userId}-${item.name}`}
-              item={item}
-              onClick={handleItemClick}
-            />
-          ))}
-        </div>
-
-        {/* Pagination - Memoized calculations */}
-        {pageCount > 1 && (
-          <div className="flex justify-center mt-6 gap-2">
-            <Button
-              className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-              disabled={currentPage === 1}
+  
+    return (
+      <DefaultLayout>
+        <Container className="sm:my-16 sm:p-0 p-4 flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-7xl mx-auto">
+          <h1 className="font-serif text-[#9564b4] italic sm:text-5xl text-3xl">
+            Gallery
+          </h1>
+          
+          {/* Artist filter - Optimized with memoized options */}
+          <div className="w-full">
+            <select 
+              className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
+              value={selectedArtist || ''}
+              onChange={(e) => {
+                startTransition(() => {
+                  setSelectedArtist(e.target.value || null);
+                  setCurrentPage(1); // Reset to first page when changing artist
+                });
+              }}
             >
-              <IoIosArrowRoundBack className="text-2xl"/>
-            </Button>
-            
-            {Array.from({ length: pageCount }, (_, i) => (
+              <option value="">All Artists</option>
+              {allArtists.map(artist => (
+                <option key={artist} value={artist}>{artist}</option>
+              ))}
+            </select>
+          </div>
+  
+          {/* Gallery grid - Using virtualization for large lists */}
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full">
+            {currentItems.map((item) => (
+              <GalleryItem
+                key={`${item.bucket}-${item.userId}-${item.name}`}
+                item={item}
+                onClick={handleItemClick}
+              />
+            ))}
+          </div>
+  
+          {/* Pagination - Memoized calculations */}
+          {pageCount > 1 && (
+            <div className="flex justify-center mt-6 gap-2">
               <Button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`px-3 py-1 rounded-full ${
-                  currentPage === i + 1 
-                    ? 'bg-[#9564b4] text-white' 
-                    : 'bg-black text-white hover:bg-[#333333]'
-                }`}
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                disabled={currentPage === 1}
               >
-                {i + 1}
+                <IoIosArrowRoundBack className="text-2xl"/>
               </Button>
-            ))}
-            
-            <Button
-              className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-              onClick={() => setCurrentPage(prev => Math.min(pageCount, prev + 1))}
-              disabled={currentPage === pageCount}
+              
+              {Array.from({ length: pageCount }, (_, i) => (
+                <Button
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className={`px-3 py-1 rounded-full ${
+                    currentPage === i + 1 
+                      ? 'bg-[#9564b4] text-white' 
+                      : 'bg-black text-white hover:bg-[#333333]'
+                  }`}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+              
+              <Button
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                onClick={() => setCurrentPage(prev => Math.min(pageCount, prev + 1))}
+                disabled={currentPage === pageCount}
+              >
+                <IoIosArrowRoundForward className="text-2xl"/>
+              </Button>
+            </div>
+          )}
+  
+          {/* Modal - Extracted to separate component */}
+          <ImageModal
+            item={selectedItem}
+            isOpen={modalOpen}
+            onClose={handleCloseModal}
+          />
+        </Container>
+      </DefaultLayout>
+    );
+  }
+  
+  // Error Boundary Component
+  class ErrorBoundary extends React.Component {
+    state = { hasError: false };
+  
+    static getDerivedStateFromError() {
+      return { hasError: true };
+    }
+  
+    componentDidCatch(error, errorInfo) {
+      console.error('Gallery Error:', error, errorInfo);
+    }
+  
+    render() {
+      if (this.state.hasError) {
+        return (
+          <div className="flex flex-col items-center justify-center h-screen">
+            <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-blue-500 text-white px-4 py-2 rounded"
             >
-              <IoIosArrowRoundForward className="text-2xl"/>
+              Reload Page
             </Button>
           </div>
-        )}
-
-        {/* Modal - Extracted to separate component */}
-        <ImageModal
-          item={selectedItem}
-          isOpen={modalOpen}
-          onClose={handleCloseModal}
-        />
-      </Container>
-    </DefaultLayout>
-  );
-}
-
-// Error Boundary Component - Optimized with static methods
-class ErrorBoundary extends React.Component {
-  state = { hasError: false };
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error('Gallery Error:', error, errorInfo);
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="flex flex-col items-center justify-center h-screen">
-          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
-          <Button 
-            onClick={() => window.location.reload()} 
-            className="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Reload Page
-          </Button>
-        </div>
-      );
+        );
+      }
+      return this.props.children;
     }
-    return this.props.children;
   }
-}
-
-// Export wrapped component
-export default function GalleryPageWrapper() {
-  return (
-    <ErrorBoundary>
-      <Suspense fallback={<Spinner color="default" labelColor="foreground"/>}>
-        <GalleryPage />
-      </Suspense>
-    </ErrorBoundary>
-  );
-}
+  
+  // Export wrapped component
+  export default function GalleryPageWrapper() {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<Spinner color="default" labelColor="foreground"/>}>
+          <GalleryPage />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
