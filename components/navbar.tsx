@@ -56,7 +56,7 @@ export const Navbar = () => {
             </DropdownTrigger>
             <DropdownMenu 
               aria-label="Gallery options"
-              className="w-[240px] text-center"
+              className="w-auto text-center"
               itemClasses={{
                 base: "gap-4",
               }}
@@ -84,7 +84,7 @@ export const Navbar = () => {
             </DropdownTrigger>
             <DropdownMenu 
               aria-label="Gallery options"
-              className="w-[240px] text-center"
+              className="w-auto text-center"
               itemClasses={{
                 base: "gap-4",
               }}
@@ -124,10 +124,12 @@ export const Navbar = () => {
               <FaExternalLinkAlt />
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="font-medium hover:text-[#9564b4]">
+          <NavbarItem  className="font-medium text-gray-400">
             <NextLink
-              className="flex items-center gap-2"
-              href="/"
+              className="flex items-center gap-2 pointer-events-none"
+              href="/auction"
+              aria-disabled="true"
+              
             >
               Auction
               <FaExternalLinkAlt />

@@ -37,7 +37,7 @@ const Bio: FC<BioProps> = ({
       </div>
 
       {/* Bio Details */}
-      <div className="basis-2/4">
+      <div className="basis-3/4">
         <div>
           {/* Name and Focus */}
           <div className="flex flex-row gap-3 items-center">
@@ -45,7 +45,7 @@ const Bio: FC<BioProps> = ({
             <div className="bg-[#9564b4] truncate text-sm text-center px-2 rounded-full border-4 border-[#3b2747]">{focus}</div>
           </div>
           {/* Skillset */}
-          <div className="text-xs">{skillset}</div>
+          <div className="text-xs w-[300px] truncate hover:text-clip ">{skillset}</div>
         </div>
 
         {/* Links Section */}
@@ -60,12 +60,19 @@ const Bio: FC<BioProps> = ({
                 <div>{site}</div>
               </div>
             </Link>
-          ) : null}
+          ) : (
+            <div className="text-xs flex flex-row items-center gap-1">
+                  <div>
+                    <FaGlobe/>
+                  </div>
+                  <div className="text-xs text-gray-400">No Portfolio available</div>
+                </div>
+          )}
 
           {/* Social Links */}
           <div className="flex flex-col gap-1 mt-1">
             {/* Twitter */}
-            {twitter && (
+            {twitter ? (
               <Link 
                 href={`https://twitter.com/${twitter}`} 
                 target="_blank" 
@@ -78,10 +85,18 @@ const Bio: FC<BioProps> = ({
                   <div>{twitter}</div>
                 </div>
               </Link>
+            ) : (
+              <div className="text-xs flex flex-row items-center gap-1">
+                  <div>
+                    <FaTwitter/>
+                  </div>
+                  <div className="text-xs text-gray-400">No Twitter profile available</div>
+                </div>
+              
             )}
 
             {/* Discord */}
-            {discord && (
+            {discord ? (
               <div 
                 onClick={() => navigator.clipboard.writeText(discord)}
                 className="text-xs flex flex-row items-center gap-1 cursor-pointer"
@@ -91,6 +106,13 @@ const Bio: FC<BioProps> = ({
                 </div>
                 <div>{discord}</div>
               </div>
+            ) : (
+              <div className="text-xs flex flex-row items-center gap-1">
+                  <div>
+                    <FaDiscord/>
+                  </div>
+                  <div className="text-xs text-gray-400">No Discord handle available</div>
+                </div>
             )}
           </div>
         </div>
