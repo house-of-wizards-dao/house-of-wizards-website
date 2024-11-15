@@ -9,6 +9,20 @@
   font-stretch: 75% 125%;
 }
 
+@font-face {
+  font-family: 'Atirose';
+  src: url('/fonts/atirose.ttf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'OCRAStd';
+  src: url('/fonts/OCRAStd.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

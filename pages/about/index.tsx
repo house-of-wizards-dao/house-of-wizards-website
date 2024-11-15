@@ -3,28 +3,46 @@ import DefaultLayout from "@/layouts/default";
 
 const teamMembers = [
   {
-    name: "Bambam",
+    name: "Acid",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/bambam.png"
+    image: "/img/council/acid.png"
   },
   {
-    name: "Dotta",
+    name: "Meeple",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/dotta.png"
   },
   {
-    name: "Dragonfetus",
+    name: "Sharkchild",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/dragonfetus.png"
+    image: "/img/council/sharkchild.png"
   },
   {
-    name: "Jitcy",
+    name: "DFI",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/jitcy.png"
+  },
+  {
+    name: "Sharon",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/madotsuki.png"
+  },
+  {
+    name: "Bridge",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/meph.png"
+  },
+  {
+    name: "TAD",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/R Y F.png"
   },
   {
     name: "Madotsuki",
@@ -38,36 +56,6 @@ const teamMembers = [
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/meph.png"
   },
-  {
-    name: "RYF",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/R Y F.png"
-  },
-  {
-    name: "Reptar",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/r3ptar.png"
-  },
-  {
-    name: "Slickchick",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/Slickchick.png"
-  },
-  {
-    name: "TV",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/tv.png"
-  },
-  {
-    name: "Wazir",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/wazir.png"
-  }
 ];
 
 export default function IndexPage() {

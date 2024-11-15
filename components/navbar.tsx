@@ -40,16 +40,16 @@ export const Navbar = () => {
       </NavbarContent>
 
       <NavbarContent>
-        <div className="hidden lg:flex gap-8 justify-start ml-2">
-          <NavbarItem className="font-medium hover:text-[#9564b4]">
+        <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
+          <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink href="/about">
               About
             </NextLink>
           </NavbarItem>
-          <Dropdown>
+          <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button 
-                className="hover:text-[#9564b4] p-0 bg-transparent data-[hover=true]:bg-transparent"
+                className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase"
               >
                 Gallery
               </button>
@@ -74,10 +74,10 @@ export const Navbar = () => {
               
             </DropdownMenu>
           </Dropdown>
-          <Dropdown>
+          <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button 
-                className="hover:text-[#9564b4] p-0 bg-transparent data-[hover=true]:bg-transparent"
+                className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase"
               >
                 Community
               </button>
@@ -106,7 +106,7 @@ export const Navbar = () => {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <NavbarItem className="font-medium hover:text-[#9564b4]">
+          <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink
               className="flex items-center gap-2"
               href="/ministries"
@@ -114,7 +114,7 @@ export const Navbar = () => {
               Ministries
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="font-medium hover:text-[#9564b4]">
+          <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink
               className="flex items-center gap-2"
               target="_blank"
@@ -124,7 +124,7 @@ export const Navbar = () => {
               <FaExternalLinkAlt />
             </NextLink>
           </NavbarItem>
-          <NavbarItem  className="font-medium text-gray-400">
+          <NavbarItem  className="text-sm text-gray-400">
             <NextLink
               className="flex items-center gap-2 pointer-events-none"
               href="/auction"
