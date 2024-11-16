@@ -371,27 +371,27 @@ export default function IndexPage() {
       {user === null ?
         <>
         <div className="w-full h-screen flex flex-col items-center justify-center gap-6 ">
-        <h1 className="font-serif italic text-[#9564b4] text-5xl">Forgotten Artist</h1>
-        <div className="flex flex-row gap-6">
-          <Button
-              className="font-pop font-medium text-white text-md bg-[#242424]" 
-            /* variant={activeTab === "signin" ? "primary" : "secondary"}  */
-            onClick={() => setActiveTab("signin")}
-          >
-            Sign In
-          </Button>
-          <Button
-            className="font-pop font-medium text-white text-md bg-[#7d7d7d]"  
-            onClick={() => setActiveTab("signup")}
-          >
-            Register
-          </Button>
-        </div>
+          <h1 className="font-atirose text-violet text-7xl">Forgotten Artist</h1>
+            <div className="flex flex-row gap-6">
+              <Button
+                  className="text-white text-sm bg-[#242424] focus:bg-violet" 
+                /* variant={activeTab === "signin" ? "primary" : "secondary"}  */
+                onClick={() => setActiveTab("signin")}
+              >
+                Sign In
+              </Button>
+              <Button
+                className="text-white text-sm bg-[#242424] focus:bg-violet"  
+                onClick={() => setActiveTab("signup")}
+              >
+                Register
+              </Button>
+            </div>
         {activeTab === "signin" ? (
-          /* Sign In */
+            /* Sign In */
             <div className="flex flex-col items-center justify-center gap-6 sm:w-[500px] w-full">
             <div className="flex flex-col w-full flex-wrap md:flex-nowrap gap-4">
-                <Input type="email" label="Email" placeholder="Enter your email"  onChange={(e) => setEmail(e.target.value)}/>
+                <Input type="email" label="Email" placeholder="Enter your email" onChange={(e) => setEmail(e.target.value)}/>
                 <Input
                 label="Password"
                 variant="bordered"
@@ -411,43 +411,43 @@ export default function IndexPage() {
               />
               </div>
             
-              <Button className="font-pop font-medium text-md bg-[#242424] text-foreground" color="success" onClick={() => signInWithEmail()}>
+              <Button className="text-sm bg-[#242424] text-foreground" color="success" onClick={() => signInWithEmail()}>
                 Sign In
               </Button>
             </div>
         ) : (
             /* Sign Up */
-          <div className="flex flex-col items-center justify-center gap-6 sm:w-[500px] w-full">
-            <Input type="name" label="Name" placeholder="Enter your name"  onChange={(e) => setName(e.target.value)}/>
-            <Input type="email" label="Email" placeholder="Enter your name"  onChange={(e) => setEmail(e.target.value)}/>
-            <Input
-              label="Password"
-              variant="bordered"
-              placeholder="Enter your password"
-              endContent={
-                <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
-                  {isVisible ? (
-                    <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                  ) : (
-                    <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
-                  )}
-                </button>
-              }
-              type={isVisible ? "text" : "password"}
-              className=""
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <Button className="font-pop font-medium text-md bg-[#7d7d7d] text-white" color="primary" onClick={() => signUpWithEmail()}>
-              Register
-            </Button>
-          </div>
+            <div className="flex flex-col items-center justify-center gap-6 sm:w-[500px] w-full">
+              <Input type="name" label="Name" placeholder="Enter your name"  onChange={(e) => setName(e.target.value)}/>
+              <Input type="email" label="Email" placeholder="Enter your name"  onChange={(e) => setEmail(e.target.value)}/>
+              <Input
+                label="Password"
+                variant="bordered"
+                placeholder="Enter your password"
+                endContent={
+                  <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                    {isVisible ? (
+                      <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    ) : (
+                      <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                    )}
+                  </button>
+                }
+                type={isVisible ? "text" : "password"}
+                className=""
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <Button className="text-sm bg-[#242424] text-foreground" color="primary" onClick={() => signUpWithEmail()}>
+                Register
+              </Button>
+            </div>
         )}
         </div>
         </>
       :
         <>
           {/* Your profile */}
-          <div className="w-full flex flex-col max-w-7xl mx-auto min-h-screen my-16">
+          <div className="w-full flex flex-col max-w-7xl mx-auto min-h-screen">
             {/* Avater and Header Profile */}
             <div className="flex flex-row justify-between">
               <div className="flex flex-row gap-6">
@@ -482,13 +482,13 @@ export default function IndexPage() {
                   )}
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h1 className="font-serif text-[#9564b4] italic sm:text-4xl text-2xl">Your Profile</h1>
-                  <p className="text-grey font-pop text-md sm:block hidden">{user.email} {user.name}</p>
+                  <h1 className="font-atirose text-[#9564b4] sm:text-5xl text-3xl">Your Profile</h1>
+                  <p className="text-grey  text-sm sm:block hidden">{user.email} {user.name}</p>
                 </div>
               </div>
 
               <div className="flex justify-center items-center">
-                <Button color="danger" className="w-fit font-pop sm:text-md text-sm font-bold" onClick={() => signOut()}>Sign Out</Button>
+                <Button color="danger" className="w-fit  sm:text-sm text-sm font-bold" onClick={() => signOut()}>Sign Out</Button>
               </div>
             </div>
 
@@ -497,7 +497,7 @@ export default function IndexPage() {
               {isEditingDescription ? (
                 <div className="flex flex-col sm:w-[400px] w-full">
                   <Input
-                    className="w-full mt-3 font-pop"
+                    className="w-full mt-3 "
                     type="text"
                     label="User Description"
                     placeholder="Enter a description about yourself"
@@ -505,25 +505,25 @@ export default function IndexPage() {
                     onChange={(e) => setUserDescription(e.target.value)}
                   />
                   <div className="flex justify-end mt-2 gap-2">
-                    <Button color="success" className="font-pop" onClick={() => {updateUserDescription(); setIsEditingDescription(false);}}>Save</Button>
-                    <Button color="danger" className="font-pop" onClick={() => setIsEditingDescription(false)}>Cancel</Button>
+                    <Button color="success" className="" onClick={() => {updateUserDescription(); setIsEditingDescription(false);}}>Save</Button>
+                    <Button color="danger" className="" onClick={() => setIsEditingDescription(false)}>Cancel</Button>
                   </div>
                 </div>
               ) : (
                 <div className="flex items-center">
-                  <p className="text-foreground font-pop text-md mr-2">
+                  <p className="text-foreground  text-sm mr-2">
                     {userDescription || "No description added yet"}
                   </p>
                   <button onClick={() => setIsEditingDescription(true)} className="bg-transparent border-none cursor-pointer">
-                    <PencilIcon className="sm:h-4 sm:w-4 h-3 w-3 text-foreground" />
-                  </button>
+                    <PencilIcon className="sm:h-4 sm:w-4 h-3 w-3 text-foreground"/>
+                  </button>   
                 </div>
               )}
             
               {isEditingSocial ? (
                 <div className="flex flex-col sm:w-[400px] w-full max-w-md mt-4">
                   <Input
-                    className="mt-3 font-pop"
+                    className="mt-3 "
                     type="text"
                     label="Twitter"
                     placeholder="Your Twitter username"
@@ -531,7 +531,7 @@ export default function IndexPage() {
                     onChange={(e) => setTwitter(e.target.value)}
                   />
                   <Input
-                    className="mt-3 font-pop"
+                    className="mt-3 "
                     type="text"
                     label="Discord"
                     placeholder="Your Discord username"
@@ -539,7 +539,7 @@ export default function IndexPage() {
                     onChange={(e) => setDiscord(e.target.value)}
                   />
                   <Input
-                    className="mt-3 font-pop"
+                    className="mt-3 "
                     type="text"
                     label="Website"
                     placeholder="Your website URL"
@@ -547,14 +547,14 @@ export default function IndexPage() {
                     onChange={(e) => setWebsite(e.target.value)}
                   />
                   <div className="flex justify-end mt-2">
-                    <Button color="success" className="ml-2 font-pop" onClick={updateSocialMedia}>Save</Button>
-                    <Button color="danger" className="ml-2 font-pop" onClick={() => setIsEditingSocial(false)}>Cancel</Button>
+                    <Button color="success" className="ml-2 " onClick={updateSocialMedia}>Save</Button>
+                    <Button color="danger" className="ml-2 " onClick={() => setIsEditingSocial(false)}>Cancel</Button>
                   </div>
                 </div>
                 ) : (
                 <div className="flex flex-col">
                   <div className="flex flex-row gap-3">
-                    <h1 className="font-pop text-md text-foreground">Socials</h1>
+                    <h1 className=" text-sm text-foreground">Socials</h1>
                     <button 
                       onClick={() => setIsEditingSocial(true)}
                       className="bg-transparent border-none cursor-pointer"
@@ -564,17 +564,17 @@ export default function IndexPage() {
                   </div>
                   <div className="flex sm:flex-row flex-col sm:space-x-4 mt-1">
                     {twitter && (
-                      <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2">
+                      <a href={`https://twitter.com/${twitter}`} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-atirose text-lg hover:text-foreground flex flex-row items-center gap-2">
                         <FaTwitter size={16}  className="text-foreground"/> {twitter}
                       </a>
                     )}
                     {discord && (
-                      <span className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2" title={discord}>
+                      <span className="text-[#9564b4] font-atirose text-lg hover:text-foreground flex flex-row items-center gap-2" title={discord}>
                         <FaDiscord size={16} className="text-foreground"/> {discord}
                       </span>
                     )}
                     {website && (
-                      <a href={website} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-serif italic text-md hover:text-foreground flex flex-row items-center gap-2">
+                      <a href={website} target="_blank" rel="noopener noreferrer" className="text-[#9564b4] font-atirose text-lg hover:text-foreground flex flex-row items-center gap-2">
                         <FaGlobe size={16} className="text-foreground"/> {website}
                       </a>
                     )}
@@ -585,27 +585,27 @@ export default function IndexPage() {
               
             {/* Handle File Upload */}       
             <div className="sm:w-[400px] w-full">
-              <p className="mt-8 font-pop sm:text-sm text-md">Upload you art here!</p>
+              <p className="mt-8  sm:text-sm text-md">Upload you art here!</p>
                 <Input 
-                  className="mt-3 font-pop" 
+                  className="mt-3 " 
                   type="file" 
                   accept="image/png, image/jpeg, image/gif, video/mp4"  
                   onChange={(e) => handleFileSelect(e)}
                 />
                 <Input
-                  className="mt-3 font-pop"
+                  className="mt-3 "
                   type="text"
                   placeholder="Enter image description"
                   value={imageDescription}
                   onChange={(e) => setImageDescription(e.target.value)}
                 />
-                <Button color="success" className="bg-[#7d7d7d] text-white font-medium mt-3 font-pop" onClick={handleUpload} disabled={!selectedFile}>Upload</Button>
+                <Button color="success" className="bg-[#7d7d7d] text-sm text-white font-medium mt-3 " onClick={handleUpload} disabled={!selectedFile}>Upload</Button>
             </div>
 
             {/* Show Image */}
             <div className="flex flex-row flex-wrap sm:gap-6 gap-3 mt-5 items-center">
               {images.map((image) => (
-                <div className="flex flex-col items-center justify-between border-1.5 border-[#ededed] rounded-2xl w-fit p-4" key={CDNURL + user.id + "/" + image.name}>
+                <div className="flex flex-col items-center justify-between border-1 border-violet rounded-2xl w-fit p-4" key={CDNURL + user.id + "/" + image.name}>
                   <div className="sm:p-2 p-1">
                     <Image
                       src={CDNURL + user.id + "/" + image.name}
@@ -615,9 +615,9 @@ export default function IndexPage() {
                       className="object-cover rounded-xl aspect-square"
                     />
                   </div>
-                    <p className="text-[#9564b4] font-serif sm:text-md text-md">{image.description}</p>
+                    <p className="text-[#9564b4] font-atirose sm:text-md text-md">{image.description}</p>
                     <div className="p-3">
-                      <Button className="text-white font-medium text-sm font-pop" color="danger" onClick={() => deleteContent({...image, bucket: 'images'})}>Delete Image</Button>
+                      <Button className="text-white font-medium text-sm " color="danger" onClick={() => deleteContent({...image, bucket: 'images'})}>Delete Image</Button>
                     </div>
                   </div>
               ))}
@@ -627,7 +627,7 @@ export default function IndexPage() {
                 {files.map((file) => {
                   const fileUrl = `${CDNURLSS}${user.id}/${file.name}`;
                   return (
-                    <div className="flex flex-col items-center justify-between border-1.5 border-[#242424] rounded-2xl p-2 w-fit hover:shadow-md" key={fileUrl}>
+                    <div className="flex flex-col items-center justify-between border-1 border-violet rounded-2xl p-2 w-fit hover:shadow-md" key={fileUrl}>
                       <div className="sm:p-2 p-1">
                         {file.fileType.startsWith('image/') ? (
                           <Image
@@ -645,9 +645,9 @@ export default function IndexPage() {
                           </video>
                         ) : null}
                       </div>
-                      <p className="text-[#9564b4] font-serif italic sm:text-md text-md mt-2">{file.description}</p>
+                      <p className="text-[#9564b4] font-atirose sm:text-md text-md mt-2">{file.description}</p>
                       <div className="p-3">
-                        <Button className="text-white font-medium text-sm font-pop" color="danger" onClick={() => deleteContent({...file, bucket: 'files'})}>Delete File</Button>
+                        <Button className="text-white font-medium text-sm " color="danger" onClick={() => deleteContent({...file, bucket: 'files'})}>Delete File</Button>
                       </div>
                     </div>
                   )

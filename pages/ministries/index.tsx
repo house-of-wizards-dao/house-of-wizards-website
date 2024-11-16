@@ -6,17 +6,47 @@ import { Link } from "@nextui-org/link";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <section className="flex sm:min-h-screen flex-col items-center justify-center gap-4 p-4">
-        <div className="inline-block max-w-7lg text-center justify-center flex flex-col gap-6">
-          <h1 className="text-5xl font-serif italic text-[#9564b4]">Ministries</h1>
-          <p className="max-w-5xl text-lg">Ministries are House of Wizards sub-DAOs focused on a specific niche. While the <i className="font-serif text-[#9564b4]">Forgotten Council</i> oversees DAO operations as a whole, the ministries are comprised of smaller, specialized teams, in order to more quickly organize and allocate funding.</p>
+      <section className="flex flex-col items-center justify-center gap-4 p-4">
+          <h1 className="text-7xl font-atirose text-[#9564b4]">Ministries</h1>
+          <p className="max-w-5xl text-md text-center">Ministries are House of Wizards sub-DAOs focused on a specific niche. While the <i className="font-atirose text-xl text-[#9564b4]">Forgotten Council</i> oversees DAO operations as a whole, the ministries are comprised of smaller, specialized teams, in order to more quickly organize and allocate funding.</p>
+
+          <div className="w-full my-4">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="100%" 
+            viewBox="0 0 330 8" 
+            fill="none" 
+            preserveAspectRatio="none"
+            className="w-full"
+          >
+            <g clipPath="url(#clip0_453_22)">
+              <path 
+                d="M35 3L-0.5 7.5V12.5H330V7.5L294.5 3H271L242 0H87.5L58.5 3H35Z" 
+                fill="transparent"
+              />
+              <path 
+                d="M59.0303 3.5303L58.8107 3.75H58.5H35.3107L0.25 7.8107V11.75H329.25V7.8107L294.189 3.75H271H270.689L270.47 3.5303L241.689 0.75H87.8107L59.0303 3.5303Z" 
+                stroke="#A986D9" 
+                strokeOpacity="0.5" 
+                strokeWidth="1.5" 
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_453_22">
+                <rect width="330" height="8" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+
+          
           <div className="flex flex-row justify-center flex-wrap gap-6">
-            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center">
+            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-darkviolet hover:scale-105 hover:border-violet">
                 <Image src="/img/ministry_art.png"/>
-                <Link href="/ministries/art" className="font-serif italic text-[#9564b4] text-xl">Ministry of Art</Link>
+                <Link href="/ministries/art" className="font-atirose text-violet text-2xl hover:text-green">Ministry of Art</Link>
             </Card>
           </div>
-        </div>
       </section>
     </DefaultLayout>
   );

@@ -3,7 +3,6 @@ import { useState, useEffect, startTransition } from "react";
 import { useUser,useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from 'next/link';
 import { FaTwitter, FaDiscord, FaGlobe } from 'react-icons/fa';
-import {Tooltip} from "@nextui-org/tooltip"
 import { Image } from "@nextui-org/image";
 import {Spinner} from "@nextui-org/spinner";
 import { Container } from "react-bootstrap";
@@ -55,40 +54,40 @@ export default function IndexPage() {
     <DefaultLayout>
       <Container className="flex flex-col max-w-8xl mx-auto">
         <div className="px-4">
-        <h3 className="text-violet font-atirose sm:text-6xl text-5xl text-center sm:mb-6  mb-4">Forgotten Artist</h3>
+        <h3 className="text-violet font-atirose sm:text-7xl text-6xl text-center sm:mb-6  mb-4">Forgotten Artist</h3>
         <p className="font-quad sm:text-sm text-xs text-grey text-center uppercase">Seeking a talented artist to bring our creative vision to life?</p>
         <p className="font-quad sm:text-sm text-xs text-grey text-center uppercase">Just browse below so you can pick one</p>
         </div>
         
         <div className="w-full my-4">
-      <svg 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="100%" 
-        viewBox="0 0 330 8" 
-        fill="none" 
-        preserveAspectRatio="none"
-        className="w-full"
-      >
-        <g clipPath="url(#clip0_453_22)">
-          <path 
-            d="M35 3L-0.5 7.5V12.5H330V7.5L294.5 3H271L242 0H87.5L58.5 3H35Z" 
-            fill="transparent"
-          />
-          <path 
-            d="M59.0303 3.5303L58.8107 3.75H58.5H35.3107L0.25 7.8107V11.75H329.25V7.8107L294.189 3.75H271H270.689L270.47 3.5303L241.689 0.75H87.8107L59.0303 3.5303Z" 
-            stroke="#A986D9" 
-            strokeOpacity="0.5" 
-            strokeWidth="1.5" 
-            vectorEffect="non-scaling-stroke"
-          />
-        </g>
-        <defs>
-          <clipPath id="clip0_453_22">
-            <rect width="330" height="8" fill="white"/>
-          </clipPath>
-        </defs>
-      </svg>
-    </div>
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="100%" 
+            viewBox="0 0 330 8" 
+            fill="none" 
+            preserveAspectRatio="none"
+            className="w-full"
+          >
+            <g clipPath="url(#clip0_453_22)">
+              <path 
+                d="M35 3L-0.5 7.5V12.5H330V7.5L294.5 3H271L242 0H87.5L58.5 3H35Z" 
+                fill="transparent"
+              />
+              <path 
+                d="M59.0303 3.5303L58.8107 3.75H58.5H35.3107L0.25 7.8107V11.75H329.25V7.8107L294.189 3.75H271H270.689L270.47 3.5303L241.689 0.75H87.8107L59.0303 3.5303Z" 
+                stroke="#A986D9" 
+                strokeOpacity="0.5" 
+                strokeWidth="1.5" 
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_453_22">
+                <rect width="330" height="8" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
 
         <div className="flex flex-row justify-center flex-wrap sm:gap-6 gap-3 max-w-7xl mx-auto">
           {allUsers.map((user) =>(

@@ -67,16 +67,16 @@ export default function IndexPage() {
       <section className="p-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="space-y-6">
-          <h1 className="text-4xl text-[#9564b4] font-bold">
-           The House of Wizards is a <i className="font-serif font-normal">Forgotten Runes</i> Community DAO.
+          <h1 className="text-4xl font-atirose text-violet font-bold">
+           The House of Wizards is a Forgotten Runes Community DAO.
           </h1>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-md">
             The House of Wizards, comprised of Forgotten Runes token holders, funds community proposals that support art, lore, development, and other creative endeavors.
           </p>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-md">
             Looking for funding as a community member? Start by submitting a proposal to bring your ideas to life. Interested in joining the community? Visit forgotten.market to explore Forgotten Runes collections.
           </p>
-          <button className="bg-[#9564b4] text-white px-6 py-3 rounded-lg">
+          <button className="bg-violet text-sm text-white px-6 py-3 rounded-lg">
             Meet the Team
           </button>
         </div>
@@ -91,11 +91,11 @@ export default function IndexPage() {
 
       <div className="bg-[#121212] p-8">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto sm:mb-16 mb-0">
-          <h2 className="text-[#9564b4] text-4xl font-serif italic mb-6">
+        <div className="text-center max-w-4xl mx-auto sm:mb-16 mb-0">
+          <h2 className="text-[#9564b4] text-6xl font-atirose mb-6">
             Forgotten Council
           </h2>
-          <p className="text-gray-300">
+          <p className="text-gray-300 text-md">
             The Forgotten Council is the group of wizards and warriors holding the keys to the DAO multisig wallet, is responsible for facilitating governance - everything from running votes for new proposals to managing the ministries and carrying out multisig transactions.
           </p>
         </div>
@@ -111,9 +111,9 @@ export default function IndexPage() {
                 />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-medium">{member.name}</h3>
-                <p className="text-gray-600">{member.role}</p>
-                <p className="text-sm text-gray-500">{member.bio}</p>
+                <h3 className="text-xl font-atirose text-center text-violet">{member.name}</h3>
+                <p className="text-gray-600 text-center">{member.role}</p>
+                <p className="text-sm text-gray-500 text-center">{member.bio}</p>
               </div>
             </div>
           ))}
@@ -121,7 +121,7 @@ export default function IndexPage() {
       </div>
       </div>
 
-      <div className="sm:min-h-screen flex items-center justify-center p-8">
+      <div className="flex items-center justify-center py-[200px]">
         <div className="max-w-5xl w-full mx-auto flex sm:flex-row flex-col-reverse sm:gap-14 gap-8 items-center">
           {/* Form Section */}
           <div className="w-full max-w-md">
@@ -162,7 +162,7 @@ export default function IndexPage() {
           {/* Text Section */}
           <div className="text-white sm:space-y-16 space-y-8">
             <div className="">
-              <h2 className="text-5xl font-serif">Contact <i className="font-serif text-[#9564b4]">Us</i></h2>
+              <h2 className="text-6xl font-atirose">Contact <i className="font-atirose text-[#9564b4]">Us</i></h2>
             </div>
             <p className="text-gray-400 max-w-md">
               It is very important for us to keep in touch with you, so we are always ready to answer any question that interests you. Shoot!

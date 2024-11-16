@@ -24,7 +24,7 @@ const Bio: FC<BioProps> = ({
   imageName = '',
 }) => {
   return (
-    <div className="border-1 border-[#1d1c1e] bg-[#18181b] sm:w-[49%] w-full items-center justify-start gap-3 flex flex-row p-2 rounded-xl">
+    <div className="border-1 border-darkviolet bg-transparent sm:w-[49%] w-full items-center justify-start gap-3 flex flex-row p-2 rounded-xl">
       {/* Image Section */}
       <div className="basis-1/4">
         <Image 
@@ -462,17 +462,17 @@ const Talent: FC = () => {
 
   return (
     <DefaultLayout>
-      <div className="max-w-5xl mx-auto p-4">
+      <div className="max-w-8xl mx-auto p-4">
         {/* Header Section */}
-        <h1 className="font-serif italic text-[#9564b4] text-5xl">Talent</h1>
+        <h1 className="font-atirose text-violet text-center sm:text-7xl text-6xl">Talent</h1>
 
         {/* Description Section */}
-        <div className="mt-4 flex flex-col gap-2">
-          <p>
+        <div className="mt-4 flex flex-col gap-2 items-center max-w-5xl mx-auto">
+          <p className="text-center sm:text-sm text-xs">
             Looking for collaborators to work on a Forgotten Runes project? 
             Use the talent board below to find community members with the perfect skillset for your team.
           </p>
-          <p>
+          <p className="text-center sm:text-sm text-xs">
             Interested in being considered for work on community projects?
           </p>
           
@@ -481,14 +481,45 @@ const Talent: FC = () => {
             href="https://www.addressform.io/form/11013d4a-7611-4693-8ab1-7a27634457d6"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 bg-[#9564b4] w-[230px] text-center p-1 rounded-full border-4 border-[#3b2747]"
+            className="mt-4 bg-[#9564b4] w-[250px] text-center sm:text-sm text-xs p-2 rounded-full border-4 border-[#3b2747]"
           >
             Add yourself to the board!
           </Link>
         </div>
 
+        <div className="w-full my-4">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="100%" 
+            viewBox="0 0 330 8" 
+            fill="none" 
+            preserveAspectRatio="none"
+            className="w-full"
+          >
+            <g clipPath="url(#clip0_453_22)">
+              <path 
+                d="M35 3L-0.5 7.5V12.5H330V7.5L294.5 3H271L242 0H87.5L58.5 3H35Z" 
+                fill="transparent"
+              />
+              <path 
+                d="M59.0303 3.5303L58.8107 3.75H58.5H35.3107L0.25 7.8107V11.75H329.25V7.8107L294.189 3.75H271H270.689L270.47 3.5303L241.689 0.75H87.8107L59.0303 3.5303Z" 
+                stroke="#A986D9" 
+                strokeOpacity="0.5" 
+                strokeWidth="1.5" 
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_453_22">
+                <rect width="330" height="8" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+        
+        <div className="max-w-7xl mx-auto">
         {/* Focus Filter */}
-        <div className="mt-8 mb-4">
+        <div className=" mb-4">
           <div className="flex flex-wrap gap-2">
             {focusAreas.map((focus) => (
               <button
@@ -519,6 +550,7 @@ const Talent: FC = () => {
               {...talent}
             />
           ))}
+        </div>
         </div>
       </div>
     </DefaultLayout>

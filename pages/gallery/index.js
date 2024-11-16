@@ -1,4 +1,5 @@
 import DefaultLayout from "@/layouts/default";
+import dynamic from 'next/dynamic';
 import React, { useState, useEffect, useCallback, Suspense, useRef, useMemo, startTransition } from "react";
 import { Container } from "react-bootstrap";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
@@ -94,7 +95,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <div ref={modalRef} className="bg-background border-1.5 border-[#242424] sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative">
+      <div ref={modalRef} className="bg-background border-1.5 border-darkviolet sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative">
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
             {!item.name.toLowerCase().endsWith('.mp4') && (
@@ -153,9 +154,9 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
             </div>
           )}
         </div>
-        <div className="mt-4 text-center">
-          <p className="text-foreground font-medium sm:text-md text-sm font-pop mb-1">{item.description}</p>
-          <p className="text-[#9564b4] font-serif font-bold italic">{item.userName}</p>
+        <div className="mt-4 text-center flex items-center flex-col">
+          <p className="text-foreground font-medium sm:text-lg text-md font-pop mb-1 w-[80%]">{item.description}</p>
+          <p className="text-[#9564b4] font-atirose text-2xl">{item.userName}</p>
         </div>
       </div>
     </div>
@@ -167,7 +168,7 @@ const GalleryItem = React.memo(({ item, onClick }) => (
   <div
     role="button"
     tabIndex={0}
-    className="hover:bg-[#1c1c1c] hover:shadow-md cursor-pointer flex flex-col justify-between items-center p-4 border-1.5 border-[#242424] rounded-2xl transition-all duration-200"
+    className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
     onClick={() => onClick(item)}
     onKeyDown={(e) => {
       if (e.key === "Enter" || e.key === " ") {
@@ -185,7 +186,7 @@ const GalleryItem = React.memo(({ item, onClick }) => (
         alt={item.description}
         width={150}
         height={150}
-        className="w-full aspect-square object-cover rounded-xl"
+        className="w-full aspect-square object-cover rounded-xl p-4"
         quality={60}
         unoptimized={item.name.toLowerCase().endsWith('.gif')}
         placeholder="blur"
@@ -194,12 +195,12 @@ const GalleryItem = React.memo(({ item, onClick }) => (
       />
     )}
     
-    <div className="mt-3 w-full">
-      <p className="font-quad text-foreground sm:text-md text-sm text-center truncate">
+    <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
+      <p className="text-foreground sm:text-md text-sm text-center truncate">
         {item.description}
       </p>
       <p className="text-foreground sm:text-md text-sm truncate text-center">
-        <i className="text-[#9564b4] font-serif font-bold">{item.userName}</i>
+        <i className="text-violet font-atirose text-lg">{item.userName}</i>
       </p>
     </div>
   </div>
@@ -211,9 +212,10 @@ function GalleryPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true);
   const [content, setContent] = useState([]);
   const [selectedArtist, setSelectedArtist] = useState(null);
+
+  const isLoading = content.length === 0;
 
   // Memoized derived states
   const allArtists = useMemo(() => 
@@ -239,87 +241,129 @@ function GalleryPage() {
     [filteredContent.length]
   );
 
-  // Fetch gallery data
-  const fetchAllImages = useCallback(async () => {
-    try {
-      const [{ data: users }, { data: imageDescData }, { data: fileDescData }] = await Promise.all([
-        supabase.from('profiles').select('id, name'),
-        supabase.from('image_descriptions').select('*'),
-        supabase.from('file_descriptions').select('*')
-      ]);
+  useEffect(() => {
+    const fetchAllImages = async () => {
+      try {
+        const [{ data: users }, { data: imageDescData }, { data: fileDescData }] = await Promise.all([
+          supabase.from('profiles').select('id, name'),
+          supabase.from('image_descriptions').select('*'),
+          supabase.from('file_descriptions').select('*')
+        ]);
 
-      const allContent = await Promise.all(
-        users.map(async (user) => {
-          const [imageData, fileData] = await Promise.all([
-            supabase.storage.from('images').list(user.id + "/"),
-            supabase.storage.from('files').list(user.id + "/")
-          ]);
+        const allContent = await Promise.all(
+          users.map(async (user) => {
+            const [imageData, fileData] = await Promise.all([
+              supabase.storage.from('images').list(user.id + "/"),
+              supabase.storage.from('files').list(user.id + "/")
+            ]);
 
-          return [
-            ...(imageData.data || []).map(img => ({
-              ...img,
-              userId: user.id,
-              userName: user.name,
-              bucket: 'images',
-              description: imageDescData?.find(desc => 
-                desc.image_name === img.name && desc.user_id === user.id
-              )?.description
-            })),
-            ...(fileData.data || []).map(file => ({
-              ...file,
-              userId: user.id,
-              userName: user.name,
-              bucket: 'files',
-              description: fileDescData?.find(desc => 
-                desc.file_name === file.name && desc.user_id === user.id
-              )?.description
-            }))
-          ];
-        })
-      );
-      startTransition(() => {
-        setContent(allContent.flat());
-      });
-    } catch (error) {
-      console.error("Error fetching gallery data:", error);} finally {
-        setLoading(false);
+            return [
+              ...(imageData.data || []).map(img => ({
+                ...img,
+                userId: user.id,
+                userName: user.name,
+                bucket: 'images',
+                description: imageDescData?.find(desc => 
+                  desc.image_name === img.name && desc.user_id === user.id
+                )?.description
+              })),
+              ...(fileData.data || []).map(file => ({
+                ...file,
+                userId: user.id,
+                userName: user.name,
+                bucket: 'files',
+                description: fileDescData?.find(desc => 
+                  desc.file_name === file.name && desc.user_id === user.id
+                )?.description
+              }))
+            ];
+          })
+        );
+
+        const flatContent = allContent.flat();
+        startTransition(() => {
+          setContent(flatContent);
+        });
+      } catch (error) {
+        console.error("Error fetching gallery data:", error);
       }
-    }, [supabase]);
-  
-    useEffect(() => {
-      fetchAllImages();
-    }, [fetchAllImages]);
-  
-    const handleItemClick = useCallback((item) => {
+    };
+
+    fetchAllImages();
+  }, [supabase]);
+
+  const handleItemClick = useCallback((item) => {
+    startTransition(() => {
       setSelectedItem(item);
       setModalOpen(true);
-    }, []);
-  
-    const handleCloseModal = useCallback(() => {
+    });
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    startTransition(() => {
       setModalOpen(false);
       setSelectedItem(null);
-    }, []);
-  
-    if (loading) {
-      return <Spinner className="h-screen w-full" color="default" labelColor="foreground"/>;
-    }
-  
+    });
+  }, []);
+
+  if (isLoading) {
     return (
       <DefaultLayout>
-        <Container className="sm:my-16 sm:p-0 p-4 flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-7xl mx-auto">
-          <h1 className="font-serif text-[#9564b4] italic sm:text-5xl text-3xl">
-            Gallery
-          </h1>
-          
-          {/* Artist filter - Optimized with memoized options */}
-          <div className="w-full">
+        <Container className="flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-8xl mx-auto">
+          <div className="h-screen w-full flex items-center justify-center">
+            <Spinner color="default" labelColor="foreground"/>
+          </div>
+        </Container>
+      </DefaultLayout>
+    );
+  }
+
+  return (
+    <DefaultLayout>
+      <Container className="flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-8xl mx-auto">
+        <h1 className="font-atirose text-[#9564b4] sm:text-7xl text-6xl">
+          Gallery
+        </h1>
+
+        <div className="w-full my-4">
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="100%" 
+            viewBox="0 0 330 8" 
+            fill="none" 
+            preserveAspectRatio="none"
+            className="w-full"
+          >
+            <g clipPath="url(#clip0_453_22)">
+              <path 
+                d="M35 3L-0.5 7.5V12.5H330V7.5L294.5 3H271L242 0H87.5L58.5 3H35Z" 
+                fill="transparent"
+              />
+              <path 
+                d="M59.0303 3.5303L58.8107 3.75H58.5H35.3107L0.25 7.8107V11.75H329.25V7.8107L294.189 3.75H271H270.689L270.47 3.5303L241.689 0.75H87.8107L59.0303 3.5303Z" 
+                stroke="#A986D9" 
+                strokeOpacity="0.5" 
+                strokeWidth="1.5" 
+                vectorEffect="non-scaling-stroke"
+              />
+            </g>
+            <defs>
+              <clipPath id="clip0_453_22">
+                <rect width="330" height="8" fill="white"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </div>
+
+        <div className="max-w-7xl">
+          <div className="mb-6">
             <select 
               className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
               value={selectedArtist || ''}
               onChange={(e) => {
                 startTransition(() => {
                   setSelectedArtist(e.target.value || null);
-                  setCurrentPage(1); // Reset to first page when changing artist
+                  setCurrentPage(1);
                 });
               }}
             >
@@ -329,8 +373,7 @@ function GalleryPage() {
               ))}
             </select>
           </div>
-  
-          {/* Gallery grid - Using virtualization for large lists */}
+
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full">
             {currentItems.map((item) => (
               <GalleryItem
@@ -340,13 +383,12 @@ function GalleryPage() {
               />
             ))}
           </div>
-  
-          {/* Pagination - Memoized calculations */}
+
           {pageCount > 1 && (
             <div className="flex justify-center mt-6 gap-2">
               <Button
                 className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
                 disabled={currentPage === 1}
               >
                 <IoIosArrowRoundBack className="text-2xl"/>
@@ -355,7 +397,7 @@ function GalleryPage() {
               {Array.from({ length: pageCount }, (_, i) => (
                 <Button
                   key={i}
-                  onClick={() => setCurrentPage(i + 1)}
+                  onClick={() => startTransition(() => setCurrentPage(i + 1))}
                   className={`px-3 py-1 rounded-full ${
                     currentPage === i + 1 
                       ? 'bg-[#9564b4] text-white' 
@@ -368,62 +410,75 @@ function GalleryPage() {
               
               <Button
                 className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => setCurrentPage(prev => Math.min(pageCount, prev + 1))}
+                onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
                 disabled={currentPage === pageCount}
               >
                 <IoIosArrowRoundForward className="text-2xl"/>
               </Button>
             </div>
           )}
-  
-          {/* Modal - Extracted to separate component */}
+
           <ImageModal
             item={selectedItem}
             isOpen={modalOpen}
             onClose={handleCloseModal}
           />
-        </Container>
-      </DefaultLayout>
-    );
+        </div>
+      </Container>
+    </DefaultLayout>
+  );
+}
+
+// Error Boundary Component
+class ErrorBoundary extends React.Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
   }
-  
-  // Error Boundary Component
-  class ErrorBoundary extends React.Component {
-    state = { hasError: false };
-  
-    static getDerivedStateFromError() {
-      return { hasError: true };
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Gallery Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex flex-col items-center justify-center h-screen">
+          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Reload Page
+          </Button>
+        </div>
+      );
     }
-  
-    componentDidCatch(error, errorInfo) {
-      console.error('Gallery Error:', error, errorInfo);
-    }
-  
-    render() {
-      if (this.state.hasError) {
-        return (
-          <div className="flex flex-col items-center justify-center h-screen">
-            <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-            >
-              Reload Page
-            </Button>
+    return this.props.children;
+  }
+}
+
+// Export wrapped component with dynamic import
+export default dynamic(() => Promise.resolve(function GalleryPageWrapper() {
+  return (
+    <ErrorBoundary>
+      <div className="min-h-screen">
+        <Suspense fallback={
+          <div className="h-screen w-full flex items-center justify-center">
+            <Spinner color="default" labelColor="foreground"/>
           </div>
-        );
-      }
-      return this.props.children;
-    }
-  }
-  
-  // Export wrapped component
-  export default function GalleryPageWrapper() {
-    return (
-      <ErrorBoundary>
-        <Suspense fallback={<Spinner color="default" labelColor="foreground"/>}>
+        }>
           <GalleryPage />
         </Suspense>
-      </ErrorBoundary>
-    );
-  }
+      </div>
+    </ErrorBoundary>
+  );
+}), {
+  ssr: false,
+  loading: () => (
+    <div className="h-screen w-full flex items-center justify-center">
+      <Spinner color="default" labelColor="foreground"/>
+    </div>
+  )
+});

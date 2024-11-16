@@ -15,7 +15,7 @@ export default function DefaultLayout({
     <div className="relative flex flex-col h-screen">
       <Head />
       <Navbar />
-      <main className="w-full">
+      <main className="w-full py-12">
         {children}
       </main>
       <footer className="flex items-center justify-center flex-col p-4">

@@ -20,7 +20,7 @@ module.exports = {
       '4xl': ['36px', '40px'],
       '5xl': ['48px', '1'],
       '6xl': ['60px', '1'],
-      '7xl': ['72px', '1'],
+      '7xl': ['89px', '1'],
       '8xl': ['96px', '1'],
       '8xl': ['128px', '1'],
     },
@@ -34,6 +34,7 @@ module.exports = {
       colors: {
         violet: '#A986D9',
         darkviolet: '#4D3E63',
+        green: '#AAC764',
       }
     },
   },
