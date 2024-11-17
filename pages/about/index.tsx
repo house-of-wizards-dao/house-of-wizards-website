@@ -121,7 +121,7 @@ export default function IndexPage() {
       </div>
       </div>
 
-      <div className="flex items-center justify-center py-[200px]">
+      <div className="flex items-center justify-center sm:py-[200px] py-[100px] sm:p-0 p-4">
         <div className="max-w-5xl w-full mx-auto flex sm:flex-row flex-col-reverse sm:gap-14 gap-8 items-center">
           {/* Form Section */}
           <div className="w-full max-w-md">

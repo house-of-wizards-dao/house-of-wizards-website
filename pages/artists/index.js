@@ -91,7 +91,7 @@ export default function IndexPage() {
 
         <div className="flex flex-row justify-center flex-wrap sm:gap-6 gap-3 max-w-7xl mx-auto">
           {allUsers.map((user) =>(
-            <Card className=" rounded-md sm:w-[300px] sm:h-[450px] w-[180px] h-[320px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet" key={user.id}>
+            <Card className=" rounded-md sm:w-[300px]  sm:h-[450px] w-[195px] h-[350px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet" key={user.id}>
                 <CardBody className="p-0 border-b-1 border-darkviolet p-4">
                   <Image 
                     className="sm:w-full aspect-square" 

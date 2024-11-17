@@ -356,7 +356,7 @@ function GalleryPage() {
         </div>
 
         <div className="max-w-7xl">
-          <div className="mb-6">
+          <div className="mb-6 px-4">
             <select 
               className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
               value={selectedArtist || ''}
@@ -374,7 +374,7 @@ function GalleryPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full">
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
             {currentItems.map((item) => (
               <GalleryItem
                 key={`${item.bucket}-${item.userId}-${item.name}`}

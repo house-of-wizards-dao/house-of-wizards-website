@@ -37,7 +37,7 @@ export default function DocsPage() {
           </svg>
         </div>
 
-        <div className="max-w-7xl flex flex-col gap-6">
+        <div className="max-w-7xl flex flex-col gap-6 sm:p-0 p-4">
 
           <p className="text-md text-center">The House of Wizards includes nearly all <i className="font-atirose text-xl text-violet">Forgoten Runes</i> token holders. The <i className="font-atirose text-xl text-violet">Beast Spawn</i> and <i className="font-atirose text-xl text-violet">Gate to the 7th Realm</i> collections
           do not currently have voting power in the DAO. Voting weight is distributed per token as follows:</p>

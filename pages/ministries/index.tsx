@@ -6,9 +6,9 @@ import { Link } from "@nextui-org/link";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <section className="flex flex-col items-center justify-center gap-4 p-4">
-          <h1 className="text-7xl font-atirose text-[#9564b4]">Ministries</h1>
-          <p className="max-w-5xl text-md text-center">Ministries are House of Wizards sub-DAOs focused on a specific niche. While the <i className="font-atirose text-xl text-[#9564b4]">Forgotten Council</i> oversees DAO operations as a whole, the ministries are comprised of smaller, specialized teams, in order to more quickly organize and allocate funding.</p>
+      <section className="flex flex-col items-center justify-center gap-4">
+          <h1 className="sm:text-7xl text-6xl font-atirose text-[#9564b4] ">Ministries</h1>
+          <p className="max-w-5xl sm:text-md text-sm text-center px-4">Ministries are House of Wizards sub-DAOs focused on a specific niche. While the Forgotten Council oversees DAO operations as a whole, the ministries are comprised of smaller, specialized teams, in order to more quickly organize and allocate funding.</p>
 
           <div className="w-full my-4">
           <svg 

@@ -5,8 +5,8 @@ import { Link } from "@nextui-org/link";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <section className="flex sm:min-h-screen flex-col items-center justify-center gap-4 p-4">
-          <h1 className="text-7xl font-atirose text-[#9564b4]">Ministry of Art</h1>
+      <section className="flex sm:min-h-screen flex-col items-center justify-center gap-4">
+          <h1 className="sm:text-7xl text-6xl text-center font-atirose text-[#9564b4]">Ministry of Art</h1>
           <div className="w-full my-4">
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
@@ -36,7 +36,7 @@ export default function DocsPage() {
             </defs>
           </svg>
         </div>
-          <p className="max-w-5xl text-center mx-auto text-md">The Ministry of Art is a DAO that generously issues grants to create Forgotten Runes art. This can be anything from paintings, comics, sculptures, murals, videogames - any art that contributes to the story of the Runiverse. Anyone can request funding from the ministry to support projects in the scope of the mandate.</p>
+          <p className="max-w-5xl text-center mx-auto sm:text-md text-sm p-4">The Ministry of Art is a DAO that generously issues grants to create Forgotten Runes art. This can be anything from paintings, comics, sculptures, murals, videogames - any art that contributes to the story of the Runiverse. Anyone can request funding from the ministry to support projects in the scope of the mandate.</p>
           {/* <div className="flex flex-row justify-center flex-wrap gap-6">
             <Card className="w-[180px] px-4 py-10 h-auto">
               <h1 className="text-lg">Warriors</h1>
@@ -64,8 +64,8 @@ export default function DocsPage() {
               <p className="text-md">Vote</p>
             </Card>
           </div> */}
-          <Image src="/img/cultcontent.png"/>
-          <p className="max-w-5xl mx-auto text-md">To request funding please fill out the <Link className="font-atirose text-[#9564b4] text-xl" isExternal href='https://docs.google.com/forms/d/e/1FAIpQLSdK1SUgOYYVbnatzeAxcs8NQCuxD9L41a61GvjDuLvbhv-_2A/viewform'>Funding Request Form</Link>.</p>
+          <Image className="px-4" src="/img/cultcontent.png"/>
+          <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">To request funding please fill out the <Link className="font-atirose text-[#9564b4] sm:text-xl text-lg" isExternal href='https://docs.google.com/forms/d/e/1FAIpQLSdK1SUgOYYVbnatzeAxcs8NQCuxD9L41a61GvjDuLvbhv-_2A/viewform'>Funding Request Form</Link>.</p>
       </section>
     </DefaultLayout>
   );
