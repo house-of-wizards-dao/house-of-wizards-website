@@ -62,12 +62,12 @@ export const Navbar = () => {
               }}
             >
               <DropdownItem key="artists">
-                <NextLink href="/artists">
+                <NextLink className="uppercase" href="/artists">
                   Artist
                 </NextLink>
               </DropdownItem>
               <DropdownItem key="gallery">
-                <NextLink href="/gallery">
+                <NextLink className="uppercase" href="/gallery">
                   Gallery
                 </NextLink>
               </DropdownItem>
@@ -90,17 +90,17 @@ export const Navbar = () => {
               }}
             >
               <DropdownItem key="talent">
-                <NextLink href="/talent">
+                <NextLink className="uppercase" href="/talent">
                   Talent
                 </NextLink>
               </DropdownItem>
               <DropdownItem key="community">
-                <NextLink href="/community">
+                <NextLink className="uppercase" href="/community">
                   Community
                 </NextLink>
               </DropdownItem>
               <DropdownItem key="signup">
-                <NextLink href="/signup">
+                <NextLink className="uppercase" href="/signup">
                     Join
                 </NextLink>
               </DropdownItem>

@@ -155,7 +155,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
           )}
         </div>
         <div className="mt-4 text-center flex items-center flex-col">
-          <p className="text-foreground font-medium sm:text-lg text-md font-pop mb-1 w-[80%]">{item.description}</p>
+          <p className="text-foreground font-medium sm:text-lg text-md font-pop mb-1 w-[80%] uppercase">{item.description}</p>
           <p className="text-[#9564b4] font-atirose text-2xl">{item.userName}</p>
         </div>
       </div>
@@ -177,7 +177,7 @@ const GalleryItem = React.memo(({ item, onClick }) => (
     }}
   >
     {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
-      <video controls className="w-full aspect-square object-cover rounded-xl">
+      <video controls className="w-full aspect-square object-cover rounded-xl p-4">
         <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
       </video>
     ) : (
@@ -196,11 +196,11 @@ const GalleryItem = React.memo(({ item, onClick }) => (
     )}
     
     <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
-      <p className="text-foreground sm:text-md text-sm text-center truncate">
+      <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
         {item.description}
       </p>
       <p className="text-foreground sm:text-md text-sm truncate text-center">
-        <i className="text-violet font-atirose text-lg">{item.userName}</i>
+        <p className="text-violet font-atirose text-lg">{item.userName}</p>
       </p>
     </div>
   </div>
