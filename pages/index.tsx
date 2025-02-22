@@ -9,40 +9,22 @@ const teamMembers = [
     image: "/img/council/acid.png"
   },
   {
-    name: "Meeple",
+    name: "Bridge",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/dotta.png"
-  },
-  {
-    name: "Sharkchild",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/sharkchild.png"
+    image: "/img/council/bridge.png"
   },
   {
     name: "DFI",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/jitcy.png"
+    image: "/img/council/dfi.png"
   },
   {
-    name: "Sharon",
+    name: "MeepleDad",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/madotsuki.png"
-  },
-  {
-    name: "Bridge",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/meph.png"
-  },
-  {
-    name: "TAD",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/R Y F.png"
+    image: "/img/council/meeple.png"
   },
   {
     name: "Madotsuki",
@@ -54,7 +36,31 @@ const teamMembers = [
     name: "Meph",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-    image: "/img/council/meph.png"
+    image: "/img/council/R Y F.png"
+  },
+  {
+    name: "SharkChild",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/sharkchild.png"
+  },
+  {
+    name: "Sharon",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/sharon.png"
+  },
+  {
+    name: "TadMajor",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/jitcy.png"
+  },
+  {
+    name: "Reptar",
+    role: "Lorem Ipsum",
+    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    image: "/img/council/reptar.png"
   },
 ];
 
