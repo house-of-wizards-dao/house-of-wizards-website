@@ -41,11 +41,11 @@ export const Navbar = () => {
 
       <NavbarContent>
         <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
-          <NavbarItem className="text-sm hover:text-[#9564b4]">
+{/*           <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink href="/about">
               About
             </NextLink>
-          </NavbarItem>
+          </NavbarItem> */}
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button 

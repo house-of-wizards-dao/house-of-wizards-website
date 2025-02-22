@@ -8,6 +8,7 @@ import Image from 'next/image';
 import { Spinner } from "@nextui-org/spinner";
 import { IoIosCloseCircle, IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import { BiZoomIn, BiZoomOut } from "react-icons/bi";
+import PropTypes from 'prop-types';
 
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
 const IMAGES_PER_PAGE = 40;
@@ -164,7 +165,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 });
 
 // Extracted Gallery Item Component
-const GalleryItem = React.memo(({ item, onClick }) => (
+const GalleryItem = React.memo(({ item, onClick, priority }) => (
   <div
     role="button"
     tabIndex={0}
@@ -190,8 +191,9 @@ const GalleryItem = React.memo(({ item, onClick }) => (
         quality={60}
         unoptimized={item.name.toLowerCase().endsWith('.gif')}
         placeholder="blur"
-        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AoNxbhL3xvpeNluNyeQ0pwCxJGwA5NCiQ5nZ23P1j+n//2Q=="
-        loading="lazy"
+        blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
+        loading={priority ? "eager" : "lazy"}
+        priority={priority}
       />
     )}
     
@@ -244,8 +246,15 @@ function GalleryPage() {
   useEffect(() => {
     const fetchAllImages = async () => {
       try {
-        const [{ data: users }, { data: imageDescData }, { data: fileDescData }] = await Promise.all([
-          supabase.from('profiles').select('id, name'),
+        const { data: users, error: usersError } = await supabase
+          .from('profiles')
+          .select('id, name');
+        
+        if (usersError) {
+          throw new Error("Failed to fetch users: " + usersError.message);
+        }
+
+        const [{ data: imageDescData }, { data: fileDescData }] = await Promise.all([
           supabase.from('image_descriptions').select('*'),
           supabase.from('file_descriptions').select('*')
         ]);
@@ -375,11 +384,12 @@ function GalleryPage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
-            {currentItems.map((item) => (
+            {currentItems.map((item, index) => (
               <GalleryItem
                 key={`${item.bucket}-${item.userId}-${item.name}`}
                 item={item}
                 onClick={handleItemClick}
+                priority={index < 4}
               />
             ))}
           </div>
@@ -415,6 +425,12 @@ function GalleryPage() {
               >
                 <IoIosArrowRoundForward className="text-2xl"/>
               </Button>
+            </div>
+          )}
+
+          {pageCount > 5 && (
+            <div className="text-foreground mx-2">
+              Page {currentPage} of {pageCount}
             </div>
           )}
 
@@ -482,3 +498,13 @@ export default dynamic(() => Promise.resolve(function GalleryPageWrapper() {
     </div>
   )
 });
+
+GalleryItem.propTypes = {
+  item: PropTypes.shape({
+    bucket: PropTypes.string.isRequired,
+    userId: PropTypes.string.isRequired,
+    // ... other prop definitions
+  }),
+  onClick: PropTypes.func.isRequired,
+  priority: PropTypes.bool.isRequired
+};

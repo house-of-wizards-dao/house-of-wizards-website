@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSupabaseClient } from '@supabase/auth-helpers-react';
 import DefaultLayout from "@/layouts/default";
 import { Container } from 'react-bootstrap';
@@ -33,104 +33,29 @@ export default function UserProfile() {
   const indexOfFirstItem = indexOfLastItem - IMAGES_PER_PAGE;
   const currentItems = allItems.slice(indexOfFirstItem, indexOfLastItem);
 
-  useEffect(() => {
-    if (userId) {
-      fetchUserData().finally(() => setLoading(false));
-      fetchUserImages().finally(() => setLoading(false));
-    }
-  }, [userId]);
-
-  useEffect(() => {
-    if (user) {
-      getFiles().finally(() => setLoading(false));
-    }
-  }, [user]);
-
-  async function getImages() {
-    const { data, error } = await supabase
-      .storage
-      .from('images')
-      .list(user?.id + "/", {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" }
-      });
-
-    if (data !== null) {
-      const { data: descData, error: descError } = await supabase
-        .from('image_descriptions')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (descError) {
-        console.error("Error fetching descriptions:", descError);
-      } else {
-        const imagesWithDesc = data.map(img => ({
-          ...img,
-          description: descData.find(desc => desc.image_name === img.name)?.description || ''
-        }));
-        setImages(imagesWithDesc);
-      }
-    } else {
-      alert("Error loading images");
-      console.log(error)
-    }
-  }
-
-  async function getFiles() {
-    const { data, error } = await supabase
-      .storage
-      .from('files')
-      .list(user?.id + "/", {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" }
-      });
-
-    if (error) {
-      console.log("Error loading files:", error);
-      return;
-    }
-
-    const { data: descData, error: descError } = await supabase
-      .from('file_descriptions')
-      .select('*')
-      .eq('user_id', user.id);
-
-    if (descError) {
-      console.error("Error fetching descriptions:", descError);
-    } else {
-      const filesWithDesc = data.map(file => ({
-        ...file,
-        description: descData.find(desc => desc.file_name === file.name)?.description || '',
-        fileType: descData.find(desc => desc.file_name === file.name)?.file_type || ''
-      }));
-      setFiles(filesWithDesc);
-    }
-  }
-
-  async function fetchUserData() {
+  // Wrap fetch functions in useCallback to prevent unnecessary recreations
+  const fetchUserData = useCallback(async () => {
     const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', userId)
       .single();
 
-    if (data) {
-      setUser(data);
-    } else {
-      console.error('Error fetching user data:', error);
-    }
-  }
+    if (data) setUser(data);
+    if (error) console.error('Error fetching user data:', error);
+    return data;
+  }, [userId, supabase]);
 
-  async function fetchUserImages() {
+  const fetchUserImages = useCallback(async () => {
+    // Add cache-control header to images request
     const { data: imageData, error: imageError } = await supabase
       .storage
       .from('images')
       .list(userId + "/", {
         limit: 100,
         offset: 0,
-        sortBy: { column: "name", order: "asc" }
+        sortBy: { column: "name", order: "asc" },
+        headers: { 'Cache-Control': 'public, max-age=3600' }
       });
 
     if (imageError) {
@@ -154,6 +79,68 @@ export default function UserProfile() {
     }));
 
     setImages(imagesWithDescriptions);
+  }, [userId, supabase]);
+
+  // Combine data fetching into a single effect
+  useEffect(() => {
+    if (userId) {
+      setLoading(true);
+      Promise.all([fetchUserData(), fetchUserImages()])
+        .then(([userData]) => userData && getFiles(userData))
+        .finally(() => setLoading(false));
+    }
+  }, [userId, fetchUserData, fetchUserImages]);
+
+  async function getFiles(userData) {
+    const { data, error } = await supabase
+      .storage
+      .from('files')
+      .list(userData.id + "/", {
+        limit: 100,
+        offset: 0,
+        sortBy: { column: "name", order: "asc" }
+      });
+
+    if (error) {
+      console.log("Error loading files:", error);
+      return;
+    }
+
+    const { data: descData, error: descError } = await supabase
+      .from('file_descriptions')
+      .select('*')
+      .eq('user_id', userData.id);
+
+    if (descError) {
+      console.error("Error fetching descriptions:", descError);
+    } else {
+      const filesWithDesc = data.map(file => ({
+        ...file,
+        description: descData.find(desc => desc.file_name === file.name)?.description || '',
+        fileType: descData.find(desc => desc.file_name === file.name)?.file_type || ''
+      }));
+      setFiles(filesWithDesc);
+    }
+  }
+
+  // Optimize image rendering
+  function renderItemPreview(item, isFile) {
+    const fileUrl = isFile 
+      ? `${CDNURLSS}${user?.id}/${item.name}`
+      : `${CDNURL}${user?.id}/${item.name}`;
+    
+    return (
+      <Image
+        src={fileUrl}
+        alt={item.description}
+        width={350}
+        height={350}
+        loading="lazy"
+        placeholder="blur"
+        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+        className="object-cover rounded-xl aspect-square"
+      />
+    );
   }
 
   if (!user) return <div>Loading...</div>;
@@ -214,8 +201,6 @@ export default function UserProfile() {
         <div className="mt-4 flex flex-row justify-center w-full flex-wrap sm:gap-3 gap-3 mx-auto">
           {currentItems.map((item) => {
             const isFile = 'fileType' in item;
-            const fileUrl = isFile ? `${CDNURLSS}${user.id}/${item.name}` : `${CDNURL}${user.id}/${item.name}`;
-
             return (
               <div
                 role="button"
@@ -231,28 +216,15 @@ export default function UserProfile() {
               >
                 <div className="sm:p-2 p-1">
                   {isFile && item.fileType?.startsWith('image/') ? (
-                    <Image
-                      src={fileUrl}
-                      alt={item.description}
-                      width={350}
-                      height={350}
-                      unoptimized
-                      className="object-cover rounded-xl aspect-square"
-                    />
+                    renderItemPreview(item, true)
                   ) : isFile && item.fileType?.startsWith('video/') ? (
-                    <video width="350" height="350" controls className="object-cover rounded-xl aspect-square">
+                    <video width="350" height="350" controls className="object-cover rounded-xl aspect-square" loading="lazy">
                       <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
-                      <source src={fileUrl} type={item.fileType} />
+                      <source src={renderItemPreview(item, false)} type={item.fileType} />
                       Your browser does not support the video tag.
                     </video>
                   ) : (
-                    <Image
-                      src={fileUrl}
-                      alt={item.description}
-                      width={350}
-                      height={350}
-                      className="object-cover rounded-xl aspect-square"
-                    />
+                    renderItemPreview(item, false)
                   )}
                 </div>
                 <p className="text-foreground font-pop font-medium truncate w-[300px] text-center sm:text-md text-md mt-2">
@@ -306,29 +278,14 @@ export default function UserProfile() {
                 <div className="flex flex-col items-end">
                   <IoIosCloseCircle className="mb-2 text-2xl cursor-pointer hover:text-grey" onClick={closeModal} />
                 </div>
-                {selectedItem?.fileType?.startsWith('image/') ? (
-                  <Image
-                    src={`${CDNURLSS}${user.id}/${selectedItem.name}`}
-                    alt={selectedItem.description}
-                    width={700}
-                    height={700}
-                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
-                  />
-                ) : selectedItem?.fileType?.startsWith('video/') ? (
-                  <video width="700" height="700" controls className="rounded-xl w-full h-auto max-h-[80vh] object-contain">
-                    <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
-                    <source src={`${CDNURLSS}${user.id}/${selectedItem.name}`} type={selectedItem.fileType} />
-                    Your browser does not support the video tag.
-                  </video>
-                ) : (
-                  <Image
-                    src={`${CDNURL}${user.id}/${selectedItem.name}`}
-                    alt={selectedItem.description}
-                    width={700}
-                    height={700}
-                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
-                  />
-                )}
+                <Image
+                  src={selectedItemUrl}
+                  alt={selectedItem.description}
+                  width={700}
+                  height={700}
+                  priority={true}
+                  className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
+                />
               </div>
               <p className="text-foreground font-medium text-center sm:text-md text-sm font-pop mb-1 mt-4">{selectedItem.description}</p>
             </div>
