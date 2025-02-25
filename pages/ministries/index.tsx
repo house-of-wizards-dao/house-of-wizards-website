@@ -42,10 +42,12 @@ export default function DocsPage() {
 
           
           <div className="flex flex-row justify-center flex-wrap gap-6">
-            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-darkviolet hover:scale-105 hover:border-violet">
-                <Image src="/img/ministry_art.png"/>
-                <Link href="/ministries/art" className="font-atirose text-violet text-2xl hover:text-green">Ministry of Art</Link>
-            </Card>
+            <Link href="/ministries/art" className="[&_a]:hover:text-green">
+              <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-darkviolet hover:scale-105 hover:border-violet cursor-pointer">
+                  <Image src="/img/ministry_art.png"/>
+                  <span className="font-atirose text-violet text-2xl">Ministry of Art</span>
+              </Card>
+            </Link>
           </div>
       </section>
     </DefaultLayout>

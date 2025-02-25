@@ -11,7 +11,7 @@ import { BiZoomIn, BiZoomOut } from "react-icons/bi";
 import PropTypes from 'prop-types';
 
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
-const IMAGES_PER_PAGE = 40;
+const IMAGES_PER_PAGE = 20;
 
 // Add image transformation parameters
 const getImageUrl = (bucket, userId, name, isThumb = false) => {

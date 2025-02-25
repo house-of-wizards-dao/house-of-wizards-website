@@ -57,7 +57,7 @@ const teamMembers = [
     image: "/img/council/jitcy.png"
   },
   {
-    name: "Reptar",
+    name: "R3ptar",
     role: "Lorem Ipsum",
     bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
     image: "/img/council/reptar.png"

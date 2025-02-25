@@ -65,7 +65,7 @@ export default function DocsPage() {
             </Card>
           </div> */}
           <Image className="px-4" src="/img/cultcontent.png"/>
-          <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">To request funding please fill out the <Link className="font-atirose text-[#9564b4] sm:text-xl text-lg" isExternal href='https://docs.google.com/forms/d/e/1FAIpQLSdK1SUgOYYVbnatzeAxcs8NQCuxD9L41a61GvjDuLvbhv-_2A/viewform'>Funding Request Form</Link>.</p>
+          <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">To request funding please fill out the <Link className="font-atirose text-[#9564b4] sm:text-xl text-lg" isExternal href='https://docs.google.com/forms/d/e/1FAIpQLSfY8gtHsO-vusX0GV1jn9y_Nza0OV0vRTFOITKI8k2NHUetGw/viewform'>Funding Request Form</Link>.</p>
       </section>
     </DefaultLayout>
   );
