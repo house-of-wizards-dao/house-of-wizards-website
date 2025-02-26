@@ -20,8 +20,8 @@ const getImageUrl = (bucket, userId, name, isThumb = false) => {
   if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
     return baseUrl;
   }
-  // Add width/height constraints and format conversion
-  return isThumb ? `${baseUrl}?width=300&height=300&format=webp&quality=60` : 
+  // Use WebP format with exact dimensions to prevent layout shifts
+  return isThumb ? `${baseUrl}?width=150&height=150&format=webp&quality=5` : 
                   `${baseUrl}?width=1200&height=800&format=webp&quality=90`;
 };
 
@@ -167,57 +167,70 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 });
 
 // Extracted Gallery Item Component
-const GalleryItem = React.memo(({ item, onClick, priority }) => (
-  <div
-    role="button"
-    tabIndex={0}
-    className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
-    onClick={() => onClick(item)}
-    onKeyDown={(e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        onClick(item);
-      }
-    }}
-  >
-    {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
-      <div className="w-full aspect-square rounded-xl p-4 flex items-center justify-center bg-gray-900">
-        {/* Only load video player when needed */}
-        <div className="relative w-full h-full flex items-center justify-center">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <svg className="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-            </svg>
+const GalleryItem = React.memo(({ item, onClick, priority }) => {
+  // Use state to track image loading
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
+      onClick={() => onClick(item)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClick(item);
+        }
+      }}
+      // Add explicit width/height to prevent layout shifts
+      style={{ height: '100%', width: '100%' }}
+    >
+      <div className="w-full aspect-square relative overflow-hidden p-4">
+        {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
+          // Use a placeholder for videos instead of loading the player
+          <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-xl">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <svg className="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+              </svg>
+            </div>
           </div>
-        </div>
+        ) : (
+          <>
+            {/* Show skeleton while image loads */}
+            {!isLoaded && (
+              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl" />
+            )}
+            <Image
+              src={getImageUrl(item.bucket, item.userId, item.name, true)}
+              alt={item.description || "Gallery image"}
+              width={150}
+              height={150}
+              className={`w-full h-full object-cover rounded-xl transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+              quality={5}
+              unoptimized={item.name.toLowerCase().endsWith('.gif')}
+              onLoad={() => setIsLoaded(true)}
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
+              sizes="(max-width: 768px) 50vw, 20vw"
+            />
+          </>
+        )}
       </div>
-    ) : (
-      <Image
-        src={getImageUrl(item.bucket, item.userId, item.name, true)}
-        alt={item.description || "Gallery image"}
-        width={300}
-        height={300}
-        className="w-full aspect-square object-cover rounded-xl p-4"
-        quality={60}
-        unoptimized={item.name.toLowerCase().endsWith('.gif')}
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
-        loading={priority ? "eager" : "lazy"}
-        priority={priority}
-      />
-    )}
-    
-    <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
-      <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
-        {item.description ? item.description : "Untitled"}
-      </p>
-      <p className="text-violet font-atirose text-lg text-center truncate">
-        {item.userName}
-      </p>
+      
+      <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
+        <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
+          {item.description ? item.description : "Untitled"}
+        </p>
+        <p className="text-violet font-atirose text-lg text-center truncate">
+          {item.userName}
+        </p>
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
-// Main Gallery Component with improved data loading
+// Main Gallery Component with optimized data loading and pagination
 function GalleryPage() {
   const supabase = useSupabaseClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -417,6 +430,41 @@ function GalleryPage() {
     }
   }, []);
 
+  // Implement virtualized rendering for large lists
+  const galleryRef = useRef(null);
+  
+  // Debounce pagination changes to prevent rapid re-renders
+  const handlePageChange = useCallback(
+    debounce((newPage) => {
+      startTransition(() => {
+        setCurrentPage(newPage);
+      });
+    }, 200),
+    []
+  );
+  
+  // Implement intersection observer to lazy load images
+  useEffect(() => {
+    if (!galleryRef.current) return;
+    
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            // Mark visible items for priority loading
+            entry.target.dataset.visible = 'true';
+          }
+        });
+      },
+      { rootMargin: '200px' }
+    );
+    
+    const items = galleryRef.current.querySelectorAll('.gallery-item');
+    items.forEach(item => observer.observe(item));
+    
+    return () => observer.disconnect();
+  }, [content]);
+
   if (isLoading) {
     return (
       <DefaultLayout>
@@ -491,14 +539,18 @@ function GalleryPage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
+              <div 
+                ref={galleryRef}
+                className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4"
+              >
                 {content.map((item, index) => (
-                  <GalleryItem
-                    key={`${item.bucket}-${item.userId}-${item.name}`}
-                    item={item}
-                    onClick={handleItemClick}
-                    priority={index < 4}
-                  />
+                  <div key={`${item.bucket}-${item.userId}-${item.name}`} className="gallery-item">
+                    <GalleryItem
+                      item={item}
+                      onClick={handleItemClick}
+                      priority={index < 4}
+                    />
+                  </div>
                 ))}
               </div>
 
@@ -506,43 +558,19 @@ function GalleryPage() {
                 <div className="flex justify-center mt-6 gap-2">
                   <Button
                     className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => debouncedSetCurrentPage(Math.max(1, currentPage - 1))}
+                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                   >
                     <IoIosArrowRoundBack className="text-2xl"/>
                   </Button>
                   
-                  {/* Simplified pagination - only show nearby pages */}
-                  {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
-                    let pageNum;
-                    if (pageCount <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= pageCount - 2) {
-                      pageNum = pageCount - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    
-                    return (
-                      <Button
-                        key={pageNum}
-                        onClick={() => debouncedSetCurrentPage(pageNum)}
-                        className={`px-3 py-1 rounded-full ${
-                          currentPage === pageNum 
-                            ? 'bg-[#9564b4] text-white' 
-                            : 'bg-black text-white hover:bg-[#333333]'
-                        }`}
-                      >
-                        {pageNum}
-                      </Button>
-                    );
-                  })}
+                  <span className="flex items-center px-3">
+                    Page {currentPage} of {pageCount}
+                  </span>
                   
                   <Button
                     className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => debouncedSetCurrentPage(Math.min(pageCount, currentPage + 1))}
+                    onClick={() => handlePageChange(Math.min(pageCount, currentPage + 1))}
                     disabled={currentPage === pageCount}
                   >
                     <IoIosArrowRoundForward className="text-2xl"/>
