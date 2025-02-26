@@ -13,14 +13,15 @@ import PropTypes from 'prop-types';
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
 const IMAGES_PER_PAGE = 20;
 
-// Add image transformation parameters
+// Improved image URL function with better caching
 const getImageUrl = (bucket, userId, name, isThumb = false) => {
   const baseUrl = `${CDNURL}${bucket}/${userId}/${name}`;
   if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
     return baseUrl; // Don't transform GIFs or videos
   }
-  // Add Supabase image transformation parameters
-  return isThumb ? `${baseUrl}?width=300&quality=60` : `${baseUrl}?quality=100`;
+  // Add cache control and better sizing parameters
+  return isThumb ? `${baseUrl}?width=300&height=300&quality=60&cache=max-age=604800` : 
+                  `${baseUrl}?width=1200&height=800&quality=90&cache=max-age=604800`;
 };
 
 // Extracted Modal Component for better code splitting
@@ -178,15 +179,22 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => (
     }}
   >
     {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
-      <video controls className="w-full aspect-square object-cover rounded-xl p-4">
-        <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
-      </video>
+      <div className="w-full aspect-square rounded-xl p-4 flex items-center justify-center bg-gray-900">
+        {/* Only load video player when needed */}
+        <div className="relative w-full h-full flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <svg className="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+      </div>
     ) : (
       <Image
         src={getImageUrl(item.bucket, item.userId, item.name, true)}
-        alt={item.description}
-        width={150}
-        height={150}
+        alt={item.description || "Gallery image"}
+        width={300}
+        height={300}
         className="w-full aspect-square object-cover rounded-xl p-4"
         quality={60}
         unoptimized={item.name.toLowerCase().endsWith('.gif')}
@@ -199,16 +207,16 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => (
     
     <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
       <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
-        {item.description}
+        {item.description ? item.description : "Untitled"}
       </p>
-      <p className="text-foreground sm:text-md text-sm truncate text-center">
-        <p className="text-violet font-atirose text-lg">{item.userName}</p>
+      <p className="text-violet font-atirose text-lg text-center truncate">
+        {item.userName}
       </p>
     </div>
   </div>
 ));
 
-// Main Gallery Component
+// Main Gallery Component with improved data loading
 function GalleryPage() {
   const supabase = useSupabaseClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -216,90 +224,166 @@ function GalleryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [content, setContent] = useState([]);
   const [selectedArtist, setSelectedArtist] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [totalCount, setTotalCount] = useState(0);
+  const [artists, setArtists] = useState([]);
 
-  const isLoading = content.length === 0;
-
-  // Memoized derived states
-  const allArtists = useMemo(() => 
-    [...new Set(content.map(item => item.userName))],
-    [content]
-  );
-
-  const filteredContent = useMemo(() => 
-    selectedArtist ? content.filter(item => item.userName === selectedArtist) : content,
-    [content, selectedArtist]
-  );
-
-  const currentItems = useMemo(() => 
-    filteredContent.slice(
-      (currentPage - 1) * IMAGES_PER_PAGE,
-      currentPage * IMAGES_PER_PAGE
-    ),
-    [filteredContent, currentPage]
-  );
-
-  const pageCount = useMemo(() => 
-    Math.ceil(filteredContent.length / IMAGES_PER_PAGE),
-    [filteredContent.length]
-  );
-
+  // Server-side pagination with existing tables
   useEffect(() => {
-    const fetchAllImages = async () => {
+    const fetchPaginatedData = async () => {
       try {
-        const { data: users, error: usersError } = await supabase
-          .from('profiles')
-          .select('id, name');
+        setIsLoading(true);
         
-        if (usersError) {
-          throw new Error("Failed to fetch users: " + usersError.message);
+        // Fetch artists once
+        if (artists.length === 0) {
+          const { data: artistsData } = await supabase
+            .from('profiles')
+            .select('id, name');
+          
+          setArtists(artistsData || []);
         }
-
+        
+        // Calculate pagination range
+        const from = (currentPage - 1) * IMAGES_PER_PAGE;
+        const to = from + IMAGES_PER_PAGE - 1;
+        
+        // Fetch both image and file descriptions for lookup
         const [{ data: imageDescData }, { data: fileDescData }] = await Promise.all([
           supabase.from('image_descriptions').select('*'),
           supabase.from('file_descriptions').select('*')
         ]);
-
-        const allContent = await Promise.all(
-          users.map(async (user) => {
-            const [imageData, fileData] = await Promise.all([
-              supabase.storage.from('images').list(user.id + "/"),
-              supabase.storage.from('files').list(user.id + "/")
-            ]);
-
-            return [
-              ...(imageData.data || []).map(img => ({
+        
+        // Create lookup maps for faster access
+        const imageDescMap = {};
+        const fileDescMap = {};
+        
+        if (imageDescData) {
+          imageDescData.forEach(desc => {
+            const key = `${desc.user_id}-${desc.image_name}`;
+            imageDescMap[key] = desc.description;
+          });
+        }
+        
+        if (fileDescData) {
+          fileDescData.forEach(desc => {
+            const key = `${desc.user_id}-${desc.file_name}`;
+            fileDescMap[key] = desc.description;
+          });
+        }
+        
+        // Fetch only users we need based on filter
+        let usersQuery = supabase.from('profiles').select('id, name');
+        if (selectedArtist) {
+          usersQuery = usersQuery.eq('name', selectedArtist);
+        }
+        const { data: users } = await usersQuery;
+        
+        if (!users || users.length === 0) {
+          setContent([]);
+          setTotalCount(0);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Get total count first (for pagination)
+        let totalItems = 0;
+        for (const user of users) {
+          const [imageList, fileList] = await Promise.all([
+            supabase.storage.from('images').list(user.id + "/"),
+            supabase.storage.from('files').list(user.id + "/")
+          ]);
+          
+          totalItems += (imageList.data?.length || 0) + (fileList.data?.length || 0);
+        }
+        
+        setTotalCount(totalItems);
+        
+        // Now fetch only the items for the current page
+        let allItems = [];
+        let itemCount = 0;
+        let skipCount = from;
+        
+        // Process each user's content
+        for (const user of users) {
+          if (itemCount >= IMAGES_PER_PAGE) break;
+          
+          const [imageList, fileList] = await Promise.all([
+            supabase.storage.from('images').list(user.id + "/"),
+            supabase.storage.from('files').list(user.id + "/")
+          ]);
+          
+          // Process images
+          if (imageList.data) {
+            for (const img of imageList.data) {
+              if (skipCount > 0) {
+                skipCount--;
+                continue;
+              }
+              
+              if (itemCount >= IMAGES_PER_PAGE) break;
+              
+              const key = `${user.id}-${img.name}`;
+              const description = imageDescMap[key];
+              
+              allItems.push({
                 ...img,
                 userId: user.id,
                 userName: user.name,
                 bucket: 'images',
-                description: imageDescData?.find(desc => 
-                  desc.image_name === img.name && desc.user_id === user.id
-                )?.description
-              })),
-              ...(fileData.data || []).map(file => ({
+                description: description || '',
+                created_at: img.created_at || new Date().toISOString()
+              });
+              
+              itemCount++;
+            }
+          }
+          
+          // Process files
+          if (fileList.data && itemCount < IMAGES_PER_PAGE) {
+            for (const file of fileList.data) {
+              if (skipCount > 0) {
+                skipCount--;
+                continue;
+              }
+              
+              if (itemCount >= IMAGES_PER_PAGE) break;
+              
+              const key = `${user.id}-${file.name}`;
+              const description = fileDescMap[key]; // Use file description map
+              
+              allItems.push({
                 ...file,
                 userId: user.id,
                 userName: user.name,
                 bucket: 'files',
-                description: fileDescData?.find(desc => 
-                  desc.file_name === file.name && desc.user_id === user.id
-                )?.description
-              }))
-            ];
-          })
-        );
-
-        const flatContent = allContent.flat();
-        startTransition(() => {
-          setContent(flatContent);
-        });
+                description: description || '',
+                created_at: file.created_at || new Date().toISOString()
+              });
+              
+              itemCount++;
+            }
+          }
+        }
+        
+        // Sort by created_at
+        allItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        setContent(allItems);
       } catch (error) {
         console.error("Error fetching gallery data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchAllImages();
-  }, [supabase]);
+    fetchPaginatedData();
+  }, [supabase, currentPage, selectedArtist, artists.length]);
+
+  // Memoized derived states - simplified since we're using server pagination
+  const pageCount = useMemo(() => 
+    Math.ceil(totalCount / IMAGES_PER_PAGE),
+    [totalCount]
+  );
 
   const handleItemClick = useCallback((item) => {
     startTransition(() => {
@@ -377,62 +461,87 @@ function GalleryPage() {
               }}
             >
               <option value="">All Artists</option>
-              {allArtists.map(artist => (
-                <option key={artist} value={artist}>{artist}</option>
+              {artists.map(artist => (
+                <option key={artist.id} value={artist.name}>{artist.name}</option>
               ))}
             </select>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
-            {currentItems.map((item, index) => (
-              <GalleryItem
-                key={`${item.bucket}-${item.userId}-${item.name}`}
-                item={item}
-                onClick={handleItemClick}
-                priority={index < 4}
-              />
-            ))}
-          </div>
-
-          {pageCount > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
-              <Button
-                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
-                disabled={currentPage === 1}
-              >
-                <IoIosArrowRoundBack className="text-2xl"/>
-              </Button>
-              
-              {Array.from({ length: pageCount }, (_, i) => (
-                <Button
-                  key={i}
-                  onClick={() => startTransition(() => setCurrentPage(i + 1))}
-                  className={`px-3 py-1 rounded-full ${
-                    currentPage === i + 1 
-                      ? 'bg-[#9564b4] text-white' 
-                      : 'bg-black text-white hover:bg-[#333333]'
-                  }`}
-                >
-                  {i + 1}
-                </Button>
-              ))}
-              
-              <Button
-                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
-                disabled={currentPage === pageCount}
-              >
-                <IoIosArrowRoundForward className="text-2xl"/>
-              </Button>
+          {isLoading ? (
+            <div className="h-96 w-full flex items-center justify-center">
+              <Spinner color="default" labelColor="foreground"/>
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
+                {content.map((item, index) => (
+                  <GalleryItem
+                    key={`${item.bucket}-${item.userId}-${item.name}`}
+                    item={item}
+                    onClick={handleItemClick}
+                    priority={index < 4}
+                  />
+                ))}
+              </div>
+
+              {pageCount > 1 && (
+                <div className="flex justify-center mt-6 gap-2">
+                  <Button
+                    className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                    onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
+                    disabled={currentPage === 1}
+                  >
+                    <IoIosArrowRoundBack className="text-2xl"/>
+                  </Button>
+                  
+                  {/* Simplified pagination - only show nearby pages */}
+                  {Array.from({ length: Math.min(5, pageCount) }, (_, i) => {
+                    let pageNum;
+                    if (pageCount <= 5) {
+                      pageNum = i + 1;
+                    } else if (currentPage <= 3) {
+                      pageNum = i + 1;
+                    } else if (currentPage >= pageCount - 2) {
+                      pageNum = pageCount - 4 + i;
+                    } else {
+                      pageNum = currentPage - 2 + i;
+                    }
+                    
+                    return (
+                      <Button
+                        key={pageNum}
+                        onClick={() => startTransition(() => setCurrentPage(pageNum))}
+                        className={`px-3 py-1 rounded-full ${
+                          currentPage === pageNum 
+                            ? 'bg-[#9564b4] text-white' 
+                            : 'bg-black text-white hover:bg-[#333333]'
+                        }`}
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                  
+                  <Button
+                    className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                    onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
+                    disabled={currentPage === pageCount}
+                  >
+                    <IoIosArrowRoundForward className="text-2xl"/>
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
-          <ImageModal
-            item={selectedItem}
-            isOpen={modalOpen}
-            onClose={handleCloseModal}
-          />
+          {/* Lazy load the modal only when needed */}
+          {modalOpen && (
+            <ImageModal
+              item={selectedItem}
+              isOpen={modalOpen}
+              onClose={handleCloseModal}
+            />
+          )}
         </div>
       </Container>
     </DefaultLayout>
