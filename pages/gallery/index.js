@@ -12,22 +12,39 @@ import PropTypes from 'prop-types';
 
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
 const IMAGES_PER_PAGE = 20;
+const IMAGES_PER_BATCH = 50; // Number of images to load in each batch
 
-// Add image transformation parameters
-const getImageUrl = (bucket, userId, name, isThumb = false) => {
+// Add image transformation parameters with better optimization
+const getImageUrl = (bucket, userId, name, size = null) => {
   const baseUrl = `${CDNURL}${bucket}/${userId}/${name}`;
+  
+  // Don't transform GIFs or videos
   if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
-    return baseUrl; // Don't transform GIFs or videos
+    return baseUrl;
   }
-  // Add Supabase image transformation parameters
-  return isThumb ? `${baseUrl}?width=300&quality=60` : `${baseUrl}?quality=100`;
+  
+  // Use different optimization strategies based on size needs
+  switch(size) {
+    case 'thumbnail':
+      return `${baseUrl}?width=250&height=250&resize=contain&quality=20`;
+    case 'preview':
+      return `${baseUrl}?width=600&height=600&resize=contain&quality=75`;
+    case 'full':
+      return `${baseUrl}?quality=90`; // Reduced from 100 to 90 for better performance
+    default:
+      return baseUrl;
+  }
 };
+
+// Optimized blurDataURL for faster placeholder rendering
+const BLUR_DATA_URL = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyIDIiPjxyZWN0IHdpZHRoPSIyIiBoZWlnaHQ9IjIiIGZpbGw9IiM5OTk5OTkiLz48L3N2Zz4=';
 
 // Extracted Modal Component for better code splitting
 const ImageModal = React.memo(({ item, onClose, isOpen }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const dragStartPosition = useRef({ x: 0, y: 0 });
   const modalRef = useRef();
 
@@ -63,6 +80,13 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
   }, []);
+
+  // Reset image loaded state when modal closes or item changes
+  useEffect(() => {
+    if (!isOpen) {
+      setImageLoaded(false);
+    }
+  }, [isOpen, item]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -118,6 +142,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
           {item.name.toLowerCase().endsWith('.mp4') ? (
             <video 
               controls 
+              preload="metadata"
               className="w-full aspect-video object-contain rounded-xl"
               style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
             >
@@ -136,21 +161,28 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
                 touchAction: 'none'
               }}
             >
+              {!imageLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Spinner color="default" size="lg" />
+                </div>
+              )}
               <Image
-                src={getImageUrl(item.bucket, item.userId, item.name, false)}
-                alt={item.description}
+                src={getImageUrl(item.bucket, item.userId, item.name, 'full')}
+                alt={item.description || "Gallery image"}
                 width={1200}
                 height={800}
-                className={`w-auto rounded-xl transition-all duration-300 ${isZoomed ? 'max-h-[80vh]' : 'max-h-[70vh]'}`}
+                className={`w-auto rounded-xl transition-all duration-300 ${isZoomed ? 'max-h-[80vh]' : 'max-h-[70vh]'} ${!imageLoaded ? 'opacity-0' : 'opacity-100'}`}
                 style={{ 
                   objectFit: 'contain',
                   pointerEvents: isZoomed ? 'none' : 'auto'
                 }}
-                quality={100}
+                quality={85}
                 unoptimized={item.name.toLowerCase().endsWith('.gif')}
                 draggable={false}
-                loading="eager"
                 priority
+                onLoadingComplete={() => setImageLoaded(true)}
+                placeholder="blur"
+                blurDataURL={BLUR_DATA_URL}
               />
             </div>
           )}
@@ -164,51 +196,78 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
   );
 });
 
-// Extracted Gallery Item Component
-const GalleryItem = React.memo(({ item, onClick, priority }) => (
-  <div
-    role="button"
-    tabIndex={0}
-    className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
-    onClick={() => onClick(item)}
-    onKeyDown={(e) => {
-      if (e.key === "Enter" || e.key === " ") {
-        onClick(item);
-      }
-    }}
-  >
-    {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
-      <video controls className="w-full aspect-square object-cover rounded-xl p-4">
-        <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
-      </video>
-    ) : (
-      <Image
-        src={getImageUrl(item.bucket, item.userId, item.name, true)}
-        alt={item.description}
-        width={150}
-        height={150}
-        className="w-full aspect-square object-cover rounded-xl p-4"
-        quality={60}
-        unoptimized={item.name.toLowerCase().endsWith('.gif')}
-        placeholder="blur"
-        blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
-        loading={priority ? "eager" : "lazy"}
-        priority={priority}
-      />
-    )}
-    
-    <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
-      <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
-        {item.description}
-      </p>
-      <p className="text-foreground sm:text-md text-sm truncate text-center">
-        <p className="text-violet font-atirose text-lg">{item.userName}</p>
-      </p>
+// Optimized Gallery Item Component with better image loading 
+const GalleryItem = React.memo(({ item, onClick, priority, inView }) => {
+  const [loaded, setLoaded] = useState(false);
+  
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
+      onClick={() => onClick(item)}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          onClick(item);
+        }
+      }}
+    >
+      {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
+        <div className="w-full aspect-square relative">
+          <video 
+            className="w-full aspect-square object-cover rounded-xl p-4"
+            preload="none"
+            poster={`${CDNURL}${item.bucket}/${item.userId}/${item.name}?width=250&height=250&resize=contain&frame=1`}
+          >
+            <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
+          </video>
+          {!loaded && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-[#9564b4]/30 flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="w-full aspect-square relative">
+          {!loaded && (
+            <div className="absolute inset-0 flex items-center justify-center p-4">
+              <div className="w-full h-full bg-gray-200 animate-pulse rounded-xl"></div>
+            </div>
+          )}
+          <Image
+            src={getImageUrl(item.bucket, item.userId, item.name, 'thumbnail')}
+            alt={item.description || "Gallery thumbnail"}
+            width={250}
+            height={250}
+            className={`w-full aspect-square object-cover rounded-xl p-4 transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            quality={50}
+            unoptimized={item.name.toLowerCase().endsWith('.gif')}
+            placeholder="blur"
+            blurDataURL={BLUR_DATA_URL}
+            loading={priority ? "eager" : "lazy"}
+            priority={priority}
+            onLoadingComplete={() => setLoaded(true)}
+          />
+        </div>
+      )}
+      
+      <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
+        <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
+          {item.description || ""}
+        </p>
+        <p className="text-violet font-atirose text-lg text-center">
+          {item.userName}
+        </p>
+      </div>
     </div>
-  </div>
-));
+  );
+});
 
-// Main Gallery Component
+// Main Gallery Component with optimized data loading
 function GalleryPage() {
   const supabase = useSupabaseClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -216,8 +275,18 @@ function GalleryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [content, setContent] = useState([]);
   const [selectedArtist, setSelectedArtist] = useState(null);
+  const [isLoadingData, setIsLoadingData] = useState(true);
+  const [hasLoadedAllData, setHasLoadedAllData] = useState(false);
+  const [loadingError, setLoadingError] = useState(null);
+  const [pagesToLoad, setPagesToLoad] = useState(1);
 
-  const isLoading = content.length === 0;
+  const loadMoreTimeout = useRef(null);
+  const contentCache = useRef({
+    profiles: null,
+    imageDesc: null,
+    fileDesc: null,
+    galleryItems: []
+  });
 
   // Memoized derived states
   const allArtists = useMemo(() => 
@@ -243,63 +312,164 @@ function GalleryPage() {
     [filteredContent.length]
   );
 
+  // Load initial data only once
   useEffect(() => {
-    const fetchAllImages = async () => {
+    const fetchBaseData = async () => {
       try {
-        const { data: users, error: usersError } = await supabase
-          .from('profiles')
-          .select('id, name');
+        setIsLoadingData(true);
         
-        if (usersError) {
-          throw new Error("Failed to fetch users: " + usersError.message);
+        // Only fetch the base data if not already in cache
+        if (!contentCache.current.profiles) {
+          const { data: users, error: usersError } = await supabase
+            .from('profiles')
+            .select('id, name');
+          
+          if (usersError) {
+            throw new Error("Failed to fetch users: " + usersError.message);
+          }
+          
+          contentCache.current.profiles = users;
+          
+          const [{ data: imageDescData }, { data: fileDescData }] = await Promise.all([
+            supabase.from('image_descriptions').select('*'),
+            supabase.from('file_descriptions').select('*')
+          ]);
+          
+          contentCache.current.imageDesc = imageDescData;
+          contentCache.current.fileDesc = fileDescData;
         }
-
-        const [{ data: imageDescData }, { data: fileDescData }] = await Promise.all([
-          supabase.from('image_descriptions').select('*'),
-          supabase.from('file_descriptions').select('*')
-        ]);
-
-        const allContent = await Promise.all(
-          users.map(async (user) => {
-            const [imageData, fileData] = await Promise.all([
-              supabase.storage.from('images').list(user.id + "/"),
-              supabase.storage.from('files').list(user.id + "/")
-            ]);
-
-            return [
-              ...(imageData.data || []).map(img => ({
-                ...img,
-                userId: user.id,
-                userName: user.name,
-                bucket: 'images',
-                description: imageDescData?.find(desc => 
-                  desc.image_name === img.name && desc.user_id === user.id
-                )?.description
-              })),
-              ...(fileData.data || []).map(file => ({
-                ...file,
-                userId: user.id,
-                userName: user.name,
-                bucket: 'files',
-                description: fileDescData?.find(desc => 
-                  desc.file_name === file.name && desc.user_id === user.id
-                )?.description
-              }))
-            ];
-          })
-        );
-
-        const flatContent = allContent.flat();
-        startTransition(() => {
-          setContent(flatContent);
-        });
+        
+        // Load first batch of data
+        await loadBatchData(1);
+        setIsLoadingData(false);
       } catch (error) {
         console.error("Error fetching gallery data:", error);
+        setLoadingError(error.message);
+        setIsLoadingData(false);
       }
     };
 
-    fetchAllImages();
+    fetchBaseData();
+    
+    return () => {
+      if (loadMoreTimeout.current) {
+        clearTimeout(loadMoreTimeout.current);
+      }
+    };
   }, [supabase]);
+
+  // Load more content when reaching a new page
+  useEffect(() => {
+    const loadMore = async () => {
+      if (!hasLoadedAllData && currentPage >= pagesToLoad) {
+        setPagesToLoad(prev => prev + 1);
+        await loadBatchData(pagesToLoad + 1);
+      }
+    };
+    
+    if (!isLoadingData && currentPage >= pagesToLoad - 1) {
+      loadMoreTimeout.current = setTimeout(loadMore, 100);
+    }
+    
+    return () => {
+      if (loadMoreTimeout.current) {
+        clearTimeout(loadMoreTimeout.current);
+      }
+    };
+  }, [currentPage, pagesToLoad, hasLoadedAllData, isLoadingData]);
+
+  // Function to load a batch of data
+  const loadBatchData = async (batchNumber) => {
+    try {
+      setIsLoadingData(true);
+      
+      const profiles = contentCache.current.profiles;
+      const imageDescData = contentCache.current.imageDesc;
+      const fileDescData = contentCache.current.fileDesc;
+      
+      if (!profiles) return;
+      
+      // Calculate which users to load in this batch
+      const startIndex = (batchNumber - 1) * IMAGES_PER_BATCH;
+      const endIndex = startIndex + IMAGES_PER_BATCH;
+      const batchProfiles = profiles.slice(startIndex, endIndex);
+      
+      if (batchProfiles.length === 0) {
+        setHasLoadedAllData(true);
+        setIsLoadingData(false);
+        return;
+      }
+      
+      const batchContent = await Promise.all(
+        batchProfiles.map(async (user) => {
+          const [imageData, fileData] = await Promise.all([
+            supabase.storage.from('images').list(user.id + "/"),
+            supabase.storage.from('files').list(user.id + "/")
+          ]);
+
+          return [
+            ...(imageData.data || []).map(img => ({
+              ...img,
+              userId: user.id,
+              userName: user.name,
+              bucket: 'images',
+              description: imageDescData?.find(desc => 
+                desc.image_name === img.name && desc.user_id === user.id
+              )?.description
+            })),
+            ...(fileData.data || []).map(file => ({
+              ...file,
+              userId: user.id,
+              userName: user.name,
+              bucket: 'files',
+              description: fileDescData?.find(desc => 
+                desc.file_name === file.name && desc.user_id === user.id
+              )?.description
+            }))
+          ];
+        })
+      );
+
+      const newItems = batchContent.flat();
+      contentCache.current.galleryItems = [...contentCache.current.galleryItems, ...newItems];
+      
+      startTransition(() => {
+        setContent(contentCache.current.galleryItems);
+        setIsLoadingData(false);
+      });
+      
+    } catch (error) {
+      console.error("Error loading batch data:", error);
+      setLoadingError(error.message);
+      setIsLoadingData(false);
+    }
+  };
+
+  // Preload the next set of images when a user opens the modal
+  useEffect(() => {
+    if (selectedItem && filteredContent.length > 0) {
+      const currentIndex = filteredContent.findIndex(
+        item => item.bucket === selectedItem.bucket && 
+               item.userId === selectedItem.userId && 
+               item.name === selectedItem.name
+      );
+      
+      if (currentIndex !== -1) {
+        // Preload next few images
+        const nextItems = filteredContent.slice(
+          currentIndex + 1, 
+          currentIndex + 4
+        );
+        
+        nextItems.forEach(item => {
+          if (!item.name.toLowerCase().endsWith('.mp4')) {
+            const img = new Image();
+            img.src = getImageUrl(item.bucket, item.userId, item.name, 'preview');
+          }
+        });
+      }
+    }
+  }, [selectedItem, filteredContent]);
 
   const handleItemClick = useCallback((item) => {
     startTransition(() => {
@@ -315,12 +485,64 @@ function GalleryPage() {
     });
   }, []);
 
-  if (isLoading) {
+  const handleLoadMore = useCallback(() => {
+    if (!isLoadingData && currentPage < pageCount) {
+      startTransition(() => {
+        setCurrentPage(prev => prev + 1);
+      });
+    }
+  }, [currentPage, pageCount, isLoadingData]);
+
+  // Functions for pagination
+  const handlePageChange = useCallback((pageNumber) => {
+    if (!isLoadingData) {
+      startTransition(() => {
+        setCurrentPage(pageNumber);
+      });
+    }
+  }, [isLoadingData]);
+
+  const handlePrevPage = useCallback(() => {
+    if (!isLoadingData && currentPage > 1) {
+      startTransition(() => {
+        setCurrentPage(prev => prev - 1);
+      });
+    }
+  }, [currentPage, isLoadingData]);
+
+  const handleNextPage = useCallback(() => {
+    if (!isLoadingData && currentPage < pageCount) {
+      startTransition(() => {
+        setCurrentPage(prev => prev + 1);
+      });
+    }
+  }, [currentPage, pageCount, isLoadingData]);
+
+  if (isLoadingData && content.length === 0) {
     return (
       <DefaultLayout>
         <Container className="flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-8xl mx-auto">
           <div className="h-screen w-full flex items-center justify-center">
             <Spinner color="default" labelColor="foreground"/>
+          </div>
+        </Container>
+      </DefaultLayout>
+    );
+  }
+
+  if (loadingError) {
+    return (
+      <DefaultLayout>
+        <Container className="flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-8xl mx-auto">
+          <div className="h-screen w-full flex flex-col items-center justify-center">
+            <h2 className="text-2xl font-bold mb-4">Error loading gallery</h2>
+            <p className="text-red-500 mb-4">{loadingError}</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Try Again
+            </Button>
           </div>
         </Container>
       </DefaultLayout>
@@ -389,47 +611,98 @@ function GalleryPage() {
                 key={`${item.bucket}-${item.userId}-${item.name}`}
                 item={item}
                 onClick={handleItemClick}
-                priority={index < 4}
+                priority={index < 8}
+                inView={true}
               />
             ))}
           </div>
 
           {pageCount > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
+            <div className="flex justify-center mt-6 gap-2 items-center flex-wrap">
               <Button
                 className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
-                disabled={currentPage === 1}
+                onClick={handlePrevPage}
+                disabled={isLoadingData || currentPage === 1}
+                aria-label="Previous page"
               >
                 <IoIosArrowRoundBack className="text-2xl"/>
               </Button>
               
-              {Array.from({ length: pageCount }, (_, i) => (
-                <Button
-                  key={i}
-                  onClick={() => startTransition(() => setCurrentPage(i + 1))}
-                  className={`px-3 py-1 rounded-full ${
-                    currentPage === i + 1 
-                      ? 'bg-[#9564b4] text-white' 
-                      : 'bg-black text-white hover:bg-[#333333]'
-                  }`}
-                >
-                  {i + 1}
-                </Button>
-              ))}
+              {(() => {
+                // Determine which page numbers to show (for large page counts)
+                let pageNumbers = [];
+                if (pageCount <= 7) {
+                  // Show all pages if 7 or fewer
+                  pageNumbers = Array.from({ length: pageCount }, (_, i) => i + 1);
+                } else {
+                  // Always include first and last pages
+                  pageNumbers.push(1);
+                  
+                  // Show ellipsis if not near the beginning
+                  if (currentPage > 3) {
+                    pageNumbers.push('...');
+                  }
+                  
+                  // Add pages around current page
+                  const startPage = Math.max(2, currentPage - 1);
+                  const endPage = Math.min(pageCount - 1, currentPage + 1);
+                  
+                  for (let i = startPage; i <= endPage; i++) {
+                    pageNumbers.push(i);
+                  }
+                  
+                  // Show ellipsis if not near the end
+                  if (currentPage < pageCount - 2) {
+                    pageNumbers.push('...');
+                  }
+                  
+                  // Add last page if not already included
+                  if (pageCount > 1) {
+                    pageNumbers.push(pageCount);
+                  }
+                }
+                
+                return pageNumbers.map((pageNum, index) => 
+                  pageNum === '...' ? (
+                    <span key={`ellipsis-${index}`} className="px-3 py-1 text-foreground">...</span>
+                  ) : (
+                    <Button
+                      key={pageNum}
+                      onClick={() => handlePageChange(pageNum)}
+                      className={`px-3 py-1 rounded-full ${
+                        currentPage === pageNum 
+                          ? 'bg-[#9564b4] text-white' 
+                          : 'bg-black text-white hover:bg-[#333333]'
+                      }`}
+                      disabled={isLoadingData}
+                      aria-label={`Page ${pageNum}`}
+                      aria-current={currentPage === pageNum ? 'page' : undefined}
+                    >
+                      {pageNum}
+                    </Button>
+                  )
+                );
+              })()}
               
               <Button
                 className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
-                disabled={currentPage === pageCount}
+                onClick={handleNextPage}
+                disabled={isLoadingData || currentPage === pageCount}
+                aria-label="Next page"
               >
                 <IoIosArrowRoundForward className="text-2xl"/>
               </Button>
+              
+              {isLoadingData && (
+                <div className="ml-3">
+                  <Spinner size="sm" color="default" />
+                </div>
+              )}
             </div>
           )}
-
-          {pageCount > 5 && (
-            <div className="text-foreground mx-2">
+          
+          {pageCount > 7 && (
+            <div className="text-center text-foreground text-sm mt-2">
               Page {currentPage} of {pageCount}
             </div>
           )}

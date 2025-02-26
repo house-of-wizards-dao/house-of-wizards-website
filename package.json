@@ -27,6 +27,7 @@
 		"@react-aria/visually-hidden": "3.8.12",
 		"@supabase/auth-helpers-react": "^0.5.0",
 		"@supabase/supabase-js": "^2.46.1",
+		"@tanstack/react-virtual": "^3.13.2",
 		"clsx": "2.1.1",
 		"framer-motion": "~11.1.1",
 		"intl-messageformat": "^10.5.0",
