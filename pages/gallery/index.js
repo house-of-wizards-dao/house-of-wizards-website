@@ -9,20 +9,20 @@ import { Spinner } from "@nextui-org/spinner";
 import { IoIosCloseCircle, IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import { BiZoomIn, BiZoomOut } from "react-icons/bi";
 import PropTypes from 'prop-types';
-import { debounce } from 'lodash';
 
-const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
+const CDNURL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/files/";
 const IMAGES_PER_PAGE = 20;
 
-// Improved image URL function with better caching
-const getImageUrl = (bucket, userId, name, isThumb = false) => {
-  const baseUrl = `${CDNURL}${bucket}/${userId}/${name}`;
+// Add file transformation parameters
+const getFileUrl = (userId, name, isThumb = false) => {
+  const baseUrl = `${CDNURL}${userId}/${name}`;
   if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
-    return baseUrl;
+    return baseUrl; // Don't transform GIFs or videos
   }
-  // Use WebP format with exact dimensions to prevent layout shifts
-  return isThumb ? `${baseUrl}?width=150&height=150&format=webp&quality=5` : 
-                  `${baseUrl}?width=1200&height=800&format=webp&quality=90`;
+  // Reduce quality for thumbnails more aggressively, and add size limits for full images
+  return isThumb 
+    ? `${baseUrl}?width=250&height=250&resize=contain&quality=20` 
+    : `${baseUrl}?width=1000&height=1000&resize=contain&quality=80`;
 };
 
 // Extracted Modal Component for better code splitting
@@ -30,13 +30,33 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [dragPosition, setDragPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1.5); // Add configurable zoom level
   const dragStartPosition = useRef({ x: 0, y: 0 });
   const modalRef = useRef();
+  const imageContainerRef = useRef();
 
   const handleZoomToggle = () => {
     if (!isDragging) {
-      setIsZoomed(!isZoomed);
+      // Reset position when toggling zoom
       setDragPosition({ x: 0, y: 0 });
+      setIsZoomed(!isZoomed);
+    }
+  };
+
+  const handleZoomIn = () => {
+    if (isZoomed) {
+      setZoomLevel(prev => Math.min(prev + 0.25, 3)); // Limit max zoom to 3x
+    } else {
+      setIsZoomed(true);
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (isZoomed && zoomLevel > 1.25) {
+      setZoomLevel(prev => prev - 0.25);
+    } else {
+      setIsZoomed(false);
+      setZoomLevel(1.5); // Reset to default zoom level
     }
   };
 
@@ -49,22 +69,58 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
       x: clientX - dragPosition.x,
       y: clientY - dragPosition.y
     };
+    
+    // Prevent default behavior to avoid text selection during drag
+    e.preventDefault();
+    
+    // Change cursor immediately
+    if (imageContainerRef.current) {
+      imageContainerRef.current.style.cursor = 'grabbing';
+    }
   }, [isZoomed, dragPosition]);
 
   const handleDragMove = useCallback((e) => {
     if (!isDragging || !isZoomed) return;
     e.preventDefault();
+    
     const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
     const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+    
+    // Calculate boundaries based on zoom level to prevent dragging too far
+    const containerRect = imageContainerRef.current?.getBoundingClientRect();
+    if (!containerRect) return;
+    
+    const maxX = (containerRect.width * (zoomLevel - 1)) / 2;
+    const maxY = (containerRect.height * (zoomLevel - 1)) / 2;
+    
+    const newX = clientX - dragStartPosition.current.x;
+    const newY = clientY - dragStartPosition.current.y;
+    
+    // Apply boundaries
+    const boundedX = Math.max(-maxX, Math.min(maxX, newX));
+    const boundedY = Math.max(-maxY, Math.min(maxY, newY));
+    
     setDragPosition({
-      x: clientX - dragStartPosition.current.x,
-      y: clientY - dragStartPosition.current.y
+      x: boundedX,
+      y: boundedY
     });
-  }, [isDragging, isZoomed]);
+  }, [isDragging, isZoomed, zoomLevel]);
 
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
+    
+    // Reset cursor
+    if (imageContainerRef.current) {
+      imageContainerRef.current.style.cursor = 'grab';
+    }
   }, []);
+
+  // Reset zoom and position when changing images
+  useEffect(() => {
+    setIsZoomed(false);
+    setDragPosition({ x: 0, y: 0 });
+    setZoomLevel(1.5);
+  }, [item]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -81,33 +137,61 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
       }
     };
 
+    // Add wheel event for zooming with mouse wheel
+    const handleWheel = (event) => {
+      if (modalRef.current && modalRef.current.contains(event.target)) {
+        event.preventDefault();
+        if (event.deltaY < 0) {
+          handleZoomIn();
+        } else {
+          handleZoomOut();
+        }
+      }
+    };
+
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleEscape);
     document.addEventListener('mouseup', handleDragEnd);
     document.addEventListener('touchend', handleDragEnd);
+    document.addEventListener('wheel', handleWheel, { passive: false });
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleEscape);
       document.removeEventListener('mouseup', handleDragEnd);
       document.removeEventListener('touchend', handleDragEnd);
+      document.removeEventListener('wheel', handleWheel);
     };
-  }, [isOpen, onClose, handleDragEnd]);
+  }, [isOpen, onClose, handleDragEnd, handleZoomIn, handleZoomOut]);
 
   if (!item || !isOpen) return null;
+
+  const isVideo = item.fileType?.startsWith('video/') || item.name.toLowerCase().endsWith('.mp4');
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
       <div ref={modalRef} className="bg-background border-1.5 border-darkviolet sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative">
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
-            {!item.name.toLowerCase().endsWith('.mp4') && (
-              <button
-                onClick={handleZoomToggle}
-                className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
-              >
-                {isZoomed ? <BiZoomOut size={24} /> : <BiZoomIn size={24} />}
-              </button>
+            {!isVideo && (
+              <>
+                <button
+                  onClick={handleZoomIn}
+                  className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
+                  aria-label="Zoom in"
+                >
+                  <BiZoomIn size={24} />
+                </button>
+                {isZoomed && (
+                  <button
+                    onClick={handleZoomOut}
+                    className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
+                    aria-label="Zoom out"
+                  >
+                    <BiZoomOut size={24} />
+                  </button>
+                )}
+              </>
             )}
           </div>
           <IoIosCloseCircle 
@@ -117,38 +201,42 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
         </div>
         
         <div className={`transition-all duration-300 ease-in-out overflow-hidden ${isZoomed ? 'cursor-move' : 'cursor-zoom-in'}`}>
-          {item.name.toLowerCase().endsWith('.mp4') ? (
+          {isVideo ? (
             <video 
               controls 
               className="w-full aspect-video object-contain rounded-xl"
               style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
+              preload="metadata"
             >
-              <source src={getImageUrl(item.bucket, item.userId, item.name)} type="video/mp4" />
+              <source src={getFileUrl(item.userId, item.name)} type={item.fileType || "video/mp4"} />
             </video>
           ) : (
             <div 
+              ref={imageContainerRef}
               className="flex justify-center items-center transition-transform duration-300"
               onMouseDown={handleDragStart}
               onMouseMove={handleDragMove}
               onTouchStart={handleDragStart}
               onTouchMove={handleDragMove}
               style={{
-                transform: isZoomed ? `scale(1.5) translate(${dragPosition.x}px, ${dragPosition.y}px)` : 'none',
-                cursor: isDragging ? 'grabbing' : 'grab',
-                touchAction: 'none'
+                transform: isZoomed ? `scale(${zoomLevel}) translate(${dragPosition.x}px, ${dragPosition.y}px)` : 'none',
+                cursor: isDragging ? 'grabbing' : isZoomed ? 'grab' : 'zoom-in',
+                touchAction: 'none',
+                willChange: 'transform', // Optimize for animations
+                transition: isDragging ? 'none' : 'transform 0.2s ease-out'
               }}
             >
               <Image
-                src={getImageUrl(item.bucket, item.userId, item.name, false)}
-                alt={item.description}
-                width={1200}
+                src={getFileUrl(item.userId, item.name, false)}
+                alt={item.description || "Gallery image"}
+                width={1000}
                 height={800}
                 className={`w-auto rounded-xl transition-all duration-300 ${isZoomed ? 'max-h-[80vh]' : 'max-h-[70vh]'}`}
                 style={{ 
                   objectFit: 'contain',
                   pointerEvents: isZoomed ? 'none' : 'auto'
                 }}
-                quality={100}
+                quality={80}
                 unoptimized={item.name.toLowerCase().endsWith('.gif')}
                 draggable={false}
                 loading="eager"
@@ -168,8 +256,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 
 // Extracted Gallery Item Component
 const GalleryItem = React.memo(({ item, onClick, priority }) => {
-  // Use state to track image loading
-  const [isLoaded, setIsLoaded] = useState(false);
+  const isVideo = item.fileType?.startsWith('video/') || item.name.toLowerCase().endsWith('.mp4');
   
   return (
     <div
@@ -182,55 +269,44 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => {
           onClick(item);
         }
       }}
-      // Add explicit width/height to prevent layout shifts
-      style={{ height: '100%', width: '100%' }}
     >
-      <div className="w-full aspect-square relative overflow-hidden p-4">
-        {item.bucket === 'files' && item.name.toLowerCase().endsWith('.mp4') ? (
-          // Use a placeholder for videos instead of loading the player
-          <div className="w-full h-full flex items-center justify-center bg-gray-900 rounded-xl">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <svg className="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
-              </svg>
-            </div>
-          </div>
-        ) : (
-          <>
-            {/* Show skeleton while image loads */}
-            {!isLoaded && (
-              <div className="absolute inset-0 bg-gray-200 animate-pulse rounded-xl" />
-            )}
-            <Image
-              src={getImageUrl(item.bucket, item.userId, item.name, true)}
-              alt={item.description || "Gallery image"}
-              width={150}
-              height={150}
-              className={`w-full h-full object-cover rounded-xl transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-              quality={5}
-              unoptimized={item.name.toLowerCase().endsWith('.gif')}
-              onLoad={() => setIsLoaded(true)}
-              loading={priority ? "eager" : "lazy"}
-              priority={priority}
-              sizes="(max-width: 768px) 50vw, 20vw"
-            />
-          </>
-        )}
-      </div>
+      {isVideo ? (
+        <video 
+          className="w-full aspect-square object-cover rounded-xl p-4"
+          preload="none"
+          poster={`${CDNURL}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
+        >
+          <source src={getFileUrl(item.userId, item.name)} type={item.fileType || "video/mp4"} />
+        </video>
+      ) : (
+        <Image
+          src={getFileUrl(item.userId, item.name, true)}
+          alt={item.description || "Gallery image"}
+          width={150}
+          height={150}
+          className="w-full aspect-square object-cover rounded-xl p-4"
+          quality={40}
+          unoptimized={item.name.toLowerCase().endsWith('.gif')}
+          placeholder="blur"
+          blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
+          loading={priority ? "eager" : "lazy"}
+          priority={priority}
+        />
+      )}
       
       <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
         <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
-          {item.description ? item.description : "Untitled"}
+          {item.description}
         </p>
-        <p className="text-violet font-atirose text-lg text-center truncate">
-          {item.userName}
-        </p>
+        <div className="text-foreground sm:text-md text-sm truncate text-center">
+          <span className="text-violet font-atirose text-lg">{item.userName}</span>
+        </div>
       </div>
     </div>
   );
 });
 
-// Main Gallery Component with optimized data loading and pagination
+// Main Gallery Component
 function GalleryPage() {
   const supabase = useSupabaseClient();
   const [modalOpen, setModalOpen] = useState(false);
@@ -238,166 +314,95 @@ function GalleryPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [content, setContent] = useState([]);
   const [selectedArtist, setSelectedArtist] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
-  const [artists, setArtists] = useState([]);
 
-  // Server-side pagination with existing tables
+  const isLoading = content.length === 0;
+
+  // Memoized derived states
+  const allArtists = useMemo(() => 
+    [...new Set(content.map(item => item.userName))],
+    [content]
+  );
+
+  const filteredContent = useMemo(() => 
+    selectedArtist ? content.filter(item => item.userName === selectedArtist) : content,
+    [content, selectedArtist]
+  );
+
+  const currentItems = useMemo(() => 
+    filteredContent.slice(
+      (currentPage - 1) * IMAGES_PER_PAGE,
+      currentPage * IMAGES_PER_PAGE
+    ),
+    [filteredContent, currentPage]
+  );
+
+  const pageCount = useMemo(() => 
+    Math.ceil(filteredContent.length / IMAGES_PER_PAGE),
+    [filteredContent.length]
+  );
+
+  // Add virtualization for large galleries
+  const IMAGES_TO_PRELOAD = 8; // Only preload first 8 images
+  
   useEffect(() => {
-    const fetchPaginatedData = async () => {
+    const fetchAllContent = async () => {
       try {
-        setIsLoading(true);
+        const { data: users, error: usersError } = await supabase
+          .from('profiles')
+          .select('id, name');
         
-        // Fetch artists once
-        if (artists.length === 0) {
-          const { data: artistsData } = await supabase
-            .from('profiles')
-            .select('id, name');
+        if (usersError) {
+          throw new Error("Failed to fetch users: " + usersError.message);
+        }
+
+        const { data: fileDescData, error: fileDescError } = await supabase
+          .from('file_descriptions')
+          .select('*');
           
-          setArtists(artistsData || []);
+        if (fileDescError) {
+          throw new Error("Failed to fetch file descriptions: " + fileDescError.message);
         }
-        
-        // Calculate pagination range
-        const from = (currentPage - 1) * IMAGES_PER_PAGE;
-        const to = from + IMAGES_PER_PAGE - 1;
-        
-        // Fetch both image and file descriptions for lookup
-        const [{ data: imageDescData }, { data: fileDescData }] = await Promise.all([
-          supabase.from('image_descriptions').select('*'),
-          supabase.from('file_descriptions').select('*')
-        ]);
-        
-        // Create lookup maps for faster access
-        const imageDescMap = {};
-        const fileDescMap = {};
-        
-        if (imageDescData) {
-          imageDescData.forEach(desc => {
-            const key = `${desc.user_id}-${desc.image_name}`;
-            imageDescMap[key] = desc.description;
-          });
-        }
-        
-        if (fileDescData) {
-          fileDescData.forEach(desc => {
-            const key = `${desc.user_id}-${desc.file_name}`;
-            fileDescMap[key] = desc.description;
-          });
-        }
-        
-        // Fetch only users we need based on filter
-        let usersQuery = supabase.from('profiles').select('id, name');
-        if (selectedArtist) {
-          usersQuery = usersQuery.eq('name', selectedArtist);
-        }
-        const { data: users } = await usersQuery;
-        
-        if (!users || users.length === 0) {
-          setContent([]);
-          setTotalCount(0);
-          setIsLoading(false);
-          return;
-        }
-        
-        // Get total count first (for pagination)
-        let totalItems = 0;
-        for (const user of users) {
-          const [imageList, fileList] = await Promise.all([
-            supabase.storage.from('images').list(user.id + "/"),
-            supabase.storage.from('files').list(user.id + "/")
-          ]);
-          
-          totalItems += (imageList.data?.length || 0) + (fileList.data?.length || 0);
-        }
-        
-        setTotalCount(totalItems);
-        
-        // Now fetch only the items for the current page
-        let allItems = [];
-        let itemCount = 0;
-        let skipCount = from;
-        
-        // Process each user's content
-        for (const user of users) {
-          if (itemCount >= IMAGES_PER_PAGE) break;
-          
-          const [imageList, fileList] = await Promise.all([
-            supabase.storage.from('images').list(user.id + "/"),
-            supabase.storage.from('files').list(user.id + "/")
-          ]);
-          
-          // Process images
-          if (imageList.data) {
-            for (const img of imageList.data) {
-              if (skipCount > 0) {
-                skipCount--;
-                continue;
-              }
+
+        const allContent = await Promise.all(
+          users.map(async (user) => {
+            const { data: fileData, error: fileError } = await supabase
+              .storage.from('files')
+              .list(user.id + "/");
               
-              if (itemCount >= IMAGES_PER_PAGE) break;
-              
-              const key = `${user.id}-${img.name}`;
-              const description = imageDescMap[key];
-              
-              allItems.push({
-                ...img,
-                userId: user.id,
-                userName: user.name,
-                bucket: 'images',
-                description: description || '',
-                created_at: img.created_at || new Date().toISOString()
-              });
-              
-              itemCount++;
+            if (fileError) {
+              console.error(`Error fetching files for user ${user.id}:`, fileError);
+              return [];
             }
-          }
+            
+            return (fileData || []).map(file => ({
+              ...file,
+              userId: user.id,
+              userName: user.name,
+              description: fileDescData?.find(desc => 
+                desc.file_name === file.name && desc.user_id === user.id
+              )?.description,
+              fileType: fileDescData?.find(desc => 
+                desc.file_name === file.name && desc.user_id === user.id
+              )?.file_type
+            }));
+          })
+        );
+
+        // Sort content by most recent first and filter out items without descriptions
+        const flatContent = allContent.flat()
+          .filter(item => item.description) // Only show items with descriptions
+          .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
           
-          // Process files
-          if (fileList.data && itemCount < IMAGES_PER_PAGE) {
-            for (const file of fileList.data) {
-              if (skipCount > 0) {
-                skipCount--;
-                continue;
-              }
-              
-              if (itemCount >= IMAGES_PER_PAGE) break;
-              
-              const key = `${user.id}-${file.name}`;
-              const description = fileDescMap[key]; // Use file description map
-              
-              allItems.push({
-                ...file,
-                userId: user.id,
-                userName: user.name,
-                bucket: 'files',
-                description: description || '',
-                created_at: file.created_at || new Date().toISOString()
-              });
-              
-              itemCount++;
-            }
-          }
-        }
-        
-        // Sort by created_at
-        allItems.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-        
-        setContent(allItems);
+        startTransition(() => {
+          setContent(flatContent);
+        });
       } catch (error) {
         console.error("Error fetching gallery data:", error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
-    fetchPaginatedData();
-  }, [supabase, currentPage, selectedArtist, artists.length]);
-
-  // Memoized derived states - simplified since we're using server pagination
-  const pageCount = useMemo(() => 
-    Math.ceil(totalCount / IMAGES_PER_PAGE),
-    [totalCount]
-  );
+    fetchAllContent();
+  }, [supabase]);
 
   const handleItemClick = useCallback((item) => {
     startTransition(() => {
@@ -412,58 +417,6 @@ function GalleryPage() {
       setSelectedItem(null);
     });
   }, []);
-
-  // 4. Debounce user interactions
-  const debouncedSetCurrentPage = useCallback(
-    debounce((page) => {
-      setCurrentPage(page);
-    }, 100),
-    []
-  );
-  
-  // 5. Use requestIdleCallback for non-critical operations
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      window.requestIdleCallback(() => {
-        // Perform non-critical operations here
-      });
-    }
-  }, []);
-
-  // Implement virtualized rendering for large lists
-  const galleryRef = useRef(null);
-  
-  // Debounce pagination changes to prevent rapid re-renders
-  const handlePageChange = useCallback(
-    debounce((newPage) => {
-      startTransition(() => {
-        setCurrentPage(newPage);
-      });
-    }, 200),
-    []
-  );
-  
-  // Implement intersection observer to lazy load images
-  useEffect(() => {
-    if (!galleryRef.current) return;
-    
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            // Mark visible items for priority loading
-            entry.target.dataset.visible = 'true';
-          }
-        });
-      },
-      { rootMargin: '200px' }
-    );
-    
-    const items = galleryRef.current.querySelectorAll('.gallery-item');
-    items.forEach(item => observer.observe(item));
-    
-    return () => observer.disconnect();
-  }, [content]);
 
   if (isLoading) {
     return (
@@ -527,67 +480,62 @@ function GalleryPage() {
               }}
             >
               <option value="">All Artists</option>
-              {artists.map(artist => (
-                <option key={artist.id} value={artist.name}>{artist.name}</option>
+              {allArtists.map(artist => (
+                <option key={artist} value={artist}>{artist}</option>
               ))}
             </select>
           </div>
 
-          {isLoading ? (
-            <div className="h-96 w-full flex items-center justify-center">
-              <Spinner color="default" labelColor="foreground"/>
-            </div>
-          ) : (
-            <>
-              <div 
-                ref={galleryRef}
-                className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4"
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
+            {currentItems.map((item, index) => (
+              <GalleryItem
+                key={`${item.userId}-${item.name}`}
+                item={item}
+                onClick={handleItemClick}
+                priority={index < IMAGES_TO_PRELOAD} // Only prioritize first few images
+              />
+            ))}
+          </div>
+
+          {pageCount > 1 && (
+            <div className="flex justify-center mt-6 gap-2">
+              <Button
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
+                disabled={currentPage === 1}
               >
-                {content.map((item, index) => (
-                  <div key={`${item.bucket}-${item.userId}-${item.name}`} className="gallery-item">
-                    <GalleryItem
-                      item={item}
-                      onClick={handleItemClick}
-                      priority={index < 4}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              {pageCount > 1 && (
-                <div className="flex justify-center mt-6 gap-2">
-                  <Button
-                    className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                  >
-                    <IoIosArrowRoundBack className="text-2xl"/>
-                  </Button>
-                  
-                  <span className="flex items-center px-3">
-                    Page {currentPage} of {pageCount}
-                  </span>
-                  
-                  <Button
-                    className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => handlePageChange(Math.min(pageCount, currentPage + 1))}
-                    disabled={currentPage === pageCount}
-                  >
-                    <IoIosArrowRoundForward className="text-2xl"/>
-                  </Button>
-                </div>
-              )}
-            </>
+                <IoIosArrowRoundBack className="text-2xl"/>
+              </Button>
+              
+              {Array.from({ length: pageCount }, (_, i) => (
+                <Button
+                  key={i}
+                  onClick={() => startTransition(() => setCurrentPage(i + 1))}
+                  className={`px-3 py-1 rounded-full ${
+                    currentPage === i + 1 
+                      ? 'bg-[#9564b4] text-white' 
+                      : 'bg-black text-white hover:bg-[#333333]'
+                  }`}
+                >
+                  {i + 1}
+                </Button>
+              ))}
+              
+              <Button
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
+                disabled={currentPage === pageCount}
+              >
+                <IoIosArrowRoundForward className="text-2xl"/>
+              </Button>
+            </div>
           )}
 
-          {/* Lazy load the modal only when needed */}
-          {modalOpen && (
-            <ImageModal
-              item={selectedItem}
-              isOpen={modalOpen}
-              onClose={handleCloseModal}
-            />
-          )}
+          <ImageModal
+            item={selectedItem}
+            isOpen={modalOpen}
+            onClose={handleCloseModal}
+          />
         </div>
       </Container>
     </DefaultLayout>
@@ -650,10 +598,18 @@ export default dynamic(() => Promise.resolve(function GalleryPageWrapper() {
 
 GalleryItem.propTypes = {
   item: PropTypes.shape({
-    bucket: PropTypes.string.isRequired,
     userId: PropTypes.string.isRequired,
-    // ... other prop definitions
+    name: PropTypes.string.isRequired,
+    description: PropTypes.string,
+    fileType: PropTypes.string,
+    userName: PropTypes.string
   }),
   onClick: PropTypes.func.isRequired,
   priority: PropTypes.bool.isRequired
+};
+
+ImageModal.propTypes = {
+  item: PropTypes.object,
+  onClose: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired
 };

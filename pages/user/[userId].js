@@ -9,29 +9,27 @@ import Image from 'next/image';
 import { IoIosCloseCircle, IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import { Button } from '@nextui-org/button';
 
-const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/images/";
-const CDNURLS = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
-const AVATAR_CDN_URL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/avatars/";
-const IMAGES_PER_PAGE = 15;
-const CDNURLSS = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/files/";
+const CDNURL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/files/";
+const CDNURLS = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/";
+const AVATAR_CDN_URL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/avatars/";
+const FILES_PER_PAGE = 15;
+const CDNURLSS = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/files/";
 
 export default function UserProfile() {
   const router = useRouter();
   const { userId } = router.query;
   const [user, setUser] = useState(null);
-  const [images, setImages] = useState([]);
+  const [files, setFiles] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const supabase = useSupabaseClient();
-  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Combined items array for pagination
-  const allItems = [...images, ...files];
-  const indexOfLastItem = currentPage * IMAGES_PER_PAGE;
-  const indexOfFirstItem = indexOfLastItem - IMAGES_PER_PAGE;
-  const currentItems = allItems.slice(indexOfFirstItem, indexOfLastItem);
+  // Pagination
+  const indexOfLastItem = currentPage * FILES_PER_PAGE;
+  const indexOfFirstItem = indexOfLastItem - FILES_PER_PAGE;
+  const currentItems = files.slice(indexOfFirstItem, indexOfLastItem);
 
   // Wrap fetch functions in useCallback to prevent unnecessary recreations
   const fetchUserData = useCallback(async () => {
@@ -46,50 +44,15 @@ export default function UserProfile() {
     return data;
   }, [userId, supabase]);
 
-  const fetchUserImages = useCallback(async () => {
-    // Add cache-control header to images request
-    const { data: imageData, error: imageError } = await supabase
-      .storage
-      .from('images')
-      .list(userId + "/", {
-        limit: 100,
-        offset: 0,
-        sortBy: { column: "name", order: "asc" },
-        headers: { 'Cache-Control': 'public, max-age=3600' }
-      });
-
-    if (imageError) {
-      console.error('Error fetching user images:', imageError);
-      return;
-    }
-
-    const { data: descriptionData, error: descriptionError } = await supabase
-      .from('image_descriptions')
-      .select('*')
-      .eq('user_id', userId);
-
-    if (descriptionError) {
-      console.error('Error fetching image descriptions:', descriptionError);
-      return;
-    }
-
-    const imagesWithDescriptions = imageData.map(image => ({
-      ...image,
-      description: descriptionData.find(desc => desc.image_name === image.name)?.description || 'No description'
-    }));
-
-    setImages(imagesWithDescriptions);
-  }, [userId, supabase]);
-
   // Combine data fetching into a single effect
   useEffect(() => {
     if (userId) {
       setLoading(true);
-      Promise.all([fetchUserData(), fetchUserImages()])
+      Promise.all([fetchUserData()])
         .then(([userData]) => userData && getFiles(userData))
         .finally(() => setLoading(false));
     }
-  }, [userId, fetchUserData, fetchUserImages]);
+  }, [userId, fetchUserData]);
 
   async function getFiles(userData) {
     const { data, error } = await supabase
@@ -98,7 +61,8 @@ export default function UserProfile() {
       .list(userData.id + "/", {
         limit: 100,
         offset: 0,
-        sortBy: { column: "name", order: "asc" }
+        sortBy: { column: "name", order: "asc" },
+        headers: { 'Cache-Control': 'public, max-age=3600' }
       });
 
     if (error) {
@@ -123,24 +87,44 @@ export default function UserProfile() {
     }
   }
 
-  // Optimize image rendering
-  function renderItemPreview(item, isFile) {
-    const fileUrl = isFile 
-      ? `${CDNURLSS}${user?.id}/${item.name}`
-      : `${CDNURL}${user?.id}/${item.name}`;
+  // Render file preview based on file type
+  function renderFilePreview(file) {
+    const fileUrl = `${CDNURL}${user?.id}/${file.name}`;
     
-    return (
-      <Image
-        src={fileUrl}
-        alt={item.description}
-        width={350}
-        height={350}
-        loading="lazy"
-        placeholder="blur"
-        blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
-        className="object-cover rounded-xl aspect-square"
-      />
-    );
+    if (file.fileType?.startsWith('video/')) {
+      return (
+        <video 
+          width="350" 
+          height="350" 
+          controls 
+          className="object-cover rounded-xl aspect-square" 
+          loading="lazy"
+        >
+          <source src={fileUrl} type={file.fileType} />
+          Your browser does not support the video tag.
+        </video>
+      );
+    } else if (file.fileType?.startsWith('image/')) {
+      return (
+        <Image
+          src={fileUrl}
+          alt={file.description}
+          width={350}
+          height={350}
+          loading="lazy"
+          placeholder="blur"
+          blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkqAcAAIUAgUW0RjgAAAAASUVORK5CYII="
+          className="object-cover rounded-xl aspect-square"
+        />
+      );
+    } else {
+      // Default file icon for other file types
+      return (
+        <div className="flex items-center justify-center w-[350px] h-[350px] bg-[#1c1c1c] rounded-xl">
+          <p className="text-white text-lg">File: {file.name}</p>
+        </div>
+      );
+    }
   }
 
   if (!user) return <div>Loading...</div>;
@@ -172,7 +156,8 @@ export default function UserProfile() {
           alt={`${user.name}'s avatar`}
           width={150}
           height={150}
-          className="rounded-full mb-6"
+          className="rounded-full mb-6 object-cover"
+          style={{ width: '150px', height: '150px', objectFit: 'cover' }}
         />
         <h1 className="font-serif text-[#9564b4] italic sm:text-4xl text-3xl">{user.name}&apos;s Work</h1>
         <p className="font-pop text-md text-grey">{user.email}</p>
@@ -199,40 +184,27 @@ export default function UserProfile() {
 
         {/* Gallery Grid */}
         <div className="mt-4 flex flex-row justify-center w-full flex-wrap sm:gap-3 gap-3 mx-auto">
-          {currentItems.map((item) => {
-            const isFile = 'fileType' in item;
-            return (
-              <div
-                role="button"
-                tabIndex="0"
-                className="hover:bg-[#1c1c1c] hover:shadow-md cursor-pointer flex flex-col justify-between items-center sm:w-fit w-[48%] p-4 border-1.5 border-[#242424] rounded-2xl"
-                key={`${item.bucket || 'file'}-${user.id}-${item.name}`}
-                onClick={() => openModal(item)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    openModal(item);
-                  }
-                }}
-              >
-                <div className="sm:p-2 p-1">
-                  {isFile && item.fileType?.startsWith('image/') ? (
-                    renderItemPreview(item, true)
-                  ) : isFile && item.fileType?.startsWith('video/') ? (
-                    <video width="350" height="350" controls className="object-cover rounded-xl aspect-square" loading="lazy">
-                      <track kind="captions" src="captions.vtt" srcLang="en" label="English" />
-                      <source src={renderItemPreview(item, false)} type={item.fileType} />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    renderItemPreview(item, false)
-                  )}
-                </div>
-                <p className="text-foreground font-pop font-medium truncate w-[300px] text-center sm:text-md text-md mt-2">
-                  {item.description}
-                </p>
+          {currentItems.map((file) => (
+            <div
+              role="button"
+              tabIndex="0"
+              className="hover:bg-[#1c1c1c] hover:shadow-md cursor-pointer flex flex-col justify-between items-center sm:w-fit w-[48%] p-4 border-1.5 border-[#242424] rounded-2xl"
+              key={`file-${user.id}-${file.name}`}
+              onClick={() => openModal(file)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  openModal(file);
+                }
+              }}
+            >
+              <div className="sm:p-2 p-1">
+                {renderFilePreview(file)}
               </div>
-            );
-          })}
+              <p className="text-foreground font-pop font-medium truncate w-[300px] text-center sm:text-md text-md mt-2">
+                {file.description}
+              </p>
+            </div>
+          ))}
         </div>
 
         {/* Pagination */}
@@ -245,7 +217,7 @@ export default function UserProfile() {
             <IoIosArrowRoundBack className="text-2xl" />
           </Button>
 
-          {Array.from({ length: Math.ceil(allItems.length / IMAGES_PER_PAGE) }, (_, i) => (
+          {Array.from({ length: Math.ceil(files.length / FILES_PER_PAGE) }, (_, i) => (
             <Button
               key={i}
               onClick={() => setCurrentPage(i + 1)}
@@ -262,9 +234,9 @@ export default function UserProfile() {
           <Button
             className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
             onClick={() => setCurrentPage(prev =>
-              Math.min(Math.ceil(allItems.length / IMAGES_PER_PAGE), prev + 1)
+              Math.min(Math.ceil(files.length / FILES_PER_PAGE), prev + 1)
             )}
-            disabled={currentPage === Math.ceil(allItems.length / IMAGES_PER_PAGE)}
+            disabled={currentPage === Math.ceil(files.length / FILES_PER_PAGE)}
           >
             <IoIosArrowRoundForward className="text-2xl" />
           </Button>
@@ -278,14 +250,29 @@ export default function UserProfile() {
                 <div className="flex flex-col items-end">
                   <IoIosCloseCircle className="mb-2 text-2xl cursor-pointer hover:text-grey" onClick={closeModal} />
                 </div>
-                <Image
-                  src={selectedItemUrl}
-                  alt={selectedItem.description}
-                  width={700}
-                  height={700}
-                  priority={true}
-                  className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
-                />
+                {selectedItem.fileType?.startsWith('video/') ? (
+                  <video 
+                    controls 
+                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
+                    autoPlay
+                  >
+                    <source src={`${CDNURL}${user?.id}/${selectedItem.name}`} type={selectedItem.fileType} />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : selectedItem.fileType?.startsWith('image/') ? (
+                  <Image
+                    src={`${CDNURL}${user?.id}/${selectedItem.name}`}
+                    alt={selectedItem.description}
+                    width={700}
+                    height={700}
+                    priority={true}
+                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
+                  />
+                ) : (
+                  <div className="flex items-center justify-center w-full h-[400px] bg-[#1c1c1c] rounded-xl">
+                    <p className="text-white text-lg">File: {selectedItem.name}</p>
+                  </div>
+                )}
               </div>
               <p className="text-foreground font-medium text-center sm:text-md text-sm font-pop mb-1 mt-4">{selectedItem.description}</p>
             </div>

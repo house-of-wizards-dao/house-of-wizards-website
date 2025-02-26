@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient ("https://czflihgzksfynoqfilot.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZmxpaGd6a3NmeW5vcWZpbG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIwNTczODksImV4cCI6MjAzNzYzMzM4OX0.2dKaAUrSVCJBvWJIn-y_WWVpeJJtYZxQs1VrZiuuA8M");
+const supabase = createClient ("https://bdmtbvaqmjiwxbuxflup.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN6ZmxpaGd6a3NmeW5vcWZpbG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjIwNTczODksImV4cCI6MjAzNzYzMzM4OX0.2dKaAUrSVCJBvWJIn-y_WWVpeJJtYZxQs1VrZiuuA8M");
 
 
 export default async function handler(req, res) {

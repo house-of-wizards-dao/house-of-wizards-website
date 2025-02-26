@@ -8,7 +8,7 @@ import {Spinner} from "@nextui-org/spinner";
 import { Container } from "react-bootstrap";
 import { Card, CardBody, CardFooter } from "@nextui-org/card";
 
-  const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/avatars/";
+  const CDNURL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/avatars/";
 
 export default function IndexPage() {
   const user = useUser();
@@ -90,7 +90,9 @@ export default function IndexPage() {
         </div>
 
         <div className="flex flex-row justify-center flex-wrap sm:gap-6 gap-3 max-w-7xl mx-auto">
-          {allUsers.map((user) =>(
+          {allUsers
+            .filter(user => user.role !== 'admin')
+            .map((user) =>(
             <Card className=" rounded-md sm:w-[300px]  sm:h-[450px] w-[195px] h-[350px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet" key={user.id}>
                 <CardBody className="p-0 border-b-1 border-darkviolet p-4">
                   <Image 
@@ -98,7 +100,6 @@ export default function IndexPage() {
                     src={user.avatar_url ? `${CDNURL}${user.avatar_url}` : '/img/avatar.png'}
                     alt={`${user.name}'s avatar`}
                     placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AoNxbhL3xvpeNluNyeQ0pwCxJGwA5NCiQ5nZ23P1j+n//2Q=="
                   />
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-4">
@@ -108,7 +109,7 @@ export default function IndexPage() {
                   <div className="flex flex-row items-center gap-2">
                     <FaGlobe size={18} className="text-white"/>
                     {user?.website ? (
-                      <Link isExternal href={user.website} className="text-xs uppercase truncate">
+                      <Link href={user.website} className="text-xs uppercase truncate" target="_blank" rel="noopener noreferrer">
                         {user.website}
                       </Link>
                     ) : (
@@ -118,7 +119,7 @@ export default function IndexPage() {
                   <div className="flex flex-row items-center gap-2">
                     <FaTwitter size={18} className="text-white"/>
                     {user?.twitter ? (
-                      <Link isExternal href={`https://twitter.com/${user.twitter}`} className="text-xs uppercase">
+                      <Link href={`https://twitter.com/${user.twitter}`} className="text-xs uppercase" target="_blank" rel="noopener noreferrer">
                         {user.twitter}
                       </Link>
                     ) : (
@@ -138,7 +139,6 @@ export default function IndexPage() {
                     </div>
                 </CardFooter>
             </Card>
-
           ))}
         </div>
       </Container>

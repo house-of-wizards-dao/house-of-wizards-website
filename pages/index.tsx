@@ -4,62 +4,52 @@ import DefaultLayout from "@/layouts/default";
 const teamMembers = [
   {
     name: "Acid",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/acid.png"
   },
   {
     name: "Bridge",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/bridge.png"
   },
   {
     name: "DFI",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/dfi.png"
   },
   {
     name: "MeepleDad",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/meeple.png"
   },
   {
     name: "Madotsuki",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/madotsuki.png"
   },
   {
     name: "Meph",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/R Y F.png"
   },
   {
     name: "SharkChild",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/sharkchild.png"
   },
   {
     name: "Sharon",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/sharon.png"
   },
   {
     name: "TadMajor",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/jitcy.png"
   },
   {
     name: "R3ptar",
-    role: "Lorem Ipsum",
-    bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    
     image: "/img/council/reptar.png"
   },
 ];
@@ -118,8 +108,8 @@ export default function IndexPage() {
               </div>
               <div className="space-y-1">
                 <h3 className="text-xl font-atirose text-center text-violet">{member.name}</h3>
-                <p className="text-gray-600 text-center">{member.role}</p>
-                <p className="text-sm text-gray-500 text-center">{member.bio}</p>
+                {/* <p className="text-gray-600 text-center">{member.role}</p>
+                <p className="text-sm text-gray-500 text-center">{member.bio}</p> */}
               </div>
             </div>
           ))}

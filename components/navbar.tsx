@@ -61,12 +61,12 @@ export const Navbar = () => {
                 base: "gap-4",
               }}
             >
-              <DropdownItem key="artists">
+              <DropdownItem key="artists" textValue="Artist">
                 <NextLink className="uppercase" href="/artists">
                   Artist
                 </NextLink>
               </DropdownItem>
-              <DropdownItem key="gallery">
+              <DropdownItem key="gallery" textValue="Gallery">
                 <NextLink className="uppercase" href="/gallery">
                   Gallery
                 </NextLink>
@@ -89,17 +89,17 @@ export const Navbar = () => {
                 base: "gap-4",
               }}
             >
-              <DropdownItem key="talent">
+              <DropdownItem key="talent" textValue="Talent">
                 <NextLink className="uppercase" href="/talent">
                   Talent
                 </NextLink>
               </DropdownItem>
-              <DropdownItem key="community">
+              <DropdownItem key="community" textValue="Community">
                 <NextLink className="uppercase" href="/community">
                   Community
                 </NextLink>
               </DropdownItem>
-              <DropdownItem key="signup">
+              <DropdownItem key="signup" textValue="Join">
                 <NextLink className="uppercase" href="/signup">
                     Join
                 </NextLink>
