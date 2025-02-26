@@ -9,6 +9,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { IoIosCloseCircle, IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import { BiZoomIn, BiZoomOut } from "react-icons/bi";
 import PropTypes from 'prop-types';
+import { debounce } from 'lodash';
 
 const CDNURL = "https://czflihgzksfynoqfilot.supabase.co/storage/v1/object/public/";
 const IMAGES_PER_PAGE = 20;
@@ -17,11 +18,11 @@ const IMAGES_PER_PAGE = 20;
 const getImageUrl = (bucket, userId, name, isThumb = false) => {
   const baseUrl = `${CDNURL}${bucket}/${userId}/${name}`;
   if (name.toLowerCase().endsWith('.gif') || name.toLowerCase().endsWith('.mp4')) {
-    return baseUrl; // Don't transform GIFs or videos
+    return baseUrl;
   }
-  // Add cache control and better sizing parameters
-  return isThumb ? `${baseUrl}?width=300&height=300&quality=60&cache=max-age=604800` : 
-                  `${baseUrl}?width=1200&height=800&quality=90&cache=max-age=604800`;
+  // Add width/height constraints and format conversion
+  return isThumb ? `${baseUrl}?width=300&height=300&format=webp&quality=60` : 
+                  `${baseUrl}?width=1200&height=800&format=webp&quality=90`;
 };
 
 // Extracted Modal Component for better code splitting
@@ -399,6 +400,23 @@ function GalleryPage() {
     });
   }, []);
 
+  // 4. Debounce user interactions
+  const debouncedSetCurrentPage = useCallback(
+    debounce((page) => {
+      setCurrentPage(page);
+    }, 100),
+    []
+  );
+  
+  // 5. Use requestIdleCallback for non-critical operations
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        // Perform non-critical operations here
+      });
+    }
+  }, []);
+
   if (isLoading) {
     return (
       <DefaultLayout>
@@ -488,7 +506,7 @@ function GalleryPage() {
                 <div className="flex justify-center mt-6 gap-2">
                   <Button
                     className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
+                    onClick={() => debouncedSetCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                   >
                     <IoIosArrowRoundBack className="text-2xl"/>
@@ -510,7 +528,7 @@ function GalleryPage() {
                     return (
                       <Button
                         key={pageNum}
-                        onClick={() => startTransition(() => setCurrentPage(pageNum))}
+                        onClick={() => debouncedSetCurrentPage(pageNum)}
                         className={`px-3 py-1 rounded-full ${
                           currentPage === pageNum 
                             ? 'bg-[#9564b4] text-white' 
@@ -524,7 +542,7 @@ function GalleryPage() {
                   
                   <Button
                     className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-                    onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
+                    onClick={() => debouncedSetCurrentPage(Math.min(pageCount, currentPage + 1))}
                     disabled={currentPage === pageCount}
                   >
                     <IoIosArrowRoundForward className="text-2xl"/>
