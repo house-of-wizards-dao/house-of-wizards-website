@@ -362,7 +362,8 @@ const AdminPanel = () => {
     if (item.fileType?.startsWith('video/') || item.name.toLowerCase().endsWith('.mp4')) {
       return (
         <video 
-          className="w-full h-32 object-cover rounded-md"
+          className="w-full h-32 object-cover rounded-md aspect-square"
+          style={{ height: 'auto' }}
           controls
         >
           <source src={fileUrl} type={item.fileType || "video/mp4"} />
