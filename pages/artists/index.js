@@ -93,7 +93,8 @@ export default function IndexPage() {
           {allUsers
             .filter(user => user.role !== 'admin')
             .map((user) =>(
-            <Card className=" rounded-md sm:w-[300px]  sm:h-[450px] w-[195px] h-[350px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet" key={user.id}>
+            <Link href={`/user/${user.id}`} key={user.id}>
+              <Card className="rounded-md sm:w-[300px] sm:h-[450px] w-[195px] h-[350px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet cursor-pointer">
                 <CardBody className="p-0 border-b-1 border-darkviolet p-4">
                   <Image 
                     className="sm:w-full aspect-square" 
@@ -103,15 +104,15 @@ export default function IndexPage() {
                   />
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-4">
-                  <Link className="cursor-pointer text-[#A986D9] font-atirose sm:text-2xl text-xl truncate" href={`/user/${user.id}`}>{user.name}</Link>
-                  <p className="truncate text-xs uppercase w-[95%]">{user.description || <p>None</p>}</p>
+                  <span className="text-[#A986D9] font-atirose sm:text-2xl text-xl truncate">{user.name}</span>
+                  <p className="truncate text-xs uppercase w-[95%]">{user.description || "None"}</p>
                   <div className="flex flex-col w-full mt-4">
                   <div className="flex flex-row items-center gap-2">
                     <FaGlobe size={18} className="text-white"/>
                     {user?.website ? (
-                      <Link href={user.website} className="text-xs uppercase truncate" target="_blank" rel="noopener noreferrer">
+                      <a href={user.website} className="text-xs uppercase truncate" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                         {user.website}
-                      </Link>
+                      </a>
                     ) : (
                       <span className="text-xs uppercase text-white">None</span>
                     )}
@@ -119,9 +120,9 @@ export default function IndexPage() {
                   <div className="flex flex-row items-center gap-2">
                     <FaTwitter size={18} className="text-white"/>
                     {user?.twitter ? (
-                      <Link href={`https://twitter.com/${user.twitter}`} className="text-xs uppercase" target="_blank" rel="noopener noreferrer">
+                      <a href={`https://twitter.com/${user.twitter}`} className="text-xs uppercase" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>
                         {user.twitter}
-                      </Link>
+                      </a>
                     ) : (
                       <span className="text-xs uppercase text-white">None</span>
                     )}
@@ -138,7 +139,8 @@ export default function IndexPage() {
                   </div>
                     </div>
                 </CardFooter>
-            </Card>
+              </Card>
+            </Link>
           ))}
         </div>
       </Container>
