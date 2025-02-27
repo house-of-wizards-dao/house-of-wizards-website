@@ -25,9 +25,40 @@ import NextLink from "next/link";
 import { siteConfig } from "@/config/site";
 import { TwitterIcon, GithubIcon, DiscordIcon } from "@/components/icons";
 import { useTheme } from "next-themes";
+import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
+import { useEffect, useState } from 'react';
+
+// Add the same CDN URL constant used in your signup page
+const AVATAR_CDN_URL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/avatars/";
 
 export const Navbar = () => {
   const { theme } = useTheme();
+  const user = useUser();
+  const supabase = useSupabaseClient();
+  const [avatar, setAvatar] = useState(null);
+  
+  // Fetch the user's avatar from the profiles table
+  useEffect(() => {
+    const fetchUserAvatar = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        
+        if (!error && data && data.avatar_url) {
+          setAvatar(data.avatar_url);
+        }
+      }
+    };
+    
+    fetchUserAvatar();
+  }, [user, supabase]);
+
+  // Add this console log to check if user data is available
+  console.log("User data:", user);
+  console.log("User metadata:", user?.user_metadata);
 
   return (
     <NextUINavbar className="sm:p-8 p-4" maxWidth="xl" position="static">
@@ -149,6 +180,23 @@ export const Navbar = () => {
           <Link isExternal href="https://discord.gg/forgottenrunes" title="Discord">
             <DiscordIcon className="text-white hover:text-[#9564b4]" />
           </Link>
+          {user && (
+            <NextLink href="/signup" title="Your Profile">
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#9564b4] hover:border-white transition-colors">
+                {avatar ? (
+                  <img
+                    src={`${AVATAR_CDN_URL}${avatar}`}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-[#9564b4] flex items-center justify-center text-white font-bold">
+                    {user.user_metadata?.name ? user.user_metadata.name.charAt(0).toUpperCase() : 'U'}
+                  </div>
+                )}
+              </div>
+            </NextLink>
+          )}
         </NavbarItem>
       </NavbarContent>
 

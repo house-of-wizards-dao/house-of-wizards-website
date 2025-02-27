@@ -33,7 +33,7 @@ export default function DefaultLayout({
           </div> */}
           <div className="flex flex-col items-center sm:w-[700px] w-full">
             <p className="text-xs text-white uppercase">All right reserved. 2024.</p>
-            <p className="text-xs text-white uppercase">Forgotten Runes</p>
+            <p className="text-xs text-white uppercase">HoW</p>
           </div>
         </div>
       </footer>
