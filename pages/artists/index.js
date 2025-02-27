@@ -52,7 +52,7 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout>
-      <Container className="flex flex-col max-w-8xl mx-auto">
+      <Container className="flex flex-col max-w-8xl mx-auto h-screen">
         <div className="px-4">
         <h3 className="text-violet font-atirose sm:text-7xl text-6xl text-center sm:mb-6  mb-4">Forgotten Artist</h3>
         <p className="font-quad sm:text-sm text-xs text-grey text-center uppercase">Seeking a talented artist to bring our creative vision to life?</p>

@@ -5,7 +5,7 @@ import { Link } from "@nextui-org/link";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <section className="flex sm:min-h-screen flex-col items-center justify-center gap-4">
+      <section className="flex sm:min-h-screen flex-col items-center gap-4">
           <h1 className="sm:text-7xl text-6xl text-center font-atirose text-[#9564b4]">Ministry of Art</h1>
           <div className="w-full my-4">
           <svg 

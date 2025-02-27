@@ -4,7 +4,7 @@ import DefaultLayout from "@/layouts/default";
 export default function DocsPage() {
   return (
     <DefaultLayout>
-      <div className="flex flex-col items-center justify-center gap-4 max-w-8xl">
+      <div className="flex flex-col items-center gap-4 max-w-8xl h-screen">
           <h1 className="sm:text-7xl text-6xl font-atirose text-violet">Community</h1>
 
           <div className="w-full my-4">
