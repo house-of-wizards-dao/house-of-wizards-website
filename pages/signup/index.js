@@ -39,6 +39,8 @@ export default function IndexPage() {
   const router = useRouter();
 
   const [isVisible, setIsVisible] = React.useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editableName, setEditableName] = useState(user?.user_metadata?.name || user?.email?.split('@')[0] || '');
 
   const toggleVisibility = () => setIsVisible(!isVisible);
 
@@ -79,6 +81,7 @@ export default function IndexPage() {
   useEffect(() => {
     if(user) {
       getFiles();
+      setEditableName(user.user_metadata?.name || user.email?.split('@')[0] || '');
       async function refreshUserData() {
         try {
           const { data: { user: freshUser } } = await supabase.auth.getUser();
@@ -523,6 +526,31 @@ export default function IndexPage() {
     }
   }
 
+  async function updateUserName() {
+    try {
+      // Update the user metadata in auth
+      const { error: authError } = await supabase.auth.updateUser({
+        data: { name: editableName }
+      });
+      
+      if (authError) throw authError;
+      
+      // Also update the name in the profiles table
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .update({ name: editableName })
+        .eq('id', user.id);
+      
+      if (profileError) throw profileError;
+      
+      alert("Name updated successfully");
+      setIsEditingName(false);
+    } catch (error) {
+      console.error("Error updating name:", error);
+      alert("Failed to update name: " + error.message);
+    }
+  }
+
   return (
     <DefaultLayout>
       <Container className="flex flex-col items-center justify-center gap-6 h-screen">
@@ -674,16 +702,43 @@ export default function IndexPage() {
                       />
                       <button
                         onClick={() => fileInputRef.current.click()}
-                        className="absolute bottom-0 right-0  rounded-full p-1"
+                        className="absolute bottom-0 right-0 bg-[#9564b4] rounded-full p-1 shadow-md hover:bg-purple-700 transition-colors"
                       >
-                        <PencilIcon className="h-4 w-4 text-background" />
+                        <PencilIcon className="h-4 w-4 text-white" />
                       </button>
                     </div>
                   )}
                 </div>
                 <div className="flex flex-col justify-center">
-                  <h1 className="font-atirose text-[#9564b4] sm:text-5xl text-3xl">Your Profile</h1>
-                  <p className="text-grey  text-sm sm:block hidden">{user.email} {user.name}</p>
+                  {isEditingName ? (
+                    <div className="flex flex-col sm:w-[400px] w-full">
+                      <Input
+                        className="w-full"
+                        type="text"
+                        label="Your Name"
+                        placeholder="Enter your name"
+                        value={editableName}
+                        onChange={(e) => setEditableName(e.target.value)}
+                      />
+                      <div className="flex justify-end mt-2 gap-2">
+                        <Button color="success" onClick={updateUserName}>Save</Button>
+                        <Button color="danger" onClick={() => setIsEditingName(false)}>Cancel</Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center">
+                      <h1 className="font-atirose text-[#9564b4] sm:text-5xl text-3xl">
+                        {user.user_metadata?.name || user.email?.split('@')[0]}'s Profile
+                      </h1>
+                      <button 
+                        onClick={() => setIsEditingName(true)} 
+                        className="ml-2 bg-transparent border-none cursor-pointer"
+                      >
+                        <PencilIcon className="h-5 w-5 text-[#9564b4]"/>
+                      </button>
+                    </div>
+                  )}
+                  <p className="text-grey text-sm sm:block hidden">{user.email}</p>
                 </div>
               </div>
 
