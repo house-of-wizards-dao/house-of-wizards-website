@@ -170,7 +170,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
-      <div ref={modalRef} className="bg-background border-1.5 border-darkviolet sm:p-6 p-4 rounded-xl max-w-[90vw] w-fit relative">
+      <div ref={modalRef} className="bg-background border-1.5 border-darkviolet sm:p-6 p-3 rounded-xl max-w-[95vw] w-fit relative">
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
             {!isVideo && (
@@ -180,7 +180,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
                   className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
                   aria-label="Zoom in"
                 >
-                  <BiZoomIn size={24} />
+                  <BiZoomIn size={22} />
                 </button>
                 {isZoomed && (
                   <button
@@ -188,7 +188,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
                     className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
                     aria-label="Zoom out"
                   >
-                    <BiZoomOut size={24} />
+                    <BiZoomOut size={22} />
                   </button>
                 )}
               </>
@@ -196,7 +196,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
           </div>
           <IoIosCloseCircle 
             onClick={onClose}
-            className="sm:text-2xl text-md text-[#9564b4] cursor-pointer hover:text-[#7d4d9c] transition-colors" 
+            className="sm:text-2xl text-xl text-[#9564b4] cursor-pointer hover:text-[#7d4d9c] transition-colors" 
           />
         </div>
         
@@ -205,7 +205,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
             <video 
               controls 
               className="w-full aspect-video object-contain rounded-xl"
-              style={{ maxHeight: isZoomed ? '90vh' : '70vh' }}
+              style={{ maxHeight: isZoomed ? '85vh' : '65vh' }}
               preload="metadata"
             >
               <source src={getFileUrl(item.userId, item.name)} type={item.fileType || "video/mp4"} />
@@ -231,7 +231,7 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
                 alt={item.description || "Gallery image"}
                 width={1000}
                 height={800}
-                className={`w-auto rounded-xl transition-all duration-300 ${isZoomed ? 'max-h-[80vh]' : 'max-h-[70vh]'}`}
+                className={`w-auto rounded-xl transition-all duration-300 ${isZoomed ? 'max-h-[75vh]' : 'max-h-[65vh]'}`}
                 style={{ 
                   objectFit: 'contain',
                   pointerEvents: isZoomed ? 'none' : 'auto'
@@ -245,9 +245,9 @@ const ImageModal = React.memo(({ item, onClose, isOpen }) => {
             </div>
           )}
         </div>
-        <div className="mt-4 text-center flex items-center flex-col">
-          <p className="text-foreground font-medium sm:text-lg text-md font-pop mb-1 w-[80%] uppercase">{item.description}</p>
-          <p className="text-[#9564b4] font-atirose text-2xl">{item.userName}</p>
+        <div className="mt-3 text-center flex items-center flex-col">
+          <p className="text-foreground font-medium sm:text-lg text-sm font-pop mb-1 w-full px-2 uppercase line-clamp-2">{item.description}</p>
+          <p className="text-[#9564b4] font-atirose text-xl sm:text-2xl">{item.userName}</p>
         </div>
       </div>
     </div>
@@ -272,7 +272,7 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => {
     >
       {isVideo ? (
         <video 
-          className="w-full aspect-square object-cover rounded-xl p-4"
+          className="w-full aspect-square object-cover rounded-xl p-3 sm:p-4"
           preload="none"
           poster={`${CDNURL}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
         >
@@ -284,7 +284,7 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => {
           alt={item.description || "Gallery image"}
           width={150}
           height={150}
-          className="w-full aspect-square object-cover rounded-xl p-4"
+          className="w-full aspect-square object-cover rounded-xl p-3 sm:p-4"
           quality={40}
           unoptimized={item.name.toLowerCase().endsWith('.gif')}
           placeholder="blur"
@@ -294,12 +294,12 @@ const GalleryItem = React.memo(({ item, onClick, priority }) => {
         />
       )}
       
-      <div className="mt-3 w-full border-t-1 border-darkviolet p-4">
-        <p className="text-foreground sm:text-md text-sm text-center truncate uppercase">
+      <div className="mt-2 w-full border-t-1 border-darkviolet p-2 sm:p-4">
+        <p className="text-foreground sm:text-md text-xs text-center truncate uppercase">
           {item.description}
         </p>
-        <div className="text-foreground sm:text-md text-sm truncate text-center">
-          <span className="text-violet font-atirose text-lg">{item.userName}</span>
+        <div className="text-foreground sm:text-md text-xs truncate text-center">
+          <span className="text-violet font-atirose text-base sm:text-lg">{item.userName}</span>
         </div>
       </div>
     </div>
@@ -433,11 +433,11 @@ function GalleryPage() {
   return (
     <DefaultLayout>
       <Container className="flex flex-col sm:gap-6 gap-3 justify-center items-center max-w-8xl mx-auto">
-        <h1 className="font-atirose text-[#9564b4] sm:text-7xl text-6xl">
+        <h1 className="font-atirose text-[#9564b4] text-5xl sm:text-7xl">
           Gallery
         </h1>
 
-        <div className="w-full my-4">
+        <div className="w-full my-3 sm:my-4">
           <svg 
             xmlns="http://www.w3.org/2000/svg" 
             width="100%" 
@@ -467,10 +467,10 @@ function GalleryPage() {
           </svg>
         </div>
 
-        <div className="max-w-7xl">
-          <div className="mb-6 px-4">
+        <div className="max-w-7xl w-full">
+          <div className="mb-4 sm:mb-6 px-3 sm:px-4">
             <select 
-              className="cursor-pointer bg-background text-foreground rounded-md sm:text-md text-sm p-2"
+              className="cursor-pointer bg-background text-foreground rounded-md text-sm sm:text-md p-2 w-full sm:w-auto"
               value={selectedArtist || ''}
               onChange={(e) => {
                 startTransition(() => {
@@ -486,7 +486,7 @@ function GalleryPage() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 w-full px-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 w-full px-2 sm:px-4">
             {currentItems.map((item, index) => (
               <GalleryItem
                 key={`${item.userId}-${item.name}`}
@@ -498,35 +498,50 @@ function GalleryPage() {
           </div>
 
           {pageCount > 1 && (
-            <div className="flex justify-center mt-6 gap-2">
+            <div className="flex justify-center mt-4 sm:mt-6 gap-1 sm:gap-2 flex-wrap px-2">
               <Button
-                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                className="px-2 sm:px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
                 onClick={() => startTransition(() => setCurrentPage(prev => Math.max(1, prev - 1)))}
                 disabled={currentPage === 1}
               >
-                <IoIosArrowRoundBack className="text-2xl"/>
+                <IoIosArrowRoundBack className="text-xl sm:text-2xl"/>
               </Button>
               
-              {Array.from({ length: pageCount }, (_, i) => (
-                <Button
-                  key={i}
-                  onClick={() => startTransition(() => setCurrentPage(i + 1))}
-                  className={`px-3 py-1 rounded-full ${
-                    currentPage === i + 1 
-                      ? 'bg-[#9564b4] text-white' 
-                      : 'bg-black text-white hover:bg-[#333333]'
-                  }`}
-                >
-                  {i + 1}
-                </Button>
-              ))}
+              {Array.from({ length: Math.min(pageCount, 7) }, (_, i) => {
+                // Show first 3, last 3, and current page with neighbors
+                const showPageNumbers = pageCount <= 7;
+                const isFirstPages = i < 3;
+                const isLastPages = i >= pageCount - 3;
+                const isCurrentPageArea = Math.abs(currentPage - (i + 1)) <= 1;
+                
+                if (showPageNumbers || isFirstPages || isLastPages || isCurrentPageArea) {
+                  return (
+                    <Button
+                      key={i}
+                      onClick={() => startTransition(() => setCurrentPage(i + 1))}
+                      className={`min-w-[32px] px-2 sm:px-3 py-1 rounded-full text-sm ${
+                        currentPage === i + 1 
+                          ? 'bg-[#9564b4] text-white' 
+                          : 'bg-black text-white hover:bg-[#333333]'
+                      }`}
+                    >
+                      {i + 1}
+                    </Button>
+                  );
+                } else if (i === 3 && pageCount > 7 && currentPage > 4) {
+                  return <span key="ellipsis1" className="px-2 py-1">...</span>;
+                } else if (i === pageCount - 4 && pageCount > 7 && currentPage < pageCount - 3) {
+                  return <span key="ellipsis2" className="px-2 py-1">...</span>;
+                }
+                return null;
+              }).filter(Boolean)}
               
               <Button
-                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                className="px-2 sm:px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
                 onClick={() => startTransition(() => setCurrentPage(prev => Math.min(pageCount, prev + 1)))}
                 disabled={currentPage === pageCount}
               >
-                <IoIosArrowRoundForward className="text-2xl"/>
+                <IoIosArrowRoundForward className="text-xl sm:text-2xl"/>
               </Button>
             </div>
           )}
