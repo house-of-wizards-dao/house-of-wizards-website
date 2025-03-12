@@ -340,14 +340,14 @@ const AdminPanel = () => {
   };
 
   const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    (user.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (user.email?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   const filteredContent = content.filter(item => {
     const matchesSearch = 
-      item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (item.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (item.userName?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
       (item.description && item.description.toLowerCase().includes(searchTerm.toLowerCase()));
     
     const matchesUser = selectedUser === 'all' || item.userId === selectedUser;
