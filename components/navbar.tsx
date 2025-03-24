@@ -155,7 +155,7 @@ export const Navbar = () => {
               <FaExternalLinkAlt />
             </NextLink>
           </NavbarItem>
-          <NavbarItem  className="text-sm text-gray-400">
+          {/*<NavbarItem  className="text-sm text-gray-400">
             <NextLink
               className="flex items-center gap-2 pointer-events-none"
               href="/auction"
@@ -165,7 +165,7 @@ export const Navbar = () => {
               Auction
               <FaExternalLinkAlt />
             </NextLink>
-          </NavbarItem>
+          </NavbarItem>*/}
         </div>
       </NavbarContent>
 
