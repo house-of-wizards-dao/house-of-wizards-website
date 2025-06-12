@@ -112,53 +112,57 @@ export default function IndexPage() {
 
   return (
     <DefaultLayout>
-      <div className="bg-[url('/img/banner.png')] h-[500px] bg-center" />
+      <div className="bg-[url('/img/banner.png')] h-[700px] bg-center bg-cover" />
 
-      <section className="p-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div className="space-y-6">
-            <h1 className="text-4xl font-atirose text-violet font-bold">
+      <section className="py-32 px-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+          <div className="space-y-10">
+            <h1 className="text-4xl md:text-5xl font-atirose text-violet font-bold leading-tight">
               The House of Wizards is a Forgotten Runes Community DAO.
             </h1>
-            <p className="text-gray-300 text-md">
-              The House of Wizards, comprised of Forgotten Runes token holders,
-              funds community proposals that support art, lore, development, and
-              other creative endeavors.
-            </p>
-            <p className="text-gray-300 text-md">
-              Looking for funding as a community member? Start by submitting a
-              proposal to bring your ideas to life. Interested in joining the
-              community? Visit forgotten.market to explore Forgotten Runes
-              collections.
-            </p>
-            <button
-              aria-label="Scroll to team section"
-              className="bg-violet text-sm text-white px-6 py-3 rounded-lg hover:bg-violet-600 transition-colors focus:outline-none focus:ring-2 focus:ring-violet focus:ring-offset-2 focus:ring-offset-gray-900"
+            <div className="space-y-6">
+              <p className="text-gray-300 text-base leading-relaxed">
+                The House of Wizards, comprised of Forgotten Runes token holders,
+                funds community proposals that support art, lore, development, and
+                other creative endeavors.
+              </p>
+              <p className="text-gray-300 text-base leading-relaxed">
+                Looking for funding as a community member? Start by submitting a
+                proposal to bring your ideas to life. Interested in joining the
+                community? Visit forgotten.market to explore Forgotten Runes
+                collections.
+              </p>
+            </div>
+            <div className="pt-6">
+              <button
+                aria-label="Scroll to team section"
+                className="bg-violet text-white px-8 py-3 rounded-full hover:bg-violet-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-violet focus:ring-opacity-50 font-medium shadow-lg hover:shadow-xl"
               onClick={() => {
                 document.getElementById("team-section")?.scrollIntoView({
                   behavior: "smooth",
                 });
               }}
             >
-              Meet the Team
-            </button>
+                Meet the Team
+              </button>
+            </div>
           </div>
-          <div className="relative h-96">
+          <div className="relative h-[600px]">
             <div className="absolute inset-0">
               {/* Replace with your actual hero image */}
-              <div className="bg-purple-100 rounded-lg h-full w-full" />
+              <div className="bg-gradient-to-br from-violet/20 to-purple-100/30 rounded-3xl h-full w-full backdrop-blur-sm shadow-2xl" />
             </div>
           </div>
         </div>
       </section>
 
-      <div className="bg-[#121212] p-8" id="team-section">
+      <div className="bg-[#121212] py-32 px-8" id="team-section">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto sm:mb-16 mb-0">
-            <h2 className="text-[#9564b4] text-6xl font-atirose mb-6">
+          <div className="text-center max-w-4xl mx-auto mb-20">
+            <h2 className="text-[#9564b4] text-5xl md:text-6xl font-atirose mb-10">
               Forgotten Council
             </h2>
-            <p className="text-gray-300 text-md">
+            <p className="text-gray-300 text-lg leading-relaxed">
               The Forgotten Council is the group of wizards and warriors holding
               the keys to the DAO multisig wallet, is responsible for
               facilitating governance - everything from running votes for new
@@ -167,19 +171,19 @@ export default function IndexPage() {
             </p>
           </div>
 
-          <div className="flex flex-row flex-wrap sm:gap-6 gap-3 justify-center">
+          <div className="flex flex-row flex-wrap gap-8 justify-center mt-16">
             {teamMembers.map((member, index) => (
-              <div key={index} className="w-[170px] sm:w-[190px]">
-                <div className="aspect-[3/4] mb-4">
+              <div key={index} className="w-[200px] sm:w-[220px] transform transition-all duration-300 hover:scale-105">
+                <div className="aspect-[3/4] mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <NextImage
                     alt={member.name}
-                    className="w-full h-full object-cover rounded-lg"
+                    className="w-full h-full object-cover"
                     height={253}
                     src={member.image}
                     width={190}
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <h3 className="text-xl font-atirose text-center text-violet">
                     {member.name}
                   </h3>
@@ -192,12 +196,25 @@ export default function IndexPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-center sm:py-[200px] py-[100px] sm:p-0 p-4">
-        <div className="max-w-5xl w-full mx-auto flex sm:flex-row flex-col-reverse sm:gap-14 gap-8 items-center">
+      <div className="flex items-center justify-center py-32 px-8">
+        <div className="max-w-6xl w-full mx-auto flex md:flex-row flex-col gap-20 items-center">
+          {/* Text Section */}
+          <div className="text-white space-y-8 w-full md:w-1/2">
+            <div>
+              <h2 className="text-5xl md:text-6xl font-atirose leading-tight">
+                Contact <i className="font-atirose text-[#9564b4]">Us</i>
+              </h2>
+            </div>
+            <p className="text-gray-400 text-base leading-relaxed">
+              It is very important for us to keep in touch with you, so we are
+              always ready to answer any question that interests you. Shoot!
+            </p>
+          </div>
+
           {/* Form Section */}
-          <div className="w-full max-w-md">
+          <div className="w-full md:w-1/2 max-w-lg">
             {submitStatus === "success" && (
-              <div className="mb-4 p-4 bg-green-900 border border-green-700 rounded-lg text-green-200">
+              <div className="mb-6 p-6 bg-green-900 border border-green-700 rounded-xl text-green-200 shadow-lg">
                 <p className="font-medium">Message sent successfully!</p>
                 <p className="text-sm mt-1">We'll get back to you soon.</p>
               </div>
@@ -211,12 +228,12 @@ export default function IndexPage() {
               />
             )}
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            <form className="space-y-8" onSubmit={handleSubmit}>
               <div>
                 <input
                   required
                   aria-label="Your name"
-                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+                  className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-all duration-300"
                   disabled={isSubmitting}
                   name="name"
                   placeholder="Your Name"
@@ -230,7 +247,7 @@ export default function IndexPage() {
                 <input
                   required
                   aria-label="Your email"
-                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors"
+                  className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-all duration-300"
                   disabled={isSubmitting}
                   name="email"
                   placeholder="Your Email"
@@ -244,7 +261,7 @@ export default function IndexPage() {
                 <textarea
                   required
                   aria-label="Your message"
-                  className="w-full bg-transparent border-b border-gray-700 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-colors resize-none"
+                  className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#9564b4] transition-all duration-300 resize-none"
                   disabled={isSubmitting}
                   name="message"
                   placeholder="Share your thoughts"
@@ -256,7 +273,7 @@ export default function IndexPage() {
 
               <button
                 aria-label="Send message"
-                className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-[#9564b4] hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-[#9564b4] hover:text-white transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl mt-8"
                 disabled={isSubmitting}
                 type="submit"
               >
@@ -270,19 +287,6 @@ export default function IndexPage() {
                 )}
               </button>
             </form>
-          </div>
-
-          {/* Text Section */}
-          <div className="text-white sm:space-y-16 space-y-8">
-            <div className="">
-              <h2 className="text-6xl font-atirose">
-                Contact <i className="font-atirose text-[#9564b4]">Us</i>
-              </h2>
-            </div>
-            <p className="text-gray-400 max-w-md">
-              It is very important for us to keep in touch with you, so we are
-              always ready to answer any question that interests you. Shoot!
-            </p>
           </div>
         </div>
       </div>

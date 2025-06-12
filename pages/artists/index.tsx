@@ -62,20 +62,22 @@ export default function IndexPage(): JSX.Element {
 
   return (
     <DefaultLayout>
-      <div className="flex flex-col mx-auto h-screen">
-        <div className="px-4">
-          <h3 className="text-violet font-atirose sm:text-7xl text-6xl text-center sm:mb-6 mb-4">
-            Forgotten Artist
+      <div className="flex flex-col mx-auto min-h-screen py-16">
+        <div className="px-4 mb-12">
+          <h3 className="text-violet font-atirose text-5xl md:text-6xl text-center mb-8">
+            Forgotten Artists
           </h3>
-          <p className="font-quad sm:text-sm text-xs text-grey text-center uppercase">
-            Seeking a talented artist to bring our creative vision to life?
-          </p>
-          <p className="font-quad sm:text-sm text-xs text-grey text-center uppercase">
-            Just browse below so you can pick one
-          </p>
+          <div className="max-w-2xl mx-auto space-y-2">
+            <p className="font-quad text-sm text-gray-400 text-center uppercase">
+              Seeking a talented artist to bring our creative vision to life?
+            </p>
+            <p className="font-quad text-sm text-gray-400 text-center uppercase">
+              Just browse below so you can pick one
+            </p>
+          </div>
         </div>
 
-        <div className="w-full my-4">
+        <div className="w-full mb-16">
           <svg
             aria-label="Decorative separator"
             className="w-full"
@@ -107,17 +109,17 @@ export default function IndexPage(): JSX.Element {
           </svg>
         </div>
 
-        <div className="flex flex-row justify-center flex-wrap sm:gap-6 gap-3 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 max-w-7xl mx-auto px-4 pb-16">
           {allUsers
             .filter((userProfile) => userProfile.role !== "admin")
             .map((userProfile) => (
               <Link key={userProfile.id} href={`/user/${userProfile.id}`}>
-                <Card className="rounded-md sm:w-[300px] sm:h-[450px] w-[195px] h-[350px] border border-darkviolet bg-transparent hover:scale-105 hover:border-violet cursor-pointer transition-transform duration-200">
-                  <CardBody className="p-0 border-b-1 border-darkviolet p-4">
+                <Card className="rounded-xl w-full h-full border border-darkviolet bg-transparent/50 backdrop-blur-sm hover:scale-[1.02] hover:border-violet hover:shadow-xl cursor-pointer transition-all duration-300">
+                  <CardBody className="p-0">
                     <Image
                       alt={`${userProfile.name || "User"}'s avatar`}
                       blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3C/svg%3E"
-                      className="w-full aspect-square object-cover rounded-lg"
+                      className="w-full aspect-square object-cover rounded-t-xl"
                       height={300}
                       placeholder="blur"
                       src={
@@ -129,76 +131,78 @@ export default function IndexPage(): JSX.Element {
                       width={300}
                     />
                   </CardBody>
-                  <CardFooter className="flex flex-col items-start p-4">
-                    <span className="text-[#A986D9] font-atirose sm:text-2xl text-xl truncate">
-                      {userProfile.name || "Anonymous"}
-                    </span>
-                    <p className="truncate text-xs uppercase w-[95%]">
-                      {userProfile.description || "No description available"}
-                    </p>
-                    <div className="flex flex-col w-full mt-4 space-y-1">
-                      <div className="flex flex-row items-center gap-2">
+                  <CardFooter className="flex flex-col items-start p-6 space-y-4">
+                    <div className="w-full">
+                      <h4 className="text-[#A986D9] font-atirose text-2xl truncate mb-2">
+                        {userProfile.name || "Anonymous"}
+                      </h4>
+                      <p className="text-gray-400 text-sm line-clamp-2">
+                        {userProfile.description || "No description available"}
+                      </p>
+                    </div>
+                    <div className="flex flex-col w-full space-y-2 pt-2 border-t border-darkviolet/50">
+                      <div className="flex flex-row items-center gap-3">
                         <FaGlobe
                           aria-hidden="true"
-                          className="text-white"
-                          size={18}
+                          className="text-gray-400"
+                          size={16}
                         />
                         {userProfile?.website ? (
                           <a
                             aria-label={`Visit ${userProfile.name || "user"}'s website`}
-                            className="text-xs uppercase truncate hover:underline"
+                            className="text-sm text-gray-300 truncate hover:text-violet transition-colors"
                             href={userProfile.website}
                             rel="noopener noreferrer"
                             target="_blank"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {userProfile.website}
+                            {userProfile.website.replace(/^https?:\/\//i, '')}
                           </a>
                         ) : (
-                          <span className="text-xs uppercase text-white">
-                            None
+                          <span className="text-sm text-gray-500">
+                            No website
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-row items-center gap-2">
+                      <div className="flex flex-row items-center gap-3">
                         <FaTwitter
                           aria-hidden="true"
-                          className="text-white"
-                          size={18}
+                          className="text-gray-400"
+                          size={16}
                         />
                         {userProfile?.twitter ? (
                           <a
                             aria-label={`Visit ${userProfile.name || "user"}'s Twitter profile`}
-                            className="text-xs uppercase hover:underline"
+                            className="text-sm text-gray-300 hover:text-violet transition-colors"
                             href={`https://twitter.com/${userProfile.twitter}`}
                             rel="noopener noreferrer"
                             target="_blank"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {userProfile.twitter}
+                            @{userProfile.twitter}
                           </a>
                         ) : (
-                          <span className="text-xs uppercase text-white">
-                            None
+                          <span className="text-sm text-gray-500">
+                            No Twitter
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-row items-center gap-2">
+                      <div className="flex flex-row items-center gap-3">
                         <FaDiscord
                           aria-hidden="true"
-                          className="text-white"
-                          size={18}
+                          className="text-gray-400"
+                          size={16}
                         />
                         {userProfile?.discord ? (
                           <span
-                            className="text-xs uppercase"
+                            className="text-sm text-gray-300"
                             title={`Discord: ${userProfile.discord}`}
                           >
                             {userProfile.discord}
                           </span>
                         ) : (
-                          <span className="text-xs uppercase text-white">
-                            None
+                          <span className="text-sm text-gray-500">
+                            No Discord
                           </span>
                         )}
                       </div>

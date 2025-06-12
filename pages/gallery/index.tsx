@@ -351,49 +351,52 @@ const GalleryItem = React.memo<GalleryItemProps>(
     return (
       <div
         aria-label={`View artwork: ${item.description || "Untitled"} by ${item.userName}`}
-        className="hover:scale-105 hover:border-violet cursor-pointer flex flex-col justify-between items-center border-1.5 border-darkviolet rounded-2xl transition-all duration-200"
+        className="group relative overflow-hidden hover:scale-[1.02] cursor-pointer border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl transition-all duration-300 hover:border-violet hover:shadow-xl"
         role="button"
         tabIndex={0}
         onClick={handleClick}
         onKeyDown={handleKeyDown}
       >
-        {isVideo ? (
-          <video
-            className="w-full aspect-square object-cover rounded-xl p-3 sm:p-4"
-            poster={`${CDNURL}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
-            preload="none"
-          >
-            <source
-              src={getFileUrl(item.userId, item.name)}
-              type={item.fileType || "video/mp4"}
+        <div className="relative aspect-square overflow-hidden">
+          {isVideo ? (
+            <video
+              className="w-full h-full object-cover"
+              poster={`${CDNURL}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
+              preload="none"
+            >
+              <source
+                src={getFileUrl(item.userId, item.name)}
+                type={item.fileType || "video/mp4"}
+              />
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <Image
+              alt={item.description || "Gallery image"}
+              blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+              height={300}
+              loading={priority ? "eager" : "lazy"}
+              placeholder="blur"
+              priority={priority}
+              quality={60}
+              src={getFileUrl(item.userId, item.name, true)}
+              unoptimized
+              width={300}
             />
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <Image
-            alt={item.description || "Gallery image"}
-            blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3Cpath d='M-1,1 l2,-2 M0,10 l10,-10 M9,11 l2,-2' stroke='%23777777' stroke-width='0.5'/%3E%3C/svg%3E"
-            className="w-full aspect-square object-cover rounded-xl p-3 sm:p-4"
-            height={150}
-            loading={priority ? "eager" : "lazy"}
-            placeholder="blur"
-            priority={priority}
-            quality={40}
-            src={getFileUrl(item.userId, item.name, true)}
-            unoptimized
-            width={150}
-          />
-        )}
+          )}
+          
+          {/* Overlay gradient */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
 
-        <div className="mt-2 w-full border-t-1 border-darkviolet p-2 sm:p-4">
-          <p className="text-foreground sm:text-md text-xs text-center truncate uppercase">
+        <div className="p-4 space-y-1">
+          <p className="text-gray-300 text-sm truncate">
             {item.description || "Untitled"}
           </p>
-          <div className="text-foreground sm:text-md text-xs truncate text-center">
-            <span className="text-violet font-atirose text-base sm:text-lg">
-              {item.userName || "Anonymous"}
-            </span>
-          </div>
+          <p className="text-violet font-atirose text-lg">
+            {item.userName || "Anonymous"}
+          </p>
         </div>
       </div>
     );
@@ -562,12 +565,17 @@ function GalleryPage(): JSX.Element {
 
   return (
     <DefaultLayout>
-      <div className="flex flex-col sm:gap-6 gap-3 justify-center items-center mx-auto px-4">
-        <h1 className="font-atirose text-[#9564b4] text-5xl sm:text-7xl">
-          Gallery
-        </h1>
+      <div className="flex flex-col justify-center items-center mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h1 className="font-atirose text-[#9564b4] text-5xl md:text-6xl mb-4">
+            Gallery
+          </h1>
+          <p className="text-gray-400 text-base max-w-2xl mx-auto">
+            Explore the creative works from our talented community of artists
+          </p>
+        </div>
 
-        <div className="w-full my-3 sm:my-4">
+        <div className="w-full mb-12">
           <svg
             aria-label="Decorative separator"
             className="w-full"
@@ -600,26 +608,31 @@ function GalleryPage(): JSX.Element {
         </div>
 
         <div className="max-w-7xl w-full">
-          <div className="mb-4 sm:mb-6 px-3 sm:px-4">
-            <label className="sr-only" htmlFor="artist-filter">
-              Filter by artist
-            </label>
-            <select
-              className="cursor-pointer bg-background text-foreground rounded-md text-sm sm:text-md p-2 w-full sm:w-auto border border-darkviolet"
-              id="artist-filter"
-              value={selectedArtist || ""}
-              onChange={handleArtistChange}
-            >
-              <option value="">All Artists</option>
-              {allArtists.map((artist) => (
-                <option key={artist} value={artist}>
-                  {artist}
-                </option>
-              ))}
-            </select>
+          <div className="mb-8 px-4">
+            <div className="flex justify-between items-center">
+              <label className="sr-only" htmlFor="artist-filter">
+                Filter by artist
+              </label>
+              <select
+                className="cursor-pointer bg-background/50 backdrop-blur-sm text-foreground rounded-full text-sm px-4 py-2 border border-darkviolet hover:border-violet transition-colors"
+                id="artist-filter"
+                value={selectedArtist || ""}
+                onChange={handleArtistChange}
+              >
+                <option value="">All Artists</option>
+                {allArtists.map((artist) => (
+                  <option key={artist} value={artist}>
+                    {artist}
+                  </option>
+                ))}
+              </select>
+              <div className="text-sm text-gray-400">
+                {filteredContent.length} {filteredContent.length === 1 ? 'artwork' : 'artworks'}
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4 w-full px-2 sm:px-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-4">
             {currentItems.map((item, index) => (
               <GalleryItem
                 key={`${item.userId}-${item.name}`}
@@ -631,14 +644,14 @@ function GalleryPage(): JSX.Element {
           </div>
 
           {pageCount > 1 && (
-            <div className="flex justify-center mt-4 sm:mt-6 gap-1 sm:gap-2 flex-wrap px-2">
+            <div className="flex justify-center mt-12 gap-2 flex-wrap px-4">
               <Button
                 aria-label="Previous page"
-                className="px-2 sm:px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                className="px-3 py-2 rounded-full bg-transparent border border-darkviolet text-white disabled:opacity-50 hover:border-violet hover:bg-violet/20 transition-all"
                 disabled={currentPage === 1}
                 onClick={handlePrevPage}
               >
-                <IoIosArrowRoundBack className="text-xl sm:text-2xl" />
+                <IoIosArrowRoundBack className="text-xl" />
               </Button>
 
               {Array.from({ length: Math.min(pageCount, 7) }, (_, i) => {
@@ -659,10 +672,10 @@ function GalleryPage(): JSX.Element {
                       key={i}
                       aria-current={currentPage === i + 1 ? "page" : undefined}
                       aria-label={`Go to page ${i + 1}`}
-                      className={`min-w-[32px] px-2 sm:px-3 py-1 rounded-full text-sm ${
+                      className={`min-w-[40px] px-3 py-2 rounded-full text-sm transition-all ${
                         currentPage === i + 1
-                          ? "bg-[#9564b4] text-white"
-                          : "bg-black text-white hover:bg-[#333333]"
+                          ? "bg-violet text-white"
+                          : "bg-transparent border border-darkviolet text-white hover:border-violet hover:bg-violet/20"
                       }`}
                       onClick={() => handlePageClick(i + 1)}
                     >
@@ -700,11 +713,11 @@ function GalleryPage(): JSX.Element {
 
               <Button
                 aria-label="Next page"
-                className="px-2 sm:px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                className="px-3 py-2 rounded-full bg-transparent border border-darkviolet text-white disabled:opacity-50 hover:border-violet hover:bg-violet/20 transition-all"
                 disabled={currentPage === pageCount}
                 onClick={handleNextPage}
               >
-                <IoIosArrowRoundForward className="text-xl sm:text-2xl" />
+                <IoIosArrowRoundForward className="text-xl" />
               </Button>
             </div>
           )}
