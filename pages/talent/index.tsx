@@ -1,11 +1,15 @@
-import { FC, useState, useMemo } from "react";
+import { FC, useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaDiscord, FaGlobe, FaTwitter } from "react-icons/fa";
+import { FaDiscord, FaGlobe, FaTwitter, FaCamera } from "react-icons/fa";
+import { IoClose } from "react-icons/io5";
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { Spinner } from "@nextui-org/spinner";
 
 import DefaultLayout from "@/layouts/default";
 
 interface BioProps {
+  id?: string;
   name: string;
   twitter: string;
   discord: string;
@@ -13,6 +17,16 @@ interface BioProps {
   skillset: string;
   site?: string;
   imageName?: string;
+  avatar_url?: string;
+  user_id?: string;
+}
+
+const AVATAR_STORAGE_URL = "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/talent-avatars/";
+
+interface AddTalentModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onTalentAdded: () => void;
 }
 
 const Bio: FC<BioProps> = ({
@@ -23,106 +37,102 @@ const Bio: FC<BioProps> = ({
   skillset,
   site = "",
   imageName = "",
+  avatar_url = "",
 }) => {
   return (
-    <div className="border-1 border-darkviolet bg-transparent sm:w-[49%] w-full items-center justify-start gap-3 flex flex-row p-2 rounded-xl">
-      {/* Image Section */}
-      <div className="basis-1/4">
-        <Image
-          alt={`${name}'s avatar`}
-          className="w-full rounded-xl"
-          height={120}
-          src={`/img/talent/${imageName || `${name}.png`}`}
-          width={120}
-        />
-      </div>
-
-      {/* Bio Details */}
-      <div className="basis-3/4">
-        <div>
-          {/* Name and Focus */}
-          <div className="flex flex-row gap-3 items-center">
-            <div className="text-xs">{name}</div>
-            <div className="bg-[#9564b4] truncate text-sm text-center px-2 rounded-full border-4 border-[#3b2747]">
-              {focus}
-            </div>
-          </div>
-          {/* Skillset */}
-          <div className="text-xs w-[300px] truncate hover:text-clip ">
-            {skillset}
+    <div className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+      <div className="flex flex-col sm:flex-row p-6 gap-4">
+        {/* Image Section */}
+        <div className="flex-shrink-0">
+          <div className="relative w-24 h-24 sm:w-28 sm:h-28 mx-auto sm:mx-0">
+            <Image
+              alt={`${name}'s avatar`}
+              className="rounded-xl object-cover w-full h-full"
+              height={112}
+              src={avatar_url ? `${AVATAR_STORAGE_URL}${avatar_url}` : `/img/talent/${imageName || `${name}.png`}`}
+              width={112}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = `/img/talent/${name}.png`;
+                target.onerror = () => {
+                  target.src = '/img/logo.png'; // fallback to logo
+                };
+              }}
+            />
+            {/* Gradient overlay on hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl" />
           </div>
         </div>
 
-        {/* Links Section */}
-        <div className="mt-4">
-          {/* Website */}
-          {site ? (
-            <Link href={site} rel="noopener noreferrer" target="_blank">
-              <div className="text-xs flex flex-row items-center gap-1">
-                <div>
-                  <FaGlobe />
-                </div>
-                <div>{site}</div>
-              </div>
-            </Link>
-          ) : (
-            <div className="text-xs flex flex-row items-center gap-1">
-              <div>
-                <FaGlobe />
-              </div>
-              <div className="text-xs text-gray-400">
-                No Portfolio available
-              </div>
+        {/* Bio Details */}
+        <div className="flex-1 min-w-0">
+          <div className="mb-3">
+            {/* Name and Focus */}
+            <div className="flex flex-col sm:flex-row gap-2 sm:items-center mb-2">
+              <h3 className="text-lg font-medium text-white">{name}</h3>
+              <span className="inline-block bg-violet/20 border border-violet text-violet text-xs px-3 py-1 rounded-full">
+                {focus}
+              </span>
             </div>
-          )}
+            {/* Skillset */}
+            <p className="text-sm text-gray-300 line-clamp-2">
+              {skillset}
+            </p>
+          </div>
 
-          {/* Social Links */}
-          <div className="flex flex-col gap-1 mt-1">
+          {/* Links Section */}
+          <div className="flex flex-wrap gap-3">
+            {/* Website */}
+            {site && (
+              <Link
+                href={site}
+                rel="noopener noreferrer"
+                target="_blank"
+                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
+              >
+                <FaGlobe size={14} />
+                <span className="text-sm">Portfolio</span>
+              </Link>
+            )}
+
             {/* Twitter */}
-            {twitter ? (
+            {twitter && (
               <Link
                 href={`https://twitter.com/${twitter}`}
                 rel="noopener noreferrer"
                 target="_blank"
+                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
               >
-                <div className="text-xs flex flex-row items-center gap-1">
-                  <div>
-                    <FaTwitter />
-                  </div>
-                  <div>{twitter}</div>
-                </div>
+                <FaTwitter size={14} />
+                <span className="text-sm">@{twitter}</span>
               </Link>
-            ) : (
-              <div className="text-xs flex flex-row items-center gap-1">
-                <div>
-                  <FaTwitter />
-                </div>
-                <div className="text-xs text-gray-400">
-                  No Twitter profile available
-                </div>
-              </div>
             )}
 
             {/* Discord */}
-            {discord ? (
-              <div
-                className="text-xs flex flex-row items-center gap-1 cursor-pointer"
-                onClick={() => navigator.clipboard.writeText(discord)}
+            {discord && (
+              <button
+                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors group"
+                title="Click to copy Discord handle"
+                onClick={(e) => {
+                  navigator.clipboard.writeText(discord);
+                  // Show a temporary "Copied!" message
+                  const button = e.currentTarget as HTMLButtonElement;
+                  const originalText = button.querySelector('span:last-child')?.textContent;
+                  const span = button.querySelector('span:last-child');
+                  if (span) {
+                    span.textContent = 'Copied!';
+                    span.classList.add('opacity-100');
+                    setTimeout(() => {
+                      span.textContent = originalText || '(click to copy)';
+                      span.classList.remove('opacity-100');
+                    }, 2000);
+                  }
+                }}
               >
-                <div>
-                  <FaDiscord />
-                </div>
-                <div>{discord}</div>
-              </div>
-            ) : (
-              <div className="text-xs flex flex-row items-center gap-1">
-                <div>
-                  <FaDiscord />
-                </div>
-                <div className="text-xs text-gray-400">
-                  No Discord handle available
-                </div>
-              </div>
+                <FaDiscord size={14} />
+                <span className="text-sm">{discord}</span>
+                <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">(click to copy)</span>
+              </button>
             )}
           </div>
         </div>
@@ -131,10 +141,314 @@ const Bio: FC<BioProps> = ({
   );
 };
 
+// Add Talent Modal Component
+const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdded }) => {
+  const [formData, setFormData] = useState<Omit<BioProps, 'id' | 'user_id'>>({
+    name: "",
+    twitter: "",
+    discord: "",
+    focus: "Developer",
+    skillset: "",
+    site: "",
+  });
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string>("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  
+  const supabase = useSupabaseClient();
+  const user = useUser();
+  
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError("Please select an image file");
+        return;
+      }
+      
+      // Validate file size (5MB limit)
+      if (file.size > 5 * 1024 * 1024) {
+        setError("Image size must be less than 5MB");
+        return;
+      }
+      
+      setAvatarFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    
+    if (!user) {
+      setError("You must be logged in to add yourself to the talent board");
+      return;
+    }
+    
+    if (!formData.name || !formData.skillset || !formData.focus) {
+      setError("Please fill in all required fields");
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      let avatar_url = "";
+      
+      // Upload avatar if provided
+      if (avatarFile) {
+        try {
+          const fileExt = avatarFile.name.split('.').pop();
+          const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+          
+          const { error: uploadError } = await supabase.storage
+            .from('talent-avatars')
+            .upload(fileName, avatarFile, {
+              cacheControl: '3600',
+              upsert: false
+            });
+            
+          if (uploadError) {
+            console.error("Avatar upload error:", uploadError);
+            // Continue without avatar instead of throwing error
+            setError("Avatar upload failed. Profile will be created without avatar.");
+          } else {
+            avatar_url = fileName;
+          }
+        } catch (uploadErr) {
+          console.error("Avatar upload exception:", uploadErr);
+          // Continue without avatar
+          setError("Avatar upload failed. Profile will be created without avatar.");
+        }
+      }
+      
+      const { error: insertError } = await supabase
+        .from("talents")
+        .insert({
+          ...formData,
+          avatar_url,
+          user_id: user.id,
+        });
+        
+      if (insertError) {
+        console.error("Insert error:", insertError);
+        throw insertError;
+      }
+      
+      // Reset form
+      setFormData({
+        name: "",
+        twitter: "",
+        discord: "",
+        focus: "Developer",
+        skillset: "",
+        site: "",
+      });
+      setAvatarFile(null);
+      setAvatarPreview("");
+      
+      onTalentAdded();
+      onClose();
+    } catch (err: any) {
+      setError(err.message || "Failed to add talent. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-background border border-darkviolet rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-darkviolet">
+          <h2 className="text-2xl font-atirose text-violet">Add Yourself to the Talent Board</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <IoClose size={24} />
+          </button>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-88px)]">
+          {error && (
+            <div className="bg-red-900/20 border border-red-600 text-red-400 p-4 rounded-lg">
+              {error}
+            </div>
+          )}
+          
+          {/* Avatar Upload */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="relative">
+              <div className="w-32 h-32 rounded-xl overflow-hidden bg-background/50 border-2 border-dashed border-darkviolet flex items-center justify-center">
+                {avatarPreview ? (
+                  <Image
+                    src={avatarPreview}
+                    alt="Avatar preview"
+                    className="w-full h-full object-cover"
+                    width={128}
+                    height={128}
+                  />
+                ) : (
+                  <div className="text-center">
+                    <FaCamera className="mx-auto text-gray-400 text-2xl mb-2" />
+                    <p className="text-xs text-gray-400">Upload Avatar</p>
+                  </div>
+                )}
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                title="Choose avatar image"
+              />
+            </div>
+            <p className="text-xs text-gray-400">Click to upload avatar (optional, max 5MB)</p>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Name <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+              placeholder="Your name or handle"
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Focus Area <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.focus}
+              onChange={(e) => setFormData({ ...formData, focus: e.target.value })}
+              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet transition-colors"
+              required
+            >
+              <option value="Developer">Developer</option>
+              <option value="Artist">Artist</option>
+              <option value="Writer">Writer</option>
+              <option value="Project Manager">Project Manager</option>
+              <option value="Musician + Dev">Musician + Dev</option>
+              <option value="Filmmaker">Filmmaker</option>
+              <option value="Biz Dev">Biz Dev</option>
+            </select>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Skills & Expertise <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              value={formData.skillset}
+              onChange={(e) => setFormData({ ...formData, skillset: e.target.value })}
+              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors resize-none"
+              placeholder="Describe your skills and what you can offer..."
+              rows={3}
+              required
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Portfolio/Website
+            </label>
+            <input
+              type="url"
+              value={formData.site}
+              onChange={(e) => setFormData({ ...formData, site: e.target.value })}
+              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+              placeholder="https://..."
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Twitter Handle
+              </label>
+              <input
+                type="text"
+                value={formData.twitter}
+                onChange={(e) => setFormData({ ...formData, twitter: e.target.value.replace('@', '') })}
+                className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+                placeholder="username (without @)"
+              />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Discord Handle
+              </label>
+              <input
+                type="text"
+                value={formData.discord}
+                onChange={(e) => setFormData({ ...formData, discord: e.target.value })}
+                className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+                placeholder="username#0000"
+              />
+            </div>
+          </div>
+          
+          <div className="flex gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="flex-1 bg-violet hover:bg-violet-600 text-white px-6 py-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isSubmitting ? (
+                <>
+                  <Spinner size="sm" />
+                  <span>Adding...</span>
+                </>
+              ) : (
+                "Add to Talent Board"
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 rounded-full border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 transition-all duration-300"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 const Talent: FC = () => {
   const [selectedFocus, setSelectedFocus] = useState<string>("All");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [talents, setTalents] = useState<BioProps[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showLoginMessage, setShowLoginMessage] = useState(false);
+  
+  const supabase = useSupabaseClient();
+  const user = useUser();
 
-  const talents: BioProps[] = [
+  // Static talents data - commented out to show only database entries
+  // Uncomment if you want to show both static and database talents
+  /*
+  const staticTalents: BioProps[] = [
     {
       name: "swiftpaw",
       twitter: "thomas_djb",
@@ -468,6 +782,32 @@ const Talent: FC = () => {
     },
     // Add all other talents here...
   ];
+  */
+
+  // Fetch talents from Supabase
+  const fetchTalents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("talents")
+        .select("*")
+        .order("created_at", { ascending: false });
+        
+      if (error) throw error;
+      
+      // Only use database talents
+      setTalents(data || []);
+    } catch (error) {
+      console.error("Error fetching talents:", error);
+      // Set empty array if database fetch fails
+      setTalents([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchTalents();
+  }, []);
 
   // Extract unique focus areas and sort them
   const focusAreas = useMemo(() => {
@@ -484,38 +824,59 @@ const Talent: FC = () => {
 
     return talents.filter((talent) => talent.focus === selectedFocus);
   }, [talents, selectedFocus]);
+  
+  if (isLoading) {
+    return (
+      <DefaultLayout>
+        <div className="flex justify-center items-center h-screen">
+          <Spinner color="default" size="lg" />
+        </div>
+      </DefaultLayout>
+    );
+  }
 
   return (
     <DefaultLayout>
-      <div className="max-w-8xl mx-auto ">
+      <div className="mx-auto py-16 px-4">
         {/* Header Section */}
-        <h1 className="font-atirose text-violet text-center sm:text-7xl text-6xl">
-          Talent
-        </h1>
-
-        {/* Description Section */}
-        <div className="mt-4 flex flex-col gap-2 items-center max-w-5xl mx-auto">
-          <p className="text-center sm:text-sm text-xs">
-            Looking for collaborators to work on a Forgotten Runes project? Use
-            the talent board below to find community members with the perfect
-            skillset for your team.
-          </p>
-          <p className="text-center sm:text-sm text-xs">
-            Interested in being considered for work on community projects?
-          </p>
-
-          {/* Add to Board Button */}
-          <Link
-            className="mt-4 bg-[#9564b4] w-[250px] text-center sm:text-sm text-xs p-2 rounded-full border-4 border-[#3b2747]"
-            href="https://www.addressform.io/form/11013d4a-7611-4693-8ab1-7a27634457d6"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            Add yourself to the board!
-          </Link>
+        <div className="text-center mb-12">
+          <h1 className="font-atirose text-violet text-5xl md:text-6xl mb-6">
+            Talent Board
+          </h1>
+          <div className="max-w-3xl mx-auto space-y-4">
+            <p className="text-gray-300 text-base leading-relaxed">
+              Looking for collaborators to work on a Forgotten Runes project? Use
+              the talent board below to find community members with the perfect
+              skillset for your team.
+            </p>
+            <p className="text-gray-300 text-base">
+              Interested in being considered for work on community projects?
+            </p>
+            
+            {/* Add to Board Button */}
+            <button
+              onClick={() => {
+                if (!user) {
+                  setShowLoginMessage(true);
+                  setTimeout(() => setShowLoginMessage(false), 3000);
+                } else {
+                  setIsModalOpen(true);
+                }
+              }}
+              className="inline-block mt-6 bg-violet hover:bg-violet-600 text-white px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              Add yourself to the board!
+            </button>
+            
+            {showLoginMessage && (
+              <div className="mt-4 text-sm text-red-400">
+                Please log in to add yourself to the talent board
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="w-full my-4">
+        <div className="w-full mb-12">
           <svg
             className="w-full"
             fill="none"
@@ -545,40 +906,48 @@ const Talent: FC = () => {
           </svg>
         </div>
 
-        <div className="max-w-7xl mx-auto sm:p-0 p-4">
+        <div className="max-w-7xl mx-auto">
           {/* Focus Filter */}
-          <div className=" mb-4">
-            <div className="flex flex-wrap gap-2">
-              {focusAreas.map((focus) => (
-                <button
-                  key={focus}
-                  className={`px-3 text-sm py-1 rounded-full border-2 ${
-                    selectedFocus === focus
-                      ? "bg-[#9564b4] text-white border-[#3b2747]"
-                      : "bg-[#321e3e] border-[#9564b4]"
-                  }`}
-                  onClick={() => setSelectedFocus(focus)}
-                >
-                  {focus}
-                </button>
-              ))}
+          <div className="mb-8">
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex flex-wrap gap-2">
+                {focusAreas.map((focus) => (
+                  <button
+                    key={focus}
+                    className={`px-4 py-2 text-sm rounded-full transition-all duration-300 ${
+                      selectedFocus === focus
+                        ? "bg-violet text-white shadow-lg"
+                        : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
+                    }`}
+                    onClick={() => setSelectedFocus(focus)}
+                  >
+                    {focus}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Talent Count */}
+              <div className="text-sm text-gray-400">
+                {filteredTalents.length} {filteredTalents.length === 1 ? 'talent' : 'talents'}
+              </div>
             </div>
           </div>
 
-          {/* Talent Count */}
-          <div className="text-sm text-[#9564b4] mb-4">
-            Showing {filteredTalents.length}{" "}
-            {selectedFocus !== "All" ? selectedFocus : ""} talents
-          </div>
-
           {/* Talent Grid */}
-          <div className="flex flex-row flex-wrap gap-3">
-            {filteredTalents.map((talent) => (
-              <Bio key={talent.name} {...talent} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {filteredTalents.map((talent, index) => (
+              <Bio key={talent.id || `${talent.name}-${index}`} {...talent} />
             ))}
           </div>
         </div>
       </div>
+      
+      {/* Add Talent Modal */}
+      <AddTalentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onTalentAdded={fetchTalents}
+      />
     </DefaultLayout>
   );
 };
