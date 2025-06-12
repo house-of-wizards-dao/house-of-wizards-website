@@ -45,7 +45,7 @@ export default function IndexPage(): JSX.Element {
     // Fetch descriptions for these files
     const { data: descData, error: descError } = await supabase
       .from("file_descriptions")
-      .select("*")
+      .select("file_name, description, file_type, created_at")
       .eq("user_id", user.id);
 
     if (descError) {

@@ -39,9 +39,12 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
 
   const fetchTalents = async () => {
     try {
+      // Use active_talents view to exclude soft-deleted talents
       const { data, error } = await supabase
-        .from("talents")
-        .select("*")
+        .from("active_talents")
+        .select(
+          "id, name, twitter, discord, focus, skillset, site, avatar_url, user_id, created_at",
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -59,24 +62,25 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
   const handleDelete = async (talentId: string, talentName: string) => {
     if (
       !confirm(
-        `Are you sure you want to delete "${talentName}" from the talent board?`,
+        `Are you sure you want to delete "${talentName}" from the talent board? This will soft delete the talent (it can be restored later).`,
       )
     ) {
       return;
     }
 
     try {
-      const { error } = await supabase
-        .from("talents")
-        .delete()
-        .eq("id", talentId);
+      // Use the soft delete function instead of hard delete
+      const { error } = await supabase.rpc("soft_delete_talent", {
+        talent_id: talentId,
+      });
 
       if (error) throw error;
 
-      setTalents(talents.filter((t) => t.id !== talentId));
+      // Refresh talents list to reflect the change
+      await fetchTalents();
       setError(null);
     } catch (err: any) {
-      setError("Failed to delete talent");
+      setError("Failed to delete talent: " + (err.message || "Unknown error"));
       console.error("Error deleting talent:", err);
     }
   };

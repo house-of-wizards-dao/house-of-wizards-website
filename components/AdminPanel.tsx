@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { LogOut, Users, FolderOpen, UserPlus, Briefcase } from "lucide-react";
 import { useRouter } from "next/router";
@@ -17,7 +17,7 @@ interface ContentItem {
   fileType?: string;
 }
 
-const AdminPanel = (): JSX.Element => {
+const AdminPanel = React.memo((): JSX.Element => {
   const router = useRouter();
   const supabase = useSupabaseClient();
   const [users, setUsers] = useState<Profile[]>([]);
@@ -45,11 +45,12 @@ const AdminPanel = (): JSX.Element => {
     }
   };
 
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
+      // Use active_profiles view to exclude soft-deleted users
       const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
+        .from("active_profiles")
+        .select("id, name, email, role, created_at, avatar_url")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -57,52 +58,40 @@ const AdminPanel = (): JSX.Element => {
     } catch (err: any) {
       setError("Failed to fetch users");
     }
-  };
+  }, [supabase]);
 
-  const fetchAllContent = async () => {
+  const fetchAllContent = useCallback(async () => {
     try {
-      const { data: users, error: userError } = await supabase
-        .from("profiles")
-        .select("id, name");
+      // Use active_file_descriptions view to exclude soft-deleted content
+      const { data, error } = await supabase
+        .from("active_file_descriptions")
+        .select(
+          `
+          file_name,
+          description,
+          file_type,
+          user_id,
+          created_at,
+          profiles!inner(name)
+        `,
+        )
+        .order("created_at", { ascending: false });
 
-      if (userError) throw userError;
+      if (error) throw error;
 
-      const allContent = await Promise.all(
-        users.map(async (user) => {
-          const { data: fileData, error: fileError } = await supabase.storage
-            .from("files")
-            .list(user.id + "/");
+      const contentItems = (data || []).map((desc: any) => ({
+        name: desc.file_name,
+        userId: desc.user_id,
+        userName: desc.profiles?.name || "Unknown User",
+        description: desc.description || "",
+        fileType: desc.file_type || "",
+      }));
 
-          if (fileError) {
-            return [];
-          }
-
-          const { data: descData } = await supabase
-            .from("file_descriptions")
-            .select("*")
-            .eq("user_id", user.id);
-
-          return (fileData || []).map((file) => {
-            const fileDesc = descData?.find(
-              (desc) => desc.file_name === file.name,
-            );
-
-            return {
-              name: file.name,
-              userId: user.id,
-              userName: user.name || "Unknown User",
-              description: fileDesc?.description || "",
-              fileType: fileDesc?.file_type || "",
-            };
-          });
-        }),
-      );
-
-      setContent(allContent.flat());
+      setContent(contentItems);
     } catch (err: any) {
       setError("Failed to fetch content");
     }
-  };
+  }, [supabase]);
 
   useEffect(() => {
     const initializeData = async () => {
@@ -112,12 +101,12 @@ const AdminPanel = (): JSX.Element => {
     };
 
     initializeData();
-  }, [supabase]);
+  }, [fetchUsers, fetchAllContent]);
 
   const handleUserDelete = async (userId: string) => {
     if (
       !confirm(
-        "Are you sure you want to delete this user? This action cannot be undone.",
+        "Are you sure you want to delete this user? This will soft delete the user and all their content (they can be restored later).",
       )
     ) {
       return;
@@ -126,63 +115,47 @@ const AdminPanel = (): JSX.Element => {
     try {
       setLoading(true);
 
-      // Delete user files first
-      const { data: files } = await supabase.storage
-        .from("files")
-        .list(userId + "/");
-
-      if (files && files.length > 0) {
-        const filePaths = files.map((file) => `${userId}/${file.name}`);
-
-        await supabase.storage.from("files").remove(filePaths);
-      }
-
-      // Delete file descriptions
-      await supabase.from("file_descriptions").delete().eq("user_id", userId);
-
-      // Delete profile
-      const { error } = await supabase
-        .from("profiles")
-        .delete()
-        .eq("id", userId);
+      // Use the soft delete function instead of hard delete
+      const { error } = await supabase.rpc("delete_user_with_content", {
+        user_id: userId,
+      });
 
       if (error) throw error;
 
       // Refresh data
       await Promise.all([fetchUsers(), fetchAllContent()]);
     } catch (err: any) {
-      setError("Failed to delete user");
+      setError("Failed to delete user: " + (err.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
   };
 
   const handleContentDelete = async (item: ContentItem) => {
-    if (!confirm(`Are you sure you want to delete "${item.name}"?`)) {
+    if (
+      !confirm(
+        `Are you sure you want to delete "${item.name}"? This will soft delete the content (it can be restored later).`,
+      )
+    ) {
       return;
     }
 
     try {
       setLoading(true);
 
-      // Delete from storage
-      const { error: storageError } = await supabase.storage
-        .from("files")
-        .remove([`${item.userId}/${item.name}`]);
-
-      if (storageError) throw storageError;
-
-      // Delete description
-      await supabase
+      // Soft delete the file description (content will be hidden from views)
+      const { error } = await supabase
         .from("file_descriptions")
-        .delete()
+        .update({ deleted_at: new Date().toISOString() })
         .eq("user_id", item.userId)
         .eq("file_name", item.name);
+
+      if (error) throw error;
 
       // Refresh content
       await fetchAllContent();
     } catch (err: any) {
-      setError("Failed to delete content");
+      setError("Failed to delete content: " + (err.message || "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -197,12 +170,53 @@ const AdminPanel = (): JSX.Element => {
     setActiveTab("users");
   };
 
-  const tabIcons = {
-    users: Users,
-    content: FolderOpen,
-    create: UserPlus,
-    talents: Briefcase,
-  };
+  // Memoize expensive calculations
+  const filteredUsers = useMemo(() => {
+    if (!searchTerm) return users;
+    return users.filter(
+      (user) =>
+        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [users, searchTerm]);
+
+  const filteredContent = useMemo(() => {
+    let filtered = content;
+
+    if (searchTerm) {
+      filtered = filtered.filter(
+        (item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          item.userName.toLowerCase().includes(searchTerm.toLowerCase()),
+      );
+    }
+
+    if (selectedUser !== "all") {
+      filtered = filtered.filter((item) => item.userId === selectedUser);
+    }
+
+    return filtered;
+  }, [content, searchTerm, selectedUser]);
+
+  const statsData = useMemo(
+    () => ({
+      totalUsers: users.length,
+      totalContent: content.length,
+      activeUsers: new Set(content.map((item) => item.userId)).size,
+    }),
+    [users, content],
+  );
+
+  const tabIcons = useMemo(
+    () => ({
+      users: Users,
+      content: FolderOpen,
+      create: UserPlus,
+      talents: Briefcase,
+    }),
+    [],
+  );
 
   return (
     <div className="mx-auto py-16 px-4">
@@ -303,14 +317,18 @@ const AdminPanel = (): JSX.Element => {
             <h3 className="text-lg font-semibold text-gray-300 mb-2">
               Total Users
             </h3>
-            <p className="text-3xl font-bold text-violet">{users.length}</p>
+            <p className="text-3xl font-bold text-violet">
+              {statsData.totalUsers}
+            </p>
             <div className="absolute inset-0 bg-gradient-to-r from-violet/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <div className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300 p-6">
             <h3 className="text-lg font-semibold text-gray-300 mb-2">
               Total Content
             </h3>
-            <p className="text-3xl font-bold text-violet">{content.length}</p>
+            <p className="text-3xl font-bold text-violet">
+              {statsData.totalContent}
+            </p>
             <div className="absolute inset-0 bg-gradient-to-r from-violet/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
           <div className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300 p-6">
@@ -318,11 +336,7 @@ const AdminPanel = (): JSX.Element => {
               Active Users
             </h3>
             <p className="text-3xl font-bold text-violet">
-              {
-                users.filter((user) =>
-                  content.some((item) => item.userId === user.id),
-                ).length
-              }
+              {statsData.activeUsers}
             </p>
             <div className="absolute inset-0 bg-gradient-to-r from-violet/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </div>
@@ -335,7 +349,7 @@ const AdminPanel = (): JSX.Element => {
               expandedUser={expandedUser}
               loading={loading}
               searchTerm={searchTerm}
-              users={users}
+              users={filteredUsers}
               onSearchChange={setSearchTerm}
               onUserDelete={handleUserDelete}
               onUserToggle={handleUserToggle}
@@ -344,7 +358,7 @@ const AdminPanel = (): JSX.Element => {
 
           {activeTab === "content" && (
             <ContentManagement
-              content={content}
+              content={filteredContent}
               loading={loading}
               searchTerm={searchTerm}
               selectedUser={selectedUser}
@@ -370,6 +384,8 @@ const AdminPanel = (): JSX.Element => {
       </div>
     </div>
   );
-};
+});
+
+AdminPanel.displayName = "AdminPanel";
 
 export default AdminPanel;

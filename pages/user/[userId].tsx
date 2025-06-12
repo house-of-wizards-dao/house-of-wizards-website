@@ -58,7 +58,9 @@ export default function UserProfile() {
 
     const { data, error } = await supabase
       .from("profiles")
-      .select("*")
+      .select(
+        "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+      )
       .eq("id", userId)
       .single();
 
@@ -100,7 +102,7 @@ export default function UserProfile() {
 
       const { data: descData, error: descError } = await supabase
         .from("file_descriptions")
-        .select("*")
+        .select("file_name, description, file_type, created_at")
         .eq("user_id", userData.id);
 
       if (descError || !descData) {
@@ -116,11 +118,11 @@ export default function UserProfile() {
           ...file,
           description:
             descData.find(
-              (desc: FileDescription) => desc.file_name === file.name,
+              (desc: any) => desc.file_name === file.name,
             )?.description || "",
           fileType:
             descData.find(
-              (desc: FileDescription) => desc.file_name === file.name,
+              (desc: any) => desc.file_name === file.name,
             )?.file_type || "",
         }));
 

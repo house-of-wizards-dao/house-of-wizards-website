@@ -1,45 +1,64 @@
 import { NextApiRequest, NextApiResponse } from "next";
-
-import { createClient } from "@supabase/supabase-js";
+import { getServiceSupabase } from "@/lib/supabase";
 import { requireAdmin, AuthenticatedUser } from "@/lib/auth";
-import { checkRateLimit } from "@/lib/sanitization";
+import { paginationSchema } from "@/lib/validation-schemas";
+import {
+  createApiHandler,
+  sendSuccess,
+  validateQuery,
+} from "@/lib/api-middleware";
 
-// Server-side Supabase client with service role key for admin operations
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-);
-
-async function handler(
+async function usersHandler(
   req: NextApiRequest,
   res: NextApiResponse,
   user: AuthenticatedUser,
 ) {
+  const supabaseAdmin = getServiceSupabase();
+
   if (req.method === "GET") {
-    try {
-      // Rate limiting
-      checkRateLimit(user.id, 20, 60000); // 20 requests per minute
-      // Admin-only endpoint to fetch all users
-      const { data, error } = await supabaseAdmin
-        .from("profiles")
-        .select("id, name, email, role, created_at, avatar_url")
-        .order("created_at", { ascending: false });
+    // Validate query parameters
+    const { page = 1, limit = 10, sortBy, sortOrder } =
+      validateQuery(paginationSchema)(req);
 
-      if (error) {
-        throw error;
-      }
+    const offset = (page - 1) * limit;
+    const orderColumn = sortBy || "created_at";
 
-      res.status(200).json(data || []);
-    } catch (error) {
-      res.status(500).json({
-        error: error instanceof Error ? error.message : "An error occurred",
-      });
+    // Get total count - use active_profiles view to exclude soft-deleted users
+    const { count } = await supabaseAdmin
+      .from("active_profiles")
+      .select("*", { count: "exact", head: true });
+
+    // Fetch paginated users
+    const { data, error } = await supabaseAdmin
+      .from("active_profiles")
+      .select("id, name, email, role, created_at, avatar_url")
+      .order(orderColumn, { ascending: sortOrder === "asc" })
+      .range(offset, offset + limit - 1);
+
+    if (error) {
+      throw new Error("Failed to fetch users");
     }
-  } else {
-    res.setHeader("Allow", ["GET"]);
-    res.status(405).json({ message: `Method ${req.method} not allowed` });
+
+    const total = count || 0;
+    const hasMore = offset + limit < total;
+
+    sendSuccess(res, data || [], "Users fetched successfully", {
+      page,
+      limit,
+      total,
+      hasMore,
+    });
   }
 }
 
-// Export the handler wrapped with admin authentication
-export default requireAdmin(handler);
+// Create API handler with middleware
+const handler = createApiHandler(requireAdmin(usersHandler), {
+  methods: ["GET"],
+  rateLimit: { maxRequests: 20, windowMs: 60000 }, // 20 requests per minute
+  cors: true,
+  validation: {
+    query: paginationSchema,
+  },
+});
+
+export default handler;

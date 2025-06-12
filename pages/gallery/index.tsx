@@ -461,8 +461,9 @@ function GalleryPage(): JSX.Element {
   useEffect(() => {
     const fetchAllContent = async (): Promise<void> => {
       try {
+        // Use active_profiles view to exclude soft-deleted users
         const { data: users, error: usersError } = await supabase
-          .from("profiles")
+          .from("active_profiles")
           .select("id, name");
 
         if (usersError) {
@@ -471,9 +472,10 @@ function GalleryPage(): JSX.Element {
 
         if (!users) return;
 
+        // Use active_file_descriptions view to exclude soft-deleted content
         const { data: fileDescData, error: fileDescError } = await supabase
-          .from("file_descriptions")
-          .select("*");
+          .from("active_file_descriptions")
+          .select("file_name, description, file_type, user_id, created_at");
 
         if (fileDescError) {
           return;

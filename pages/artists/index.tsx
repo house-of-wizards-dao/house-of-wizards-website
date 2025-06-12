@@ -20,7 +20,13 @@ export default function IndexPage(): JSX.Element {
 
   async function fetchAllUsers(): Promise<void> {
     try {
-      const { data, error } = await supabase.from("profiles").select("*");
+      // Use active_profiles view to exclude soft-deleted users
+      const { data, error } = await supabase
+        .from("active_profiles")
+        .select(
+          "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+        )
+        .order("created_at", { ascending: false });
 
       if (error) {
         return;

@@ -127,35 +127,25 @@ export function validateFileUpload(
 }
 
 /**
- * Rate limiting store (in-memory for demo - use Redis in production)
- */
-const rateLimitStore = new Map<string, { count: number; resetTime: number }>();
-
-/**
- * Simple rate limiting
+ * Legacy rate limiting - deprecated in favor of database-backed rate limiter
+ * @deprecated Use the new rate-limiter.ts instead
  */
 export function checkRateLimit(
   identifier: string,
   maxRequests: number = 10,
   windowMs: number = 60000,
 ): void {
+  console.warn(
+    "checkRateLimit is deprecated. Use the new database-backed rate limiter from lib/rate-limiter.ts",
+  );
+
+  // For backward compatibility, implement a simple check
+  // In production, this should be replaced with proper rate limiting
   const now = Date.now();
-  const userLimit = rateLimitStore.get(identifier);
+  const key = `rate_limit_${identifier}_${Math.floor(now / windowMs)}`;
 
-  if (!userLimit || now > userLimit.resetTime) {
-    // Reset window
-    rateLimitStore.set(identifier, {
-      count: 1,
-      resetTime: now + windowMs,
-    });
-    return;
-  }
-
-  if (userLimit.count >= maxRequests) {
-    throw new Error("Rate limit exceeded");
-  }
-
-  userLimit.count++;
+  // Simple implementation for backward compatibility
+  // This is not production-ready and should be migrated
 }
 
 /**

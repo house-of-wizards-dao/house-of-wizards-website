@@ -821,9 +821,12 @@ const Talent: FC = () => {
   // Fetch talents from Supabase
   const fetchTalents = async () => {
     try {
+      // Use active_talents view to exclude soft-deleted talents
       const { data, error } = await supabase
-        .from("talents")
-        .select("*")
+        .from("active_talents")
+        .select(
+          "id, name, twitter, discord, focus, skillset, site, avatar_url, user_id, created_at",
+        )
         .order("created_at", { ascending: false });
 
       if (error) throw error;

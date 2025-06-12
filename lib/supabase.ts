@@ -1,29 +1,39 @@
 import { createClient } from "@supabase/supabase-js";
+import { env, isServerSide } from "./env";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-// Only throw error if we're in runtime (not build time)
-if (typeof window !== "undefined" && (!supabaseUrl || !supabaseAnonKey)) {
-  throw new Error("Missing Supabase environment variables");
-}
-
-// Create client with fallback values for build time
+// Client-side Supabase client
 export const supabase = createClient(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-key",
+  env.NEXT_PUBLIC_SUPABASE_URL,
+  env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  },
 );
 
-// For server-side operations (API routes)
+// Server-side Supabase client with service role key
 export const getServiceSupabase = () => {
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!isServerSide()) {
+    throw new Error("Service Supabase client can only be used server-side");
+  }
 
-  if (!supabaseServiceKey && typeof window !== "undefined") {
-    throw new Error("Missing SUPABASE_SERVICE_ROLE_KEY environment variable");
+  if (!env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error(
+      "SUPABASE_SERVICE_ROLE_KEY is required for server-side operations",
+    );
   }
 
   return createClient(
-    supabaseUrl || "https://placeholder.supabase.co",
-    supabaseServiceKey || "placeholder-key",
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.SUPABASE_SERVICE_ROLE_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    },
   );
 };
