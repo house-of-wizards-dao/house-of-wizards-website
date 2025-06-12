@@ -122,9 +122,9 @@ export default function IndexPage() {
             </h1>
             <div className="space-y-6">
               <p className="text-gray-300 text-base leading-relaxed">
-                The House of Wizards, comprised of Forgotten Runes token holders,
-                funds community proposals that support art, lore, development, and
-                other creative endeavors.
+                The House of Wizards, comprised of Forgotten Runes token
+                holders, funds community proposals that support art, lore,
+                development, and other creative endeavors.
               </p>
               <p className="text-gray-300 text-base leading-relaxed">
                 Looking for funding as a community member? Start by submitting a
@@ -137,12 +137,12 @@ export default function IndexPage() {
               <button
                 aria-label="Scroll to team section"
                 className="bg-violet text-white px-8 py-3 rounded-full hover:bg-violet-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-violet focus:ring-opacity-50 font-medium shadow-lg hover:shadow-xl"
-              onClick={() => {
-                document.getElementById("team-section")?.scrollIntoView({
-                  behavior: "smooth",
-                });
-              }}
-            >
+                onClick={() => {
+                  document.getElementById("team-section")?.scrollIntoView({
+                    behavior: "smooth",
+                  });
+                }}
+              >
                 Meet the Team
               </button>
             </div>
@@ -173,7 +173,10 @@ export default function IndexPage() {
 
           <div className="flex flex-row flex-wrap gap-8 justify-center mt-16">
             {teamMembers.map((member, index) => (
-              <div key={index} className="w-[200px] sm:w-[220px] transform transition-all duration-300 hover:scale-105">
+              <div
+                key={index}
+                className="w-[200px] sm:w-[220px] transform transition-all duration-300 hover:scale-105"
+              >
                 <div className="aspect-[3/4] mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <NextImage
                     alt={member.name}

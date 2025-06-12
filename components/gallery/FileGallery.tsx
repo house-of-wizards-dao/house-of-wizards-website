@@ -14,7 +14,10 @@ interface FileGalleryProps {
   onDeleteFile: (file: FileData) => void;
 }
 
-export default function FileGallery({ files, onDeleteFile }: FileGalleryProps): JSX.Element {
+export default function FileGallery({
+  files,
+  onDeleteFile,
+}: FileGalleryProps): JSX.Element {
   const user = useUser();
   const [focusedIndex, setFocusedIndex] = useState(0);
 
@@ -22,47 +25,52 @@ export default function FileGallery({ files, onDeleteFile }: FileGalleryProps): 
     itemCount: files.length,
     currentIndex: focusedIndex,
     onIndexChange: setFocusedIndex,
-    orientation: 'grid',
+    orientation: "grid",
     gridColumns: 3, // Assuming 3 columns layout
     loop: true,
   });
 
-  const renderFilePreview = useCallback((file: FileData): JSX.Element => {
-    if (!user?.id) return <div>No preview available</div>;
-    
-    const fileUrl = `${CDNURL}${user.id}/${file.name}`;
+  const renderFilePreview = useCallback(
+    (file: FileData): JSX.Element => {
+      if (!user?.id) return <div>No preview available</div>;
 
-    if (file.fileType?.startsWith("video/")) {
-      return (
-        <video
-          controls
-          className="object-cover rounded-xl aspect-square"
-          height="175"
-          width="175"
-        >
-          <source src={fileUrl} type={file.fileType} />
-          Your browser does not support the video tag.
-        </video>
-      );
-    } else {
-      return (
-        <Image
-          alt={file.description || "User uploaded content"}
-          className="object-cover rounded-xl aspect-square"
-          height={175}
-          src={fileUrl}
-          unoptimized
-          width={175}
-        />
-      );
-    }
-  }, [user?.id]);
+      const fileUrl = `${CDNURL}${user.id}/${file.name}`;
+
+      if (file.fileType?.startsWith("video/")) {
+        return (
+          <video
+            controls
+            className="object-cover rounded-xl aspect-square"
+            height="175"
+            width="175"
+          >
+            <source src={fileUrl} type={file.fileType} />
+            Your browser does not support the video tag.
+          </video>
+        );
+      } else {
+        return (
+          <Image
+            alt={file.description || "User uploaded content"}
+            className="object-cover rounded-xl aspect-square"
+            height={175}
+            src={fileUrl}
+            unoptimized
+            width={175}
+          />
+        );
+      }
+    },
+    [user?.id],
+  );
 
   const emptyState = useMemo(() => {
     if (files.length === 0) {
       return (
         <div className="text-center py-8">
-          <p className="text-gray-500">No files uploaded yet. Upload some art to get started!</p>
+          <p className="text-gray-500">
+            No files uploaded yet. Upload some art to get started!
+          </p>
         </div>
       );
     }
@@ -74,7 +82,7 @@ export default function FileGallery({ files, onDeleteFile }: FileGalleryProps): 
   }
 
   return (
-    <div 
+    <div
       className="flex flex-row flex-wrap sm:gap-6 gap-3 mt-5 items-center"
       onKeyDown={handleNavigation}
       role="grid"
@@ -84,7 +92,7 @@ export default function FileGallery({ files, onDeleteFile }: FileGalleryProps): 
         <div
           key={`file-${user?.id}-${file.name}`}
           className={`flex flex-col items-center justify-between border-1 border-violet rounded-2xl w-fit p-4 ${
-            index === focusedIndex ? 'ring-2 ring-purple-500' : ''
+            index === focusedIndex ? "ring-2 ring-purple-500" : ""
           }`}
           role="gridcell"
           tabIndex={index === focusedIndex ? 0 : -1}

@@ -73,10 +73,10 @@ export default function DocsPage() {
               <p className="text-md">Vote</p>
             </Card>
           </div> */}
-        <Image 
-          alt="Cultural content and art ministry information graphic" 
-          className="px-4" 
-          src="/img/cultcontent.png" 
+        <Image
+          alt="Cultural content and art ministry information graphic"
+          className="px-4"
+          src="/img/cultcontent.png"
         />
         <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">
           To request funding please fill out the{" "}

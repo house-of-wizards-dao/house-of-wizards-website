@@ -13,7 +13,7 @@ export default function IndexPage(): JSX.Element {
   // Core state
   const user = useUser();
   const supabase = useSupabaseClient();
-  
+
   // Profile state
   const [files, setFiles] = useState<FileData[]>([]);
   const [userDescription, setUserDescription] = useState<string>("");
@@ -22,7 +22,6 @@ export default function IndexPage(): JSX.Element {
   const [discord, setDiscord] = useState<string>("");
   const [website, setWebsite] = useState<string>("");
   const [editableName, setEditableName] = useState<string>("");
-
 
   const getFiles = useCallback(async (): Promise<void> => {
     if (!user?.id) return;
@@ -77,13 +76,15 @@ export default function IndexPage(): JSX.Element {
   // Initialize user data on mount and user change
   useEffect(() => {
     if (!user) return;
-    
+
     // Load user files
     getFiles();
-    
+
     // Set initial editable name
-    setEditableName(user.user_metadata?.name || user.email?.split("@")[0] || "");
-    
+    setEditableName(
+      user.user_metadata?.name || user.email?.split("@")[0] || "",
+    );
+
     // Set initial social media from user metadata
     setTwitter(user.user_metadata?.twitter || "");
     setDiscord(user.user_metadata?.discord || "");
@@ -104,7 +105,8 @@ export default function IndexPage(): JSX.Element {
             await supabase.from("profiles").insert({
               id: user.id,
               email: user.email,
-              name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+              name:
+                user.user_metadata?.name || user.email?.split("@")[0] || "User",
             });
           }
         } else {
@@ -148,76 +150,83 @@ export default function IndexPage(): JSX.Element {
     }
   }, [user?.id, userDescription, supabase]);
 
-  const handleAvatarUpload = useCallback(async (
-    event: ChangeEvent<HTMLInputElement>,
-  ): Promise<void> => {
-    const file = event.target.files?.[0];
+  const handleAvatarUpload = useCallback(
+    async (event: ChangeEvent<HTMLInputElement>): Promise<void> => {
+      const file = event.target.files?.[0];
 
-    if (!file || !user?.id) return;
+      if (!file || !user?.id) return;
 
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${user.id}_avatar.${fileExt}`;
-    const filePath = `${user.id}/${fileName}`;
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.id}_avatar.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
 
-    try {
-      const { error: uploadError } = await supabase.storage
-        .from("avatars")
-        .upload(filePath, file, { upsert: true });
+      try {
+        const { error: uploadError } = await supabase.storage
+          .from("avatars")
+          .upload(filePath, file, { upsert: true });
 
-      if (uploadError) {
-        throw new Error(uploadError.message);
-      } else {
-        setAvatar(filePath);
-        await updateProfile({ avatar: filePath });
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        } else {
+          setAvatar(filePath);
+          await updateProfile({ avatar: filePath });
+        }
+      } catch (err) {
+        throw err;
       }
-    } catch (err) {
-      throw err;
-    }
-  }, [user?.id, supabase]);
+    },
+    [user?.id, supabase],
+  );
 
-  const updateProfile = useCallback(async ({ avatar }: { avatar: string }): Promise<void> => {
-    if (!user?.id) return;
+  const updateProfile = useCallback(
+    async ({ avatar }: { avatar: string }): Promise<void> => {
+      if (!user?.id) return;
 
-    try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ avatar_url: avatar })
-        .eq("id", user.id);
+      try {
+        const { error } = await supabase
+          .from("profiles")
+          .update({ avatar_url: avatar })
+          .eq("id", user.id);
 
-      if (error) throw error;
-    } catch (error) {
-      throw error;
-    }
-  }, [user?.id, supabase]);
-
-  const deleteContent = useCallback(async (file: FileData): Promise<void> => {
-    if (!user?.id) return;
-
-    try {
-      const { error } = await supabase.storage
-        .from("files")
-        .remove([`${user.id}/${file.name}`]);
-
-      if (error) {
-        throw new Error(error.message);
+        if (error) throw error;
+      } catch (error) {
+        throw error;
       }
+    },
+    [user?.id, supabase],
+  );
 
-      // Remove the file from state
-      setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+  const deleteContent = useCallback(
+    async (file: FileData): Promise<void> => {
+      if (!user?.id) return;
 
-      // Delete the description
-      const { error: descError } = await supabase
-        .from("file_descriptions")
-        .delete()
-        .match({ user_id: user.id, file_name: file.name });
+      try {
+        const { error } = await supabase.storage
+          .from("files")
+          .remove([`${user.id}/${file.name}`]);
 
-      if (descError) {
-        // Error deleting file description - handled gracefully
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        // Remove the file from state
+        setFiles((prevFiles) => prevFiles.filter((f) => f.name !== file.name));
+
+        // Delete the description
+        const { error: descError } = await supabase
+          .from("file_descriptions")
+          .delete()
+          .match({ user_id: user.id, file_name: file.name });
+
+        if (descError) {
+          // Error deleting file description - handled gracefully
+        }
+      } catch (err) {
+        throw err;
       }
-    } catch (err) {
-      throw err;
-    }
-  }, [user?.id, supabase]);
+    },
+    [user?.id, supabase],
+  );
 
   const updateSocialMedia = useCallback(async (): Promise<void> => {
     if (!user?.id) return;
@@ -235,7 +244,6 @@ export default function IndexPage(): JSX.Element {
       throw err;
     }
   }, [user?.id, twitter, discord, website, supabase]);
-
 
   const updateUserName = useCallback(async (): Promise<void> => {
     if (!user?.id) return;
@@ -293,7 +301,9 @@ export default function IndexPage(): JSX.Element {
                 {/* Profile Section */}
                 <section className="p-2">
                   <div className="flex items-center space-x-4 mb-6">
-                    <h2 className="text-white text-2xl font-bold">Profile Settings</h2>
+                    <h2 className="text-white text-2xl font-bold">
+                      Profile Settings
+                    </h2>
                   </div>
                   <ProfileEditor
                     avatar={avatar}
@@ -318,7 +328,9 @@ export default function IndexPage(): JSX.Element {
                 {/* File Upload Section */}
                 <section className="p-2">
                   <div className="flex items-center space-x-4 mb-6">
-                    <h2 className="text-white text-2xl font-bold">Upload Artwork</h2>
+                    <h2 className="text-white text-2xl font-bold">
+                      Upload Artwork
+                    </h2>
                   </div>
                   <FileUpload onUploadComplete={getFiles} />
                 </section>
@@ -326,10 +338,12 @@ export default function IndexPage(): JSX.Element {
                 {/* File Gallery Section */}
                 <section className="p-2">
                   <div className="flex items-center space-x-4 mb-6">
-                    <h2 className="text-white text-2xl font-bold">Your Gallery</h2>
+                    <h2 className="text-white text-2xl font-bold">
+                      Your Gallery
+                    </h2>
                     {files.length > 0 && (
                       <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm">
-                        {files.length} {files.length === 1 ? 'file' : 'files'}
+                        {files.length} {files.length === 1 ? "file" : "files"}
                       </span>
                     )}
                   </div>

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 /**
  * Custom hook for keyboard navigation support
@@ -10,16 +10,22 @@ export interface UseKeyboardNavigationProps {
   disabled?: boolean;
 }
 
-export function useKeyboardNavigation({ onActivate, disabled = false }: UseKeyboardNavigationProps) {
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (disabled) return;
-    
-    // Handle Enter and Space key activation
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onActivate();
-    }
-  }, [onActivate, disabled]);
+export function useKeyboardNavigation({
+  onActivate,
+  disabled = false,
+}: UseKeyboardNavigationProps) {
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (disabled) return;
+
+      // Handle Enter and Space key activation
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onActivate();
+      }
+    },
+    [onActivate, disabled],
+  );
 
   const handleClick = useCallback(() => {
     if (disabled) return;
@@ -30,7 +36,7 @@ export function useKeyboardNavigation({ onActivate, disabled = false }: UseKeybo
     onKeyDown: handleKeyDown,
     onClick: handleClick,
     tabIndex: disabled ? -1 : 0,
-    'aria-disabled': disabled,
+    "aria-disabled": disabled,
   };
 }
 
@@ -42,7 +48,7 @@ export interface UseFocusNavigationProps {
   itemCount: number;
   currentIndex: number;
   onIndexChange: (index: number) => void;
-  orientation?: 'horizontal' | 'vertical' | 'grid';
+  orientation?: "horizontal" | "vertical" | "grid";
   gridColumns?: number;
   loop?: boolean;
 }
@@ -51,76 +57,79 @@ export function useFocusNavigation({
   itemCount,
   currentIndex,
   onIndexChange,
-  orientation = 'vertical',
+  orientation = "vertical",
   gridColumns = 1,
   loop = true,
 }: UseFocusNavigationProps) {
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    let newIndex = currentIndex;
-    
-    switch (event.key) {
-      case 'ArrowDown':
-        if (orientation === 'vertical' || orientation === 'grid') {
-          event.preventDefault();
-          if (orientation === 'grid') {
-            newIndex = Math.min(currentIndex + gridColumns, itemCount - 1);
-          } else {
-            newIndex = loop 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      let newIndex = currentIndex;
+
+      switch (event.key) {
+        case "ArrowDown":
+          if (orientation === "vertical" || orientation === "grid") {
+            event.preventDefault();
+            if (orientation === "grid") {
+              newIndex = Math.min(currentIndex + gridColumns, itemCount - 1);
+            } else {
+              newIndex = loop
+                ? (currentIndex + 1) % itemCount
+                : Math.min(currentIndex + 1, itemCount - 1);
+            }
+          }
+          break;
+
+        case "ArrowUp":
+          if (orientation === "vertical" || orientation === "grid") {
+            event.preventDefault();
+            if (orientation === "grid") {
+              newIndex = Math.max(currentIndex - gridColumns, 0);
+            } else {
+              newIndex = loop
+                ? (currentIndex - 1 + itemCount) % itemCount
+                : Math.max(currentIndex - 1, 0);
+            }
+          }
+          break;
+
+        case "ArrowRight":
+          if (orientation === "horizontal" || orientation === "grid") {
+            event.preventDefault();
+            newIndex = loop
               ? (currentIndex + 1) % itemCount
               : Math.min(currentIndex + 1, itemCount - 1);
           }
-        }
-        break;
-        
-      case 'ArrowUp':
-        if (orientation === 'vertical' || orientation === 'grid') {
-          event.preventDefault();
-          if (orientation === 'grid') {
-            newIndex = Math.max(currentIndex - gridColumns, 0);
-          } else {
-            newIndex = loop 
+          break;
+
+        case "ArrowLeft":
+          if (orientation === "horizontal" || orientation === "grid") {
+            event.preventDefault();
+            newIndex = loop
               ? (currentIndex - 1 + itemCount) % itemCount
               : Math.max(currentIndex - 1, 0);
           }
-        }
-        break;
-        
-      case 'ArrowRight':
-        if (orientation === 'horizontal' || orientation === 'grid') {
+          break;
+
+        case "Home":
           event.preventDefault();
-          newIndex = loop 
-            ? (currentIndex + 1) % itemCount
-            : Math.min(currentIndex + 1, itemCount - 1);
-        }
-        break;
-        
-      case 'ArrowLeft':
-        if (orientation === 'horizontal' || orientation === 'grid') {
+          newIndex = 0;
+          break;
+
+        case "End":
           event.preventDefault();
-          newIndex = loop 
-            ? (currentIndex - 1 + itemCount) % itemCount
-            : Math.max(currentIndex - 1, 0);
-        }
-        break;
-        
-      case 'Home':
-        event.preventDefault();
-        newIndex = 0;
-        break;
-        
-      case 'End':
-        event.preventDefault();
-        newIndex = itemCount - 1;
-        break;
-        
-      default:
-        return;
-    }
-    
-    if (newIndex !== currentIndex) {
-      onIndexChange(newIndex);
-    }
-  }, [currentIndex, itemCount, onIndexChange, orientation, gridColumns, loop]);
+          newIndex = itemCount - 1;
+          break;
+
+        default:
+          return;
+      }
+
+      if (newIndex !== currentIndex) {
+        onIndexChange(newIndex);
+      }
+    },
+    [currentIndex, itemCount, onIndexChange, orientation, gridColumns, loop],
+  );
 
   return {
     onKeyDown: handleKeyDown,
@@ -131,12 +140,15 @@ export function useFocusNavigation({
  * Hook for escape key handling (modals, dropdowns, etc.)
  */
 export function useEscapeKey(onEscape: () => void, enabled = true) {
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (enabled && event.key === 'Escape') {
-      event.preventDefault();
-      onEscape();
-    }
-  }, [onEscape, enabled]);
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (enabled && event.key === "Escape") {
+        event.preventDefault();
+        onEscape();
+      }
+    },
+    [onEscape, enabled],
+  );
 
   return {
     onKeyDown: handleKeyDown,
@@ -148,29 +160,34 @@ export function useEscapeKey(onEscape: () => void, enabled = true) {
  * Useful for modals and dropdowns
  */
 export function useFocusTrap(isActive: boolean) {
-  const handleKeyDown = useCallback((event: React.KeyboardEvent) => {
-    if (!isActive || event.key !== 'Tab') return;
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (!isActive || event.key !== "Tab") return;
 
-    const container = event.currentTarget as HTMLElement;
-    const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    );
-    
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+      const container = event.currentTarget as HTMLElement;
+      const focusableElements = container.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
 
-    if (event.shiftKey) {
-      if (document.activeElement === firstElement) {
-        event.preventDefault();
-        lastElement?.focus();
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[
+        focusableElements.length - 1
+      ] as HTMLElement;
+
+      if (event.shiftKey) {
+        if (document.activeElement === firstElement) {
+          event.preventDefault();
+          lastElement?.focus();
+        }
+      } else {
+        if (document.activeElement === lastElement) {
+          event.preventDefault();
+          firstElement?.focus();
+        }
       }
-    } else {
-      if (document.activeElement === lastElement) {
-        event.preventDefault();
-        firstElement?.focus();
-      }
-    }
-  }, [isActive]);
+    },
+    [isActive],
+  );
 
   return {
     onKeyDown: handleKeyDown,
@@ -182,15 +199,15 @@ export function useFocusTrap(isActive: boolean) {
  */
 export function isFocusable(element: HTMLElement): boolean {
   const focusableSelectors = [
-    'button:not([disabled])',
-    '[href]',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
+    "button:not([disabled])",
+    "[href]",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
     '[tabindex]:not([tabindex="-1"])',
   ];
 
-  return focusableSelectors.some(selector => element.matches(selector));
+  return focusableSelectors.some((selector) => element.matches(selector));
 }
 
 /**
@@ -198,13 +215,15 @@ export function isFocusable(element: HTMLElement): boolean {
  */
 export function getFocusableElements(container: HTMLElement): HTMLElement[] {
   const focusableSelectors = [
-    'button:not([disabled])',
-    '[href]',
-    'input:not([disabled])',
-    'select:not([disabled])',
-    'textarea:not([disabled])',
+    "button:not([disabled])",
+    "[href]",
+    "input:not([disabled])",
+    "select:not([disabled])",
+    "textarea:not([disabled])",
     '[tabindex]:not([tabindex="-1"])',
-  ].join(', ');
+  ].join(", ");
 
-  return Array.from(container.querySelectorAll(focusableSelectors)) as HTMLElement[];
+  return Array.from(
+    container.querySelectorAll(focusableSelectors),
+  ) as HTMLElement[];
 }

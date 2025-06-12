@@ -156,7 +156,7 @@ export default function IndexPage(): JSX.Element {
                             target="_blank"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            {userProfile.website.replace(/^https?:\/\//i, '')}
+                            {userProfile.website.replace(/^https?:\/\//i, "")}
                           </a>
                         ) : (
                           <span className="text-sm text-gray-500">

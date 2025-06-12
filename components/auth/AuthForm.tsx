@@ -4,10 +4,10 @@ import { Input } from "@nextui-org/input";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 
-import { EyeSlashFilledIcon } from "../EyeSlashFilledIcon";
-import { EyeFilledIcon } from "../EyeFilledIcon";
 import { sanitizeString, sanitizeEmail } from "@/lib/sanitization";
 import { useToast } from "@/hooks/useToast";
+import { EyeSlashFilledIcon } from "../EyeSlashFilledIcon";
+import { EyeFilledIcon } from "../EyeFilledIcon";
 
 interface AuthFormProps {
   onSuccess?: () => void;
@@ -25,7 +25,10 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
   const router = useRouter();
   const { success, error: showError } = useToast();
 
-  const toggleVisibility = useCallback((): void => setIsVisible(!isVisible), []);
+  const toggleVisibility = useCallback(
+    (): void => setIsVisible(!isVisible),
+    [],
+  );
 
   const signInWithEmail = useCallback(async (): Promise<void> => {
     try {
@@ -63,7 +66,10 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
       // Update the profile
       const { error: updateError } = await supabase
         .from("profiles")
-        .upsert({ id: data.user.id, email: sanitizedEmail }, { onConflict: "id" });
+        .upsert(
+          { id: data.user.id, email: sanitizedEmail },
+          { onConflict: "id" },
+        );
 
       if (updateError) {
         // Error updating profile - handled gracefully
@@ -72,7 +78,10 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
       success("Successfully signed in!", "Welcome!");
       onSuccess?.();
     } catch (err) {
-      showError("An unexpected error occurred during sign in.", "Sign In Error");
+      showError(
+        "An unexpected error occurred during sign in.",
+        "Sign In Error",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -114,12 +123,21 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
       );
 
       if (profileError) {
-        success("Account created! Please check your email for verification.", "Sign Up Successful");
+        success(
+          "Account created! Please check your email for verification.",
+          "Sign Up Successful",
+        );
       } else {
-        success("Signed up successfully! Please check your email for verification.", "Sign Up Successful");
+        success(
+          "Signed up successfully! Please check your email for verification.",
+          "Sign Up Successful",
+        );
       }
     } catch (err) {
-      showError("An unexpected error occurred during sign up.", "Sign Up Error");
+      showError(
+        "An unexpected error occurred during sign up.",
+        "Sign Up Error",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -129,7 +147,9 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
     <div className="p-8">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">Welcome</h1>
-        <p className="text-gray-400">Sign in to your account or create a new one</p>
+        <p className="text-gray-400">
+          Sign in to your account or create a new one
+        </p>
       </div>
 
       <div className="flex justify-center mb-8">
@@ -163,14 +183,17 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
         <div className="space-y-6">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-white mb-2">Sign In</h2>
-            <p className="text-gray-400 text-sm">Welcome back! Please sign in to continue.</p>
+            <p className="text-gray-400 text-sm">
+              Welcome back! Please sign in to continue.
+            </p>
           </div>
           <div className="space-y-4">
             <Input
               aria-label="Email address"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Email"
               placeholder="Enter your email"
@@ -182,18 +205,17 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
               aria-label="Password"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               endContent={
                 <button
-                  aria-label={
-                    isVisible ? "Hide password" : "Show password"
-                  }
+                  aria-label={isVisible ? "Hide password" : "Show password"}
                   className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:rounded"
                   type="button"
                   onClick={toggleVisibility}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       toggleVisibility();
                     }
@@ -222,19 +244,24 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
               {isLoading ? "Signing In..." : "Sign In"}
             </Button>
           </div>
-          </div>
+        </div>
       ) : (
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-white mb-2">Create Account</h2>
-            <p className="text-gray-400 text-sm">Join our community of artists and creators.</p>
+            <h2 className="text-xl font-semibold text-white mb-2">
+              Create Account
+            </h2>
+            <p className="text-gray-400 text-sm">
+              Join our community of artists and creators.
+            </p>
           </div>
           <div className="space-y-4">
             <Input
               aria-label="Full name"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Name"
               placeholder="Enter your name"
@@ -246,7 +273,8 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
               aria-label="Email address"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Email"
               placeholder="Enter your email"
@@ -258,18 +286,17 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
               aria-label="Password"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               endContent={
                 <button
-                  aria-label={
-                    isVisible ? "Hide password" : "Show password"
-                  }
+                  aria-label={isVisible ? "Hide password" : "Show password"}
                   className="focus:outline-none focus:ring-2 focus:ring-purple-500 focus:rounded"
                   type="button"
                   onClick={toggleVisibility}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       toggleVisibility();
                     }

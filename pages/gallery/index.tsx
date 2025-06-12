@@ -215,8 +215,12 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
   if (!item || !isOpen || !item.name) return null;
 
   const isVideo =
-    (item.fileType && typeof item.fileType === "string" && item.fileType.startsWith("video/")) ||
-    (item.name && typeof item.name === "string" && item.name.toLowerCase().endsWith(".mp4"));
+    (item.fileType &&
+      typeof item.fileType === "string" &&
+      item.fileType.startsWith("video/")) ||
+    (item.name &&
+      typeof item.name === "string" &&
+      item.name.toLowerCase().endsWith(".mp4"));
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
@@ -332,10 +336,14 @@ ImageModal.displayName = "ImageModal";
 const GalleryItem = React.memo<GalleryItemProps>(
   ({ item, onClick, priority }) => {
     if (!item || !item.name) return null;
-    
+
     const isVideo =
-      (item.fileType && typeof item.fileType === "string" && item.fileType.startsWith("video/")) ||
-      (item.name && typeof item.name === "string" && item.name.toLowerCase().endsWith(".mp4"));
+      (item.fileType &&
+        typeof item.fileType === "string" &&
+        item.fileType.startsWith("video/")) ||
+      (item.name &&
+        typeof item.name === "string" &&
+        item.name.toLowerCase().endsWith(".mp4"));
 
     const handleClick = (): void => {
       onClick(item);
@@ -385,7 +393,7 @@ const GalleryItem = React.memo<GalleryItemProps>(
               width={300}
             />
           )}
-          
+
           {/* Overlay gradient */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
@@ -489,10 +497,11 @@ function GalleryPage(): JSX.Element {
                 (desc) =>
                   desc.file_name === file.name && desc.user_id === user.id,
               )?.description,
-              fileType: fileDescData?.find(
-                (desc) =>
-                  desc.file_name === file.name && desc.user_id === user.id,
-              )?.file_type || "",
+              fileType:
+                fileDescData?.find(
+                  (desc) =>
+                    desc.file_name === file.name && desc.user_id === user.id,
+                )?.file_type || "",
             }));
           }),
         );
@@ -500,7 +509,10 @@ function GalleryPage(): JSX.Element {
         // Sort content by most recent first and filter out items without descriptions
         const flatContent = allContent
           .flat()
-          .filter((item) => item.description && item.name && typeof item.name === "string") // Only show items with descriptions and valid names
+          .filter(
+            (item) =>
+              item.description && item.name && typeof item.name === "string",
+          ) // Only show items with descriptions and valid names
           .sort(
             (a, b) =>
               new Date(b.created_at || 0).getTime() -
@@ -627,7 +639,8 @@ function GalleryPage(): JSX.Element {
                 ))}
               </select>
               <div className="text-sm text-gray-400">
-                {filteredContent.length} {filteredContent.length === 1 ? 'artwork' : 'artworks'}
+                {filteredContent.length}{" "}
+                {filteredContent.length === 1 ? "artwork" : "artworks"}
               </div>
             </div>
           </div>

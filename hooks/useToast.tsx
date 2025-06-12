@@ -1,10 +1,16 @@
-import React, { createContext, useContext, useCallback, useState, ReactNode } from 'react';
-import ErrorMessage from '@/components/ui/ErrorMessage';
-import SuccessMessage from '@/components/ui/SuccessMessage';
+import React, {
+  createContext,
+  useContext,
+  useCallback,
+  useState,
+  ReactNode,
+} from "react";
+import ErrorMessage from "@/components/ui/ErrorMessage";
+import SuccessMessage from "@/components/ui/SuccessMessage";
 
 export interface Toast {
   id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
+  type: "success" | "error" | "warning" | "info";
   title?: string;
   message: string;
   duration?: number;
@@ -13,10 +19,15 @@ export interface Toast {
 
 interface ToastContextType {
   toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
+  addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
   success: (message: string, title?: string, duration?: number) => void;
-  error: (message: string, title?: string, duration?: number, onRetry?: () => void) => void;
+  error: (
+    message: string,
+    title?: string,
+    duration?: number,
+    onRetry?: () => void,
+  ) => void;
   warning: (message: string, title?: string, duration?: number) => void;
   info: (message: string, title?: string, duration?: number) => void;
 }
@@ -26,7 +37,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
 export function useToast(): ToastContextType {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
 }
@@ -38,11 +49,11 @@ interface ToastProviderProps {
 export function ToastProvider({ children }: ToastProviderProps): JSX.Element {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+  const addToast = useCallback((toast: Omit<Toast, "id">) => {
     const id = Math.random().toString(36).substr(2, 9);
     const newToast: Toast = { ...toast, id };
-    
-    setToasts(prev => [...prev, newToast]);
+
+    setToasts((prev) => [...prev, newToast]);
 
     // Auto-remove toast after duration (default 5 seconds)
     const duration = toast.duration ?? 5000;
@@ -54,24 +65,41 @@ export function ToastProvider({ children }: ToastProviderProps): JSX.Element {
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
-  const success = useCallback((message: string, title?: string, duration?: number) => {
-    addToast({ type: 'success', message, title, duration });
-  }, [addToast]);
+  const success = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      addToast({ type: "success", message, title, duration });
+    },
+    [addToast],
+  );
 
-  const error = useCallback((message: string, title?: string, duration?: number, onRetry?: () => void) => {
-    addToast({ type: 'error', message, title, duration, onRetry });
-  }, [addToast]);
+  const error = useCallback(
+    (
+      message: string,
+      title?: string,
+      duration?: number,
+      onRetry?: () => void,
+    ) => {
+      addToast({ type: "error", message, title, duration, onRetry });
+    },
+    [addToast],
+  );
 
-  const warning = useCallback((message: string, title?: string, duration?: number) => {
-    addToast({ type: 'warning', message, title, duration });
-  }, [addToast]);
+  const warning = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      addToast({ type: "warning", message, title, duration });
+    },
+    [addToast],
+  );
 
-  const info = useCallback((message: string, title?: string, duration?: number) => {
-    addToast({ type: 'info', message, title, duration });
-  }, [addToast]);
+  const info = useCallback(
+    (message: string, title?: string, duration?: number) => {
+      addToast({ type: "info", message, title, duration });
+    },
+    [addToast],
+  );
 
   const value: ToastContextType = {
     toasts,
@@ -96,7 +124,10 @@ interface ToastContainerProps {
   onRemove: (id: string) => void;
 }
 
-function ToastContainer({ toasts, onRemove }: ToastContainerProps): JSX.Element {
+function ToastContainer({
+  toasts,
+  onRemove,
+}: ToastContainerProps): JSX.Element {
   if (toasts.length === 0) {
     return <></>;
   }
@@ -108,7 +139,7 @@ function ToastContainer({ toasts, onRemove }: ToastContainerProps): JSX.Element 
           key={toast.id}
           className="animate-in slide-in-from-top-2 fade-in duration-300"
         >
-          {toast.type === 'success' ? (
+          {toast.type === "success" ? (
             <SuccessMessage
               title={toast.title}
               message={toast.message}
@@ -118,7 +149,13 @@ function ToastContainer({ toasts, onRemove }: ToastContainerProps): JSX.Element 
             <ErrorMessage
               title={toast.title}
               message={toast.message}
-              variant={toast.type === 'error' ? 'error' : toast.type === 'warning' ? 'warning' : 'info'}
+              variant={
+                toast.type === "error"
+                  ? "error"
+                  : toast.type === "warning"
+                    ? "warning"
+                    : "info"
+              }
               onDismiss={() => onRemove(toast.id)}
               onRetry={toast.onRetry}
             />
@@ -140,7 +177,12 @@ export const toast = {
   success: (message: string, title?: string, duration?: number) => {
     toastInstance?.success(message, title, duration);
   },
-  error: (message: string, title?: string, duration?: number, onRetry?: () => void) => {
+  error: (
+    message: string,
+    title?: string,
+    duration?: number,
+    onRetry?: () => void,
+  ) => {
     toastInstance?.error(message, title, duration, onRetry);
   },
   warning: (message: string, title?: string, duration?: number) => {

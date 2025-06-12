@@ -61,7 +61,11 @@ const AdminPage = () => {
     );
   }
 
-  return <AdminPanel />;
+  return (
+    <DefaultLayout>
+      <AdminPanel />
+    </DefaultLayout>
+  );
 };
 
 export default AdminPage;

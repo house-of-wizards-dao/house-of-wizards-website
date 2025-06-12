@@ -7,7 +7,6 @@ import { FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa";
 import { useUser } from "@supabase/auth-helpers-react";
 
 import { useToast } from "@/hooks/useToast";
-import { sanitizeString, sanitizeUrl, sanitizeUsername } from "@/lib/sanitization";
 
 const AVATAR_CDN_URL =
   "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/avatars/";
@@ -116,7 +115,8 @@ export default function ProfileEditor({
           ) : (
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-purple-500/20 to-violet-500/20 border-2 border-purple-500/30 flex items-center justify-center">
               <span className="text-purple-300 text-sm font-medium">
-                {user.user_metadata?.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase()}
+                {user.user_metadata?.name?.[0]?.toUpperCase() ||
+                  user.email?.[0]?.toUpperCase()}
               </span>
             </div>
           )}
@@ -133,7 +133,7 @@ export default function ProfileEditor({
             className="absolute -bottom-1 -right-1 bg-purple-500 hover:bg-purple-600 rounded-full p-2 shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-gray-800"
             onClick={() => fileInputRef.current?.click()}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 fileInputRef.current?.click();
               }
@@ -143,7 +143,7 @@ export default function ProfileEditor({
             <PencilIcon className="h-3 w-3 text-white" />
           </button>
         </div>
-        
+
         {/* Name and Email */}
         <div className="flex-1 space-y-2">
           {isEditingName ? (
@@ -153,7 +153,8 @@ export default function ProfileEditor({
                 className="max-w-md"
                 classNames={{
                   input: "bg-gray-800/50 border-gray-600 text-white",
-                  inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                  inputWrapper:
+                    "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
                 }}
                 label="Display Name"
                 placeholder="Enter your name"
@@ -162,7 +163,7 @@ export default function ProfileEditor({
                 onChange={(e) => setEditableName(e.target.value)}
               />
               <div className="flex gap-2">
-                <Button 
+                <Button
                   className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400"
                   size="sm"
                   variant="bordered"
@@ -191,7 +192,7 @@ export default function ProfileEditor({
                   className="p-1 rounded-md bg-gray-700/50 hover:bg-gray-600/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400"
                   onClick={() => setIsEditingName(true)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
+                    if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
                       setIsEditingName(true);
                     }
@@ -216,7 +217,7 @@ export default function ProfileEditor({
             className="p-1 rounded-md bg-gray-700/50 hover:bg-gray-600/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400"
             onClick={() => setIsEditingDescription(true)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 setIsEditingDescription(true);
               }
@@ -234,7 +235,8 @@ export default function ProfileEditor({
               className="max-w-lg"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Description"
               placeholder="Tell us about yourself..."
@@ -243,7 +245,7 @@ export default function ProfileEditor({
               onChange={(e) => setUserDescription(e.target.value)}
             />
             <div className="flex gap-2">
-              <Button 
+              <Button
                 className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400"
                 size="sm"
                 variant="bordered"
@@ -277,7 +279,7 @@ export default function ProfileEditor({
             className="p-1 rounded-md bg-gray-700/50 hover:bg-gray-600/50 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400"
             onClick={() => setIsEditingSocial(true)}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 setIsEditingSocial(true);
               }
@@ -294,7 +296,8 @@ export default function ProfileEditor({
               aria-label="Twitter username"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Twitter"
               placeholder="@username"
@@ -307,7 +310,8 @@ export default function ProfileEditor({
               aria-label="Discord username"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Discord"
               placeholder="username#1234"
@@ -320,7 +324,8 @@ export default function ProfileEditor({
               aria-label="Website URL"
               classNames={{
                 input: "bg-gray-800/50 border-gray-600 text-white",
-                inputWrapper: "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500"
+                inputWrapper:
+                  "bg-gray-800/50 border-gray-600 hover:border-purple-500 focus-within:border-purple-500",
               }}
               label="Website"
               placeholder="https://your-website.com"
@@ -330,7 +335,7 @@ export default function ProfileEditor({
               onChange={(e) => setWebsite(e.target.value)}
             />
             <div className="flex gap-2">
-              <Button 
+              <Button
                 className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 text-green-400"
                 size="sm"
                 variant="bordered"
@@ -378,7 +383,9 @@ export default function ProfileEditor({
                 target="_blank"
               >
                 <FaGlobe size={16} />
-                <span className="text-sm truncate max-w-32">{website.replace(/^https?:\/\//, '')}</span>
+                <span className="text-sm truncate max-w-32">
+                  {website.replace(/^https?:\/\//, "")}
+                </span>
               </a>
             )}
             {!twitter && !discord && !website && (

@@ -81,7 +81,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
       );
     } else {
       return (
-        <div className="w-full h-32 bg-gray-700 rounded-lg flex items-center justify-center">
+        <div className="w-full h-full bg-background/30 rounded-lg flex items-center justify-center">
           <File className="h-8 w-8 text-gray-400" />
         </div>
       );
@@ -97,13 +97,20 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h2 className="text-2xl font-bold text-white">Content Management</h2>
+        <div className="text-sm text-gray-400">
+          Showing {paginatedContent.length} of {filteredContent.length} items
+        </div>
+      </div>
+
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <input
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet text-white"
-            placeholder="Search content..."
+            className="w-full pl-10 pr-4 py-3 bg-background/50 border border-darkviolet rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-violet transition-colors"
+            placeholder="Search content by name, description, or user..."
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -111,7 +118,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
         </div>
 
         <select
-          className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet text-white"
+          className="px-4 py-3 bg-background/50 border border-darkviolet rounded-xl text-white focus:outline-none focus:border-violet transition-colors"
           value={selectedUser}
           onChange={(e) => onUserFilter(e.target.value)}
         >
@@ -124,81 +131,80 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
         </select>
       </div>
 
-      <div className="text-sm text-gray-400">
-        Showing {paginatedContent.length} of {filteredContent.length} items
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {paginatedContent.map((item, index) => (
           <div
             key={`${item.userId}-${item.name}-${index}`}
-            className="bg-gray-800 rounded-lg overflow-hidden group hover:bg-gray-750 transition-colors"
+            className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300"
           >
             <div className="relative">
-              {renderFilePreview(item)}
+              <div className="aspect-video overflow-hidden rounded-t-xl">
+                {renderFilePreview(item)}
+              </div>
               <button
                 aria-label={`Delete ${item.name}`}
-                className="absolute top-2 right-2 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-700"
+                className="absolute top-3 right-3 p-2 bg-red-600/80 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-600 hover:scale-110"
                 onClick={() => onContentDelete(item)}
               >
                 <Trash2 className="text-white" size={14} />
               </button>
+
+              {/* File type indicator */}
+              <div className="absolute bottom-3 left-3">
+                <div className="flex items-center gap-1 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1">
+                  {item.fileType?.startsWith("image/") ? (
+                    <ImageIcon className="text-blue-400" size={12} />
+                  ) : item.fileType?.startsWith("video/") ? (
+                    <File className="text-green-400" size={12} />
+                  ) : (
+                    <File className="text-gray-400" size={12} />
+                  )}
+                  <span className="text-xs text-white">
+                    {item.fileType?.split("/")[0] || "unknown"}
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div className="p-3">
+            <div className="p-4 space-y-2">
               <h4
-                className="text-white font-medium text-sm truncate"
+                className="text-white font-medium text-sm line-clamp-1"
                 title={item.name}
               >
                 {item.name}
               </h4>
-              <p
-                className="text-gray-400 text-xs mt-1 truncate"
-                title={item.userName}
-              >
+              <p className="text-gray-400 text-xs" title={item.userName}>
                 by {item.userName}
               </p>
               {item.description && (
                 <p
-                  className="text-gray-300 text-xs mt-2 line-clamp-2"
+                  className="text-gray-300 text-xs line-clamp-2"
                   title={item.description}
                 >
                   {item.description}
                 </p>
               )}
-              <div className="flex items-center gap-1 mt-2">
-                {item.fileType?.startsWith("image/") ? (
-                  <ImageIcon className="text-blue-400" size={12} />
-                ) : item.fileType?.startsWith("video/") ? (
-                  <File className="text-green-400" size={12} />
-                ) : (
-                  <File className="text-gray-400" size={12} />
-                )}
-                <span className="text-xs text-gray-500">
-                  {item.fileType?.split("/")[0] || "unknown"}
-                </span>
-              </div>
             </div>
           </div>
         ))}
       </div>
 
       {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-6">
+        <div className="flex justify-center items-center gap-4 mt-8">
           <button
-            className="px-3 py-1 bg-gray-800 text-white rounded disabled:opacity-50 hover:bg-gray-700"
+            className="px-6 py-3 bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentPage === 1}
             onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
           >
             Previous
           </button>
 
-          <span className="text-gray-400">
+          <span className="text-gray-400 bg-background/50 px-4 py-2 rounded-full border border-darkviolet">
             Page {currentPage} of {totalPages}
           </span>
 
           <button
-            className="px-3 py-1 bg-gray-800 text-white rounded disabled:opacity-50 hover:bg-gray-700"
+            className="px-6 py-3 bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={currentPage === totalPages}
             onClick={() =>
               setCurrentPage((prev) => Math.min(totalPages, prev + 1))

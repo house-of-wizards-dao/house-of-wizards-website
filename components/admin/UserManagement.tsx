@@ -38,13 +38,20 @@ const UserManagement: React.FC<UserManagementProps> = ({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+        <h2 className="text-2xl font-bold text-white">User Management</h2>
+        <div className="text-sm text-gray-400">
+          {filteredUsers.length} of {users.length} users
+        </div>
+      </div>
+
       <div className="flex items-center gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
           <input
-            className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet text-white"
-            placeholder="Search users..."
+            className="w-full pl-10 pr-4 py-3 bg-background/50 border border-darkviolet rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-violet transition-colors"
+            placeholder="Search users by name, email, or ID..."
             type="text"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -52,8 +59,9 @@ const UserManagement: React.FC<UserManagementProps> = ({
         </div>
       </div>
 
-      <div className="bg-gray-800 rounded-lg">
-        <div className="grid grid-cols-5 gap-4 p-4 border-b border-gray-600 font-semibold text-gray-300">
+      <div className="space-y-4">
+        {/* Header - Hidden on mobile */}
+        <div className="hidden lg:grid lg:grid-cols-5 gap-4 p-4 font-semibold text-gray-300 border-b border-darkviolet">
           <span>Name</span>
           <span>Email</span>
           <span>ID</span>
@@ -61,27 +69,38 @@ const UserManagement: React.FC<UserManagementProps> = ({
           <span>Actions</span>
         </div>
 
-        <div className="divide-y divide-gray-600">
-          {filteredUsers.map((user) => (
-            <div key={user.id}>
-              <div className="grid grid-cols-5 gap-4 p-4 items-center hover:bg-gray-700 transition-colors">
-                <span className="text-white font-medium">
-                  {user.name || "No name"}
-                </span>
-                <span className="text-gray-300">
-                  {(user as any).email || "No email"}
-                </span>
+        {filteredUsers.map((user) => (
+          <div
+            key={user.id}
+            className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300"
+          >
+            {/* Mobile/Tablet Layout */}
+            <div className="lg:hidden p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h3 className="text-white font-medium text-lg">
+                    {user.name || "No name"}
+                  </h3>
+                  <p className="text-gray-300 text-sm">
+                    {(user as any).email || "No email"}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      (user as any).role === "admin"
+                        ? "bg-red-600/20 text-red-400 border border-red-600"
+                        : "bg-violet/20 text-violet border border-violet"
+                    }`}
+                  >
+                    {(user as any).role || "user"}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
                 <span className="text-gray-400 font-mono text-sm">
-                  {user.id.slice(0, 8)}...
-                </span>
-                <span
-                  className={`px-2 py-1 rounded text-xs font-medium ${
-                    (user as any).role === "admin"
-                      ? "bg-red-900 text-red-200"
-                      : "bg-blue-900 text-blue-200"
-                  }`}
-                >
-                  {(user as any).role || "user"}
+                  ID: {user.id.slice(0, 8)}...
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -90,7 +109,7 @@ const UserManagement: React.FC<UserManagementProps> = ({
                         ? "Collapse user details"
                         : "Expand user details"
                     }
-                    className="p-1 text-gray-400 hover:text-white transition-colors"
+                    className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
                     onClick={() => onUserToggle(user.id)}
                   >
                     {expandedUser === user.id ? (
@@ -101,46 +120,89 @@ const UserManagement: React.FC<UserManagementProps> = ({
                   </button>
                   <button
                     aria-label={`Delete user ${user.name}`}
-                    className="p-1 text-red-400 hover:text-red-300 transition-colors"
+                    className="p-2 text-gray-400 hover:text-red-400 transition-colors rounded-lg hover:bg-red-400/20"
                     onClick={() => onUserDelete(user.id)}
                   >
                     <Trash2 size={16} />
                   </button>
                 </div>
               </div>
+            </div>
 
-              {expandedUser === user.id && (
-                <div className="px-4 pb-4 bg-gray-750">
-                  <div className="bg-gray-900 p-4 rounded">
-                    <h4 className="text-white font-medium mb-2">
-                      User Details
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-gray-400">Full ID:</span>
-                        <p className="text-white font-mono">{user.id}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Created:</span>
-                        <p className="text-white">
-                          {user.created_at
-                            ? new Date(user.created_at).toLocaleDateString()
-                            : "Unknown"}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Bio:</span>
-                        <p className="text-white">
-                          {user.bio || "No bio provided"}
-                        </p>
-                      </div>
-                    </div>
+            {/* Desktop Layout */}
+            <div className="hidden lg:grid lg:grid-cols-5 gap-4 p-4 items-center">
+              <span className="text-white font-medium">
+                {user.name || "No name"}
+              </span>
+              <span className="text-gray-300">
+                {(user as any).email || "No email"}
+              </span>
+              <span className="text-gray-400 font-mono text-sm">
+                {user.id.slice(0, 8)}...
+              </span>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium w-fit ${
+                  (user as any).role === "admin"
+                    ? "bg-red-600/20 text-red-400 border border-red-600"
+                    : "bg-violet/20 text-violet border border-violet"
+                }`}
+              >
+                {(user as any).role || "user"}
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  aria-label={
+                    expandedUser === user.id
+                      ? "Collapse user details"
+                      : "Expand user details"
+                  }
+                  className="p-2 text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/10"
+                  onClick={() => onUserToggle(user.id)}
+                >
+                  {expandedUser === user.id ? (
+                    <ChevronUp size={16} />
+                  ) : (
+                    <ChevronDown size={16} />
+                  )}
+                </button>
+                <button
+                  aria-label={`Delete user ${user.name}`}
+                  className="p-2 text-gray-400 hover:text-red-400 transition-colors rounded-lg hover:bg-red-400/20"
+                  onClick={() => onUserDelete(user.id)}
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            </div>
+
+            {/* Expanded Details */}
+            {expandedUser === user.id && (
+              <div className="border-t border-darkviolet p-6 bg-background/30">
+                <h4 className="text-white font-medium mb-4">User Details</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-gray-400 block mb-1">Full ID:</span>
+                    <p className="text-white font-mono break-all">{user.id}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 block mb-1">Created:</span>
+                    <p className="text-white">
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleDateString()
+                        : "Unknown"}
+                    </p>
+                  </div>
+                  <div className="md:col-span-2">
+                    <span className="text-gray-400 block mb-1">Bio:</span>
+                    <p className="text-white">
+                      {user.bio || "No bio provided"}
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
-          ))}
-        </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
 
       {filteredUsers.length === 0 && (

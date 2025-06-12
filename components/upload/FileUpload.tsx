@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import Image from "next/image";
@@ -15,9 +15,13 @@ interface FileUploadProps {
   onUploadComplete?: () => void;
 }
 
-export default function FileUpload({ onUploadComplete }: FileUploadProps): JSX.Element {
+export default function FileUpload({
+  onUploadComplete,
+}: FileUploadProps): JSX.Element {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [fileDescriptions, setFileDescriptions] = useState<FileDescriptions>({});
+  const [fileDescriptions, setFileDescriptions] = useState<FileDescriptions>(
+    {},
+  );
   const [uploadProgress, setUploadProgress] = useState<UploadProgressState>({});
   const [filePreviews, setFilePreviews] = useState<FilePreviews>({});
   const [error, setError] = useState<string>("");
@@ -25,61 +29,70 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps): JSX.E
   const user = useUser();
   const supabase = useSupabaseClient();
 
-  const handleFilesSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>): void => {
-    const files = Array.from(e.target.files || []);
-    setSelectedFiles(files);
-    setError("");
+  const handleFilesSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>): void => {
+      const files = Array.from(e.target.files || []);
+      setSelectedFiles(files);
+      setError("");
 
-    // Initialize descriptions for new files
-    const newDescriptions: FileDescriptions = {};
-    const newPreviews: FilePreviews = {};
+      // Initialize descriptions for new files
+      const newDescriptions: FileDescriptions = {};
+      const newPreviews: FilePreviews = {};
 
-    files.forEach((file) => {
-      newDescriptions[file.name] = "";
+      files.forEach((file) => {
+        newDescriptions[file.name] = "";
 
-      // Generate preview URLs for images and videos
-      if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
-        const previewUrl = URL.createObjectURL(file);
-        newPreviews[file.name] = previewUrl;
-      }
-    });
-
-    setFileDescriptions(newDescriptions);
-    setFilePreviews(newPreviews);
-  }, []);
-
-  const removeSelectedFile = useCallback((fileName: string): void => {
-    setSelectedFiles((prev) => prev.filter((file) => file.name !== fileName));
-
-    setFileDescriptions((prev) => {
-      const newDescriptions = { ...prev };
-      delete newDescriptions[fileName];
-      return newDescriptions;
-    });
-
-    setUploadProgress((prev) => {
-      const newProgress = { ...prev };
-      delete newProgress[fileName];
-      return newProgress;
-    });
-
-    // Revoke the object URL when removing a file
-    if (filePreviews[fileName]) {
-      URL.revokeObjectURL(filePreviews[fileName]);
-      setFilePreviews((prev) => {
-        const newPreviews = { ...prev };
-        delete newPreviews[fileName];
-        return newPreviews;
+        // Generate preview URLs for images and videos
+        if (file.type.startsWith("image/") || file.type.startsWith("video/")) {
+          const previewUrl = URL.createObjectURL(file);
+          newPreviews[file.name] = previewUrl;
+        }
       });
-    }
-  }, [filePreviews]);
 
-  const handleDescriptionChange = useCallback((fileName: string, description: string): void => {
-    setFileDescriptions((prev) => ({
-      ...prev,
-      [fileName]: description,
-    }));
-  }, []);
+      setFileDescriptions(newDescriptions);
+      setFilePreviews(newPreviews);
+    },
+    [],
+  );
+
+  const removeSelectedFile = useCallback(
+    (fileName: string): void => {
+      setSelectedFiles((prev) => prev.filter((file) => file.name !== fileName));
+
+      setFileDescriptions((prev) => {
+        const newDescriptions = { ...prev };
+        delete newDescriptions[fileName];
+        return newDescriptions;
+      });
+
+      setUploadProgress((prev) => {
+        const newProgress = { ...prev };
+        delete newProgress[fileName];
+        return newProgress;
+      });
+
+      // Revoke the object URL when removing a file
+      if (filePreviews[fileName]) {
+        URL.revokeObjectURL(filePreviews[fileName]);
+        setFilePreviews((prev) => {
+          const newPreviews = { ...prev };
+          delete newPreviews[fileName];
+          return newPreviews;
+        });
+      }
+    },
+    [filePreviews],
+  );
+
+  const handleDescriptionChange = useCallback(
+    (fileName: string, description: string): void => {
+      setFileDescriptions((prev) => ({
+        ...prev,
+        [fileName]: description,
+      }));
+    },
+    [],
+  );
 
   const handleMultipleUpload = useCallback(async (): Promise<void> => {
     if (selectedFiles.length === 0) {
@@ -191,41 +204,51 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps): JSX.E
     } catch (err) {
       setError("Some files failed to upload");
     }
-  }, [selectedFiles, fileDescriptions, user, supabase, onUploadComplete, filePreviews]);
+  }, [
+    selectedFiles,
+    fileDescriptions,
+    user,
+    supabase,
+    onUploadComplete,
+    filePreviews,
+  ]);
 
-  const renderFilePreviewForUpload = useCallback((file: File): JSX.Element => {
-    const preview = filePreviews[file.name];
+  const renderFilePreviewForUpload = useCallback(
+    (file: File): JSX.Element => {
+      const preview = filePreviews[file.name];
 
-    if (!preview) {
-      return (
-        <div className="w-20 h-20 bg-gray-200 rounded-md flex items-center justify-center">
-          <span className="text-xs text-gray-500">
-            {file.name.split(".").pop()}
-          </span>
-        </div>
-      );
-    }
+      if (!preview) {
+        return (
+          <div className="w-20 h-20 bg-gray-200 rounded-md flex items-center justify-center">
+            <span className="text-xs text-gray-500">
+              {file.name.split(".").pop()}
+            </span>
+          </div>
+        );
+      }
 
-    if (file.type.startsWith("video/")) {
-      return (
-        <video className="object-cover rounded-md" height="80" width="80">
-          <source src={preview} type={file.type} />
-          Your browser does not support the video tag.
-        </video>
-      );
-    } else {
-      return (
-        <Image
-          alt={file.name}
-          className="object-cover rounded-md"
-          height={80}
-          src={preview}
-          unoptimized
-          width={80}
-        />
-      );
-    }
-  }, [filePreviews]);
+      if (file.type.startsWith("video/")) {
+        return (
+          <video className="object-cover rounded-md" height="80" width="80">
+            <source src={preview} type={file.type} />
+            Your browser does not support the video tag.
+          </video>
+        );
+      } else {
+        return (
+          <Image
+            alt={file.name}
+            className="object-cover rounded-md"
+            height={80}
+            src={preview}
+            unoptimized
+            width={80}
+          />
+        );
+      }
+    },
+    [filePreviews],
+  );
 
   // Clean up object URLs when component unmounts
   React.useEffect(() => {
@@ -236,8 +259,10 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps): JSX.E
 
   return (
     <div className="sm:w-full w-full max-w-3xl">
-      <p className="mt-8 sm:text-xl text-md font-medium">Upload your art here!</p>
-      
+      <p className="mt-8 sm:text-xl text-md font-medium">
+        Upload your art here!
+      </p>
+
       {error && (
         <div className="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
@@ -270,7 +295,9 @@ export default function FileUpload({ onUploadComplete }: FileUploadProps): JSX.E
                     {renderFilePreviewForUpload(file)}
 
                     <div className="flex-1">
-                      <p className="text-sm font-medium truncate">{file.name}</p>
+                      <p className="text-sm font-medium truncate">
+                        {file.name}
+                      </p>
                       <p className="text-xs text-gray-500">
                         {(file.size / 1024).toFixed(1)} KB
                       </p>

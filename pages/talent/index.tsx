@@ -21,7 +21,8 @@ interface BioProps {
   user_id?: string;
 }
 
-const AVATAR_STORAGE_URL = "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/talent-avatars/";
+const AVATAR_STORAGE_URL =
+  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/talent-avatars/";
 
 interface AddTalentModalProps {
   isOpen: boolean;
@@ -49,13 +50,17 @@ const Bio: FC<BioProps> = ({
               alt={`${name}'s avatar`}
               className="rounded-xl object-cover w-full h-full"
               height={112}
-              src={avatar_url ? `${AVATAR_STORAGE_URL}${avatar_url}` : `/img/talent/${imageName || `${name}.png`}`}
+              src={
+                avatar_url
+                  ? `${AVATAR_STORAGE_URL}${avatar_url}`
+                  : `/img/talent/${imageName || `${name}.png`}`
+              }
               width={112}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `/img/talent/${name}.png`;
                 target.onerror = () => {
-                  target.src = '/img/logo.png'; // fallback to logo
+                  target.src = "/img/logo.png"; // fallback to logo
                 };
               }}
             />
@@ -75,9 +80,7 @@ const Bio: FC<BioProps> = ({
               </span>
             </div>
             {/* Skillset */}
-            <p className="text-sm text-gray-300 line-clamp-2">
-              {skillset}
-            </p>
+            <p className="text-sm text-gray-300 line-clamp-2">{skillset}</p>
           </div>
 
           {/* Links Section */}
@@ -117,21 +120,24 @@ const Bio: FC<BioProps> = ({
                   navigator.clipboard.writeText(discord);
                   // Show a temporary "Copied!" message
                   const button = e.currentTarget as HTMLButtonElement;
-                  const originalText = button.querySelector('span:last-child')?.textContent;
-                  const span = button.querySelector('span:last-child');
+                  const originalText =
+                    button.querySelector("span:last-child")?.textContent;
+                  const span = button.querySelector("span:last-child");
                   if (span) {
-                    span.textContent = 'Copied!';
-                    span.classList.add('opacity-100');
+                    span.textContent = "Copied!";
+                    span.classList.add("opacity-100");
                     setTimeout(() => {
-                      span.textContent = originalText || '(click to copy)';
-                      span.classList.remove('opacity-100');
+                      span.textContent = originalText || "(click to copy)";
+                      span.classList.remove("opacity-100");
                     }, 2000);
                   }
                 }}
               >
                 <FaDiscord size={14} />
                 <span className="text-sm">{discord}</span>
-                <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">(click to copy)</span>
+                <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                  (click to copy)
+                </span>
               </button>
             )}
           </div>
@@ -142,8 +148,12 @@ const Bio: FC<BioProps> = ({
 };
 
 // Add Talent Modal Component
-const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdded }) => {
-  const [formData, setFormData] = useState<Omit<BioProps, 'id' | 'user_id'>>({
+const AddTalentModal: FC<AddTalentModalProps> = ({
+  isOpen,
+  onClose,
+  onTalentAdded,
+}) => {
+  const [formData, setFormData] = useState<Omit<BioProps, "id" | "user_id">>({
     name: "",
     twitter: "",
     discord: "",
@@ -155,27 +165,27 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
   const [avatarPreview, setAvatarPreview] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
-  
+
   const supabase = useSupabaseClient();
   const user = useUser();
-  
+
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
-      if (!file.type.startsWith('image/')) {
+      if (!file.type.startsWith("image/")) {
         setError("Please select an image file");
         return;
       }
-      
+
       // Validate file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         setError("Image size must be less than 5MB");
         return;
       }
-      
+
       setAvatarFile(file);
-      
+
       // Create preview
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -188,62 +198,64 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    
+
     if (!user) {
       setError("You must be logged in to add yourself to the talent board");
       return;
     }
-    
+
     if (!formData.name || !formData.skillset || !formData.focus) {
       setError("Please fill in all required fields");
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       let avatar_url = "";
-      
+
       // Upload avatar if provided
       if (avatarFile) {
         try {
-          const fileExt = avatarFile.name.split('.').pop();
+          const fileExt = avatarFile.name.split(".").pop();
           const fileName = `${user.id}-${Date.now()}.${fileExt}`;
-          
+
           const { error: uploadError } = await supabase.storage
-            .from('talent-avatars')
+            .from("talent-avatars")
             .upload(fileName, avatarFile, {
-              cacheControl: '3600',
-              upsert: false
+              cacheControl: "3600",
+              upsert: false,
             });
-            
+
           if (uploadError) {
             console.error("Avatar upload error:", uploadError);
             // Continue without avatar instead of throwing error
-            setError("Avatar upload failed. Profile will be created without avatar.");
+            setError(
+              "Avatar upload failed. Profile will be created without avatar.",
+            );
           } else {
             avatar_url = fileName;
           }
         } catch (uploadErr) {
           console.error("Avatar upload exception:", uploadErr);
           // Continue without avatar
-          setError("Avatar upload failed. Profile will be created without avatar.");
+          setError(
+            "Avatar upload failed. Profile will be created without avatar.",
+          );
         }
       }
-      
-      const { error: insertError } = await supabase
-        .from("talents")
-        .insert({
-          ...formData,
-          avatar_url,
-          user_id: user.id,
-        });
-        
+
+      const { error: insertError } = await supabase.from("talents").insert({
+        ...formData,
+        avatar_url,
+        user_id: user.id,
+      });
+
       if (insertError) {
         console.error("Insert error:", insertError);
         throw insertError;
       }
-      
+
       // Reset form
       setFormData({
         name: "",
@@ -255,7 +267,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
       });
       setAvatarFile(null);
       setAvatarPreview("");
-      
+
       onTalentAdded();
       onClose();
     } catch (err: any) {
@@ -271,7 +283,9 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <div className="bg-background border border-darkviolet rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         <div className="flex items-center justify-between p-6 border-b border-darkviolet">
-          <h2 className="text-2xl font-atirose text-violet">Add Yourself to the Talent Board</h2>
+          <h2 className="text-2xl font-atirose text-violet">
+            Add Yourself to the Talent Board
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
@@ -279,14 +293,17 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
             <IoClose size={24} />
           </button>
         </div>
-        
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-88px)]">
+
+        <form
+          onSubmit={handleSubmit}
+          className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-88px)]"
+        >
           {error && (
             <div className="bg-red-900/20 border border-red-600 text-red-400 p-4 rounded-lg">
               {error}
             </div>
           )}
-          
+
           {/* Avatar Upload */}
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
@@ -314,9 +331,11 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
                 title="Choose avatar image"
               />
             </div>
-            <p className="text-xs text-gray-400">Click to upload avatar (optional, max 5MB)</p>
+            <p className="text-xs text-gray-400">
+              Click to upload avatar (optional, max 5MB)
+            </p>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Name <span className="text-red-500">*</span>
@@ -324,20 +343,24 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
               className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
               placeholder="Your name or handle"
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Focus Area <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.focus}
-              onChange={(e) => setFormData({ ...formData, focus: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, focus: e.target.value })
+              }
               className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet transition-colors"
               required
             >
@@ -350,21 +373,23 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
               <option value="Biz Dev">Biz Dev</option>
             </select>
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Skills & Expertise <span className="text-red-500">*</span>
             </label>
             <textarea
               value={formData.skillset}
-              onChange={(e) => setFormData({ ...formData, skillset: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, skillset: e.target.value })
+              }
               className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors resize-none"
               placeholder="Describe your skills and what you can offer..."
               rows={3}
               required
             />
           </div>
-          
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
               Portfolio/Website
@@ -372,12 +397,14 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
             <input
               type="url"
               value={formData.site}
-              onChange={(e) => setFormData({ ...formData, site: e.target.value })}
+              onChange={(e) =>
+                setFormData({ ...formData, site: e.target.value })
+              }
               className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
               placeholder="https://..."
             />
           </div>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -386,12 +413,17 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
               <input
                 type="text"
                 value={formData.twitter}
-                onChange={(e) => setFormData({ ...formData, twitter: e.target.value.replace('@', '') })}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    twitter: e.target.value.replace("@", ""),
+                  })
+                }
                 className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
                 placeholder="username (without @)"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Discord Handle
@@ -399,13 +431,15 @@ const AddTalentModal: FC<AddTalentModalProps> = ({ isOpen, onClose, onTalentAdde
               <input
                 type="text"
                 value={formData.discord}
-                onChange={(e) => setFormData({ ...formData, discord: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, discord: e.target.value })
+                }
                 className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
                 placeholder="username#0000"
               />
             </div>
           </div>
-          
+
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
@@ -441,7 +475,7 @@ const Talent: FC = () => {
   const [talents, setTalents] = useState<BioProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showLoginMessage, setShowLoginMessage] = useState(false);
-  
+
   const supabase = useSupabaseClient();
   const user = useUser();
 
@@ -791,9 +825,9 @@ const Talent: FC = () => {
         .from("talents")
         .select("*")
         .order("created_at", { ascending: false });
-        
+
       if (error) throw error;
-      
+
       // Only use database talents
       setTalents(data || []);
     } catch (error) {
@@ -804,7 +838,7 @@ const Talent: FC = () => {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchTalents();
   }, []);
@@ -824,7 +858,7 @@ const Talent: FC = () => {
 
     return talents.filter((talent) => talent.focus === selectedFocus);
   }, [talents, selectedFocus]);
-  
+
   if (isLoading) {
     return (
       <DefaultLayout>
@@ -845,14 +879,14 @@ const Talent: FC = () => {
           </h1>
           <div className="max-w-3xl mx-auto space-y-4">
             <p className="text-gray-300 text-base leading-relaxed">
-              Looking for collaborators to work on a Forgotten Runes project? Use
-              the talent board below to find community members with the perfect
-              skillset for your team.
+              Looking for collaborators to work on a Forgotten Runes project?
+              Use the talent board below to find community members with the
+              perfect skillset for your team.
             </p>
             <p className="text-gray-300 text-base">
               Interested in being considered for work on community projects?
             </p>
-            
+
             {/* Add to Board Button */}
             <button
               onClick={() => {
@@ -867,7 +901,7 @@ const Talent: FC = () => {
             >
               Add yourself to the board!
             </button>
-            
+
             {showLoginMessage && (
               <div className="mt-4 text-sm text-red-400">
                 Please log in to add yourself to the talent board
@@ -925,10 +959,11 @@ const Talent: FC = () => {
                   </button>
                 ))}
               </div>
-              
+
               {/* Talent Count */}
               <div className="text-sm text-gray-400">
-                {filteredTalents.length} {filteredTalents.length === 1 ? 'talent' : 'talents'}
+                {filteredTalents.length}{" "}
+                {filteredTalents.length === 1 ? "talent" : "talents"}
               </div>
             </div>
           </div>
@@ -941,7 +976,7 @@ const Talent: FC = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Add Talent Modal */}
       <AddTalentModal
         isOpen={isModalOpen}

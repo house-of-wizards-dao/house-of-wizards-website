@@ -1,39 +1,41 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { createClient } from "@supabase/supabase-js";
 import { requireAuth, AuthenticatedUser } from "@/lib/auth";
 import { checkRateLimit, validators } from "@/lib/sanitization";
-import { createClient } from '@supabase/supabase-js';
 
 // Server-side Supabase client with service role key
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
+  process.env.SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 // Sanitize and validate profile update data
 function sanitizeProfileData(body: any): Record<string, any> {
   const sanitized: Record<string, any> = {};
-  
+
   if (body.name !== undefined) {
     sanitized.name = validators.profileUpdate.name(body.name);
   }
-  
+
   if (body.description !== undefined) {
-    sanitized.description = validators.profileUpdate.description(body.description);
+    sanitized.description = validators.profileUpdate.description(
+      body.description,
+    );
   }
-  
+
   if (body.twitter !== undefined) {
     sanitized.twitter = validators.profileUpdate.twitter(body.twitter);
   }
-  
+
   if (body.discord !== undefined) {
     sanitized.discord = validators.profileUpdate.discord(body.discord);
   }
-  
+
   if (body.website !== undefined) {
     sanitized.website = validators.profileUpdate.website(body.website);
   }
-  
+
   return sanitized;
 }
 
@@ -45,12 +47,14 @@ async function handler(
   try {
     // Rate limiting
     checkRateLimit(user.id, 30, 60000); // 30 requests per minute
-    
+
     if (req.method === "GET") {
       // Get current user's profile
       const { data, error } = await supabaseAdmin
         .from("profiles")
-        .select("id, name, email, description, twitter, discord, website, avatar_url, created_at")
+        .select(
+          "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+        )
         .eq("id", user.id)
         .single();
 
@@ -62,7 +66,7 @@ async function handler(
     } else if (req.method === "PUT") {
       // Sanitize input data
       const sanitizedData = sanitizeProfileData(req.body);
-      
+
       // Update current user's profile
       const { data, error } = await supabaseAdmin
         .from("profiles")

@@ -51,7 +51,10 @@ export default function DocsPage() {
         <div className="flex flex-row justify-center flex-wrap gap-6">
           <Link className="[&_a]:hover:text-green" href="/ministries/art">
             <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-darkviolet hover:scale-105 hover:border-violet cursor-pointer">
-              <Image alt="Ministry of Art illustration" src="/img/ministry_art.png" />
+              <Image
+                alt="Ministry of Art illustration"
+                src="/img/ministry_art.png"
+              />
               <span className="font-atirose text-violet text-2xl">
                 Ministry of Art
               </span>
