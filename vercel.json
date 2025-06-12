@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "functions": {
+    "pages/api/**/*.ts": {
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "SKIP_ENV_VALIDATION": "false"
+  }
+}
