@@ -5,87 +5,83 @@ import {
   NavbarMenuToggle,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem
+  NavbarMenuItem,
 } from "@nextui-org/navbar";
-
 import {
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
-  DropdownSection,
-  DropdownItem
+  DropdownItem,
 } from "@nextui-org/dropdown";
-
-import { Button } from "@nextui-org/button";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { Image } from "@nextui-org/image";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
-import { siteConfig } from "@/config/site";
-import { TwitterIcon, GithubIcon, DiscordIcon } from "@/components/icons";
-import { useTheme } from "next-themes";
-import { useSupabaseClient, useUser } from '@supabase/auth-helpers-react';
-import { useEffect, useState } from 'react';
+import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 
-// Add the same CDN URL constant used in your signup page
-const AVATAR_CDN_URL = "https://bdmtbvaqmjiwxbuxflup.supabase.co/storage/v1/object/public/avatars/";
+import { TwitterIcon, DiscordIcon } from "@/components/icons";
+
+// Avatar CDN URL
+const AVATAR_CDN_URL =
+  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/avatars/";
 
 export const Navbar = () => {
-  const { theme } = useTheme();
   const user = useUser();
   const supabase = useSupabaseClient();
   const [avatar, setAvatar] = useState(null);
-  
+
   // Fetch the user's avatar from the profiles table
   useEffect(() => {
     const fetchUserAvatar = async () => {
       if (user) {
         const { data, error } = await supabase
-          .from('profiles')
-          .select('avatar_url')
-          .eq('id', user.id)
+          .from("profiles")
+          .select("avatar_url")
+          .eq("id", user.id)
           .single();
-        
+
         if (!error && data && data.avatar_url) {
           setAvatar(data.avatar_url);
         }
       }
     };
-    
+
     fetchUserAvatar();
   }, [user, supabase]);
 
-  // Add this console log to check if user data is available
-  console.log("User data:", user);
-  console.log("User metadata:", user?.user_metadata);
+  // User data and metadata are available through the user object
 
   return (
     <NextUINavbar className="sm:p-8 p-4" maxWidth="xl" position="static">
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
         <NavbarBrand className="gap-3 max-w-fit">
           <NextLink className="flex justify-start items-center gap-1" href="/">
-           <Image className="rounded-none" width={150} src="/img/logo-white.png"/>
+            <Image
+              alt="HowDAO logo"
+              className="rounded-none"
+              height={50}
+              src="/img/logo-white.png"
+              width={150}
+            />
           </NextLink>
         </NavbarBrand>
       </NavbarContent>
 
       <NavbarContent>
         <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
-{/*           <NavbarItem className="text-sm hover:text-[#9564b4]">
+          {/*           <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink href="/about">
               About
             </NextLink>
           </NavbarItem> */}
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button 
-                className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase"
-              >
+              <button className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
                 Gallery
               </button>
             </DropdownTrigger>
-            <DropdownMenu 
+            <DropdownMenu
               aria-label="Gallery options"
               className="w-auto text-center"
               itemClasses={{
@@ -102,18 +98,15 @@ export const Navbar = () => {
                   Gallery
                 </NextLink>
               </DropdownItem>
-              
             </DropdownMenu>
           </Dropdown>
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button 
-                className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase"
-              >
+              <button className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
                 Community
               </button>
             </DropdownTrigger>
-            <DropdownMenu 
+            <DropdownMenu
               aria-label="Gallery options"
               className="w-auto text-center"
               itemClasses={{
@@ -132,24 +125,21 @@ export const Navbar = () => {
               </DropdownItem>
               <DropdownItem key="signup" textValue="Join">
                 <NextLink className="uppercase" href="/signup">
-                    Join
+                  Join
                 </NextLink>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <NavbarItem className="text-sm hover:text-[#9564b4]">
-            <NextLink
-              className="flex items-center gap-2"
-              href="/ministries"
-            >
+            <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
             </NextLink>
           </NavbarItem>
           <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink
               className="flex items-center gap-2"
-              target="_blank"
               href="https://snapshot.org/#/forgottengov.eth"
+              target="_blank"
             >
               Vote
               <FaExternalLinkAlt />
@@ -177,21 +167,30 @@ export const Navbar = () => {
           <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
             <TwitterIcon className="text-white hover:text-[#9564b4]" />
           </Link>
-          <Link isExternal href="https://discord.gg/forgottenrunes" title="Discord">
+          <Link
+            isExternal
+            href="https://discord.gg/forgottenrunes"
+            title="Discord"
+          >
             <DiscordIcon className="text-white hover:text-[#9564b4]" />
           </Link>
           {user && (
             <NextLink href="/signup" title="Your Profile">
               <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#9564b4] hover:border-white transition-colors">
                 {avatar ? (
-                  <img
-                    src={`${AVATAR_CDN_URL}${avatar}`}
+                  <Image
                     alt="Avatar"
                     className="w-full h-full object-cover"
+                    height={32}
+                    src={`${AVATAR_CDN_URL}${avatar}`}
+                    unoptimized
+                    width={32}
                   />
                 ) : (
                   <div className="w-full h-full bg-[#9564b4] flex items-center justify-center text-white font-bold">
-                    {user.user_metadata?.name ? user.user_metadata.name.charAt(0).toUpperCase() : 'U'}
+                    {user.user_metadata?.name
+                      ? user.user_metadata.name.charAt(0).toUpperCase()
+                      : "U"}
                   </div>
                 )}
               </div>
@@ -206,54 +205,92 @@ export const Navbar = () => {
 
       <NavbarMenu>
         <div className="mx-4 mt-14 flex flex-col gap-2">
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/about" size="lg">
-                About
-              </Link>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/artists"
+            >
+              Artist
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/gallery"
+            >
+              Gallery
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/talent"
+            >
+              Talent
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/community"
+            >
+              Community
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/signup"
+            >
+              Join
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/ministries"
+            >
+              Ministries
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2 flex items-center gap-2"
+              href="https://snapshot.org/#/forgottengov.eth"
+              target="_blank"
+            >
+              Vote
+              <FaExternalLinkAlt size={14} />
+            </NextLink>
+          </NavbarMenuItem>
+          {user && (
+            <NavbarMenuItem className="pt-4 border-t border-gray-600 mt-4">
+              <NextLink
+                className="text-white text-lg uppercase w-full block py-2 flex items-center gap-2"
+                href="/signup"
+              >
+                <div className="w-6 h-6 rounded-full overflow-hidden border border-[#9564b4]">
+                  {avatar ? (
+                    <Image
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                      height={24}
+                      src={`${AVATAR_CDN_URL}${avatar}`}
+                      unoptimized
+                      width={24}
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#9564b4] flex items-center justify-center text-white text-xs font-bold">
+                      {user.user_metadata?.name
+                        ? user.user_metadata.name.charAt(0).toUpperCase()
+                        : "U"}
+                    </div>
+                  )}
+                </div>
+                Profile
+              </NextLink>
             </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/gallery" size="lg">
-                Gallery
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/artists" size="lg">
-                Artists
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/community" size="lg">
-                Community
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/council" size="lg">
-                Council
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/talent" size="lg">
-                Talent
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/ministries" size="lg">
-                Ministries
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                className="text-white" href="/vote" size="lg">
-                Vote
-              </Link>
-            </NavbarMenuItem>
+          )}
         </div>
       </NavbarMenu>
     </NextUINavbar>

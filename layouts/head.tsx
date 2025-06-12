@@ -10,7 +10,12 @@ export const Head = () => {
       <meta key="title" content={siteConfig.name} property="og:title" />
       <meta content={siteConfig.description} property="og:description" />
       <meta content={siteConfig.description} name="description" />
-      <link rel="preload" href="/public/fonts/Mona-Sans.woff2" as="font" type="font/woff2"></link>
+      <link
+        as="font"
+        href="/public/fonts/Mona-Sans.woff2"
+        rel="preload"
+        type="font/woff2"
+      />
       <meta
         key="viewport"
         content="viewport-fit=cover, width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"

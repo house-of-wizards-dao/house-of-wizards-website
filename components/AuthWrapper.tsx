@@ -1,8 +1,7 @@
 // components/AuthWrapper.tsx
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useSupabaseClient } from '@supabase/auth-helpers-react';
-import { Session } from '@supabase/supabase-js';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useSupabaseClient } from "@supabase/auth-helpers-react";
 
 interface AuthWrapperProps {
   children: React.ReactNode;
@@ -17,35 +16,39 @@ export const AuthWrapper = ({ children }: AuthWrapperProps) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+
         if (!session) {
-          router.push('/admin/login');
+          router.push("/admin/login");
+
           return;
         }
 
         const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', session.user.id)
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
           .single();
 
-        if (profile?.role !== 'admin') {
-          router.push('/admin/login?error=unauthorized');
+        if (profile?.role !== "admin") {
+          router.push("/admin/login?error=unauthorized");
+
           return;
         }
 
         setIsAuthorized(true);
       } catch (error) {
-        console.error('Auth error:', error);
-        router.push('/admin/login');
+        // Handle auth error silently in production
+        router.push("/admin/login");
       } finally {
         setIsLoading(false);
       }
     };
 
     checkAuth();
-  }, []);
+  }, [router, supabase]);
 
   if (isLoading) {
     return (

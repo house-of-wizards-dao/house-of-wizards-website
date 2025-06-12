@@ -8,9 +8,8 @@ import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
 
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient ("https://bdmtbvaqmjiwxbuxflup.supabase.co","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJkbXRidmFxbWppd3hidXhmbHVwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDA1OTk1NzcsImV4cCI6MjA1NjE3NTU3N30.dYxicIkGHhAiVVr6Y-sIknfTCBNgMjrjh1R3klLN348");
+import { supabase } from "@/lib/supabase";
+import { ToastProvider } from "@/hooks/useToast";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -19,12 +18,16 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <NextUIProvider navigate={router.push}>
-      <NextThemesProvider attribute="class"
-      defaultTheme="dark"
-      enableSystem={false}
-      forcedTheme="dark">
+      <NextThemesProvider
+        attribute="class"
+        defaultTheme="dark"
+        enableSystem={false}
+        forcedTheme="dark"
+      >
         <SessionContextProvider supabaseClient={supabase}>
-        <RenderedComponent {...pageProps} />
+          <ToastProvider>
+            <RenderedComponent {...pageProps} />
+          </ToastProvider>
         </SessionContextProvider>
       </NextThemesProvider>
     </NextUIProvider>
