@@ -19,7 +19,7 @@ interface Auction {
   current_bid: number;
   reserve_price?: number;
   end_time: string;
-  status: 'upcoming' | 'active' | 'ended' | 'settled' | 'cancelled';
+  status: "upcoming" | "active" | "ended" | "settled" | "cancelled";
   creator_name: string;
   creator_avatar?: string;
   total_bids: number;
@@ -27,23 +27,26 @@ interface Auction {
   category: string;
 }
 
-const ARTWORK_CDN_URL = "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
+const ARTWORK_CDN_URL =
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 
 export default function AuctionsPage() {
   const supabase = useSupabaseClient();
   const [auctions, setAuctions] = useState<Auction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'active' | 'upcoming' | 'ended'>('active');
+  const [filter, setFilter] = useState<"all" | "active" | "upcoming" | "ended">(
+    "active",
+  );
 
   const fetchAuctions = useCallback(async () => {
     try {
       let query = supabase
-        .from('active_auctions')
-        .select('*')
-        .order('end_time', { ascending: true });
+        .from("active_auctions")
+        .select("*")
+        .order("end_time", { ascending: true });
 
-      if (filter !== 'all') {
-        query = query.eq('status', filter);
+      if (filter !== "all") {
+        query = query.eq("status", filter);
       }
 
       const { data, error } = await query;
@@ -51,7 +54,7 @@ export default function AuctionsPage() {
       if (error) throw error;
       setAuctions(data || []);
     } catch (error) {
-      console.error('Error fetching auctions:', error);
+      console.error("Error fetching auctions:", error);
     } finally {
       setLoading(false);
     }
@@ -66,7 +69,7 @@ export default function AuctionsPage() {
     const end = new Date(endTime);
     const diff = end.getTime() - now.getTime();
 
-    if (diff <= 0) return 'Ended';
+    if (diff <= 0) return "Ended";
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -100,40 +103,40 @@ export default function AuctionsPage() {
             Auction House
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
-            Discover and bid on exclusive artworks from the Forgotten Runes community.
-            Every piece tells a story waiting to be discovered.
+            Discover and bid on exclusive artworks from the Forgotten Runes
+            community. Every piece tells a story waiting to be discovered.
           </p>
-          
+
           <div className="flex justify-center gap-4 mb-8">
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
-                filter === 'active' 
-                  ? 'bg-violet text-white' 
-                  : 'bg-transparent border border-darkviolet text-gray-300 hover:border-violet'
+                filter === "active"
+                  ? "bg-violet text-white"
+                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
               }`}
-              onClick={() => setFilter('active')}
+              onClick={() => setFilter("active")}
             >
               <Gavel size={16} className="mr-2" />
               Active Auctions
             </Button>
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
-                filter === 'upcoming' 
-                  ? 'bg-violet text-white' 
-                  : 'bg-transparent border border-darkviolet text-gray-300 hover:border-violet'
+                filter === "upcoming"
+                  ? "bg-violet text-white"
+                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
               }`}
-              onClick={() => setFilter('upcoming')}
+              onClick={() => setFilter("upcoming")}
             >
               <Clock size={16} className="mr-2" />
               Upcoming
             </Button>
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
-                filter === 'ended' 
-                  ? 'bg-violet text-white' 
-                  : 'bg-transparent border border-darkviolet text-gray-300 hover:border-violet'
+                filter === "ended"
+                  ? "bg-violet text-white"
+                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
               }`}
-              onClick={() => setFilter('ended')}
+              onClick={() => setFilter("ended")}
             >
               Past Auctions
             </Button>
@@ -166,9 +169,9 @@ export default function AuctionsPage() {
             <Gavel size={64} className="mx-auto text-gray-600 mb-4" />
             <h3 className="text-xl text-gray-400 mb-2">No auctions found</h3>
             <p className="text-gray-500">
-              {filter === 'active' && "No active auctions at the moment."}
-              {filter === 'upcoming' && "No upcoming auctions scheduled."}
-              {filter === 'ended' && "No past auctions to display."}
+              {filter === "active" && "No active auctions at the moment."}
+              {filter === "upcoming" && "No upcoming auctions scheduled."}
+              {filter === "ended" && "No past auctions to display."}
             </p>
           </div>
         ) : (
@@ -182,26 +185,31 @@ export default function AuctionsPage() {
                       <Image
                         alt={auction.title}
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                        src={auction.artwork_thumbnail_url || auction.artwork_url}
+                        src={
+                          auction.artwork_thumbnail_url || auction.artwork_url
+                        }
                         fill
                         unoptimized
                       />
-                      
+
                       {/* Status Badge */}
                       <div className="absolute top-3 left-3">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          auction.status === 'active' 
-                            ? 'bg-green-600 text-white' 
-                            : auction.status === 'upcoming'
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-600 text-white'
-                        }`}>
-                          {auction.status.charAt(0).toUpperCase() + auction.status.slice(1)}
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            auction.status === "active"
+                              ? "bg-green-600 text-white"
+                              : auction.status === "upcoming"
+                                ? "bg-blue-600 text-white"
+                                : "bg-gray-600 text-white"
+                          }`}
+                        >
+                          {auction.status.charAt(0).toUpperCase() +
+                            auction.status.slice(1)}
                         </span>
                       </div>
 
                       {/* Time Remaining */}
-                      {auction.status === 'active' && (
+                      {auction.status === "active" && (
                         <div className="absolute top-3 right-3 bg-black/80 px-2 py-1 rounded-lg">
                           <div className="flex items-center space-x-1 text-white text-xs">
                             <Clock size={12} />
@@ -226,12 +234,16 @@ export default function AuctionsPage() {
                     {/* Bidding Info */}
                     <div className="w-full space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-gray-400 text-sm">Current Bid</span>
+                        <span className="text-gray-400 text-sm">
+                          Current Bid
+                        </span>
                         <span className="text-violet font-semibold">
-                          {formatPrice(auction.current_bid || auction.starting_bid)}
+                          {formatPrice(
+                            auction.current_bid || auction.starting_bid,
+                          )}
                         </span>
                       </div>
-                      
+
                       {/* Stats */}
                       <div className="flex justify-between items-center text-sm text-gray-500">
                         <div className="flex items-center space-x-1">
@@ -258,7 +270,8 @@ export default function AuctionsPage() {
               Ready to auction your artwork?
             </h3>
             <p className="text-gray-300 mb-6 max-w-md mx-auto">
-              Join the Forgotten Runes auction house and showcase your creations to collectors worldwide.
+              Join the Forgotten Runes auction house and showcase your creations
+              to collectors worldwide.
             </p>
             <Button
               as={Link}

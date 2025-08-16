@@ -199,9 +199,9 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
                   <Image
                     src={
                       talent.avatar_url
-                        ? (talent.avatar_url.startsWith('http') 
-                            ? talent.avatar_url 
-                            : `${AVATAR_STORAGE_URL}${talent.avatar_url}`)
+                        ? talent.avatar_url.startsWith("http")
+                          ? talent.avatar_url
+                          : `${AVATAR_STORAGE_URL}${talent.avatar_url}`
                         : "/img/logo.png"
                     }
                     alt={`${talent.name}'s avatar`}

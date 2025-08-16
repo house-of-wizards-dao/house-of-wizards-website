@@ -1,0 +1,9 @@
+{
+  "contract": "HybridAuctionHouse",
+  "address": "0x172084988957cAC63766fa0495f3FfFb89256064",
+  "network": "sepolia",
+  "chainId": "11155111",
+  "deployer": "0x225b008E6c71A4926f3375B64038703c9A7a8EBD",
+  "timestamp": "2025-08-16T10:04:38.264Z",
+  "transactionHash": "0xc3febfd0e7607122dd7e8ed3db5b99e990fee04fa0474d2c4140dbdb72cbd902"
+}

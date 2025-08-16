@@ -71,7 +71,9 @@ const AdminPanel = React.memo((): JSX.Element => {
       if (descError) throw descError;
 
       // Get user names separately to avoid join issues
-      const userIds = Array.from(new Set(fileDescriptions?.map(desc => desc.user_id) || []));
+      const userIds = Array.from(
+        new Set(fileDescriptions?.map((desc) => desc.user_id) || []),
+      );
       const { data: users, error: usersError } = await supabase
         .from("active_profiles")
         .select("id, name")
@@ -81,7 +83,7 @@ const AdminPanel = React.memo((): JSX.Element => {
 
       // Create a user lookup map
       const userLookup = new Map();
-      users?.forEach(user => {
+      users?.forEach((user) => {
         userLookup.set(user.id, user.name);
       });
 

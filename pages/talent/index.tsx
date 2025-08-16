@@ -51,9 +51,9 @@ const Bio: FC<BioProps> = ({
               height={112}
               src={
                 avatar_url
-                  ? (avatar_url.startsWith('http') 
-                      ? avatar_url 
-                      : `${AVATAR_STORAGE_URL}${avatar_url}`)
+                  ? avatar_url.startsWith("http")
+                    ? avatar_url
+                    : `${AVATAR_STORAGE_URL}${avatar_url}`
                   : `/img/talent/${imageName || `${name}.png`}`
               }
               width={112}

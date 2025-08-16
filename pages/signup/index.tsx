@@ -161,36 +161,42 @@ export default function IndexPage(): JSX.Element {
       const filePath = `${user.id}/${fileName}`;
 
       try {
-        console.log('Starting avatar upload...', { filePath, fileName, fileSize: file.size });
-        
+        console.log("Starting avatar upload...", {
+          filePath,
+          fileName,
+          fileSize: file.size,
+        });
+
         const { data, error: uploadError } = await supabase.storage
           .from("avatars")
           .upload(filePath, file, { upsert: true });
 
-        console.log('Upload result:', { data, uploadError });
+        console.log("Upload result:", { data, uploadError });
 
         if (uploadError) {
-          console.error('Upload error:', uploadError);
+          console.error("Upload error:", uploadError);
           alert(`Upload failed: ${uploadError.message}`);
           throw new Error(uploadError.message);
         } else {
-          console.log('Upload successful, updating profile...');
-          
+          console.log("Upload successful, updating profile...");
+
           // Get the public URL for the uploaded file
           const { data: urlData } = supabase.storage
             .from("avatars")
             .getPublicUrl(filePath);
-          
+
           const publicUrl = urlData.publicUrl;
-          console.log('Public URL:', publicUrl);
-          
+          console.log("Public URL:", publicUrl);
+
           setAvatar(publicUrl);
           await updateProfile({ avatar: publicUrl });
-          alert('Avatar uploaded successfully!');
+          alert("Avatar uploaded successfully!");
         }
       } catch (err) {
-        console.error('Avatar upload failed:', err);
-        alert(`Avatar upload failed: ${err instanceof Error ? err.message : 'Unknown error'}`);
+        console.error("Avatar upload failed:", err);
+        alert(
+          `Avatar upload failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+        );
         throw err;
       }
     },

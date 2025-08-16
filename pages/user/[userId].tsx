@@ -1,7 +1,14 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Twitter, MessageCircle, Globe, X, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Twitter,
+  MessageCircle,
+  Globe,
+  X,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Spinner } from "@nextui-org/spinner";
 import Image from "next/image";
 import { Button } from "@nextui-org/button";

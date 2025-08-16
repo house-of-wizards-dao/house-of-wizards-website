@@ -10,6 +10,7 @@ import "@/styles/globals.css";
 import { SessionContextProvider } from "@supabase/auth-helpers-react";
 import { supabase } from "@/lib/supabase";
 import { ToastProvider } from "@/hooks/useToast";
+import { Web3Provider } from "@/components/Web3Provider";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -25,9 +26,11 @@ export default function App({ Component, pageProps }: AppProps) {
         forcedTheme="dark"
       >
         <SessionContextProvider supabaseClient={supabase}>
-          <ToastProvider>
-            <RenderedComponent {...pageProps} />
-          </ToastProvider>
+          <Web3Provider>
+            <ToastProvider>
+              <RenderedComponent {...pageProps} />
+            </ToastProvider>
+          </Web3Provider>
         </SessionContextProvider>
       </NextThemesProvider>
     </NextUIProvider>

@@ -130,9 +130,9 @@ export default function IndexPage(): JSX.Element {
                       placeholder="blur"
                       src={
                         userProfile.avatar_url
-                          ? (userProfile.avatar_url.startsWith('http') 
-                              ? userProfile.avatar_url 
-                              : `${CDNURL}${userProfile.avatar_url}`)
+                          ? userProfile.avatar_url.startsWith("http")
+                            ? userProfile.avatar_url
+                            : `${CDNURL}${userProfile.avatar_url}`
                           : "/img/logo.png"
                       }
                       unoptimized

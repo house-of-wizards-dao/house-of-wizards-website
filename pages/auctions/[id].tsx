@@ -3,24 +3,13 @@ import { useRouter } from "next/router";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Button } from "@nextui-org/button";
-import { Input } from "@nextui-org/input";
 import { Spinner } from "@nextui-org/spinner";
 import Image from "next/image";
 import Link from "next/link";
-import { 
-  Clock, 
-  Eye, 
-  Gavel, 
-  Heart, 
-  ExternalLink,
-  Twitter,
-  Globe,
-  TrendingUp,
-  Users,
-  AlertCircle
-} from "lucide-react";
+import { Heart, Twitter, Globe, AlertCircle } from "lucide-react";
 
 import DefaultLayout from "@/layouts/default";
+import { BidWithETH } from "@/components/auction/BidWithETH";
 
 interface AuctionDetail {
   id: string;
@@ -33,7 +22,7 @@ interface AuctionDetail {
   reserve_price?: number;
   start_time: string;
   end_time: string;
-  status: 'upcoming' | 'active' | 'ended' | 'settled' | 'cancelled';
+  status: "upcoming" | "active" | "ended" | "settled" | "cancelled";
   creator_id: string;
   creator_name: string;
   creator_avatar?: string;
@@ -49,16 +38,18 @@ interface AuctionDetail {
     is_winning: boolean;
   }>;
   category: string;
+  on_chain_auction_id?: number;
 }
 
-const AVATAR_CDN_URL = "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
+const AVATAR_CDN_URL =
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
 
 export default function AuctionDetailPage() {
   const router = useRouter();
   const { id } = router.query;
   const supabase = useSupabaseClient();
   const user = useUser();
-  
+
   const [auction, setAuction] = useState<AuctionDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [bidAmount, setBidAmount] = useState("");
@@ -67,19 +58,19 @@ export default function AuctionDetailPage() {
   const [timeRemaining, setTimeRemaining] = useState("");
 
   const fetchAuction = useCallback(async () => {
-    if (!id || typeof id !== 'string') return;
+    if (!id || typeof id !== "string") return;
 
     try {
       const { data, error } = await supabase
-        .from('auction_details')
-        .select('*')
-        .eq('id', id)
+        .from("auction_details")
+        .select("*")
+        .eq("id", id)
         .single();
 
       if (error) throw error;
       setAuction(data);
     } catch (error) {
-      console.error('Error fetching auction:', error);
+      console.error("Error fetching auction:", error);
     } finally {
       setLoading(false);
     }
@@ -90,11 +81,11 @@ export default function AuctionDetailPage() {
 
     try {
       const { data, error } = await supabase
-        .from('auction_watchers')
-        .select('*')
-        .eq('auction_id', id)
-        .eq('user_id', user.id)
-        .single();
+        .from("auction_watchers")
+        .select("*")
+        .eq("auction_id", id)
+        .eq("user_id", user.id)
+        .maybeSingle();
 
       setIsWatching(!!data && !error);
     } catch (error) {
@@ -110,7 +101,7 @@ export default function AuctionDetailPage() {
     const diff = end.getTime() - now.getTime();
 
     if (diff <= 0) {
-      setTimeRemaining('Auction Ended');
+      setTimeRemaining("Auction Ended");
       return;
     }
 
@@ -147,10 +138,10 @@ export default function AuctionDetailPage() {
 
     setBidding(true);
     try {
-      const { data, error } = await supabase.rpc('place_bid', {
+      const { data, error } = await supabase.rpc("place_bid", {
         p_auction_id: auction.id,
         p_bidder_id: user.id,
-        p_amount: parseFloat(bidAmount)
+        p_amount: parseFloat(bidAmount),
       });
 
       if (error) throw error;
@@ -159,11 +150,11 @@ export default function AuctionDetailPage() {
         setBidAmount("");
         fetchAuction(); // Refresh auction data
       } else {
-        alert(data.error || 'Failed to place bid');
+        alert(data.error || "Failed to place bid");
       }
     } catch (error) {
-      console.error('Error placing bid:', error);
-      alert('Failed to place bid. Please try again.');
+      console.error("Error placing bid:", error);
+      alert("Failed to place bid. Please try again.");
     } finally {
       setBidding(false);
     }
@@ -175,42 +166,42 @@ export default function AuctionDetailPage() {
     try {
       if (isWatching) {
         const { error } = await supabase
-          .from('auction_watchers')
+          .from("auction_watchers")
           .delete()
-          .eq('auction_id', auction.id)
-          .eq('user_id', user.id);
+          .eq("auction_id", auction.id)
+          .eq("user_id", user.id);
 
         if (error) throw error;
         setIsWatching(false);
       } else {
-        const { error } = await supabase
-          .from('auction_watchers')
-          .insert({
-            auction_id: auction.id,
-            user_id: user.id
-          });
+        const { error } = await supabase.from("auction_watchers").insert({
+          auction_id: auction.id,
+          user_id: user.id,
+        });
 
         if (error) throw error;
         setIsWatching(true);
       }
     } catch (error) {
-      console.error('Error toggling watch:', error);
+      console.error("Error toggling watch:", error);
     }
   };
 
   const formatPrice = (price: number) => `${price} ETH`;
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getMinimumBid = () => {
     if (!auction) return 0;
-    return (auction.current_bid || auction.starting_bid) + auction.minimum_increment;
+    return (
+      (auction.current_bid || auction.starting_bid) + auction.minimum_increment
+    );
   };
 
   if (loading) {
@@ -229,7 +220,9 @@ export default function AuctionDetailPage() {
         <div className="flex flex-col items-center justify-center h-screen">
           <AlertCircle size={64} className="text-gray-600 mb-4" />
           <h2 className="text-2xl text-gray-400 mb-2">Auction Not Found</h2>
-          <p className="text-gray-500 mb-6">The auction you're looking for doesn't exist.</p>
+          <p className="text-gray-500 mb-6">
+            The auction you're looking for doesn't exist.
+          </p>
           <Button
             as={Link}
             href="/auctions"
@@ -267,12 +260,18 @@ export default function AuctionDetailPage() {
             {/* Auction Details */}
             <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
               <CardHeader>
-                <h2 className="text-2xl font-bold text-white">About This Piece</h2>
+                <h2 className="text-2xl font-bold text-white">
+                  About This Piece
+                </h2>
               </CardHeader>
               <CardBody className="space-y-4">
                 <div>
-                  <h3 className="text-xl font-semibold text-violet mb-2">{auction.title}</h3>
-                  <p className="text-gray-300 leading-relaxed">{auction.description}</p>
+                  <h3 className="text-xl font-semibold text-violet mb-2">
+                    {auction.title}
+                  </h3>
+                  <p className="text-gray-300 leading-relaxed">
+                    {auction.description}
+                  </p>
                 </div>
 
                 <div className="flex items-center space-x-4 pt-4 border-t border-darkviolet/50">
@@ -281,18 +280,21 @@ export default function AuctionDetailPage() {
                       <Image
                         alt={auction.creator_name}
                         className="object-cover w-full h-full"
-                        src={auction.creator_avatar 
-                          ? (auction.creator_avatar.startsWith('http') 
-                              ? auction.creator_avatar 
-                              : `${AVATAR_CDN_URL}${auction.creator_avatar}`)
-                          : "/img/logo.png"
+                        src={
+                          auction.creator_avatar
+                            ? auction.creator_avatar.startsWith("http")
+                              ? auction.creator_avatar
+                              : `${AVATAR_CDN_URL}${auction.creator_avatar}`
+                            : "/img/logo.png"
                         }
                         width={48}
                         height={48}
                       />
                     </div>
                     <div>
-                      <p className="text-white font-medium">{auction.creator_name}</p>
+                      <p className="text-white font-medium">
+                        {auction.creator_name}
+                      </p>
                       <p className="text-gray-400 text-sm">Artist</p>
                     </div>
                   </div>
@@ -337,9 +339,9 @@ export default function AuctionDetailPage() {
                       <div
                         key={bid.id}
                         className={`flex items-center justify-between p-3 rounded-lg ${
-                          bid.is_winning 
-                            ? 'bg-green-600/20 border border-green-600/50' 
-                            : 'bg-gray-800/50'
+                          bid.is_winning
+                            ? "bg-green-600/20 border border-green-600/50"
+                            : "bg-gray-800/50"
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -347,32 +349,43 @@ export default function AuctionDetailPage() {
                             <Image
                               alt={bid.bidder_name}
                               className="object-cover w-full h-full"
-                              src={bid.bidder_avatar 
-                                ? (bid.bidder_avatar.startsWith('http') 
-                                    ? bid.bidder_avatar 
-                                    : `${AVATAR_CDN_URL}${bid.bidder_avatar}`)
-                                : "/img/logo.png"
+                              src={
+                                bid.bidder_avatar
+                                  ? bid.bidder_avatar.startsWith("http")
+                                    ? bid.bidder_avatar
+                                    : `${AVATAR_CDN_URL}${bid.bidder_avatar}`
+                                  : "/img/logo.png"
                               }
                               width={32}
                               height={32}
                             />
                           </div>
                           <div>
-                            <p className="text-white font-medium">{bid.bidder_name}</p>
-                            <p className="text-gray-400 text-sm">{formatDate(bid.created_at)}</p>
+                            <p className="text-white font-medium">
+                              {bid.bidder_name}
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                              {formatDate(bid.created_at)}
+                            </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-violet font-semibold">{formatPrice(bid.amount)}</p>
+                          <p className="text-violet font-semibold">
+                            {formatPrice(bid.amount)}
+                          </p>
                           {bid.is_winning && (
-                            <p className="text-green-400 text-sm">Winning bid</p>
+                            <p className="text-green-400 text-sm">
+                              Winning bid
+                            </p>
                           )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-400 text-center py-8">No bids yet. Be the first to bid!</p>
+                  <p className="text-gray-400 text-center py-8">
+                    No bids yet. Be the first to bid!
+                  </p>
                 )}
               </CardBody>
             </Card>
@@ -383,20 +396,25 @@ export default function AuctionDetailPage() {
             {/* Auction Status */}
             <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
               <CardBody className="text-center p-6">
-                <div className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
-                  auction.status === 'active' 
-                    ? 'bg-green-600 text-white' 
-                    : auction.status === 'upcoming'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-600 text-white'
-                }`}>
-                  {auction.status.charAt(0).toUpperCase() + auction.status.slice(1)}
+                <div
+                  className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                    auction.status === "active"
+                      ? "bg-green-600 text-white"
+                      : auction.status === "upcoming"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-600 text-white"
+                  }`}
+                >
+                  {auction.status.charAt(0).toUpperCase() +
+                    auction.status.slice(1)}
                 </div>
 
-                {auction.status === 'active' && (
+                {auction.status === "active" && (
                   <div>
                     <p className="text-gray-400 text-sm mb-2">Time Remaining</p>
-                    <p className="text-2xl font-bold text-white mb-4">{timeRemaining}</p>
+                    <p className="text-2xl font-bold text-white mb-4">
+                      {timeRemaining}
+                    </p>
                   </div>
                 )}
 
@@ -411,7 +429,9 @@ export default function AuctionDetailPage() {
                   <div className="flex justify-between text-sm">
                     <div className="text-center">
                       <p className="text-gray-400">Bids</p>
-                      <p className="text-white font-semibold">{auction.total_bids}</p>
+                      <p className="text-white font-semibold">
+                        {auction.total_bids}
+                      </p>
                     </div>
                     <div className="text-center">
                       <p className="text-gray-400">Watching</p>
@@ -425,41 +445,29 @@ export default function AuctionDetailPage() {
               </CardBody>
             </Card>
 
-            {/* Bidding Form */}
-            {auction.status === 'active' && user && (
+            {/* ETH Bidding Form */}
+            {auction.status === "active" && (
               <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
                 <CardHeader>
-                  <h3 className="text-lg font-bold text-white">Place a Bid</h3>
+                  <h3 className="text-lg font-bold text-white">
+                    Place a Bid with ETH
+                  </h3>
                 </CardHeader>
-                <CardBody className="space-y-4">
-                  <div>
-                    <p className="text-gray-400 text-sm mb-2">
-                      Minimum bid: {formatPrice(getMinimumBid())}
-                    </p>
-                    <Input
-                      type="number"
-                      step="0.001"
-                      min={getMinimumBid()}
-                      value={bidAmount}
-                      onChange={(e) => setBidAmount(e.target.value)}
-                      placeholder={`${getMinimumBid()}`}
-                      endContent={<span className="text-gray-400">ETH</span>}
-                      className="w-full"
-                    />
-                  </div>
-
-                  <Button
-                    className="w-full bg-violet hover:bg-violet-600 text-white py-3 rounded-full font-semibold"
-                    onClick={handleBid}
-                    isLoading={bidding}
-                    disabled={!bidAmount || parseFloat(bidAmount) < getMinimumBid()}
-                  >
-                    <Gavel size={16} className="mr-2" />
-                    Place Bid
-                  </Button>
+                <CardBody>
+                  <BidWithETH
+                    auctionId={auction.id}
+                    currentBid={auction.current_bid || auction.starting_bid}
+                    minimumIncrement={auction.minimum_increment}
+                    onChainAuctionId={auction.on_chain_auction_id}
+                    endTime={auction.end_time}
+                    hasBids={auction.total_bids > 0}
+                    onBidSuccess={() => {
+                      fetchAuction(); // Refresh auction data after successful bid
+                    }}
+                  />
 
                   {auction.reserve_price && (
-                    <p className="text-yellow-400 text-sm text-center">
+                    <p className="text-yellow-400 text-sm text-center mt-4">
                       Reserve price: {formatPrice(auction.reserve_price)}
                     </p>
                   )}
@@ -472,41 +480,57 @@ export default function AuctionDetailPage() {
               <Button
                 className={`w-full py-3 rounded-full font-semibold transition-all ${
                   isWatching
-                    ? 'bg-red-600 hover:bg-red-700 text-white'
-                    : 'bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20'
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
                 }`}
                 onClick={toggleWatch}
               >
-                <Heart size={16} className="mr-2" fill={isWatching ? 'currentColor' : 'none'} />
-                {isWatching ? 'Stop Watching' : 'Watch Auction'}
+                <Heart
+                  size={16}
+                  className="mr-2"
+                  fill={isWatching ? "currentColor" : "none"}
+                />
+                {isWatching ? "Stop Watching" : "Watch Auction"}
               </Button>
             )}
 
             {/* Auction Info */}
             <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
               <CardHeader>
-                <h3 className="text-lg font-bold text-white">Auction Details</h3>
+                <h3 className="text-lg font-bold text-white">
+                  Auction Details
+                </h3>
               </CardHeader>
               <CardBody className="space-y-3 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-400">Starting Bid</span>
-                  <span className="text-white">{formatPrice(auction.starting_bid)}</span>
+                  <span className="text-white">
+                    {formatPrice(auction.starting_bid)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Minimum Increment</span>
-                  <span className="text-white">{formatPrice(auction.minimum_increment)}</span>
+                  <span className="text-white">
+                    {formatPrice(auction.minimum_increment)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Start Time</span>
-                  <span className="text-white">{formatDate(auction.start_time)}</span>
+                  <span className="text-white">
+                    {formatDate(auction.start_time)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">End Time</span>
-                  <span className="text-white">{formatDate(auction.end_time)}</span>
+                  <span className="text-white">
+                    {formatDate(auction.end_time)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-400">Category</span>
-                  <span className="text-white capitalize">{auction.category}</span>
+                  <span className="text-white capitalize">
+                    {auction.category}
+                  </span>
                 </div>
               </CardBody>
             </Card>
@@ -515,7 +539,9 @@ export default function AuctionDetailPage() {
             {!user && (
               <Card className="border border-violet bg-violet/10 backdrop-blur-sm">
                 <CardBody className="text-center p-6">
-                  <h4 className="text-lg font-bold text-white mb-2">Ready to bid?</h4>
+                  <h4 className="text-lg font-bold text-white mb-2">
+                    Ready to bid?
+                  </h4>
                   <p className="text-gray-300 text-sm mb-4">
                     Sign in to place bids and watch auctions
                   </p>

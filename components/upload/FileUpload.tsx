@@ -127,18 +127,18 @@ export default function FileUpload({
           }));
 
           // Upload the file
-          console.log('Starting file upload...', { 
-            bucket: 'files', 
-            path: user.id + "/" + fullFileName, 
+          console.log("Starting file upload...", {
+            bucket: "files",
+            path: user.id + "/" + fullFileName,
             fileName: fullFileName,
-            fileSize: file.size 
+            fileSize: file.size,
           });
-          
+
           const { data, error } = await supabase.storage
             .from("files")
             .upload(user.id + "/" + fullFileName, file);
-            
-          console.log('Upload result:', { data, error });
+
+          console.log("Upload result:", { data, error });
 
           if (error) {
             setUploadProgress((prev) => ({
