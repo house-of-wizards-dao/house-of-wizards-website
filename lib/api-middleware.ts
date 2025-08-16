@@ -129,9 +129,10 @@ export function handleApiError(
       url: req.url,
       method: req.method,
       userAgent: req.headers["user-agent"],
-      ip: (Array.isArray(req.headers["x-forwarded-for"]) 
-        ? req.headers["x-forwarded-for"][0] 
-        : req.headers["x-forwarded-for"]) || req.socket?.remoteAddress,
+      ip:
+        (Array.isArray(req.headers["x-forwarded-for"])
+          ? req.headers["x-forwarded-for"][0]
+          : req.headers["x-forwarded-for"]) || req.socket?.remoteAddress,
     });
 
     res.status(400).json({ error: apiError });
@@ -153,9 +154,10 @@ export function handleApiError(
       url: req.url,
       method: req.method,
       userAgent: req.headers["user-agent"],
-      ip: (Array.isArray(req.headers["x-forwarded-for"]) 
-        ? req.headers["x-forwarded-for"][0] 
-        : req.headers["x-forwarded-for"]) || req.socket?.remoteAddress,
+      ip:
+        (Array.isArray(req.headers["x-forwarded-for"])
+          ? req.headers["x-forwarded-for"][0]
+          : req.headers["x-forwarded-for"]) || req.socket?.remoteAddress,
       body: req.body ? JSON.stringify(req.body).substring(0, 500) : undefined,
     });
   } else {

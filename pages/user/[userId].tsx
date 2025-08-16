@@ -16,9 +16,9 @@ import { Profile } from "@/types";
 
 // CDN URLs
 const CDNURL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/files/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 const AVATAR_CDN_URL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/avatars/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
 const FILES_PER_PAGE = 15;
 
 interface FileItem {
@@ -117,13 +117,11 @@ export default function UserProfile() {
         const filesWithDesc = data.map((file) => ({
           ...file,
           description:
-            descData.find(
-              (desc: any) => desc.file_name === file.name,
-            )?.description || "",
+            descData.find((desc: any) => desc.file_name === file.name)
+              ?.description || "",
           fileType:
-            descData.find(
-              (desc: any) => desc.file_name === file.name,
-            )?.file_type || "",
+            descData.find((desc: any) => desc.file_name === file.name)
+              ?.file_type || "",
         }));
 
         setFiles(filesWithDesc);

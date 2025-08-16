@@ -34,7 +34,7 @@ import type {
 import DefaultLayout from "@/layouts/default";
 
 const CDNURL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/files/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 const IMAGES_PER_PAGE = 20;
 
 // Add file transformation parameters

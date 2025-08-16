@@ -1,4 +1,4 @@
-import { FC, useState, useMemo, useEffect } from "react";
+import { FC, useState, useMemo, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { FaDiscord, FaGlobe, FaTwitter, FaCamera } from "react-icons/fa";
@@ -22,7 +22,7 @@ interface BioProps {
 }
 
 const AVATAR_STORAGE_URL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/talent-avatars/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/talent-avatars/";
 
 interface AddTalentModalProps {
   isOpen: boolean;
@@ -52,7 +52,9 @@ const Bio: FC<BioProps> = ({
               height={112}
               src={
                 avatar_url
-                  ? `${AVATAR_STORAGE_URL}${avatar_url}`
+                  ? (avatar_url.startsWith('http') 
+                      ? avatar_url 
+                      : `${AVATAR_STORAGE_URL}${avatar_url}`)
                   : `/img/talent/${imageName || `${name}.png`}`
               }
               width={112}
@@ -228,7 +230,6 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
             });
 
           if (uploadError) {
-            console.error("Avatar upload error:", uploadError);
             // Continue without avatar instead of throwing error
             setError(
               "Avatar upload failed. Profile will be created without avatar.",
@@ -237,7 +238,6 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
             avatar_url = fileName;
           }
         } catch (uploadErr) {
-          console.error("Avatar upload exception:", uploadErr);
           // Continue without avatar
           setError(
             "Avatar upload failed. Profile will be created without avatar.",
@@ -252,7 +252,6 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
       });
 
       if (insertError) {
-        console.error("Insert error:", insertError);
         throw insertError;
       }
 
@@ -819,7 +818,7 @@ const Talent: FC = () => {
   */
 
   // Fetch talents from Supabase
-  const fetchTalents = async () => {
+  const fetchTalents = useCallback(async () => {
     try {
       // Use active_talents view to exclude soft-deleted talents
       const { data, error } = await supabase
@@ -834,17 +833,16 @@ const Talent: FC = () => {
       // Only use database talents
       setTalents(data || []);
     } catch (error) {
-      console.error("Error fetching talents:", error);
       // Set empty array if database fetch fails
       setTalents([]);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [supabase]);
 
   useEffect(() => {
     fetchTalents();
-  }, []);
+  }, [fetchTalents]);
 
   // Extract unique focus areas and sort them
   const focusAreas = useMemo(() => {

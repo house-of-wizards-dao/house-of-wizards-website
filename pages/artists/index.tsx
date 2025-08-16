@@ -10,7 +10,7 @@ import type { UserProfile } from "@/types";
 import DefaultLayout from "@/layouts/default";
 
 const CDNURL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/avatars/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
 
 export default function IndexPage(): JSX.Element {
   const user = useUser();
@@ -130,7 +130,9 @@ export default function IndexPage(): JSX.Element {
                       placeholder="blur"
                       src={
                         userProfile.avatar_url
-                          ? `${CDNURL}${userProfile.avatar_url}`
+                          ? (userProfile.avatar_url.startsWith('http') 
+                              ? userProfile.avatar_url 
+                              : `${CDNURL}${userProfile.avatar_url}`)
                           : "/img/logo.png"
                       }
                       unoptimized

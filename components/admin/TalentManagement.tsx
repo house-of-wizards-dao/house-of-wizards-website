@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Trash2, Eye, EyeOff, Edit2, Save, X } from "lucide-react";
 import Image from "next/image";
@@ -23,7 +23,7 @@ interface TalentManagementProps {
 }
 
 const AVATAR_STORAGE_URL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/talent-avatars/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/talent-avatars/";
 
 const TalentManagement: React.FC<TalentManagementProps> = ({
   searchTerm,
@@ -37,7 +37,7 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
   const [editForm, setEditForm] = useState<Partial<Talent>>({});
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTalents = async () => {
+  const fetchTalents = useCallback(async () => {
     try {
       // Use active_talents view to exclude soft-deleted talents
       const { data, error } = await supabase
@@ -51,13 +51,12 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
       setTalents(data || []);
     } catch (err: any) {
       setError("Failed to fetch talents");
-      console.error("Error fetching talents:", err);
     }
-  };
+  }, [supabase]);
 
   useEffect(() => {
     fetchTalents();
-  }, []);
+  }, [fetchTalents]);
 
   const handleDelete = async (talentId: string, talentName: string) => {
     if (
@@ -81,7 +80,6 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
       setError(null);
     } catch (err: any) {
       setError("Failed to delete talent: " + (err.message || "Unknown error"));
-      console.error("Error deleting talent:", err);
     }
   };
 
@@ -119,7 +117,6 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
       setError(null);
     } catch (err: any) {
       setError("Failed to update talent");
-      console.error("Error updating talent:", err);
     }
   };
 
@@ -202,7 +199,9 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
                   <Image
                     src={
                       talent.avatar_url
-                        ? `${AVATAR_STORAGE_URL}${talent.avatar_url}`
+                        ? (talent.avatar_url.startsWith('http') 
+                            ? talent.avatar_url 
+                            : `${AVATAR_STORAGE_URL}${talent.avatar_url}`)
                         : "/img/logo.png"
                     }
                     alt={`${talent.name}'s avatar`}

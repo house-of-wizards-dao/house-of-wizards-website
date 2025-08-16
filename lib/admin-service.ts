@@ -97,20 +97,34 @@ export class AdminService {
           description,
           file_type,
           user_id,
-          created_at,
-          profiles!inner(name)
+          created_at
         `,
         )
         .order("created_at", { ascending: false });
 
       if (descError) throw descError;
 
+      // Get user names separately to avoid join issues
+      const userIds = [...new Set(fileDescriptions?.map(desc => desc.user_id) || [])];
+      const { data: users, error: usersError } = await this.supabase
+        .from("active_profiles")
+        .select("id, name")
+        .in("id", userIds);
+
+      if (usersError) throw usersError;
+
+      // Create a user lookup map
+      const userLookup = new Map();
+      users?.forEach(user => {
+        userLookup.set(user.id, user.name);
+      });
+
       // Transform to the expected format
       const content: ContentItem[] =
         fileDescriptions?.map((desc: any) => ({
           name: desc.file_name,
           userId: desc.user_id,
-          userName: desc.profiles?.name || "Unknown User",
+          userName: userLookup.get(desc.user_id) || "Unknown User",
           description: desc.description,
           fileType: desc.file_type,
           created_at: desc.created_at,
@@ -192,12 +206,33 @@ export class AdminService {
     const startTime = Date.now();
 
     try {
-      // Use database transaction for atomic operations
-      const { error } = await this.supabase.rpc("delete_user_with_content", {
-        user_id: userId,
-      });
+      // Perform soft delete operations directly without function
+      // 1. Soft delete all user's file descriptions
+      const { error: contentError } = await this.supabase
+        .from("file_descriptions")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .is("deleted_at", null);
 
-      if (error) throw error;
+      if (contentError) throw contentError;
+
+      // 2. Soft delete all user's talents
+      const { error: talentsError } = await this.supabase
+        .from("talents")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .is("deleted_at", null);
+
+      if (talentsError) throw talentsError;
+
+      // 3. Soft delete the user profile
+      const { error: profileError } = await this.supabase
+        .from("profiles")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", userId)
+        .is("deleted_at", null);
+
+      if (profileError) throw profileError;
 
       logger.logDatabaseOperation(
         "DELETE",
@@ -226,12 +261,19 @@ export class AdminService {
     const startTime = Date.now();
 
     try {
-      // Batch delete in a single transaction
-      const { error } = await this.supabase.rpc("delete_multiple_content", {
-        content_items: contentItems,
+      // Perform batch soft delete operations directly
+      const deletePromises = contentItems.map(async (item) => {
+        const { error } = await this.supabase
+          .from("file_descriptions")
+          .update({ deleted_at: new Date().toISOString() })
+          .eq("user_id", item.userId)
+          .eq("file_name", item.fileName)
+          .is("deleted_at", null);
+
+        if (error) throw error;
       });
 
-      if (error) throw error;
+      await Promise.all(deletePromises);
 
       logger.logDatabaseOperation(
         "DELETE",

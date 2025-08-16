@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Profile } from "@/types";
 
 const CDNURL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/files/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 
 interface ContentItem {
   name: string;

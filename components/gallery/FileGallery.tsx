@@ -7,7 +7,7 @@ import type { FileData } from "@/types";
 import { useFocusNavigation } from "@/hooks/useKeyboardNavigation";
 
 const CDNURL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/files/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 
 interface FileGalleryProps {
   files: FileData[];

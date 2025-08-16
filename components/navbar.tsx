@@ -24,7 +24,7 @@ import { TwitterIcon, DiscordIcon } from "@/components/icons";
 
 // Avatar CDN URL
 const AVATAR_CDN_URL =
-  "https://wqpyojcwtcuzpmghjwpp.supabase.co/storage/v1/object/public/avatars/";
+  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
 
 export const Navbar = () => {
   const user = useUser();
@@ -142,7 +142,10 @@ export const Navbar = () => {
               target="_blank"
             >
               Vote
-              <FaExternalLinkAlt />
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clipRule="evenodd" />
+              </svg>
             </NextLink>
           </NavbarItem>
           {/*<NavbarItem  className="text-sm text-gray-400">
@@ -153,7 +156,10 @@ export const Navbar = () => {
               
             >
               Auction
-              <FaExternalLinkAlt />
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clipRule="evenodd" />
+              </svg>
             </NextLink>
           </NavbarItem>*/}
         </div>
@@ -182,7 +188,7 @@ export const Navbar = () => {
                     alt="Avatar"
                     className="w-full h-full object-cover"
                     height={32}
-                    src={`${AVATAR_CDN_URL}${avatar}`}
+                    src={avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar}`}
                     unoptimized
                     width={32}
                   />
@@ -260,7 +266,10 @@ export const Navbar = () => {
               target="_blank"
             >
               Vote
-              <FaExternalLinkAlt size={14} />
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" clipRule="evenodd" />
+                <path fillRule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" clipRule="evenodd" />
+              </svg>
             </NextLink>
           </NavbarMenuItem>
           {user && (
@@ -275,7 +284,7 @@ export const Navbar = () => {
                       alt="Avatar"
                       className="w-full h-full object-cover"
                       height={24}
-                      src={`${AVATAR_CDN_URL}${avatar}`}
+                      src={avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar}`}
                       unoptimized
                       width={24}
                     />

@@ -62,27 +62,33 @@ const AdminPanel = React.memo((): JSX.Element => {
 
   const fetchAllContent = useCallback(async () => {
     try {
-      // Use active_file_descriptions view to exclude soft-deleted content
-      const { data, error } = await supabase
+      // Get file descriptions without join to avoid 400 error
+      const { data: fileDescriptions, error: descError } = await supabase
         .from("active_file_descriptions")
-        .select(
-          `
-          file_name,
-          description,
-          file_type,
-          user_id,
-          created_at,
-          profiles!inner(name)
-        `,
-        )
+        .select("file_name, description, file_type, user_id, created_at")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (descError) throw descError;
 
-      const contentItems = (data || []).map((desc: any) => ({
+      // Get user names separately to avoid join issues
+      const userIds = [...new Set(fileDescriptions?.map(desc => desc.user_id) || [])];
+      const { data: users, error: usersError } = await supabase
+        .from("active_profiles")
+        .select("id, name")
+        .in("id", userIds);
+
+      if (usersError) throw usersError;
+
+      // Create a user lookup map
+      const userLookup = new Map();
+      users?.forEach(user => {
+        userLookup.set(user.id, user.name);
+      });
+
+      const contentItems = (fileDescriptions || []).map((desc: any) => ({
         name: desc.file_name,
         userId: desc.user_id,
-        userName: desc.profiles?.name || "Unknown User",
+        userName: userLookup.get(desc.user_id) || "Unknown User",
         description: desc.description || "",
         fileType: desc.file_type || "",
       }));
@@ -115,12 +121,33 @@ const AdminPanel = React.memo((): JSX.Element => {
     try {
       setLoading(true);
 
-      // Use the soft delete function instead of hard delete
-      const { error } = await supabase.rpc("delete_user_with_content", {
-        user_id: userId,
-      });
+      // Perform soft delete operations directly without function
+      // 1. Soft delete all user's file descriptions
+      const { error: contentError } = await supabase
+        .from("file_descriptions")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .is("deleted_at", null);
 
-      if (error) throw error;
+      if (contentError) throw contentError;
+
+      // 2. Soft delete all user's talents
+      const { error: talentsError } = await supabase
+        .from("talents")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("user_id", userId)
+        .is("deleted_at", null);
+
+      if (talentsError) throw talentsError;
+
+      // 3. Soft delete the user profile
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ deleted_at: new Date().toISOString() })
+        .eq("id", userId)
+        .is("deleted_at", null);
+
+      if (profileError) throw profileError;
 
       // Refresh data
       await Promise.all([fetchUsers(), fetchAllContent()]);

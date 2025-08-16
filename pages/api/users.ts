@@ -17,8 +17,12 @@ async function usersHandler(
 
   if (req.method === "GET") {
     // Validate query parameters
-    const { page = 1, limit = 10, sortBy, sortOrder } =
-      validateQuery(paginationSchema)(req);
+    const {
+      page = 1,
+      limit = 10,
+      sortBy,
+      sortOrder,
+    } = validateQuery(paginationSchema)(req);
 
     const offset = (page - 1) * limit;
     const orderColumn = sortBy || "created_at";
