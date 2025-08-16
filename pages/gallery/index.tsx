@@ -17,12 +17,8 @@ import { useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
 import { Spinner } from "@nextui-org/spinner";
-import {
-  IoIosCloseCircle,
-  IoIosArrowRoundBack,
-  IoIosArrowRoundForward,
-} from "react-icons/io";
-import { BiZoomIn, BiZoomOut } from "react-icons/bi";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { ZoomIn, ZoomOut } from "lucide-react";
 import type {
   GalleryItemData,
   DragPosition,
@@ -238,7 +234,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
                   type="button"
                   onClick={handleZoomIn}
                 >
-                  <BiZoomIn size={22} />
+                  <ZoomIn size={22} />
                 </button>
                 {isZoomed && (
                   <button
@@ -247,7 +243,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
                     type="button"
                     onClick={handleZoomOut}
                   >
-                    <BiZoomOut size={22} />
+                    <ZoomOut size={22} />
                   </button>
                 )}
               </>
@@ -259,7 +255,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
             type="button"
             onClick={onClose}
           >
-            <IoIosCloseCircle />
+            <X />
           </button>
         </div>
 
@@ -666,7 +662,7 @@ function GalleryPage(): JSX.Element {
                 disabled={currentPage === 1}
                 onClick={handlePrevPage}
               >
-                <IoIosArrowRoundBack className="text-xl" />
+                <ChevronLeft className="text-xl" />
               </Button>
 
               {Array.from({ length: Math.min(pageCount, 7) }, (_, i) => {
@@ -732,7 +728,7 @@ function GalleryPage(): JSX.Element {
                 disabled={currentPage === pageCount}
                 onClick={handleNextPage}
               >
-                <IoIosArrowRoundForward className="text-xl" />
+                <ChevronRight className="text-xl" />
               </Button>
             </div>
           )}

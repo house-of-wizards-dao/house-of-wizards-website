@@ -1,7 +1,7 @@
 import { useState, useEffect, startTransition } from "react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
-import { FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa";
+import { Globe, Twitter, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Spinner } from "@nextui-org/spinner";
 import { Card, CardBody, CardFooter } from "@nextui-org/card";
@@ -150,7 +150,7 @@ export default function IndexPage(): JSX.Element {
                     </div>
                     <div className="flex flex-col w-full space-y-2 pt-2 border-t border-darkviolet/50">
                       <div className="flex flex-row items-center gap-3">
-                        <FaGlobe
+                        <Globe
                           aria-hidden="true"
                           className="text-gray-400"
                           size={16}
@@ -173,7 +173,7 @@ export default function IndexPage(): JSX.Element {
                         )}
                       </div>
                       <div className="flex flex-row items-center gap-3">
-                        <FaTwitter
+                        <Twitter
                           aria-hidden="true"
                           className="text-gray-400"
                           size={16}
@@ -196,7 +196,7 @@ export default function IndexPage(): JSX.Element {
                         )}
                       </div>
                       <div className="flex flex-row items-center gap-3">
-                        <FaDiscord
+                        <MessageCircle
                           aria-hidden="true"
                           className="text-gray-400"
                           size={16}

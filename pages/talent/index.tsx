@@ -1,8 +1,7 @@
 import { FC, useState, useMemo, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaDiscord, FaGlobe, FaTwitter, FaCamera } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
+import { MessageCircle, Globe, Twitter, Camera, X } from "lucide-react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { Spinner } from "@nextui-org/spinner";
 
@@ -95,7 +94,7 @@ const Bio: FC<BioProps> = ({
                 target="_blank"
                 className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
               >
-                <FaGlobe size={14} />
+                <Globe size={14} />
                 <span className="text-sm">Portfolio</span>
               </Link>
             )}
@@ -108,7 +107,7 @@ const Bio: FC<BioProps> = ({
                 target="_blank"
                 className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
               >
-                <FaTwitter size={14} />
+                <Twitter size={14} />
                 <span className="text-sm">@{twitter}</span>
               </Link>
             )}
@@ -135,7 +134,7 @@ const Bio: FC<BioProps> = ({
                   }
                 }}
               >
-                <FaDiscord size={14} />
+                <MessageCircle size={14} />
                 <span className="text-sm">{discord}</span>
                 <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity">
                   (click to copy)
@@ -289,7 +288,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
           >
-            <IoClose size={24} />
+            <X size={24} />
           </button>
         </div>
 
@@ -317,7 +316,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
                   />
                 ) : (
                   <div className="text-center">
-                    <FaCamera className="mx-auto text-gray-400 text-2xl mb-2" />
+                    <Camera className="mx-auto text-gray-400 text-2xl mb-2" />
                     <p className="text-xs text-gray-400">Upload Avatar</p>
                   </div>
                 )}

@@ -1,14 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa";
+import { Twitter, MessageCircle, Globe, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Spinner } from "@nextui-org/spinner";
 import Image from "next/image";
-import {
-  IoIosCloseCircle,
-  IoIosArrowRoundBack,
-  IoIosArrowRoundForward,
-} from "react-icons/io";
 import { Button } from "@nextui-org/button";
 
 import DefaultLayout from "@/layouts/default";
@@ -237,7 +232,7 @@ export default function UserProfile() {
             rel="noopener noreferrer"
             target="_blank"
           >
-            <FaGlobe className="text-grey" size={18} /> {(user as any).website}
+            <Globe className="text-grey" size={18} /> {(user as any).website}
           </a>
         )}
 
@@ -249,13 +244,13 @@ export default function UserProfile() {
               rel="noopener noreferrer"
               target="_blank"
             >
-              <FaTwitter className="text-grey" size={18} />{" "}
+              <Twitter className="text-grey" size={18} />{" "}
               {(user as any).twitter}
             </a>
           )}
           {(user as any).discord && (
             <span className="text-grey font-pop text-md text-foreground cursor-pointer flex flex-row gap-3 items-center">
-              <FaDiscord className="text-grey" size={18} />{" "}
+              <MessageCircle className="text-grey" size={18} />{" "}
               {(user as any).discord}
             </span>
           )}
@@ -287,7 +282,7 @@ export default function UserProfile() {
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
             >
-              <IoIosArrowRoundBack className="text-2xl" />
+              <ChevronLeft className="text-2xl" />
             </Button>
 
             {Array.from(
@@ -320,7 +315,7 @@ export default function UserProfile() {
                 )
               }
             >
-              <IoIosArrowRoundForward className="text-2xl" />
+              <ChevronRight className="text-2xl" />
             </Button>
           </div>
         )}
@@ -343,7 +338,7 @@ export default function UserProfile() {
                   className="mb-2 text-2xl cursor-pointer hover:text-grey"
                   onClick={closeModal}
                 >
-                  <IoIosCloseCircle />
+                  <X />
                 </button>
               </div>
               {selectedItem.fileType?.startsWith("video/") ? (

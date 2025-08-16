@@ -29,7 +29,7 @@ const AVATAR_CDN_URL =
 export const Navbar = () => {
   const user = useUser();
   const supabase = useSupabaseClient();
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
 
   // Fetch the user's avatar from the profiles table
   useEffect(() => {
@@ -131,6 +131,11 @@ export const Navbar = () => {
             </DropdownMenu>
           </Dropdown>
           <NavbarItem className="text-sm hover:text-[#9564b4]">
+            <NextLink className="flex items-center gap-2" href="/auctions">
+              Auctions
+            </NextLink>
+          </NavbarItem>
+          <NavbarItem className="text-sm hover:text-[#9564b4]">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
             </NextLink>
@@ -188,7 +193,7 @@ export const Navbar = () => {
                     alt="Avatar"
                     className="w-full h-full object-cover"
                     height={32}
-                    src={avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar}`}
+                    src={avatar && avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar || 'default.png'}`}
                     unoptimized
                     width={32}
                   />
@@ -284,7 +289,7 @@ export const Navbar = () => {
                       alt="Avatar"
                       className="w-full h-full object-cover"
                       height={24}
-                      src={avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar}`}
+                      src={avatar && avatar.startsWith('http') ? avatar : `${AVATAR_CDN_URL}${avatar || 'default.png'}`}
                       unoptimized
                       width={24}
                     />

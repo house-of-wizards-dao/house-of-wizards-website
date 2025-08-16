@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { PencilIcon } from "@heroicons/react/24/solid";
-import { FaTwitter, FaDiscord, FaGlobe } from "react-icons/fa";
+import { Globe, Twitter, MessageCircle } from "lucide-react";
 import { useUser } from "@supabase/auth-helpers-react";
 
 import { useToast } from "@/hooks/useToast";
@@ -337,7 +337,7 @@ export default function ProfileEditor({
               }}
               label="Website"
               placeholder="https://your-website.com"
-              startContent={<FaGlobe className="text-green-400" />}
+              startContent={<Globe className="text-green-400" />}
               type="text"
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
@@ -370,7 +370,7 @@ export default function ProfileEditor({
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <FaTwitter size={16} />
+                <Twitter size={16} />
                 <span className="text-sm">{twitter}</span>
               </a>
             )}
@@ -379,7 +379,7 @@ export default function ProfileEditor({
                 className="flex items-center gap-2 px-3 py-2 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-indigo-400"
                 title={discord}
               >
-                <FaDiscord size={16} />
+                <MessageCircle size={16} />
                 <span className="text-sm">{discord}</span>
               </div>
             )}
@@ -390,7 +390,7 @@ export default function ProfileEditor({
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <FaGlobe size={16} />
+                <Globe size={16} />
                 <span className="text-sm truncate max-w-32">
                   {website.replace(/^https?:\/\//, "")}
                 </span>

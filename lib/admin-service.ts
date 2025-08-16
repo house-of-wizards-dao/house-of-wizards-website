@@ -105,7 +105,7 @@ export class AdminService {
       if (descError) throw descError;
 
       // Get user names separately to avoid join issues
-      const userIds = [...new Set(fileDescriptions?.map(desc => desc.user_id) || [])];
+      const userIds = Array.from(new Set(fileDescriptions?.map(desc => desc.user_id) || []));
       const { data: users, error: usersError } = await this.supabase
         .from("active_profiles")
         .select("id, name")
