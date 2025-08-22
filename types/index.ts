@@ -165,3 +165,84 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
   width?: number | string;
   height?: number | string;
 }
+
+// Auction related types
+export interface Auction {
+  id: string;
+  creator_id: string;
+  title: string;
+  description: string;
+  artwork_url: string;
+  artwork_thumbnail_url?: string;
+  starting_bid: number;
+  current_bid: number;
+  minimum_increment: number;
+  reserve_price?: number;
+  start_time: string;
+  end_time: string;
+  time_buffer_seconds: number;
+  status: 'upcoming' | 'active' | 'ended' | 'settled' | 'cancelled';
+  category: string;
+  tags: string[];
+  contract_address?: string;
+  token_id?: string;
+  chain_id?: number;
+  transaction_hash?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+export interface AuctionWithDetails extends Auction {
+  creator_name: string;
+  creator_avatar?: string;
+  total_bids: number;
+  watchers_count: number;
+}
+
+export interface Bid {
+  id: string;
+  auction_id: string;
+  bidder_id: string;
+  amount: number;
+  is_winning: boolean;
+  transaction_hash?: string;
+  created_at: string;
+}
+
+export interface AuctionWatcher {
+  id: string;
+  auction_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+// Admin API response types
+export interface AuctionListResponse {
+  data: AuctionWithDetails[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+    hasMore: boolean;
+  };
+}
+
+export interface AuctionUpdateRequest {
+  title?: string;
+  description?: string;
+  starting_bid?: number;
+  reserve_price?: number;
+  minimum_increment?: number;
+  start_time?: string;
+  end_time?: string;
+  time_buffer_seconds?: number;
+  category?: string;
+  tags?: string[];
+  status?: 'upcoming' | 'active' | 'ended' | 'settled' | 'cancelled';
+}
+
+export interface AuctionDeleteRequest {
+  force?: boolean;
+}

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { LogOut, Users, FolderOpen, UserPlus, Briefcase } from "lucide-react";
+import { LogOut, Users, FolderOpen, UserPlus, Briefcase, Gavel } from "lucide-react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import { Profile } from "@/types";
 import UserManagement from "./admin/UserManagement";
@@ -27,7 +28,7 @@ const AdminPanel = React.memo((): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<
-    "users" | "content" | "create" | "talents"
+    "users" | "content" | "create" | "talents" | "auctions"
   >("users");
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
@@ -243,6 +244,7 @@ const AdminPanel = React.memo((): JSX.Element => {
       content: FolderOpen,
       create: UserPlus,
       talents: Briefcase,
+      auctions: Gavel,
     }),
     [],
   );
@@ -314,7 +316,7 @@ const AdminPanel = React.memo((): JSX.Element => {
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-8 justify-center">
-          {(["users", "content", "create", "talents"] as const).map((tab) => {
+          {(["users", "content", "create", "talents", "auctions"] as const).map((tab) => {
             const Icon = tabIcons[tab];
 
             return (
@@ -334,7 +336,9 @@ const AdminPanel = React.memo((): JSX.Element => {
                     ? "Content"
                     : tab === "create"
                       ? "Create User"
-                      : "Talents"}
+                      : tab === "talents"
+                        ? "Talents"
+                        : "Auctions"}
               </button>
             );
           })}
@@ -408,6 +412,77 @@ const AdminPanel = React.memo((): JSX.Element => {
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
             />
+          )}
+
+          {activeTab === "auctions" && (
+            <div className="space-y-6">
+              <div className="text-center">
+                <h2 className="text-2xl font-semibold text-white mb-4">
+                  Auction Management
+                </h2>
+                <p className="text-gray-400 mb-8">
+                  Manage auctions, monitor bidding activity, and update auction details.
+                </p>
+                
+                <Link href="/admin/auctions">
+                  <button className="inline-flex items-center gap-3 px-8 py-4 bg-violet hover:bg-violet/80 text-white rounded-xl font-medium transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <Gavel size={20} />
+                    Go to Auction Management
+                  </button>
+                </Link>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+                <div className="bg-green-600/10 border border-green-600/30 rounded-xl p-4 text-center">
+                  <div className="text-green-400 text-2xl font-bold mb-1">•</div>
+                  <div className="text-sm text-green-400 font-medium">Active Auctions</div>
+                  <div className="text-xs text-gray-400">Currently accepting bids</div>
+                </div>
+                
+                <div className="bg-blue-600/10 border border-blue-600/30 rounded-xl p-4 text-center">
+                  <div className="text-blue-400 text-2xl font-bold mb-1">•</div>
+                  <div className="text-sm text-blue-400 font-medium">Upcoming</div>
+                  <div className="text-xs text-gray-400">Scheduled to start</div>
+                </div>
+                
+                <div className="bg-purple-600/10 border border-purple-600/30 rounded-xl p-4 text-center">
+                  <div className="text-purple-400 text-2xl font-bold mb-1">•</div>
+                  <div className="text-sm text-purple-400 font-medium">Settled</div>
+                  <div className="text-xs text-gray-400">Payment completed</div>
+                </div>
+                
+                <div className="bg-gray-600/10 border border-gray-600/30 rounded-xl p-4 text-center">
+                  <div className="text-gray-400 text-2xl font-bold mb-1">•</div>
+                  <div className="text-sm text-gray-400 font-medium">Ended</div>
+                  <div className="text-xs text-gray-400">Bidding completed</div>
+                </div>
+              </div>
+              
+              <div className="bg-violet/5 border border-violet/20 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-3">
+                  Quick Actions
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Link href="/admin/auctions?status=active">
+                    <button className="w-full px-4 py-3 bg-green-600/20 border border-green-600/30 text-green-400 rounded-lg hover:bg-green-600/30 transition-all duration-300">
+                      View Active Auctions
+                    </button>
+                  </Link>
+                  
+                  <Link href="/admin/auctions?status=upcoming">
+                    <button className="w-full px-4 py-3 bg-blue-600/20 border border-blue-600/30 text-blue-400 rounded-lg hover:bg-blue-600/30 transition-all duration-300">
+                      Manage Upcoming
+                    </button>
+                  </Link>
+                  
+                  <Link href="/admin/auctions?status=ended">
+                    <button className="w-full px-4 py-3 bg-gray-600/20 border border-gray-600/30 text-gray-400 rounded-lg hover:bg-gray-600/30 transition-all duration-300">
+                      Review Ended
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

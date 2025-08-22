@@ -1,0 +1,83 @@
+--- a/pages/api/admin/auctions.ts
++++ b/pages/api/admin/auctions.ts
+@@ -88,20 +88,15 @@ async function getAuctions(
+     const offset = (page - 1) * limit;
+ 
+     // Base query with creator information
++    // Note: Removed problematic foreign key joins that were causing 500 errors
+     let queryBuilder = supabase
+       .from('auctions')
+       .select(`
+         id,
+         title,
+         description,
+         artwork_url,
+         artwork_thumbnail_url,
+         starting_bid,
+         current_bid,
+         minimum_increment,
+         reserve_price,
+         start_time,
+         end_time,
+         time_buffer_seconds,
+         status,
+         category,
+         tags,
+         creator_id,
+         created_at,
+         updated_at,
+-        deleted_at,
+-        profiles:creator_id (
+-          name,
+-          avatar_url
+-        ),
+-        bids:bids(count),
+-        auction_watchers:auction_watchers(count)
++        deleted_at
+       `)
+       .is('deleted_at', null); // Only show non-deleted auctions by default
+ 
+@@ -154,15 +149,44 @@ async function getAuctions(
+       logger.error('Failed to fetch auctions', { error, query: validatedQuery });
+       throw new Error('Failed to fetch auctions');
+     }
++
++    // Fetch creator information separately to avoid foreign key issues
++    const creatorIds = [...new Set((auctions || []).map((auction: any) => auction.creator_id))];
++    const { data: profiles } = await supabase
++      .from('profiles')
++      .select('id, name, avatar_url')
++      .in('id', creatorIds);
++
++    // Create a map for quick lookup
++    const profilesMap = (profiles || []).reduce((acc: any, profile: any) => {
++      acc[profile.id] = profile;
++      return acc;
++    }, {});
++
++    // Get bid counts for each auction
++    const auctionIds = (auctions || []).map((auction: any) => auction.id);
++    const { data: bidCounts } = await supabase
++      .from('bids')
++      .select('auction_id')
++      .in('auction_id', auctionIds);
++
++    const bidCountMap = (bidCounts || []).reduce((acc: any, bid: any) => {
++      acc[bid.auction_id] = (acc[bid.auction_id] || 0) + 1;
++      return acc;
++    }, {});
+ 
+     // Transform data to include computed fields
+     const transformedAuctions: AuctionWithDetails[] = (auctions || []).map((auction: any) => ({
+       ...auction,
+-      creator_name: auction.profiles?.name || 'Unknown Creator',
+-      creator_avatar: auction.profiles?.avatar_url,
+-      total_bids: auction.bids?.[0]?.count || 0,
+-      watchers_count: auction.auction_watchers?.[0]?.count || 0,
++      creator_name: profilesMap[auction.creator_id]?.name || 'Unknown Creator',
++      creator_avatar: profilesMap[auction.creator_id]?.avatar_url,
++      total_bids: bidCountMap[auction.id] || 0,
++      watchers_count: 0, // TODO: Implement auction watchers count if needed
+     }));
+ 
+     const totalPages = Math.ceil((count || 0) / limit);

@@ -1,0 +1,330 @@
+
+> next-pages-template@0.1.0 dev
+> next dev
+
+  ▲ Next.js 14.2.4
+  - Local:        http://localhost:3000
+  - Environments: .env
+  - Experiments (use with caution):
+    · esmExternals
+
+ ✓ Starting...
+ ✓ Ready in 2.1s
+ ○ Compiling /admin/auctions ...
+ ✓ Compiled /admin/auctions in 5.6s (4624 modules)
+ GET /admin/auctions?status=active 200 in 6712ms
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 2.6s (4626 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 2666ms
+ GET /_next/static/chunks/pages/index.es.js.map 404 in 814ms
+ ✓ Compiled /api/admin/auctions in 75ms (309 modules)
+ GET /api/admin/auctions 401 in 508ms
+Failed to initialize rate limits table: {
+  code: 'PGRST202',
+  details: 'Searched for the function public.create_rate_limits_table_if_not_exists without parameters or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.',
+  hint: null,
+  message: 'Could not find the function public.create_rate_limits_table_if_not_exists without parameters in the schema cache'
+}
+ GET /api/admin/auctions 403 in 317ms
+ ○ Compiling /admin/login ...
+ ✓ Compiled /admin/auctions in 877ms (4649 modules)
+[31m[ERROR][0m 2025-08-22T22:40:18.283Z - Failed to fetch auctions 
+  Context: {
+  error: {
+    code: 'PGRST200',
+    details: "Searched for a foreign key relationship between 'auctions' and 'creator_id' in the schema 'public', but no matches were found.",
+    hint: null,
+    message: "Could not find a relationship between 'auctions' and 'creator_id' in the schema cache"
+  },
+  query: {
+    page: 1,
+    limit: 20,
+    search: undefined,
+    status: 'all',
+    creator_id: undefined,
+    category: undefined,
+    sort_by: 'created_at',
+    sort_order: 'desc'
+  }
+}
+[31m[ERROR][0m 2025-08-22T22:40:18.284Z - Error in getAuctions 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  userId: '0af0d632-6962-407d-8b08-8fa99066a35d'
+}
+[31m[ERROR][0m 2025-08-22T22:40:18.285Z - API error occurred 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  errorMessage: 'Failed to fetch auctions',
+  stack: 'Error: Failed to fetch auctions\n' +
+    '    at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)\n' +
+    '    at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)\n' +
+    '    at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)\n' +
+    '    at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)\n' +
+    '    at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)\n' +
+    '    at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20\n' +
+    '    at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)\n' +
+    '    at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)\n' +
+    '    at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)\n' +
+    '    at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)\n' +
+    '    at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)\n' +
+    '    at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13)',
+  url: '/api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc',
+  method: 'GET',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  ip: '::1',
+  body: '{}'
+}
+ GET /admin/auctions?status=active 200 in 388ms
+ GET /api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc 500 in 595ms
+ ✓ Compiled /_error in 156ms (4651 modules)
+ GET /.well-known/appspecific/com.chrome.devtools.json 404 in 195ms
+ GET /_next/static/chunks/pages/index.es.js.map 404 in 11ms
+Failed to initialize rate limits table: {
+  code: 'PGRST202',
+  details: 'Searched for the function public.create_rate_limits_table_if_not_exists without parameters or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.',
+  hint: null,
+  message: 'Could not find the function public.create_rate_limits_table_if_not_exists without parameters in the schema cache'
+}
+[31m[ERROR][0m 2025-08-22T22:40:20.772Z - Failed to fetch auctions 
+  Context: {
+  error: {
+    code: 'PGRST200',
+    details: "Searched for a foreign key relationship between 'auctions' and 'creator_id' in the schema 'public', but no matches were found.",
+    hint: null,
+    message: "Could not find a relationship between 'auctions' and 'creator_id' in the schema cache"
+  },
+  query: {
+    page: 1,
+    limit: 20,
+    search: undefined,
+    status: 'all',
+    creator_id: undefined,
+    category: undefined,
+    sort_by: 'created_at',
+    sort_order: 'desc'
+  }
+}
+[31m[ERROR][0m 2025-08-22T22:40:20.772Z - Error in getAuctions 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  userId: '0af0d632-6962-407d-8b08-8fa99066a35d'
+}
+[31m[ERROR][0m 2025-08-22T22:40:20.773Z - API error occurred 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  errorMessage: 'Failed to fetch auctions',
+  stack: 'Error: Failed to fetch auctions\n' +
+    '    at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:140:19)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)\n' +
+    '    at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)\n' +
+    '    at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)\n' +
+    '    at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)\n' +
+    '    at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)\n' +
+    '    at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20\n' +
+    '    at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)\n' +
+    '    at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)\n' +
+    '    at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)\n' +
+    '    at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)\n' +
+    '    at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)\n' +
+    '    at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13)',
+  url: '/api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc',
+  method: 'GET',
+  userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36',
+  ip: '::1',
+  body: '{}'
+}
+ GET /api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc 500 in 405ms
+ ✓ Compiled in 1294ms (4340 modules)
+ ✓ Compiled in 683ms (4572 modules)
+ ✓ Compiled in 395ms (4311 modules)
+ ✓ Compiled in 413ms (4311 modules)
+ ✓ Compiled in 296ms (4311 modules)
+ ✓ Compiled in 293ms (4311 modules)
+ ✓ Compiled in 374ms (4311 modules)
+ ✓ Compiled in 287ms (4311 modules)
+ ✓ Compiled in 282ms (4311 modules)
+ ✓ Compiled in 362ms (4311 modules)
+ ✓ Compiled in 303ms (4311 modules)
+ ✓ Compiled /api/admin/auctions in 91ms (282 modules)
+Failed to initialize rate limits table: {
+  code: 'PGRST202',
+  details: 'Searched for the function public.create_rate_limits_table_if_not_exists without parameters or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.',
+  hint: null,
+  message: 'Could not find the function public.create_rate_limits_table_if_not_exists without parameters in the schema cache'
+}
+[31m[ERROR][0m 2025-08-22T22:47:01.004Z - Failed to fetch auctions 
+  Context: {
+  error: {
+    code: 'PGRST100',
+    details: 'unexpected end of input expecting "...", field name (* or [a..z0..9_$]), "*" or "count()"',
+    hint: null,
+    message: '"failed to parse select parameter (id,title,description,artwork_url,artwork_thumbnail_url,starting_bid,current_bid,minimum_increment,reserve_price,start_time,end_time,time_buffer_seconds,status,category,tags,creator_id,created_at,updated_at,deleted_at,)" (line 1, column 218)'
+  },
+  query: {
+    page: 1,
+    limit: 20,
+    search: undefined,
+    status: 'all',
+    creator_id: undefined,
+    category: undefined,
+    sort_by: 'created_at',
+    sort_order: 'desc'
+  }
+}
+[31m[ERROR][0m 2025-08-22T22:47:01.004Z - Error in getAuctions 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:135:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  userId: '5de7d649-f789-401c-92c6-a4014a6aa7d4'
+}
+[31m[ERROR][0m 2025-08-22T22:47:01.006Z - API error occurred 
+  Context: {
+  error: Error: Failed to fetch auctions
+      at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:135:19)
+      at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+      at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)
+      at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)
+      at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)
+      at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)
+      at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)
+      at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)
+      at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20
+      at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)
+      at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)
+      at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)
+      at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)
+      at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)
+      at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13),
+  errorMessage: 'Failed to fetch auctions',
+  stack: 'Error: Failed to fetch auctions\n' +
+    '    at getAuctions (webpack-internal:///(api)/./pages/api/admin/auctions.ts:135:19)\n' +
+    '    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)\n' +
+    '    at async eval (webpack-internal:///(api)/./lib/api-middleware.ts:223:13)\n' +
+    '    at async K (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:2871)\n' +
+    '    at async U.render (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/compiled/next-server/pages-api.runtime.dev.js:21:3955)\n' +
+    '    at async DevServer.runApi (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:600:9)\n' +
+    '    at async NextNodeServer.handleCatchallRenderRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/next-server.js:269:37)\n' +
+    '    at async DevServer.handleRequestImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/base-server.js:816:17)\n' +
+    '    at async /Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:339:20\n' +
+    '    at async Span.traceAsyncFn (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/trace/trace.js:154:20)\n' +
+    '    at async DevServer.handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/dev/next-dev-server.js:336:24)\n' +
+    '    at async invokeRender (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:174:21)\n' +
+    '    at async handleRequest (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:353:24)\n' +
+    '    at async requestHandlerImpl (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/router-server.js:377:13)\n' +
+    '    at async Server.requestListener (/Users/pleasures/Desktop/how-dao-revamp/node_modules/next/dist/server/lib/start-server.js:141:13)',
+  url: '/api/admin/auctions',
+  method: 'GET',
+  userAgent: 'node',
+  ip: '::1',
+  body: '{}'
+}
+ GET /api/admin/auctions 500 in 1496ms
+ ✓ Compiled in 353ms (4593 modules)
+Failed to initialize rate limits table: {
+  code: 'PGRST202',
+  details: 'Searched for the function public.create_rate_limits_table_if_not_exists without parameters or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.',
+  hint: null,
+  message: 'Could not find the function public.create_rate_limits_table_if_not_exists without parameters in the schema cache'
+}
+ GET /api/admin/auctions 200 in 522ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 1847ms (4636 modules)
+ ✓ Compiled /admin/auctions in 381ms (4672 modules)
+ ✓ Compiled /api/admin/auctions in 39ms (332 modules)
+Failed to initialize rate limits table: {
+  code: 'PGRST202',
+  details: 'Searched for the function public.create_rate_limits_table_if_not_exists without parameters or with a single unnamed json/jsonb parameter, but no matches were found in the schema cache.',
+  hint: null,
+  message: 'Could not find the function public.create_rate_limits_table_if_not_exists without parameters in the schema cache'
+}
+ GET /api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc 200 in 989ms
+[36m[INFO][0m 2025-08-22T22:49:00.806Z - Auction soft deleted 
+  Context: {
+  auctionId: '9ed2c569-e1eb-4054-8420-b8019488ba80',
+  auctionTitle: 'Gay1',
+  deletedBy: '0af0d632-6962-407d-8b08-8fa99066a35d',
+  totalBids: 0
+}
+ DELETE /api/admin/auctions?id=9ed2c569-e1eb-4054-8420-b8019488ba80 200 in 622ms
+ GET /api/admin/auctions?page=1&limit=20&sort_by=created_at&sort_order=desc 200 in 873ms
+ ✓ Compiled /auctions in 436ms (4821 modules)
