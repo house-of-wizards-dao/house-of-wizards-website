@@ -126,54 +126,54 @@ export const AUCTION_ABI = [
       {
         internalType: "uint256",
         name: "auctionId",
-        type: "uint256"
-      }
+        type: "uint256",
+      },
     ],
     name: "getAuction",
     outputs: [
       {
         internalType: "address",
         name: "seller",
-        type: "address"
+        type: "address",
       },
       {
         internalType: "address",
         name: "highestBidder",
-        type: "address"
+        type: "address",
       },
       {
         internalType: "uint256",
         name: "highestBid",
-        type: "uint256"
+        type: "uint256",
       },
       {
         internalType: "uint256",
         name: "endTime",
-        type: "uint256"
+        type: "uint256",
       },
       {
         internalType: "uint256",
         name: "createdAt",
-        type: "uint256"
+        type: "uint256",
       },
       {
         internalType: "bool",
         name: "settled",
-        type: "bool"
+        type: "bool",
       },
       {
         internalType: "uint8",
         name: "timeExtensions",
-        type: "uint8"
+        type: "uint8",
       },
       {
         internalType: "string",
         name: "offchainId",
-        type: "string"
-      }
+        type: "string",
+      },
     ],
     stateMutability: "view",
-    type: "function"
+    type: "function",
   },
   {
     inputs: [{ name: "auctionId", type: "uint256" }],

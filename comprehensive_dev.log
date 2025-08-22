@@ -9,9 +9,9 @@
     · esmExternals
 
  ✓ Starting...
- ✓ Ready in 1626ms
+ ✓ Ready in 2.2s
  ○ Compiling / ...
- ✓ Compiled / in 2.4s (5609 modules)
+ ✓ Compiled / in 2.2s (5609 modules)
 ⚠️  WalletConnect Project ID not set or using placeholder. Get a real Project ID from https://cloud.walletconnect.com for production use.
 Error [ERR_REQUIRE_ESM]: require() of ES Module /Users/pleasures/Desktop/how-dao-revamp/node_modules/@reown/appkit/dist/esm/exports/core.js from /Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/ethereum-provider/dist/index.cjs.js not supported.
 Instead change the require of core.js in /Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/ethereum-provider/dist/index.cjs.js to a dynamic import() which is available in all CommonJS modules.
@@ -25,8 +25,8 @@ Instead change the require of core.js in /Users/pleasures/Desktop/how-dao-revamp
     at async Object.setup (file:///Users/pleasures/Desktop/how-dao-revamp/node_modules/@wagmi/connectors/dist/esm/walletConnect.js:20:30) {
   code: 'ERR_REQUIRE_ESM'
 }
- GET / 200 in 3422ms
- ✓ Compiled /_error in 375ms (5611 modules)
+ GET / 200 in 3299ms
+ ✓ Compiled /_error in 387ms (5611 modules)
 ⚠️  WalletConnect Project ID not set or using placeholder. Get a real Project ID from https://cloud.walletconnect.com for production use.
 WalletConnect Core is already initialized. This is probably a mistake and can lead to unexpected behavior. Init() was called 2 times.
 WalletConnect Core is already initialized. This is probably a mistake and can lead to unexpected behavior. Init() was called 2 times.
@@ -42,6 +42,6 @@ Instead change the require of core.js in /Users/pleasures/Desktop/how-dao-revamp
     at async Object.setup (file:///Users/pleasures/Desktop/how-dao-revamp/node_modules/@wagmi/connectors/dist/esm/walletConnect.js:20:30) {
   code: 'ERR_REQUIRE_ESM'
 }
- HEAD /fonts/Mona-Sans.woff2 404 in 430ms
- HEAD /sw.js 404 in 5ms
+ GET /fonts/Mona-Sans.woff2 404 in 453ms
+ GET /sw.js 404 in 4ms
 [?25h

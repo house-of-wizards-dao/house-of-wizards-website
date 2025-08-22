@@ -1,0 +1,32 @@
+
+> next-pages-template@0.1.0 dev
+> next dev --turbo
+
+  ▲ Next.js 14.2.4 (turbo)
+  - Local:        http://localhost:3000
+  - Environments: .env.local, .env
+
+ ✓ Starting...
+ ✓ Ready in 1743ms
+ ○ Compiling /auctions ...
+(node:34207) ExperimentalWarning: CommonJS module /Users/pleasures/Desktop/how-dao-revamp/node_modules/tailwindcss/lib/lib/load-config.js is loading ES Module /Users/pleasures/Desktop/how-dao-revamp/tailwind.config.js using require().
+Support for loading ES Module in require() is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34208) ExperimentalWarning: CommonJS module /Users/pleasures/Desktop/how-dao-revamp/node_modules/tailwindcss/lib/lib/load-config.js is loading ES Module /Users/pleasures/Desktop/how-dao-revamp/tailwind.config.js using require().
+Support for loading ES Module in require() is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ ✓ Compiled /auctions in 3.2s
+(node:34104) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:34104) ExperimentalWarning: CommonJS module /Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/ethereum-provider/dist/index.cjs.js is loading ES Module /Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/modal/dist/index.js using require().
+Support for loading ES Module in require() is an experimental feature and might change at any time
+ GET /auctions 200 in 4165ms
+ ✓ Compiled /auctions/create in 334ms
+ GET /auctions/create 200 in 416ms
+   Reload env: .env.local
+ ✓ Compiled / in 300ms
+ GET / 200 in 359ms
+{"level":50,"time":1755366959135,"pid":34104,"hostname":"192.168.254.109","context":"core","context":"core/relayer","err":{"type":"Error","message":"WebSocket connection closed abnormally with code: 3000 (Project not found)","stack":"Error: WebSocket connection closed abnormally with code: 3000 (Project not found)\n    at JsonRpcProvider.onClose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/core/node_modules/@walletconnect/jsonrpc-provider/dist/cjs/provider.js:89:39)\n    at EventEmitter.<anonymous> (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/core/node_modules/@walletconnect/jsonrpc-provider/dist/cjs/provider.js:118:53)\n    at EventEmitter.emit (node:events:513:28)\n    at l.onClose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/jsonrpc-ws-connection/dist/index.cjs.js:1:2508)\n    at e.onclose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/jsonrpc-ws-connection/dist/index.cjs.js:1:2376)\n    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)\n    at WebSocket.dispatchEvent (node:internal/event_target:762:26)\n    at fireEvent (node:internal/deps/undici/undici:11637:14)\n    at TLSSocket.onSocketClose (node:internal/deps/undici/undici:12036:7)\n    at TLSSocket.emit (node:events:525:35)\n    at node:net:350:12\n    at TCP.done (node:_tls_wrap:650:7)"},"msg":"WebSocket connection closed abnormally with code: 3000 (Project not found)"}
+{"level":50,"time":1755366959137,"pid":34104,"hostname":"192.168.254.109","context":"core","context":"core/relayer","err":{"type":"Error","message":"WebSocket connection closed abnormally with code: 3000 (Project not found)","stack":"Error: WebSocket connection closed abnormally with code: 3000 (Project not found)\n    at JsonRpcProvider.onClose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/core/node_modules/@walletconnect/jsonrpc-provider/dist/cjs/provider.js:89:39)\n    at EventEmitter.<anonymous> (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/core/node_modules/@walletconnect/jsonrpc-provider/dist/cjs/provider.js:118:53)\n    at EventEmitter.emit (node:events:513:28)\n    at l.onClose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/jsonrpc-ws-connection/dist/index.cjs.js:1:2508)\n    at e.onclose (/Users/pleasures/Desktop/how-dao-revamp/node_modules/@walletconnect/jsonrpc-ws-connection/dist/index.cjs.js:1:2376)\n    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:827:20)\n    at WebSocket.dispatchEvent (node:internal/event_target:762:26)\n    at fireEvent (node:internal/deps/undici/undici:11637:14)\n    at TLSSocket.onSocketClose (node:internal/deps/undici/undici:12036:7)\n    at TLSSocket.emit (node:events:525:35)\n    at node:net:350:12\n    at TCP.done (node:_tls_wrap:650:7)"},"msg":"WebSocket connection closed abnormally with code: 3000 (Project not found)"}
+ GET /auctions 200 in 44ms
+[?25h

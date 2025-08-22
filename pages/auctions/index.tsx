@@ -96,7 +96,7 @@ export default function AuctionsPage() {
 
   return (
     <DefaultLayout>
-      <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className="font-atirose text-violet text-5xl md:text-6xl mb-6">
@@ -175,7 +175,7 @@ export default function AuctionsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 container  mx-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {auctions.map((auction) => (
               <Link key={auction.id} href={`/auctions/${auction.id}`}>
                 <Card className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm hover:border-violet hover:shadow-xl cursor-pointer transition-all duration-300 hover:scale-[1.02]">
@@ -264,7 +264,7 @@ export default function AuctionsPage() {
         )}
 
         {/* Create Auction CTA */}
-        <div className="text-center mt-16">
+        <div className="text-center mt-16 container mx-auto">
           <div className="bg-gradient-to-r from-violet/20 to-purple-600/20 rounded-2xl p-8 border border-violet/30">
             <h3 className="text-2xl font-bold text-white mb-4">
               Ready to auction your artwork?

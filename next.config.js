@@ -2,12 +2,19 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['ctyeiwzxltrqyrbcbrii.supabase.co'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'ctyeiwzxltrqyrbcbrii.supabase.co',
+        port: '',
+        pathname: '/**',
+      },
+    ],
   },
   typescript: {
     ignoreBuildErrors: true,
   },
-  transpilePackages: ['@rainbow-me/rainbowkit', '@vanilla-extract/css', '@vanilla-extract/dynamic', '@vanilla-extract/recipes', '@vanilla-extract/sprinkles'],
+  transpilePackages: ['@rainbow-me/rainbowkit', '@vanilla-extract/css', '@vanilla-extract/dynamic', '@vanilla-extract/recipes', '@vanilla-extract/sprinkles', '@walletconnect/ethereum-provider', '@reown/appkit'],
   experimental: {
     esmExternals: false,
   },

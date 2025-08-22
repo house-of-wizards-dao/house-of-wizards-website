@@ -12,7 +12,7 @@ export const Head = () => {
       <meta content={siteConfig.description} name="description" />
       <link
         as="font"
-        href="/public/fonts/Mona-Sans.woff2"
+        href="/fonts/mona-sans/Mona-Sans.woff2"
         rel="preload"
         type="font/woff2"
       />
