@@ -1,12 +1,31 @@
 import React from "react";
-import { AlertTriangle, X, RefreshCw } from "lucide-react";
+import { AlertTriangle, X, RefreshCw, Info } from "lucide-react";
+import { cva, type VariantProps } from "class-variance-authority";
+import { cn } from "@/lib/utils";
 
-interface ErrorMessageProps {
+const errorMessageVariants = cva(
+  "flex items-start gap-3 p-4 rounded-lg border",
+  {
+    variants: {
+      variant: {
+        error:
+          "bg-red-50 border-red-200 text-red-800 dark:bg-red-950/50 dark:border-red-800 dark:text-red-300",
+        warning:
+          "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-950/50 dark:border-yellow-800 dark:text-yellow-300",
+        info: "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-950/50 dark:border-blue-800 dark:text-blue-300",
+      },
+    },
+    defaultVariants: {
+      variant: "error",
+    },
+  },
+);
+
+interface ErrorMessageProps extends VariantProps<typeof errorMessageVariants> {
   title?: string;
   message: string;
   onDismiss?: () => void;
   onRetry?: () => void;
-  variant?: "error" | "warning" | "info";
   className?: string;
 }
 
@@ -16,68 +35,59 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   onDismiss,
   onRetry,
   variant = "error",
-  className = "",
+  className,
 }) => {
-  const variants = {
-    error: {
-      container: "bg-red-900 border-red-700 text-red-200",
-      icon: "text-red-400",
-      button: "text-red-300 hover:text-red-100",
-    },
-    warning: {
-      container: "bg-yellow-900 border-yellow-700 text-yellow-200",
-      icon: "text-yellow-400",
-      button: "text-yellow-300 hover:text-yellow-100",
-    },
-    info: {
-      container: "bg-blue-900 border-blue-700 text-blue-200",
-      icon: "text-blue-400",
-      button: "text-blue-300 hover:text-blue-100",
-    },
+  const getIcon = () => {
+    switch (variant) {
+      case "warning":
+        return <AlertTriangle className="w-5 h-5" />;
+      case "info":
+        return <Info className="w-5 h-5" />;
+      default:
+        return <AlertTriangle className="w-5 h-5" />;
+    }
   };
-
-  const variantStyles = variants[variant];
 
   return (
     <div
-      className={`p-4 border rounded-lg ${variantStyles.container} ${className}`}
+      className={cn(errorMessageVariants({ variant }), className)}
+      role="alert"
+      aria-live="polite"
     >
-      <div className="flex items-start gap-3">
-        <AlertTriangle
-          className={`h-5 w-5 mt-0.5 flex-shrink-0 ${variantStyles.icon}`}
-        />
+      {getIcon()}
+      <div className="flex-1 min-w-0">
+        {title && <h3 className="font-medium mb-1">{title}</h3>}
+        <p className="text-sm">{message}</p>
+      </div>
 
-        <div className="flex-1 min-w-0">
-          {title && <h3 className="font-medium mb-1">{title}</h3>}
-          <p className="text-sm">{message}</p>
-        </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        {onRetry && (
+          <button
+            aria-label="Retry"
+            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+            title="Try again"
+            onClick={onRetry}
+          >
+            <RefreshCw size={16} />
+          </button>
+        )}
 
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {onRetry && (
-            <button
-              aria-label="Retry"
-              className={`p-1 rounded hover:bg-opacity-20 transition-colors ${variantStyles.button}`}
-              title="Try again"
-              onClick={onRetry}
-            >
-              <RefreshCw size={16} />
-            </button>
-          )}
-
-          {onDismiss && (
-            <button
-              aria-label="Dismiss"
-              className={`p-1 rounded hover:bg-opacity-20 transition-colors ${variantStyles.button}`}
-              title="Dismiss"
-              onClick={onDismiss}
-            >
-              <X size={16} />
-            </button>
-          )}
-        </div>
+        {onDismiss && (
+          <button
+            aria-label="Dismiss"
+            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors"
+            title="Dismiss"
+            onClick={onDismiss}
+          >
+            <X size={16} />
+          </button>
+        )}
       </div>
     </div>
   );
 };
 
+ErrorMessage.displayName = "ErrorMessage";
+
+export { ErrorMessage, errorMessageVariants };
 export default ErrorMessage;
