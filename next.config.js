@@ -11,9 +11,6 @@ const nextConfig = {
       },
     ],
   },
-  typescript: {
-    ignoreBuildErrors: true,
-  },
   transpilePackages: ['@rainbow-me/rainbowkit', '@vanilla-extract/css', '@vanilla-extract/dynamic', '@vanilla-extract/recipes', '@vanilla-extract/sprinkles', '@walletconnect/ethereum-provider', '@reown/appkit'],
   experimental: {
     esmExternals: false,

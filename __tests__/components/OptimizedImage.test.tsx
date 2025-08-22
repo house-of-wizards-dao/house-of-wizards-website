@@ -5,14 +5,27 @@ import OptimizedImage from "@/components/OptimizedImage";
 // Mock Next.js Image component
 jest.mock("next/image", () => {
   return function MockImage(props: any) {
-    const { onError, ...otherProps } = props;
+    const { 
+      onError, 
+      priority, 
+      quality, 
+      placeholder, 
+      blurDataURL,
+      style,
+      ...domProps 
+    } = props;
+    
     return (
       <img
-        {...otherProps}
+        {...domProps}
         onError={(e) => {
           if (onError) onError(e);
         }}
         data-testid="optimized-image"
+        data-priority={priority ? "true" : "false"}
+        data-quality={quality?.toString()}
+        data-placeholder={placeholder}
+        data-blur-data-url={blurDataURL}
       />
     );
   };
@@ -84,14 +97,14 @@ describe("OptimizedImage", () => {
     render(<OptimizedImage {...defaultProps} priority={true} />);
 
     const image = screen.getByTestId("optimized-image");
-    expect(image).toHaveAttribute("priority");
+    expect(image).toHaveAttribute("data-priority", "true");
   });
 
   it("passes through quality prop", () => {
     render(<OptimizedImage {...defaultProps} quality={90} />);
 
     const image = screen.getByTestId("optimized-image");
-    expect(image).toHaveAttribute("quality", "90");
+    expect(image).toHaveAttribute("data-quality", "90");
   });
 
   it("passes through placeholder props", () => {
@@ -105,7 +118,7 @@ describe("OptimizedImage", () => {
     );
 
     const image = screen.getByTestId("optimized-image");
-    expect(image).toHaveAttribute("placeholder", "blur");
-    expect(image).toHaveAttribute("blurDataURL", blurDataURL);
+    expect(image).toHaveAttribute("data-placeholder", "blur");
+    expect(image).toHaveAttribute("data-blur-data-url", blurDataURL);
   });
 });

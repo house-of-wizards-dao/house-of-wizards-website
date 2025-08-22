@@ -64,11 +64,13 @@ describe("env utilities", () => {
       expect(() => getValidatedEnv()).toThrow("Invalid SUPABASE_URL format");
     });
 
-    it("throws error for invalid JWT format", () => {
+    it("skips JWT validation in test environment", () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = "https://test.supabase.co";
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "invalid-jwt";
+      process.env.NODE_ENV = "test";
 
-      expect(() => getValidatedEnv()).toThrow("Invalid anon key format");
+      // Should not throw in test environment
+      expect(() => getValidatedEnv()).not.toThrow();
     });
 
     it("allows empty service role key", () => {

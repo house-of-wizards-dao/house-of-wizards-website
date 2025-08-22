@@ -75,22 +75,22 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
     }
   };
 
-  const handleZoomIn = (): void => {
+  const handleZoomIn = useCallback((): void => {
     if (isZoomed) {
       setZoomLevel((prev) => Math.min(prev + 0.25, 3)); // Limit max zoom to 3x
     } else {
       setIsZoomed(true);
     }
-  };
+  }, [isZoomed]);
 
-  const handleZoomOut = (): void => {
+  const handleZoomOut = useCallback((): void => {
     if (isZoomed && zoomLevel > 1.25) {
       setZoomLevel((prev) => prev - 0.25);
     } else {
       setIsZoomed(false);
       setZoomLevel(1.5); // Reset to default zoom level
     }
-  };
+  }, [isZoomed, zoomLevel]);
 
   const handleDragStart = useCallback(
     (e: MouseEvent | TouchEvent): void => {
@@ -222,7 +222,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50">
       <div
         ref={modalRef}
-        className="bg-background border-1.5 border-darkviolet sm:p-6 p-3 rounded-xl max-w-[95vw] w-fit relative"
+        className="bg-background border-1.5 border-brand-900 sm:p-6 p-3 rounded-xl max-w-[95vw] w-fit relative"
       >
         <div className="flex justify-between items-center mb-2">
           <div className="flex gap-2">
@@ -230,7 +230,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
               <>
                 <button
                   aria-label="Zoom in"
-                  className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
+                  className="text-brand-500 hover:text-brand-600 transition-colors"
                   type="button"
                   onClick={handleZoomIn}
                 >
@@ -239,7 +239,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
                 {isZoomed && (
                   <button
                     aria-label="Zoom out"
-                    className="text-[#9564b4] hover:text-[#7d4d9c] transition-colors"
+                    className="text-brand-500 hover:text-brand-600 transition-colors"
                     type="button"
                     onClick={handleZoomOut}
                   >
@@ -251,7 +251,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
           </div>
           <button
             aria-label="Close modal"
-            className="sm:text-2xl text-xl text-[#9564b4] cursor-pointer hover:text-[#7d4d9c] transition-colors"
+            className="sm:text-2xl text-xl text-brand-500 cursor-pointer hover:text-brand-600 transition-colors"
             type="button"
             onClick={onClose}
           >
@@ -288,7 +288,16 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
                 willChange: "transform", // Optimize for animations
                 transition: isDragging ? "none" : "transform 0.2s ease-out",
               }}
+              role="button"
+              tabIndex={0}
+              aria-label={isZoomed ? "Zoom out image" : "Zoom in image"}
               onClick={handleZoomToggle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  handleZoomToggle();
+                }
+              }}
               onMouseDown={handleDragStart}
               onMouseMove={handleDragMove}
               onTouchMove={handleDragMove}
@@ -317,7 +326,7 @@ const ImageModal = React.memo<ImageModalProps>(({ item, onClose, isOpen }) => {
           <p className="text-foreground font-medium sm:text-lg text-sm font-pop mb-1 w-full px-2 uppercase line-clamp-2">
             {item.description}
           </p>
-          <p className="text-[#9564b4] font-atirose text-xl sm:text-2xl">
+          <p className="text-brand-500 font-atirose text-xl sm:text-2xl">
             {item.userName}
           </p>
         </div>
@@ -355,7 +364,7 @@ const GalleryItem = React.memo<GalleryItemProps>(
     return (
       <div
         aria-label={`View artwork: ${item.description || "Untitled"} by ${item.userName}`}
-        className="group relative overflow-hidden hover:scale-[1.02] cursor-pointer border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl transition-all duration-300 hover:border-violet hover:shadow-xl"
+        className="group relative overflow-hidden hover:scale-[1.02] cursor-pointer border border-brand-900 bg-transparent/50 backdrop-blur-sm rounded-xl transition-all duration-300 hover:border-brand-500 hover:shadow-xl"
         role="button"
         tabIndex={0}
         onClick={handleClick}
@@ -398,7 +407,7 @@ const GalleryItem = React.memo<GalleryItemProps>(
           <p className="text-gray-300 text-sm truncate">
             {item.description || "Untitled"}
           </p>
-          <p className="text-violet font-atirose text-lg">
+          <p className="text-brand-500 font-atirose text-lg">
             {item.userName || "Anonymous"}
           </p>
         </div>
@@ -577,11 +586,12 @@ function GalleryPage(): JSX.Element {
     <DefaultLayout>
       <div className="flex flex-col justify-center items-center mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h1 className="font-atirose text-[#9564b4] text-5xl md:text-6xl mb-4">
+          <h1 className="font-atirose text-brand-500 text-5xl md:text-6xl mb-4">
             Gallery
           </h1>
-          <p className="text-gray-400 text-base max-w-2xl mx-auto">
-            Explore the creative works from our talented community of artists
+          <p className="font-quad text-sm text-gray-400 text-center uppercase
+">
+            Explore the creative works from our talented community of artists.
           </p>
         </div>
 
@@ -624,7 +634,7 @@ function GalleryPage(): JSX.Element {
                 Filter by artist
               </label>
               <select
-                className="cursor-pointer bg-background/50 backdrop-blur-sm text-foreground rounded-full text-sm px-4 py-2 border border-darkviolet hover:border-violet transition-colors"
+                className="cursor-pointer bg-background/50 backdrop-blur-sm text-foreground rounded-full text-sm px-4 py-2 border border-brand-900 hover:border-brand-500 transition-colors"
                 id="artist-filter"
                 value={selectedArtist || ""}
                 onChange={handleArtistChange}
@@ -658,7 +668,7 @@ function GalleryPage(): JSX.Element {
             <div className="flex justify-center mt-12 gap-2 flex-wrap px-4">
               <Button
                 aria-label="Previous page"
-                className="px-3 py-2 rounded-full bg-transparent border border-darkviolet text-white disabled:opacity-50 hover:border-violet hover:bg-violet/20 transition-all"
+                className="px-3 py-2 rounded-full bg-transparent border border-brand-900 text-white disabled:opacity-50 hover:border-brand-500 hover:bg-brand-500/20 transition-all"
                 disabled={currentPage === 1}
                 onClick={handlePrevPage}
               >
@@ -685,8 +695,8 @@ function GalleryPage(): JSX.Element {
                       aria-label={`Go to page ${i + 1}`}
                       className={`min-w-[40px] px-3 py-2 rounded-full text-sm transition-all ${
                         currentPage === i + 1
-                          ? "bg-violet text-white"
-                          : "bg-transparent border border-darkviolet text-white hover:border-violet hover:bg-violet/20"
+                          ? "bg-brand-500 text-white"
+                          : "bg-transparent border border-brand-900 text-white hover:border-brand-500 hover:bg-brand-500/20"
                       }`}
                       onClick={() => handlePageClick(i + 1)}
                     >
@@ -724,7 +734,7 @@ function GalleryPage(): JSX.Element {
 
               <Button
                 aria-label="Next page"
-                className="px-3 py-2 rounded-full bg-transparent border border-darkviolet text-white disabled:opacity-50 hover:border-violet hover:bg-violet/20 transition-all"
+                className="px-3 py-2 rounded-full bg-transparent border border-brand-900 text-white disabled:opacity-50 hover:border-brand-500 hover:bg-brand-500/20 transition-all"
                 disabled={currentPage === pageCount}
                 onClick={handleNextPage}
               >

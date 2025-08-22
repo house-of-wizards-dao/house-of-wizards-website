@@ -18,34 +18,40 @@ export default function IndexPage(): JSX.Element {
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  async function fetchAllUsers(): Promise<void> {
-    try {
-      // Use active_profiles view to exclude soft-deleted users
-      const { data, error } = await supabase
-        .from("active_profiles")
-        .select(
-          "id, name, email, description, twitter, discord, website, avatar_url, created_at",
-        )
-        .order("created_at", { ascending: false });
-
-      if (error) {
-        return;
-      }
-
-      if (data) {
-        startTransition(() => {
-          setAllUsers(data as UserProfile[]);
-        });
-      }
-    } catch (err) {}
-  }
-
   useEffect(() => {
     let isMounted = true;
 
+    async function fetchAllUsers(): Promise<void> {
+      try {
+        // Use active_profiles view to exclude soft-deleted users
+        const { data, error } = await supabase
+          .from("active_profiles")
+          .select(
+            "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+          )
+          .order("created_at", { ascending: false });
+
+        if (error || !isMounted) {
+          return;
+        }
+
+        if (data) {
+          startTransition(() => {
+            setAllUsers(data as UserProfile[]);
+          });
+        }
+      } catch (err) {
+        // Handle error silently
+      }
+    }
+
     const fetchData = async (): Promise<void> => {
       if (isMounted) {
-        await fetchAllUsers().finally(() => setLoading(false));
+        await fetchAllUsers().finally(() => {
+          if (isMounted) {
+            setLoading(false);
+          }
+        });
       }
     };
 
@@ -54,7 +60,7 @@ export default function IndexPage(): JSX.Element {
     return () => {
       isMounted = false;
     };
-  }, [user, supabase, fetchAllUsers]);
+  }, [user, supabase]);
 
   if (loading) {
     return (
@@ -120,7 +126,7 @@ export default function IndexPage(): JSX.Element {
             .filter((userProfile) => userProfile.role !== "admin")
             .map((userProfile) => (
               <Link key={userProfile.id} href={`/user/${userProfile.id}`}>
-                <Card className="rounded-xl w-full h-full border border-darkviolet bg-transparent/50 backdrop-blur-sm hover:scale-[1.02] hover:border-violet hover:shadow-xl cursor-pointer transition-all duration-300">
+                <Card className="rounded-xl w-full h-full border border-brand-900 bg-transparent/50 backdrop-blur-sm hover:scale-[1.02] hover:border-brand-500 hover:shadow-xl cursor-pointer transition-all duration-300">
                   <CardBody className="p-0">
                     <Image
                       alt={`${userProfile.name || "User"}'s avatar`}
@@ -141,14 +147,14 @@ export default function IndexPage(): JSX.Element {
                   </CardBody>
                   <CardFooter className="flex flex-col items-start p-6 space-y-4">
                     <div className="w-full">
-                      <h4 className="text-[#A986D9] font-atirose text-2xl truncate mb-2">
+                      <h4 className="text-brand-500 font-atirose text-2xl truncate mb-2">
                         {userProfile.name || "Anonymous"}
                       </h4>
                       <p className="text-gray-400 text-sm line-clamp-2">
                         {userProfile.description || "No description available"}
                       </p>
                     </div>
-                    <div className="flex flex-col w-full space-y-2 pt-2 border-t border-darkviolet/50">
+                    <div className="flex flex-col w-full space-y-2 pt-2 border-t border-brand-900/50">
                       <div className="flex flex-row items-center gap-3">
                         <Globe
                           aria-hidden="true"
@@ -158,7 +164,7 @@ export default function IndexPage(): JSX.Element {
                         {userProfile?.website ? (
                           <a
                             aria-label={`Visit ${userProfile.name || "user"}'s website`}
-                            className="text-sm text-gray-300 truncate hover:text-violet transition-colors"
+                            className="text-sm text-gray-300 truncate hover:text-brand-500 transition-colors"
                             href={userProfile.website}
                             rel="noopener noreferrer"
                             target="_blank"
@@ -181,7 +187,7 @@ export default function IndexPage(): JSX.Element {
                         {userProfile?.twitter ? (
                           <a
                             aria-label={`Visit ${userProfile.name || "user"}'s Twitter profile`}
-                            className="text-sm text-gray-300 hover:text-violet transition-colors"
+                            className="text-sm text-gray-300 hover:text-brand-500 transition-colors"
                             href={`https://twitter.com/${userProfile.twitter}`}
                             rel="noopener noreferrer"
                             target="_blank"

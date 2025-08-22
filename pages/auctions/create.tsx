@@ -15,6 +15,7 @@ import Image from "next/image";
 import { Upload, ImageIcon, DollarSign, Clock, Info } from "lucide-react";
 
 import DefaultLayout from "@/layouts/default";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 const categories = [
   { key: "art", label: "Digital Art" },
@@ -182,311 +183,370 @@ export default function CreateAuctionPage() {
 
   return (
     <DefaultLayout>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="font-atirose text-violet text-4xl md:text-5xl mb-4">
-            Create Auction
-          </h1>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-            List your artwork for auction and let collectors bid on your unique
-            creations.
-          </p>
-        </div>
+      <ErrorBoundary
+        fallback={
+          <div className="container mx-auto px-4 py-8 max-w-4xl">
+            <div className="text-center">
+              <div className="mb-6">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+                  <svg
+                    className="w-8 h-8 text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Error Creating Auction
+                </h2>
+                <p className="text-gray-400 mb-6">
+                  There was an error loading the auction creation form. Please
+                  try again.
+                </p>
+              </div>
+              <div className="space-x-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-violet hover:bg-violet/80 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Refresh Page
+                </button>
+                <button
+                  onClick={() => router.back()}
+                  className="border border-gray-600 hover:border-gray-500 text-gray-300 hover:text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                >
+                  Go Back
+                </button>
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <div className="container mx-auto px-4 py-8 max-w-4xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <h1 className="font-atirose text-violet text-4xl md:text-5xl mb-4">
+              Create Auction
+            </h1>
+            <p className="text-gray-300 text-lg max-w-2xl mx-auto">
+              List your artwork for auction and let collectors bid on your
+              unique creations.
+            </p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Artwork Upload */}
-            <div className="space-y-6">
-              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-                <CardHeader>
-                  <h2 className="text-xl font-bold text-white flex items-center">
-                    <ImageIcon size={20} className="mr-2" />
-                    Artwork
-                  </h2>
-                </CardHeader>
-                <CardBody className="space-y-4">
-                  {/* File Upload */}
-                  <div className="relative">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleArtworkChange}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Left Column - Artwork Upload */}
+              <div className="space-y-6">
+                <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                      <ImageIcon size={20} className="mr-2" />
+                      Artwork
+                    </h2>
+                  </CardHeader>
+                  <CardBody className="space-y-4">
+                    {/* File Upload */}
+                    <div className="relative">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleArtworkChange}
+                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        required
+                      />
+                      <div
+                        className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
+                          artworkPreview
+                            ? "border-violet bg-violet/5"
+                            : "border-darkviolet hover:border-violet"
+                        }`}
+                      >
+                        {artworkPreview ? (
+                          <div className="space-y-4">
+                            <div className="relative aspect-square max-w-sm mx-auto rounded-lg overflow-hidden">
+                              <Image
+                                src={artworkPreview}
+                                alt="Artwork preview"
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                            <p className="text-violet text-sm">
+                              Click to change artwork
+                            </p>
+                          </div>
+                        ) : (
+                          <div className="space-y-4">
+                            <Upload
+                              size={48}
+                              className="mx-auto text-gray-400"
+                            />
+                            <div>
+                              <p className="text-white font-medium">
+                                Upload your artwork
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                Drag and drop or click to browse
+                              </p>
+                              <p className="text-gray-500 text-xs mt-2">
+                                Supports JPG, PNG, GIF up to 10MB
+                              </p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Basic Info */}
+                    <div className="space-y-4">
+                      <Input
+                        label="Title"
+                        placeholder="Enter artwork title"
+                        value={formData.title}
+                        onChange={(e) =>
+                          updateFormData("title", e.target.value)
+                        }
+                        required
+                        className="w-full"
+                      />
+
+                      <textarea
+                        placeholder="Describe your artwork, inspiration, and technique..."
+                        value={formData.description}
+                        onChange={(e) =>
+                          updateFormData("description", e.target.value)
+                        }
+                        rows={4}
+                        required
+                        className="w-full px-3 py-2 bg-background/50 border border-darkviolet rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors resize-none"
+                      />
+
+                      <div className="space-y-2">
+                        <label className="block text-sm font-medium text-gray-300">
+                          Category
+                        </label>
+                        <Dropdown>
+                          <DropdownTrigger>
+                            <Button className="w-full justify-start bg-background/50 border border-darkviolet text-white hover:border-violet">
+                              {categories.find(
+                                (c) => c.key === formData.category,
+                              )?.label || "Select Category"}
+                            </Button>
+                          </DropdownTrigger>
+                          <DropdownMenu
+                            aria-label="Category selection"
+                            selectedKeys={[formData.category]}
+                            onSelectionChange={(keys) =>
+                              updateFormData("category", Array.from(keys)[0])
+                            }
+                          >
+                            {categories.map((category) => (
+                              <DropdownItem key={category.key}>
+                                {category.label}
+                              </DropdownItem>
+                            ))}
+                          </DropdownMenu>
+                        </Dropdown>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+
+              {/* Right Column - Auction Settings */}
+              <div className="space-y-6">
+                {/* Pricing */}
+                <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                      <DollarSign size={20} className="mr-2" />
+                      Pricing
+                    </h2>
+                  </CardHeader>
+                  <CardBody className="space-y-4">
+                    <Input
+                      type="number"
+                      step="0.00001"
+                      min="0"
+                      label="Starting Bid (ETH)"
+                      placeholder="0.00001"
+                      value={formData.starting_bid}
+                      onChange={(e) =>
+                        updateFormData("starting_bid", e.target.value)
+                      }
                       required
                     />
-                    <div
-                      className={`border-2 border-dashed rounded-xl p-8 text-center transition-colors ${
-                        artworkPreview
-                          ? "border-violet bg-violet/5"
-                          : "border-darkviolet hover:border-violet"
-                      }`}
-                    >
-                      {artworkPreview ? (
-                        <div className="space-y-4">
-                          <div className="relative aspect-square max-w-sm mx-auto rounded-lg overflow-hidden">
-                            <Image
-                              src={artworkPreview}
-                              alt="Artwork preview"
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                          <p className="text-violet text-sm">
-                            Click to change artwork
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <Upload size={48} className="mx-auto text-gray-400" />
-                          <div>
-                            <p className="text-white font-medium">
-                              Upload your artwork
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              Drag and drop or click to browse
-                            </p>
-                            <p className="text-gray-500 text-xs mt-2">
-                              Supports JPG, PNG, GIF up to 10MB
-                            </p>
-                          </div>
-                        </div>
+
+                    <Input
+                      type="number"
+                      step="0.00001"
+                      min="0.00001"
+                      label="Minimum Bid Increment (ETH)"
+                      placeholder="0.00001"
+                      value={formData.minimum_increment}
+                      onChange={(e) =>
+                        updateFormData("minimum_increment", e.target.value)
+                      }
+                      required
+                    />
+
+                    <div className="space-y-3">
+                      <Switch
+                        isSelected={formData.has_reserve}
+                        onValueChange={(checked) =>
+                          updateFormData("has_reserve", checked)
+                        }
+                      >
+                        <span className="text-white">Set Reserve Price</span>
+                      </Switch>
+
+                      {formData.has_reserve && (
+                        <Input
+                          type="number"
+                          step="0.001"
+                          min="0"
+                          label="Reserve Price (ETH)"
+                          placeholder="1.0"
+                          value={formData.reserve_price}
+                          onChange={(e) =>
+                            updateFormData("reserve_price", e.target.value)
+                          }
+                          description="Minimum price to sell (hidden from bidders)"
+                        />
                       )}
                     </div>
-                  </div>
+                  </CardBody>
+                </Card>
 
-                  {/* Basic Info */}
-                  <div className="space-y-4">
-                    <Input
-                      label="Title"
-                      placeholder="Enter artwork title"
-                      value={formData.title}
-                      onChange={(e) => updateFormData("title", e.target.value)}
-                      required
-                      className="w-full"
-                    />
-
-                    <textarea
-                      placeholder="Describe your artwork, inspiration, and technique..."
-                      value={formData.description}
-                      onChange={(e) =>
-                        updateFormData("description", e.target.value)
-                      }
-                      rows={4}
-                      required
-                      className="w-full px-3 py-2 bg-background/50 border border-darkviolet rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors resize-none"
-                    />
-
+                {/* Timing */}
+                <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <h2 className="text-xl font-bold text-white flex items-center">
+                      <Clock size={20} className="mr-2" />
+                      Auction Duration
+                    </h2>
+                  </CardHeader>
+                  <CardBody>
                     <div className="space-y-2">
                       <label className="block text-sm font-medium text-gray-300">
-                        Category
+                        Duration
                       </label>
                       <Dropdown>
                         <DropdownTrigger>
                           <Button className="w-full justify-start bg-background/50 border border-darkviolet text-white hover:border-violet">
-                            {categories.find((c) => c.key === formData.category)
-                              ?.label || "Select Category"}
+                            {(() => {
+                              const durations = {
+                                "1": "1 Hour",
+                                "6": "6 Hours",
+                                "12": "12 Hours",
+                                "24": "1 Day",
+                                "72": "3 Days",
+                                "168": "1 Week",
+                              };
+                              return (
+                                durations[
+                                  formData.duration_hours as keyof typeof durations
+                                ] || "Select Duration"
+                              );
+                            })()}
                           </Button>
                         </DropdownTrigger>
                         <DropdownMenu
-                          aria-label="Category selection"
-                          selectedKeys={[formData.category]}
+                          aria-label="Duration selection"
+                          selectedKeys={[formData.duration_hours]}
                           onSelectionChange={(keys) =>
-                            updateFormData("category", Array.from(keys)[0])
+                            updateFormData(
+                              "duration_hours",
+                              Array.from(keys)[0],
+                            )
                           }
                         >
-                          {categories.map((category) => (
-                            <DropdownItem key={category.key}>
-                              {category.label}
-                            </DropdownItem>
-                          ))}
+                          <DropdownItem key="1">1 Hour</DropdownItem>
+                          <DropdownItem key="6">6 Hours</DropdownItem>
+                          <DropdownItem key="12">12 Hours</DropdownItem>
+                          <DropdownItem key="24">1 Day</DropdownItem>
+                          <DropdownItem key="72">3 Days</DropdownItem>
+                          <DropdownItem key="168">1 Week</DropdownItem>
                         </DropdownMenu>
                       </Dropdown>
-                    </div>
-                  </div>
-                </CardBody>
-              </Card>
-            </div>
-
-            {/* Right Column - Auction Settings */}
-            <div className="space-y-6">
-              {/* Pricing */}
-              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-                <CardHeader>
-                  <h2 className="text-xl font-bold text-white flex items-center">
-                    <DollarSign size={20} className="mr-2" />
-                    Pricing
-                  </h2>
-                </CardHeader>
-                <CardBody className="space-y-4">
-                  <Input
-                    type="number"
-                    step="0.00001"
-                    min="0"
-                    label="Starting Bid (ETH)"
-                    placeholder="0.00001"
-                    value={formData.starting_bid}
-                    onChange={(e) =>
-                      updateFormData("starting_bid", e.target.value)
-                    }
-                    required
-                  />
-
-                  <Input
-                    type="number"
-                    step="0.00001"
-                    min="0.00001"
-                    label="Minimum Bid Increment (ETH)"
-                    placeholder="0.00001"
-                    value={formData.minimum_increment}
-                    onChange={(e) =>
-                      updateFormData("minimum_increment", e.target.value)
-                    }
-                    required
-                  />
-
-                  <div className="space-y-3">
-                    <Switch
-                      isSelected={formData.has_reserve}
-                      onValueChange={(checked) =>
-                        updateFormData("has_reserve", checked)
-                      }
-                    >
-                      <span className="text-white">Set Reserve Price</span>
-                    </Switch>
-
-                    {formData.has_reserve && (
-                      <Input
-                        type="number"
-                        step="0.001"
-                        min="0"
-                        label="Reserve Price (ETH)"
-                        placeholder="1.0"
-                        value={formData.reserve_price}
-                        onChange={(e) =>
-                          updateFormData("reserve_price", e.target.value)
-                        }
-                        description="Minimum price to sell (hidden from bidders)"
-                      />
-                    )}
-                  </div>
-                </CardBody>
-              </Card>
-
-              {/* Timing */}
-              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-                <CardHeader>
-                  <h2 className="text-xl font-bold text-white flex items-center">
-                    <Clock size={20} className="mr-2" />
-                    Auction Duration
-                  </h2>
-                </CardHeader>
-                <CardBody>
-                  <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-300">
-                      Duration
-                    </label>
-                    <Dropdown>
-                      <DropdownTrigger>
-                        <Button className="w-full justify-start bg-background/50 border border-darkviolet text-white hover:border-violet">
-                          {(() => {
-                            const durations = {
-                              "1": "1 Hour",
-                              "6": "6 Hours",
-                              "12": "12 Hours",
-                              "24": "1 Day",
-                              "72": "3 Days",
-                              "168": "1 Week",
-                            };
-                            return (
-                              durations[
-                                formData.duration_hours as keyof typeof durations
-                              ] || "Select Duration"
-                            );
-                          })()}
-                        </Button>
-                      </DropdownTrigger>
-                      <DropdownMenu
-                        aria-label="Duration selection"
-                        selectedKeys={[formData.duration_hours]}
-                        onSelectionChange={(keys) =>
-                          updateFormData("duration_hours", Array.from(keys)[0])
-                        }
-                      >
-                        <DropdownItem key="1">1 Hour</DropdownItem>
-                        <DropdownItem key="6">6 Hours</DropdownItem>
-                        <DropdownItem key="12">12 Hours</DropdownItem>
-                        <DropdownItem key="24">1 Day</DropdownItem>
-                        <DropdownItem key="72">3 Days</DropdownItem>
-                        <DropdownItem key="168">1 Week</DropdownItem>
-                      </DropdownMenu>
-                    </Dropdown>
-                    <p className="text-xs text-gray-400">
-                      Auction will start immediately and run for the selected
-                      duration
-                    </p>
-                  </div>
-                </CardBody>
-              </Card>
-
-              {/* Info Card */}
-              <Card className="border border-blue-600/50 bg-blue-600/10 backdrop-blur-sm">
-                <CardBody className="space-y-3">
-                  <div className="flex items-start space-x-3">
-                    <Info size={20} className="text-blue-400 mt-0.5" />
-                    <div className="text-sm space-y-2">
-                      <p className="text-blue-200 font-medium">
-                        Auction Guidelines
+                      <p className="text-xs text-gray-400">
+                        Auction will start immediately and run for the selected
+                        duration
                       </p>
-                      <ul className="text-blue-300 space-y-1 text-xs">
-                        <li>• Auctions start immediately upon creation</li>
-                        <li>
-                          • Bids placed in the last 5 minutes extend the auction
-                        </li>
-                        <li>
-                          • You cannot cancel an auction once bids are placed
-                        </li>
-                        <li>• A 5% platform fee applies to successful sales</li>
-                        <li>• Ensure you own the rights to the artwork</li>
-                      </ul>
                     </div>
-                  </div>
+                  </CardBody>
+                </Card>
+
+                {/* Info Card */}
+                <Card className="border border-blue-600/50 bg-blue-600/10 backdrop-blur-sm">
+                  <CardBody className="space-y-3">
+                    <div className="flex items-start space-x-3">
+                      <Info size={20} className="text-blue-400 mt-0.5" />
+                      <div className="text-sm space-y-2">
+                        <p className="text-blue-200 font-medium">
+                          Auction Guidelines
+                        </p>
+                        <ul className="text-blue-300 space-y-1 text-xs">
+                          <li>• Auctions start immediately upon creation</li>
+                          <li>
+                            • Bids placed in the last 5 minutes extend the
+                            auction
+                          </li>
+                          <li>
+                            • You cannot cancel an auction once bids are placed
+                          </li>
+                          <li>
+                            • A 5% platform fee applies to successful sales
+                          </li>
+                          <li>• Ensure you own the rights to the artwork</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </div>
+
+            {/* Error Display */}
+            {error && (
+              <Card className="border border-red-600 bg-red-600/10 backdrop-blur-sm">
+                <CardBody>
+                  <p className="text-red-400 text-center">{error}</p>
                 </CardBody>
               </Card>
+            )}
+
+            {/* Submit Button */}
+            <div className="flex justify-center space-x-4">
+              <Button
+                type="button"
+                onClick={() => router.back()}
+                className="px-8 py-3 bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 rounded-full"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                isLoading={isSubmitting}
+                disabled={
+                  !artworkFile || !formData.title || !formData.starting_bid
+                }
+                className="px-8 py-3 bg-violet hover:bg-violet-600 text-white rounded-full font-semibold"
+              >
+                {isSubmitting ? "Creating Auction..." : "Create Auction"}
+              </Button>
             </div>
-          </div>
-
-          {/* Error Display */}
-          {error && (
-            <Card className="border border-red-600 bg-red-600/10 backdrop-blur-sm">
-              <CardBody>
-                <p className="text-red-400 text-center">{error}</p>
-              </CardBody>
-            </Card>
-          )}
-
-          {/* Submit Button */}
-          <div className="flex justify-center space-x-4">
-            <Button
-              type="button"
-              onClick={() => router.back()}
-              className="px-8 py-3 bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 rounded-full"
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              isLoading={isSubmitting}
-              disabled={
-                !artworkFile || !formData.title || !formData.starting_bid
-              }
-              className="px-8 py-3 bg-violet hover:bg-violet-600 text-white rounded-full font-semibold"
-            >
-              {isSubmitting ? "Creating Auction..." : "Create Auction"}
-            </Button>
-          </div>
-        </form>
-      </div>
+          </form>
+        </div>
+      </ErrorBoundary>
     </DefaultLayout>
   );
 }

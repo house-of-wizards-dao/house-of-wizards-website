@@ -123,12 +123,13 @@ class RateLimiter {
       };
     } catch (error) {
       console.error("Rate limiting error:", error);
-      // Fail open - allow request if rate limiting fails
+      // Fail closed - deny request if rate limiting fails for security
       return {
-        allowed: true,
+        allowed: false,
         limit: options.maxRequests,
-        remaining: options.maxRequests - 1,
+        remaining: 0,
         reset: Math.ceil((now + options.windowMs) / 1000),
+        retryAfter: Math.ceil(options.windowMs / 1000),
       };
     }
   }

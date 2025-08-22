@@ -10,6 +10,7 @@ import type {
   FilePreviews,
   UploadProgressState,
 } from "@/types";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface FileUploadProps {
   onUploadComplete?: () => void;
@@ -267,111 +268,146 @@ export default function FileUpload({
   }, [filePreviews]);
 
   return (
-    <div className="sm:w-full w-full max-w-3xl">
-      <p className="mt-8 sm:text-xl text-md font-medium">
-        Upload your art here!
-      </p>
-
-      {error && (
-        <div className="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-          {error}
-        </div>
-      )}
-
-      <div className="mt-3 p-4 border-1 border-darkviolet rounded-xl">
-        <Input
-          multiple
-          accept="image/png, image/jpeg, image/gif, video/mp4"
-          aria-label="Select files to upload"
-          className="mt-3"
-          type="file"
-          onChange={handleFilesSelect}
-        />
-
-        {selectedFiles.length > 0 && (
-          <div className="mt-4">
-            <p className="text-sm font-medium mb-2">
-              Selected Files ({selectedFiles.length})
-            </p>
-            <div className="space-y-4 max-h-[400px] overflow-y-auto p-2">
-              {selectedFiles.map((file) => (
-                <div
-                  key={file.name}
-                  className="border-1 border-darkviolet rounded-lg p-3"
-                >
-                  <div className="flex items-center gap-3">
-                    {/* File preview */}
-                    {renderFilePreviewForUpload(file)}
-
-                    <div className="flex-1">
-                      <p className="text-sm font-medium truncate">
-                        {file.name}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        {(file.size / 1024).toFixed(1)} KB
-                      </p>
-                    </div>
-
-                    <Button
-                      aria-label={`Remove ${file.name}`}
-                      color="danger"
-                      size="sm"
-                      variant="light"
-                      onClick={() => removeSelectedFile(file.name)}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-
-                  <Input
-                    aria-label={`Description for ${file.name}`}
-                    className="mt-2"
-                    placeholder="Add a description"
-                    type="text"
-                    value={fileDescriptions[file.name] || ""}
-                    onChange={(e) =>
-                      handleDescriptionChange(file.name, e.target.value)
-                    }
-                  />
-
-                  {uploadProgress[file.name] && (
-                    <div className="mt-2">
-                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                        <div
-                          className={`h-2.5 rounded-full ${
-                            uploadProgress[file.name].status === "error"
-                              ? "bg-red-600"
-                              : uploadProgress[file.name].status === "warning"
-                                ? "bg-yellow-400"
-                                : "bg-violet"
-                          }`}
-                          style={{
-                            width: `${uploadProgress[file.name].progress}%`,
-                          }}
-                        />
-                      </div>
-                      {uploadProgress[file.name].message && (
-                        <p className="text-xs mt-1 text-red-500">
-                          {uploadProgress[file.name].message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
+    <ErrorBoundary
+      fallback={
+        <div className="sm:w-full w-full max-w-3xl">
+          <div className="text-center p-8">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/20 flex items-center justify-center">
+              <svg
+                className="w-8 h-8 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                />
+              </svg>
             </div>
-
-            <Button
-              className="bg-[#7d7d7d] text-sm text-white font-medium mt-4 w-full"
-              color="success"
-              disabled={selectedFiles.length === 0}
-              onClick={handleMultipleUpload}
+            <h3 className="text-lg font-bold text-white mb-2">Upload Error</h3>
+            <p className="text-gray-400 mb-6">
+              There was an error with the file upload component. Please refresh
+              the page to try again.
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="bg-violet hover:bg-violet/80 text-white font-medium py-2 px-4 rounded-lg transition-colors"
             >
-              Upload All Files
-            </Button>
+              Refresh Page
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <div className="sm:w-full w-full max-w-3xl">
+        <p className="mt-8 sm:text-xl text-md font-medium">
+          Upload your art here!
+        </p>
+
+        {error && (
+          <div className="mt-3 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+            {error}
           </div>
         )}
+
+        <div className="mt-3 p-4 border-1 border-darkviolet rounded-xl">
+          <Input
+            multiple
+            accept="image/png, image/jpeg, image/gif, video/mp4"
+            aria-label="Select files to upload"
+            className="mt-3"
+            type="file"
+            onChange={handleFilesSelect}
+          />
+
+          {selectedFiles.length > 0 && (
+            <div className="mt-4">
+              <p className="text-sm font-medium mb-2">
+                Selected Files ({selectedFiles.length})
+              </p>
+              <div className="space-y-4 max-h-[400px] overflow-y-auto p-2">
+                {selectedFiles.map((file) => (
+                  <div
+                    key={file.name}
+                    className="border-1 border-darkviolet rounded-lg p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      {/* File preview */}
+                      {renderFilePreviewForUpload(file)}
+
+                      <div className="flex-1">
+                        <p className="text-sm font-medium truncate">
+                          {file.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {(file.size / 1024).toFixed(1)} KB
+                        </p>
+                      </div>
+
+                      <Button
+                        aria-label={`Remove ${file.name}`}
+                        color="danger"
+                        size="sm"
+                        variant="light"
+                        onClick={() => removeSelectedFile(file.name)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
+
+                    <Input
+                      aria-label={`Description for ${file.name}`}
+                      className="mt-2"
+                      placeholder="Add a description"
+                      type="text"
+                      value={fileDescriptions[file.name] || ""}
+                      onChange={(e) =>
+                        handleDescriptionChange(file.name, e.target.value)
+                      }
+                    />
+
+                    {uploadProgress[file.name] && (
+                      <div className="mt-2">
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                          <div
+                            className={`h-2.5 rounded-full ${
+                              uploadProgress[file.name].status === "error"
+                                ? "bg-red-600"
+                                : uploadProgress[file.name].status === "warning"
+                                  ? "bg-yellow-400"
+                                  : "bg-violet"
+                            }`}
+                            style={{
+                              width: `${uploadProgress[file.name].progress}%`,
+                            }}
+                          />
+                        </div>
+                        {uploadProgress[file.name].message && (
+                          <p className="text-xs mt-1 text-red-500">
+                            {uploadProgress[file.name].message}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                className="bg-[#7d7d7d] text-sm text-white font-medium mt-4 w-full"
+                color="success"
+                disabled={selectedFiles.length === 0}
+                onClick={handleMultipleUpload}
+              >
+                Upload All Files
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+    </ErrorBoundary>
   );
 }

@@ -8,6 +8,7 @@ import {
 import { parseEther } from "viem";
 import { useState, useCallback } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { logger } from "@/lib/logger";
 import { AUCTION_ABI, getContractAddress } from "@/lib/web3-config";
 
 export function useAuctionContract() {
@@ -48,12 +49,10 @@ export function useAuctionContract() {
         // If no on-chain auction ID exists, create the auction on-chain first
         let auctionIdToUse = onChainAuctionId;
 
-        console.log(
-          "Initial auctionIdToUse:",
-          auctionIdToUse,
-          "for auction:",
-          auctionId,
-        );
+        logger.info("Initial auction ID to use", { 
+          auctionIdToUse, 
+          auctionId 
+        });
 
         if (auctionIdToUse === undefined) {
           // Get auction details from database
@@ -68,19 +67,15 @@ export function useAuctionContract() {
           // Check if we already have an on-chain auction ID stored
           if (auction.on_chain_auction_id !== null) {
             auctionIdToUse = auction.on_chain_auction_id;
-            console.log(
-              "Using existing on-chain auction ID:",
-              auctionIdToUse,
-              "for auction:",
-              auctionId,
-            );
+            logger.info("Using existing on-chain auction ID", { 
+              auctionIdToUse, 
+              auctionId 
+            });
           } else {
             // We need to create a new on-chain auction
-            console.log(
-              "No existing on-chain auction found for",
-              auctionId,
-              "- will create new one",
-            );
+            logger.info("No existing on-chain auction found - will create new one", { 
+              auctionId 
+            });
 
             // Calculate remaining duration (ensure minimum 1 hour)
             const now = Date.now();
@@ -201,6 +196,13 @@ export function useAuctionContract() {
               throw createError;
             }
           }
+        }
+
+        // Ensure auctionIdToUse is valid before proceeding
+        if (auctionIdToUse === undefined || auctionIdToUse === null) {
+          throw new Error(
+            "Failed to determine auction ID for on-chain operations",
+          );
         }
 
         // Check auction status before bidding

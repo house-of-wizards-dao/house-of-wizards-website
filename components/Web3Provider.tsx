@@ -5,6 +5,7 @@ import { WagmiProvider } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState, useEffect } from "react";
 import { config } from "@/lib/web3-config";
+import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
 interface Web3ProviderProps {
   children: ReactNode;
@@ -34,20 +35,22 @@ export function Web3Provider({ children }: Web3ProviderProps) {
   }
 
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
-        <RainbowKitProvider
-          theme={darkTheme({
-            accentColor: "#A986D9", // Violet to match your theme
-            accentColorForeground: "white",
-            borderRadius: "medium",
-            fontStack: "system",
-            overlayBlur: "small",
-          })}
-        >
-          {children}
-        </RainbowKitProvider>
-      </QueryClientProvider>
-    </WagmiProvider>
+    <Web3ErrorBoundary>
+      <WagmiProvider config={config}>
+        <QueryClientProvider client={queryClient}>
+          <RainbowKitProvider
+            theme={darkTheme({
+              accentColor: "#A986D9", // Violet to match your theme
+              accentColorForeground: "white",
+              borderRadius: "medium",
+              fontStack: "system",
+              overlayBlur: "small",
+            })}
+          >
+            {children}
+          </RainbowKitProvider>
+        </QueryClientProvider>
+      </WagmiProvider>
+    </Web3ErrorBoundary>
   );
 }

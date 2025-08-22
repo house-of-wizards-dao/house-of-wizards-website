@@ -13,7 +13,7 @@ const usernameSchema = z
   .string()
   .min(2, "Username too short")
   .max(50, "Username too long")
-  .regex(/^[a-zA-Z0-9._-]+$/, "Invalid username format");
+  .regex(/^[a-zA-Z0-9._#-]+$/, "Invalid username format");
 const urlSchema = z
   .string()
   .url("Invalid URL format")
@@ -51,10 +51,10 @@ export const profileUpdateSchema = z
     description: textSchema(500).optional(),
     twitter: usernameSchema.optional(),
     discord: usernameSchema.optional(),
-    website: urlSchema,
+    website: urlSchema.optional(),
     avatar_url: textSchema(255).optional(),
   })
-  .refine((data) => Object.keys(data).length > 0, {
+  .refine((data) => Object.keys(data).some(key => data[key as keyof typeof data] !== undefined), {
     message: "At least one field must be provided for update",
   });
 

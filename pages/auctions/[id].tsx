@@ -10,6 +10,7 @@ import { Heart, Twitter, Globe, AlertCircle } from "lucide-react";
 
 import DefaultLayout from "@/layouts/default";
 import { BidWithETH } from "@/components/auction/BidWithETH";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 interface AuctionDetail {
   id: string;
@@ -237,327 +238,361 @@ export default function AuctionDetailPage() {
 
   return (
     <DefaultLayout>
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Artwork */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Main Artwork */}
-            <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-              <CardBody className="p-0">
-                <div className="relative aspect-square">
-                  <Image
-                    alt={auction.title}
-                    className="object-cover w-full h-full rounded-lg"
-                    src={auction.artwork_url}
-                    fill
-                    unoptimized
-                    priority
-                  />
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Auction Details */}
-            <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-              <CardHeader>
-                <h2 className="text-2xl font-bold text-white">
-                  About This Piece
-                </h2>
-              </CardHeader>
-              <CardBody className="space-y-4">
-                <div>
-                  <h3 className="text-xl font-semibold text-violet mb-2">
-                    {auction.title}
-                  </h3>
-                  <p className="text-gray-300 leading-relaxed">
-                    {auction.description}
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-4 pt-4 border-t border-darkviolet/50">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-12 h-12 rounded-full overflow-hidden">
-                      <Image
-                        alt={auction.creator_name}
-                        className="object-cover w-full h-full"
-                        src={
-                          auction.creator_avatar
-                            ? auction.creator_avatar.startsWith("http")
-                              ? auction.creator_avatar
-                              : `${AVATAR_CDN_URL}${auction.creator_avatar}`
-                            : "/img/logo.png"
-                        }
-                        width={48}
-                        height={48}
-                      />
-                    </div>
-                    <div>
-                      <p className="text-white font-medium">
-                        {auction.creator_name}
-                      </p>
-                      <p className="text-gray-400 text-sm">Artist</p>
-                    </div>
-                  </div>
-
-                  <div className="flex space-x-2">
-                    {auction.creator_twitter && (
-                      <Button
-                        as={Link}
-                        href={`https://twitter.com/${auction.creator_twitter}`}
-                        target="_blank"
-                        size="sm"
-                        className="bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
-                      >
-                        <Twitter size={16} />
-                      </Button>
-                    )}
-                    {auction.creator_website && (
-                      <Button
-                        as={Link}
-                        href={auction.creator_website}
-                        target="_blank"
-                        size="sm"
-                        className="bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
-                      >
-                        <Globe size={16} />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Bid History */}
-            <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-              <CardHeader>
-                <h3 className="text-xl font-bold text-white">Bid History</h3>
-              </CardHeader>
-              <CardBody>
-                {auction.bid_history && auction.bid_history.length > 0 ? (
-                  <div className="space-y-3">
-                    {auction.bid_history.map((bid) => (
-                      <div
-                        key={bid.id}
-                        className={`flex items-center justify-between p-3 rounded-lg ${
-                          bid.is_winning
-                            ? "bg-green-600/20 border border-green-600/50"
-                            : "bg-gray-800/50"
-                        }`}
-                      >
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 rounded-full overflow-hidden">
-                            <Image
-                              alt={bid.bidder_name}
-                              className="object-cover w-full h-full"
-                              src={
-                                bid.bidder_avatar
-                                  ? bid.bidder_avatar.startsWith("http")
-                                    ? bid.bidder_avatar
-                                    : `${AVATAR_CDN_URL}${bid.bidder_avatar}`
-                                  : "/img/logo.png"
-                              }
-                              width={32}
-                              height={32}
-                            />
-                          </div>
-                          <div>
-                            <p className="text-white font-medium">
-                              {bid.bidder_name}
-                            </p>
-                            <p className="text-gray-400 text-sm">
-                              {formatDate(bid.created_at)}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-violet font-semibold">
-                            {formatPrice(bid.amount)}
-                          </p>
-                          {bid.is_winning && (
-                            <p className="text-green-400 text-sm">
-                              Winning bid
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-400 text-center py-8">
-                    No bids yet. Be the first to bid!
-                  </p>
-                )}
-              </CardBody>
-            </Card>
-          </div>
-
-          {/* Right Column - Bidding */}
-          <div className="space-y-6">
-            {/* Auction Status */}
-            <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-              <CardBody className="text-center p-6">
-                <div
-                  className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
-                    auction.status === "active"
-                      ? "bg-green-600 text-white"
-                      : auction.status === "upcoming"
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-600 text-white"
-                  }`}
+      <ErrorBoundary
+        fallback={
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col items-center justify-center min-h-[400px]">
+              <AlertCircle size={64} className="text-gray-600 mb-4" />
+              <h2 className="text-2xl text-gray-400 mb-2">
+                Error Loading Auction
+              </h2>
+              <p className="text-gray-500 mb-6">
+                There was an error loading this auction page. Please try again.
+              </p>
+              <div className="space-x-4">
+                <button
+                  onClick={() => window.location.reload()}
+                  className="bg-violet hover:bg-violet-600 text-white px-6 py-3 rounded-full"
                 >
-                  {auction.status.charAt(0).toUpperCase() +
-                    auction.status.slice(1)}
-                </div>
-
-                {auction.status === "active" && (
-                  <div>
-                    <p className="text-gray-400 text-sm mb-2">Time Remaining</p>
-                    <p className="text-2xl font-bold text-white mb-4">
-                      {timeRemaining}
-                    </p>
+                  Refresh Page
+                </button>
+                <Link
+                  href="/auctions"
+                  className="bg-transparent border border-gray-600 text-gray-300 hover:border-violet hover:text-white px-6 py-3 rounded-full inline-block"
+                >
+                  Back to Auctions
+                </Link>
+              </div>
+            </div>
+          </div>
+        }
+      >
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Left Column - Artwork */}
+            <div className="lg:col-span-2 space-y-6">
+              {/* Main Artwork */}
+              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                <CardBody className="p-0">
+                  <div className="relative aspect-square">
+                    <Image
+                      alt={auction.title}
+                      className="object-cover w-full h-full rounded-lg"
+                      src={auction.artwork_url}
+                      fill
+                      unoptimized
+                      priority
+                    />
                   </div>
-                )}
+                </CardBody>
+              </Card>
 
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-gray-400 text-sm">Current Bid</p>
-                    <p className="text-3xl font-bold text-violet">
-                      {formatPrice(auction.current_bid || auction.starting_bid)}
-                    </p>
-                  </div>
-
-                  <div className="flex justify-between text-sm">
-                    <div className="text-center">
-                      <p className="text-gray-400">Bids</p>
-                      <p className="text-white font-semibold">
-                        {auction.total_bids}
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-gray-400">Watching</p>
-                      <p className="text-white font-semibold">
-                        {/* Note: watchers count would need to be added to the query */}
-                        -
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* ETH Bidding Form */}
-            {auction.status === "active" && (
+              {/* Auction Details */}
               <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
                 <CardHeader>
-                  <h3 className="text-lg font-bold text-white">
-                    Place a Bid with ETH
-                  </h3>
+                  <h2 className="text-2xl font-bold text-white">
+                    About This Piece
+                  </h2>
+                </CardHeader>
+                <CardBody className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-semibold text-violet mb-2">
+                      {auction.title}
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      {auction.description}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center space-x-4 pt-4 border-t border-darkviolet/50">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-12 h-12 rounded-full overflow-hidden">
+                        <Image
+                          alt={auction.creator_name}
+                          className="object-cover w-full h-full"
+                          src={
+                            auction.creator_avatar
+                              ? auction.creator_avatar.startsWith("http")
+                                ? auction.creator_avatar
+                                : `${AVATAR_CDN_URL}${auction.creator_avatar}`
+                              : "/img/logo.png"
+                          }
+                          width={48}
+                          height={48}
+                        />
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">
+                          {auction.creator_name}
+                        </p>
+                        <p className="text-gray-400 text-sm">Artist</p>
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      {auction.creator_twitter && (
+                        <Button
+                          as={Link}
+                          href={`https://twitter.com/${auction.creator_twitter}`}
+                          target="_blank"
+                          size="sm"
+                          className="bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
+                        >
+                          <Twitter size={16} />
+                        </Button>
+                      )}
+                      {auction.creator_website && (
+                        <Button
+                          as={Link}
+                          href={auction.creator_website}
+                          target="_blank"
+                          size="sm"
+                          className="bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
+                        >
+                          <Globe size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Bid History */}
+              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                <CardHeader>
+                  <h3 className="text-xl font-bold text-white">Bid History</h3>
                 </CardHeader>
                 <CardBody>
-                  <BidWithETH
-                    auctionId={auction.id}
-                    currentBid={auction.current_bid || auction.starting_bid}
-                    minimumIncrement={auction.minimum_increment}
-                    onChainAuctionId={auction.on_chain_auction_id}
-                    endTime={auction.end_time}
-                    hasBids={auction.total_bids > 0}
-                    onBidSuccess={() => {
-                      fetchAuction(); // Refresh auction data after successful bid
-                    }}
-                  />
-
-                  {auction.reserve_price && (
-                    <p className="text-yellow-400 text-sm text-center mt-4">
-                      Reserve price: {formatPrice(auction.reserve_price)}
+                  {auction.bid_history && auction.bid_history.length > 0 ? (
+                    <div className="space-y-3">
+                      {auction.bid_history.map((bid) => (
+                        <div
+                          key={bid.id}
+                          className={`flex items-center justify-between p-3 rounded-lg ${
+                            bid.is_winning
+                              ? "bg-green-600/20 border border-green-600/50"
+                              : "bg-gray-800/50"
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 rounded-full overflow-hidden">
+                              <Image
+                                alt={bid.bidder_name}
+                                className="object-cover w-full h-full"
+                                src={
+                                  bid.bidder_avatar
+                                    ? bid.bidder_avatar.startsWith("http")
+                                      ? bid.bidder_avatar
+                                      : `${AVATAR_CDN_URL}${bid.bidder_avatar}`
+                                    : "/img/logo.png"
+                                }
+                                width={32}
+                                height={32}
+                              />
+                            </div>
+                            <div>
+                              <p className="text-white font-medium">
+                                {bid.bidder_name}
+                              </p>
+                              <p className="text-gray-400 text-sm">
+                                {formatDate(bid.created_at)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-violet font-semibold">
+                              {formatPrice(bid.amount)}
+                            </p>
+                            {bid.is_winning && (
+                              <p className="text-green-400 text-sm">
+                                Winning bid
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-400 text-center py-8">
+                      No bids yet. Be the first to bid!
                     </p>
                   )}
                 </CardBody>
               </Card>
-            )}
+            </div>
 
-            {/* Watch Button */}
-            {user && (
-              <Button
-                className={`w-full py-3 rounded-full font-semibold transition-all ${
-                  isWatching
-                    ? "bg-red-600 hover:bg-red-700 text-white"
-                    : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
-                }`}
-                onClick={toggleWatch}
-              >
-                <Heart
-                  size={16}
-                  className="mr-2"
-                  fill={isWatching ? "currentColor" : "none"}
-                />
-                {isWatching ? "Stop Watching" : "Watch Auction"}
-              </Button>
-            )}
-
-            {/* Auction Info */}
-            <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
-              <CardHeader>
-                <h3 className="text-lg font-bold text-white">
-                  Auction Details
-                </h3>
-              </CardHeader>
-              <CardBody className="space-y-3 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Starting Bid</span>
-                  <span className="text-white">
-                    {formatPrice(auction.starting_bid)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Minimum Increment</span>
-                  <span className="text-white">
-                    {formatPrice(auction.minimum_increment)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Start Time</span>
-                  <span className="text-white">
-                    {formatDate(auction.start_time)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">End Time</span>
-                  <span className="text-white">
-                    {formatDate(auction.end_time)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-400">Category</span>
-                  <span className="text-white capitalize">
-                    {auction.category}
-                  </span>
-                </div>
-              </CardBody>
-            </Card>
-
-            {/* Login CTA */}
-            {!user && (
-              <Card className="border border-violet bg-violet/10 backdrop-blur-sm">
+            {/* Right Column - Bidding */}
+            <div className="space-y-6">
+              {/* Auction Status */}
+              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
                 <CardBody className="text-center p-6">
-                  <h4 className="text-lg font-bold text-white mb-2">
-                    Ready to bid?
-                  </h4>
-                  <p className="text-gray-300 text-sm mb-4">
-                    Sign in to place bids and watch auctions
-                  </p>
-                  <Button
-                    as={Link}
-                    href="/signup"
-                    className="bg-violet hover:bg-violet-600 text-white px-6 py-2 rounded-full"
+                  <div
+                    className={`inline-block px-4 py-2 rounded-full text-sm font-medium mb-4 ${
+                      auction.status === "active"
+                        ? "bg-green-600 text-white"
+                        : auction.status === "upcoming"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-600 text-white"
+                    }`}
                   >
-                    Sign In
-                  </Button>
+                    {auction.status.charAt(0).toUpperCase() +
+                      auction.status.slice(1)}
+                  </div>
+
+                  {auction.status === "active" && (
+                    <div>
+                      <p className="text-gray-400 text-sm mb-2">
+                        Time Remaining
+                      </p>
+                      <p className="text-2xl font-bold text-white mb-4">
+                        {timeRemaining}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-gray-400 text-sm">Current Bid</p>
+                      <p className="text-3xl font-bold text-violet">
+                        {formatPrice(
+                          auction.current_bid || auction.starting_bid,
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-between text-sm">
+                      <div className="text-center">
+                        <p className="text-gray-400">Bids</p>
+                        <p className="text-white font-semibold">
+                          {auction.total_bids}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-gray-400">Watching</p>
+                        <p className="text-white font-semibold">
+                          {/* Note: watchers count would need to be added to the query */}
+                          -
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </CardBody>
               </Card>
-            )}
+
+              {/* ETH Bidding Form */}
+              {auction.status === "active" && (
+                <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <h3 className="text-lg font-bold text-white">
+                      Place a Bid with ETH
+                    </h3>
+                  </CardHeader>
+                  <CardBody>
+                    <BidWithETH
+                      auctionId={auction.id}
+                      currentBid={auction.current_bid || auction.starting_bid}
+                      minimumIncrement={auction.minimum_increment}
+                      onChainAuctionId={auction.on_chain_auction_id}
+                      endTime={auction.end_time}
+                      hasBids={auction.total_bids > 0}
+                      onBidSuccess={() => {
+                        fetchAuction(); // Refresh auction data after successful bid
+                      }}
+                    />
+
+                    {auction.reserve_price && (
+                      <p className="text-yellow-400 text-sm text-center mt-4">
+                        Reserve price: {formatPrice(auction.reserve_price)}
+                      </p>
+                    )}
+                  </CardBody>
+                </Card>
+              )}
+
+              {/* Watch Button */}
+              {user && (
+                <Button
+                  className={`w-full py-3 rounded-full font-semibold transition-all ${
+                    isWatching
+                      ? "bg-red-600 hover:bg-red-700 text-white"
+                      : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
+                  }`}
+                  onClick={toggleWatch}
+                >
+                  <Heart
+                    size={16}
+                    className="mr-2"
+                    fill={isWatching ? "currentColor" : "none"}
+                  />
+                  {isWatching ? "Stop Watching" : "Watch Auction"}
+                </Button>
+              )}
+
+              {/* Auction Info */}
+              <Card className="border border-darkviolet bg-transparent/50 backdrop-blur-sm">
+                <CardHeader>
+                  <h3 className="text-lg font-bold text-white">
+                    Auction Details
+                  </h3>
+                </CardHeader>
+                <CardBody className="space-y-3 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Starting Bid</span>
+                    <span className="text-white">
+                      {formatPrice(auction.starting_bid)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Minimum Increment</span>
+                    <span className="text-white">
+                      {formatPrice(auction.minimum_increment)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Start Time</span>
+                    <span className="text-white">
+                      {formatDate(auction.start_time)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">End Time</span>
+                    <span className="text-white">
+                      {formatDate(auction.end_time)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-400">Category</span>
+                    <span className="text-white capitalize">
+                      {auction.category}
+                    </span>
+                  </div>
+                </CardBody>
+              </Card>
+
+              {/* Login CTA */}
+              {!user && (
+                <Card className="border border-violet bg-violet/10 backdrop-blur-sm">
+                  <CardBody className="text-center p-6">
+                    <h4 className="text-lg font-bold text-white mb-2">
+                      Ready to bid?
+                    </h4>
+                    <p className="text-gray-300 text-sm mb-4">
+                      Sign in to place bids and watch auctions
+                    </p>
+                    <Button
+                      as={Link}
+                      href="/signup"
+                      className="bg-violet hover:bg-violet-600 text-white px-6 py-2 rounded-full"
+                    >
+                      Sign In
+                    </Button>
+                  </CardBody>
+                </Card>
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      </ErrorBoundary>
     </DefaultLayout>
   );
 }

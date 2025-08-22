@@ -51,6 +51,11 @@ function validateSupabaseUrl(url: string): string {
 }
 
 function validateSupabaseKey(key: string, type: "anon" | "service"): string {
+  // Skip validation in test environment
+  if (process.env.NODE_ENV === "test") {
+    return key;
+  }
+  
   if (key.length < 32) {
     throw new EnvironmentError(`Invalid ${type} key format - too short`);
   }

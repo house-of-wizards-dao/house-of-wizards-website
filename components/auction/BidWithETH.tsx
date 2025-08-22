@@ -6,6 +6,8 @@ import { Input } from "@nextui-org/input";
 import { Wallet, AlertTriangle, Pause } from "lucide-react";
 import { useAuctionContract } from "@/hooks/useAuctionContract";
 import { getContractAddress, formatEth } from "@/lib/web3-config";
+import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
+import { logger } from "@/lib/logger";
 
 // Get Etherscan URL based on chain ID
 function getEtherscanUrl(chainId: number | undefined, txHash: string): string {
@@ -197,102 +199,107 @@ export function BidWithETH({
   }
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>
-          <p className="text-gray-400">Current Bid</p>
-          <p className="text-xl font-bold text-violet">{currentBid} ETH</p>
-        </div>
-        <div>
-          <p className="text-gray-400">
-            Min {contractMinBid ? "Bid (Contract)" : "Increment"}
-          </p>
-          <p className="text-xl font-bold text-gray-300">
-            {contractMinBid
-              ? `${minimumBid.toFixed(6)} ETH`
-              : `+${minimumIncrement} ETH`}
-          </p>
-          {isLoadingContractData && (
-            <p className="text-xs text-yellow-400 mt-1">
-              Loading contract data...
+    <Web3ErrorBoundary>
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div>
+            <p className="text-gray-400">Current Bid</p>
+            <p className="text-xl font-bold text-violet">{currentBid} ETH</p>
+          </div>
+          <div>
+            <p className="text-gray-400">
+              Min {contractMinBid ? "Bid (Contract)" : "Increment"}
             </p>
-          )}
-        </div>
-      </div>
-
-      <div>
-        <Input
-          type="number"
-          step="0.01"
-          min={minimumBid}
-          value={bidAmount}
-          onChange={(e) => setBidAmount(e.target.value)}
-          placeholder={`Min: ${minimumBid.toFixed(6)} ETH`}
-          label="Your Bid (ETH)"
-          classNames={{
-            input: "bg-gray-800/50 border-gray-600 text-white",
-            inputWrapper:
-              "bg-gray-800/50 border-gray-600 hover:border-violet focus-within:border-violet",
-          }}
-          endContent={<span className="text-gray-400 text-sm">ETH</span>}
-        />
-      </div>
-
-      {(localError || error) && (
-        <div className="p-3 bg-red-900/20 border border-red-600 rounded-lg">
-          <p className="text-red-400 text-sm">{localError || error?.message}</p>
-          {(localError || error?.message)?.includes("timeout") && (
-            <p className="text-red-300 text-xs mt-2">
-              💡 Tip: If you're experiencing timeouts, try refreshing the page
-              or switching to a different network and back to Sepolia.
+            <p className="text-xl font-bold text-gray-300">
+              {contractMinBid
+                ? `${minimumBid.toFixed(6)} ETH`
+                : `+${minimumIncrement} ETH`}
             </p>
-          )}
+            {isLoadingContractData && (
+              <p className="text-xs text-yellow-400 mt-1">
+                Loading contract data...
+              </p>
+            )}
+          </div>
         </div>
-      )}
 
-      {txHash && (
-        <div className="p-3 bg-green-900/20 border border-green-600 rounded-lg">
-          <p className="text-green-400 text-sm">
-            Transaction submitted:{" "}
-            <a
-              href={getEtherscanUrl(chainId, txHash)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline"
-            >
-              View on {chainId === 11155111 ? "Sepolia Etherscan" : "Etherscan"}
-            </a>
-          </p>
+        <div>
+          <Input
+            type="number"
+            step="0.01"
+            min={minimumBid}
+            value={bidAmount}
+            onChange={(e) => setBidAmount(e.target.value)}
+            placeholder={`Min: ${minimumBid.toFixed(6)} ETH`}
+            label="Your Bid (ETH)"
+            classNames={{
+              input: "bg-gray-800/50 border-gray-600 text-white",
+              inputWrapper:
+                "bg-gray-800/50 border-gray-600 hover:border-violet focus-within:border-violet",
+            }}
+            endContent={<span className="text-gray-400 text-sm">ETH</span>}
+          />
         </div>
-      )}
 
-      <Button
-        onClick={handleBid}
-        disabled={isProcessing || !bidAmount || isLoadingContractData}
-        className={`w-full py-6 rounded-full font-medium transition-all ${
-          isProcessing || isLoadingContractData
-            ? "bg-gray-600 cursor-not-allowed"
-            : "bg-gradient-to-r from-violet to-purple-600 hover:from-purple-600 hover:to-violet"
-        }`}
-      >
-        {isProcessing ? (
-          <span className="flex items-center gap-2">
-            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-            Processing...
-          </span>
-        ) : isLoadingContractData ? (
-          <span className="flex items-center gap-2">
-            <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
-            Loading Contract Data...
-          </span>
-        ) : (
-          `Place Bid: ${bidAmount || minimumBid.toFixed(6)} ETH`
+        {(localError || error) && (
+          <div className="p-3 bg-red-900/20 border border-red-600 rounded-lg">
+            <p className="text-red-400 text-sm">
+              {localError || error?.message}
+            </p>
+            {(localError || error?.message)?.includes("timeout") && (
+              <p className="text-red-300 text-xs mt-2">
+                💡 Tip: If you're experiencing timeouts, try refreshing the page
+                or switching to a different network and back to Sepolia.
+              </p>
+            )}
+          </div>
         )}
-      </Button>
 
-      <p className="text-xs text-gray-400 text-center">
-        Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
-      </p>
-    </div>
+        {txHash && (
+          <div className="p-3 bg-green-900/20 border border-green-600 rounded-lg">
+            <p className="text-green-400 text-sm">
+              Transaction submitted:{" "}
+              <a
+                href={getEtherscanUrl(chainId, txHash)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                View on{" "}
+                {chainId === 11155111 ? "Sepolia Etherscan" : "Etherscan"}
+              </a>
+            </p>
+          </div>
+        )}
+
+        <Button
+          onClick={handleBid}
+          disabled={isProcessing || !bidAmount || isLoadingContractData}
+          className={`w-full py-6 rounded-full font-medium transition-all ${
+            isProcessing || isLoadingContractData
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-gradient-to-r from-violet to-purple-600 hover:from-purple-600 hover:to-violet"
+          }`}
+        >
+          {isProcessing ? (
+            <span className="flex items-center gap-2">
+              <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+              Processing...
+            </span>
+          ) : isLoadingContractData ? (
+            <span className="flex items-center gap-2">
+              <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span>
+              Loading Contract Data...
+            </span>
+          ) : (
+            `Place Bid: ${bidAmount || minimumBid.toFixed(6)} ETH`
+          )}
+        </Button>
+
+        <p className="text-xs text-gray-400 text-center">
+          Connected: {address?.slice(0, 6)}...{address?.slice(-4)}
+        </p>
+      </div>
+    </Web3ErrorBoundary>
   );
 }

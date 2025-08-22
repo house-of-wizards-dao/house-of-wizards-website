@@ -70,14 +70,14 @@ export const Navbar = () => {
 
       <NavbarContent>
         <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
-          {/*           <NavbarItem className="text-sm hover:text-[#9564b4]">
+          {/*           <NavbarItem className="text-sm hover:text-brand-500">
             <NextLink href="/about">
               About
             </NextLink>
           </NavbarItem> */}
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
+              <button className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
                 Gallery
               </button>
             </DropdownTrigger>
@@ -102,7 +102,7 @@ export const Navbar = () => {
           </Dropdown>
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button className="hover:text-[#9564b4] text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
+              <button className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
                 Community
               </button>
             </DropdownTrigger>
@@ -130,17 +130,17 @@ export const Navbar = () => {
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <NavbarItem className="text-sm hover:text-[#9564b4]">
+          <NavbarItem className="text-sm hover:text-brand-500">
             <NextLink className="flex items-center gap-2" href="/auctions">
               Auctions
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="text-sm hover:text-[#9564b4]">
+          <NavbarItem className="text-sm hover:text-brand-500">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="text-sm hover:text-[#9564b4]">
+          <NavbarItem className="text-sm hover:text-brand-500">
             <NextLink
               className="flex items-center gap-2"
               href="https://snapshot.org/#/forgottengov.eth"
@@ -185,18 +185,18 @@ export const Navbar = () => {
         <NavbarItem className="hidden sm:flex gap-4">
           <Web3ConnectButton />
           <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
-            <TwitterIcon className="text-white hover:text-[#9564b4]" />
+            <TwitterIcon className="text-white hover:text-brand-500" />
           </Link>
           <Link
             isExternal
             href="https://discord.gg/forgottenrunes"
             title="Discord"
           >
-            <DiscordIcon className="text-white hover:text-[#9564b4]" />
+            <DiscordIcon className="text-white hover:text-brand-500" />
           </Link>
           {user && (
             <NextLink href="/signup" title="Your Profile">
-              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-[#9564b4] hover:border-white transition-colors">
+              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500 hover:border-white transition-colors">
                 {avatar ? (
                   <Image
                     alt="Avatar"
@@ -211,7 +211,7 @@ export const Navbar = () => {
                     width={32}
                   />
                 ) : (
-                  <div className="w-full h-full bg-[#9564b4] flex items-center justify-center text-white font-bold">
+                  <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold">
                     {user.user_metadata?.name
                       ? user.user_metadata.name.charAt(0).toUpperCase()
                       : "U"}
@@ -308,7 +308,7 @@ export const Navbar = () => {
                 className="text-white text-lg uppercase w-full block py-2 flex items-center gap-2"
                 href="/signup"
               >
-                <div className="w-6 h-6 rounded-full overflow-hidden border border-[#9564b4]">
+                <div className="w-6 h-6 rounded-full overflow-hidden border border-brand-500">
                   {avatar ? (
                     <Image
                       alt="Avatar"
@@ -323,7 +323,7 @@ export const Navbar = () => {
                       width={24}
                     />
                   ) : (
-                    <div className="w-full h-full bg-[#9564b4] flex items-center justify-center text-white text-xs font-bold">
+                    <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold">
                       {user.user_metadata?.name
                         ? user.user_metadata.name.charAt(0).toUpperCase()
                         : "U"}

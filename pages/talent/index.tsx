@@ -40,7 +40,7 @@ const Bio: FC<BioProps> = ({
   avatar_url = "",
 }) => {
   return (
-    <div className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-violet hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
+    <div className="group relative overflow-hidden border border-brand-900 bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-brand-500 hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
       <div className="flex flex-col sm:flex-row p-6 gap-4">
         {/* Image Section */}
         <div className="flex-shrink-0">
@@ -76,7 +76,7 @@ const Bio: FC<BioProps> = ({
             {/* Name and Focus */}
             <div className="flex flex-col sm:flex-row gap-2 sm:items-center mb-2">
               <h3 className="text-lg font-medium text-white">{name}</h3>
-              <span className="inline-block bg-violet/20 border border-violet text-violet text-xs px-3 py-1 rounded-full">
+              <span className="inline-block bg-brand-500/20 border border-brand-500 text-brand-500 text-xs px-3 py-1 rounded-full">
                 {focus}
               </span>
             </div>
@@ -92,7 +92,7 @@ const Bio: FC<BioProps> = ({
                 href={site}
                 rel="noopener noreferrer"
                 target="_blank"
-                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-brand-500 transition-colors"
               >
                 <Globe size={14} />
                 <span className="text-sm">Portfolio</span>
@@ -105,7 +105,7 @@ const Bio: FC<BioProps> = ({
                 href={`https://twitter.com/${twitter}`}
                 rel="noopener noreferrer"
                 target="_blank"
-                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors"
+                className="flex items-center gap-2 text-gray-400 hover:text-brand-500 transition-colors"
               >
                 <Twitter size={14} />
                 <span className="text-sm">@{twitter}</span>
@@ -115,7 +115,7 @@ const Bio: FC<BioProps> = ({
             {/* Discord */}
             {discord && (
               <button
-                className="flex items-center gap-2 text-gray-400 hover:text-violet transition-colors group"
+                className="flex items-center gap-2 text-gray-400 hover:text-brand-500 transition-colors group"
                 title="Click to copy Discord handle"
                 onClick={(e) => {
                   navigator.clipboard.writeText(discord);
@@ -279,9 +279,9 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-background border border-darkviolet rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
-        <div className="flex items-center justify-between p-6 border-b border-darkviolet">
-          <h2 className="text-2xl font-atirose text-violet">
+      <div className="bg-background border border-brand-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-brand-900">
+          <h2 className="text-2xl font-atirose text-brand-500">
             Add Yourself to the Talent Board
           </h2>
           <button
@@ -305,7 +305,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
           {/* Avatar Upload */}
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
-              <div className="w-32 h-32 rounded-xl overflow-hidden bg-background/50 border-2 border-dashed border-darkviolet flex items-center justify-center">
+              <div className="w-32 h-32 rounded-xl overflow-hidden bg-background/50 border-2 border-dashed border-brand-900 flex items-center justify-center">
                 {avatarPreview ? (
                   <Image
                     src={avatarPreview}
@@ -344,7 +344,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+              className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors"
               placeholder="Your name or handle"
               required
             />
@@ -359,7 +359,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, focus: e.target.value })
               }
-              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white focus:outline-none focus:border-violet transition-colors"
+              className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-brand-500 transition-colors"
               required
             >
               <option value="Developer">Developer</option>
@@ -381,7 +381,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, skillset: e.target.value })
               }
-              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors resize-none"
+              className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors resize-none"
               placeholder="Describe your skills and what you can offer..."
               rows={3}
               required
@@ -398,7 +398,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
               onChange={(e) =>
                 setFormData({ ...formData, site: e.target.value })
               }
-              className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+              className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors"
               placeholder="https://..."
             />
           </div>
@@ -417,7 +417,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
                     twitter: e.target.value.replace("@", ""),
                   })
                 }
-                className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+                className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors"
                 placeholder="username (without @)"
               />
             </div>
@@ -432,7 +432,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
                 onChange={(e) =>
                   setFormData({ ...formData, discord: e.target.value })
                 }
-                className="w-full bg-background/50 border border-darkviolet rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-violet transition-colors"
+                className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors"
                 placeholder="username#0000"
               />
             </div>
@@ -442,7 +442,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="flex-1 bg-violet hover:bg-violet-600 text-white px-6 py-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {isSubmitting ? (
                 <>
@@ -456,7 +456,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 rounded-full border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20 transition-all duration-300"
+              className="px-6 py-3 rounded-full border border-brand-900 text-gray-300 hover:border-brand-500 hover:bg-brand-500/20 transition-all duration-300"
             >
               Cancel
             </button>
@@ -874,16 +874,18 @@ const Talent: FC = () => {
       <div className="mx-auto py-16 px-4">
         {/* Header Section */}
         <div className="text-center mb-12">
-          <h1 className="font-atirose text-violet text-5xl md:text-6xl mb-6">
+          <h1 className="font-atirose text-brand-500 text-5xl md:text-6xl mb-6">
             Talent Board
           </h1>
           <div className="max-w-3xl mx-auto space-y-4">
-            <p className="text-gray-300 text-base leading-relaxed">
+            <p className="font-quad text-sm text-gray-400 text-center uppercase
+">
               Looking for collaborators to work on a Forgotten Runes project?
               Use the talent board below to find community members with the
               perfect skillset for your team.
             </p>
-            <p className="text-gray-300 text-base">
+            <p className="font-quad text-sm text-gray-400 text-center uppercase
+">
               Interested in being considered for work on community projects?
             </p>
 
@@ -897,7 +899,7 @@ const Talent: FC = () => {
                   setIsModalOpen(true);
                 }
               }}
-              className="inline-block mt-6 bg-violet hover:bg-violet-600 text-white px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="inline-block mt-6 bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               Add yourself to the board!
             </button>
@@ -950,8 +952,8 @@ const Talent: FC = () => {
                     key={focus}
                     className={`px-4 py-2 text-sm rounded-full transition-all duration-300 ${
                       selectedFocus === focus
-                        ? "bg-violet text-white shadow-lg"
-                        : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
+                        ? "bg-brand-500 text-white shadow-lg"
+                        : "bg-transparent border border-brand-900 text-gray-300 hover:border-brand-500 hover:bg-brand-500/20"
                     }`}
                     onClick={() => setSelectedFocus(focus)}
                   >

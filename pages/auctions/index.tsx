@@ -99,10 +99,11 @@ export default function AuctionsPage() {
       <div className="mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="font-atirose text-violet text-5xl md:text-6xl mb-6">
+          <h1 className="font-atirose text-brand-500 text-5xl md:text-6xl mb-6">
             Auction House
           </h1>
-          <p className="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
+          <p className="font-quad text-sm text-gray-400 text-center uppercase
+mb-4 w-[600px] mx-auto">
             Discover and bid on exclusive artworks from the Forgotten Runes
             community. Every piece tells a story waiting to be discovered.
           </p>
@@ -111,8 +112,8 @@ export default function AuctionsPage() {
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
                 filter === "active"
-                  ? "bg-violet text-white"
-                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
+                  ? "bg-brand-500 text-white"
+                  : "bg-transparent border border-brand-900 text-gray-300 hover:border-brand-500"
               }`}
               onClick={() => setFilter("active")}
             >
@@ -122,8 +123,8 @@ export default function AuctionsPage() {
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
                 filter === "upcoming"
-                  ? "bg-violet text-white"
-                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
+                  ? "bg-brand-500 text-white"
+                  : "bg-transparent border border-brand-900 text-gray-300 hover:border-brand-500"
               }`}
               onClick={() => setFilter("upcoming")}
             >
@@ -133,8 +134,8 @@ export default function AuctionsPage() {
             <Button
               className={`px-6 py-3 rounded-full transition-all ${
                 filter === "ended"
-                  ? "bg-violet text-white"
-                  : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet"
+                  ? "bg-brand-500 text-white"
+                  : "bg-transparent border border-brand-900 text-gray-300 hover:border-brand-500"
               }`}
               onClick={() => setFilter("ended")}
             >
@@ -178,7 +179,7 @@ export default function AuctionsPage() {
           <div className="grid grid-cols-1 container  mx-auto md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {auctions.map((auction) => (
               <Link key={auction.id} href={`/auctions/${auction.id}`}>
-                <Card className="group relative overflow-hidden border border-darkviolet bg-transparent/50 backdrop-blur-sm hover:border-violet hover:shadow-xl cursor-pointer transition-all duration-300 hover:scale-[1.02]">
+                <Card className="group relative overflow-hidden border border-brand-900 bg-transparent/50 backdrop-blur-sm hover:border-brand-500 hover:shadow-xl cursor-pointer transition-all duration-300 hover:scale-[1.02]">
                   <CardBody className="p-0">
                     {/* Artwork Image */}
                     <div className="relative aspect-square overflow-hidden">
@@ -237,7 +238,7 @@ export default function AuctionsPage() {
                         <span className="text-gray-400 text-sm">
                           Current Bid
                         </span>
-                        <span className="text-violet font-semibold">
+                        <span className="text-brand-500 font-semibold">
                           {formatPrice(
                             auction.current_bid || auction.starting_bid,
                           )}
@@ -265,7 +266,7 @@ export default function AuctionsPage() {
 
         {/* Create Auction CTA */}
         <div className="text-center mt-16 container mx-auto">
-          <div className="bg-gradient-to-r from-violet/20 to-purple-600/20 rounded-2xl p-8 border border-violet/30">
+          <div className="bg-gradient-to-r from-brand-500/20 to-brand-600/20 rounded-2xl p-8 border border-brand-500/30">
             <h3 className="text-2xl font-bold text-white mb-4">
               Ready to auction your artwork?
             </h3>
@@ -276,7 +277,7 @@ export default function AuctionsPage() {
             <Button
               as={Link}
               href="/auctions/create"
-              className="bg-violet hover:bg-violet-600 text-white px-8 py-3 rounded-full transition-all duration-300"
+              className="bg-brand-500 hover:bg-brand-600 text-white px-8 py-3 rounded-full transition-all duration-300"
             >
               Create Auction
             </Button>

@@ -15,6 +15,7 @@ import { Button } from "@nextui-org/button";
 
 import DefaultLayout from "@/layouts/default";
 import { Profile } from "@/types";
+import PageErrorBoundary from "@/components/PageErrorBoundary";
 
 // CDN URLs
 const CDNURL =
@@ -88,7 +89,7 @@ export default function UserProfile() {
     }
   }, [userId, fetchUserData]);
 
-  async function getFiles(userData: Profile): Promise<void> {
+  const getFiles = useCallback(async (userData: Profile): Promise<void> => {
     try {
       const { data, error } = await supabase.storage
         .from("files")
@@ -132,7 +133,7 @@ export default function UserProfile() {
       // Handle error silently
       setFiles([]);
     }
-  }
+  }, [supabase]);
 
   function renderFilePreview(file: FileItem): JSX.Element {
     const fileUrl = `${CDNURL}${user?.id}/${file.name}`;
@@ -208,185 +209,197 @@ export default function UserProfile() {
 
   return (
     <DefaultLayout>
-      <div className="container flex flex-col items-center max-w-7xl mx-auto px-4">
-        <Image
-          alt={`${user.name || "User"}'s avatar`}
-          className="rounded-full mb-6 object-cover"
-          height={150}
-          src={
-            user.avatar_url && user.avatar_url.startsWith("http")
-              ? user.avatar_url
-              : user.avatar_url
-                ? `${AVATAR_CDN_URL}${user.avatar_url}`
-                : "/img/logo.png"
-          }
-          style={{ width: "150px", height: "150px", objectFit: "cover" }}
-          unoptimized
-          width={150}
-        />
-        <h1 className="font-serif text-[#9564b4] italic sm:text-4xl text-3xl">
-          {user.name || "User"}&apos;s Work
-        </h1>
-        <p className="font-pop text-md text-grey">{(user as any).email}</p>
-        <p className="font-pop text-grey text-md mb-4">
-          {(user as any).description}
-        </p>
+      <PageErrorBoundary pageTitle="User Profile">
+        <div className="container flex flex-col items-center max-w-7xl mx-auto px-4">
+          <Image
+            alt={`${user.name || "User"}'s avatar`}
+            className="rounded-full mb-6 object-cover"
+            height={150}
+            src={
+              user.avatar_url && user.avatar_url.startsWith("http")
+                ? user.avatar_url
+                : user.avatar_url
+                  ? `${AVATAR_CDN_URL}${user.avatar_url}`
+                  : "/img/logo.png"
+            }
+            style={{ width: "150px", height: "150px", objectFit: "cover" }}
+            unoptimized
+            width={150}
+          />
+          <h1 className="font-serif text-[#9564b4] italic sm:text-4xl text-3xl">
+            {user.name || "User"}&apos;s Work
+          </h1>
+          <p className="font-pop text-md text-grey">{(user as any).email}</p>
+          <p className="font-pop text-grey text-md mb-4">
+            {(user as any).description}
+          </p>
 
-        {(user as any).website && (
-          <a
-            className="font-pop text-grey text-md cursor-pointer flex flex-row gap-3 items-center"
-            href={(user as any).website}
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <Globe className="text-grey" size={18} /> {(user as any).website}
-          </a>
-        )}
-
-        <div className="flex flex-row gap-3">
-          {(user as any).twitter && (
+          {(user as any).website && (
             <a
-              className="text-grey font-pop text-md text-foreground cursor-pointer flex flex-row gap-3 items-center"
-              href={`https://twitter.com/${(user as any).twitter}`}
+              className="font-pop text-grey text-md cursor-pointer flex flex-row gap-3 items-center"
+              href={(user as any).website}
               rel="noopener noreferrer"
               target="_blank"
             >
-              <Twitter className="text-grey" size={18} />{" "}
-              {(user as any).twitter}
+              <Globe className="text-grey" size={18} /> {(user as any).website}
             </a>
           )}
-          {(user as any).discord && (
-            <span className="text-grey font-pop text-md text-foreground cursor-pointer flex flex-row gap-3 items-center">
-              <MessageCircle className="text-grey" size={18} />{" "}
-              {(user as any).discord}
-            </span>
+
+          <div className="flex flex-row gap-3">
+            {(user as any).twitter && (
+              <a
+                className="text-grey font-pop text-md text-foreground cursor-pointer flex flex-row gap-3 items-center"
+                href={`https://twitter.com/${(user as any).twitter}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <Twitter className="text-grey" size={18} />{" "}
+                {(user as any).twitter}
+              </a>
+            )}
+            {(user as any).discord && (
+              <span className="text-grey font-pop text-md text-foreground cursor-pointer flex flex-row gap-3 items-center">
+                <MessageCircle className="text-grey" size={18} />{" "}
+                {(user as any).discord}
+              </span>
+            )}
+          </div>
+
+          <div className="mt-4 flex flex-row justify-center w-full flex-wrap sm:gap-3 gap-3 mx-auto">
+            {currentItems.map((file) => (
+              <div
+                key={`file-${user.id}-${file.name}`}
+                className="hover:bg-[#1c1c1c] hover:shadow-md cursor-pointer flex flex-col justify-between items-center sm:w-fit w-[48%] p-4 border-1.5 border-[#242424] rounded-2xl"
+                role="button"
+                tabIndex={0}
+                onClick={() => openModal(file)}
+                onKeyDown={(e) => handleKeyDown(e, file)}
+              >
+                <div className="sm:p-2 p-1">{renderFilePreview(file)}</div>
+                <p className="text-foreground font-pop font-medium truncate w-[300px] text-center sm:text-md text-md mt-2">
+                  {file.description}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {files.length > FILES_PER_PAGE && (
+            <div className="flex justify-center mt-6 gap-2">
+              <Button
+                aria-label="Previous page"
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+              >
+                <ChevronLeft className="text-2xl" />
+              </Button>
+
+              {Array.from(
+                { length: Math.ceil(files.length / FILES_PER_PAGE) },
+                (_, i) => (
+                  <Button
+                    key={i}
+                    aria-label={`Go to page ${i + 1}`}
+                    className={`px-3 py-1 rounded-full ${
+                      currentPage === i + 1
+                        ? "bg-[#9564b4] text-white"
+                        : "bg-black text-white hover:bg-[#333333]"
+                    }`}
+                    onClick={() => setCurrentPage(i + 1)}
+                  >
+                    {i + 1}
+                  </Button>
+                ),
+              )}
+
+              <Button
+                aria-label="Next page"
+                className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
+                disabled={
+                  currentPage === Math.ceil(files.length / FILES_PER_PAGE)
+                }
+                onClick={() =>
+                  setCurrentPage((prev) =>
+                    Math.min(
+                      Math.ceil(files.length / FILES_PER_PAGE),
+                      prev + 1,
+                    ),
+                  )
+                }
+              >
+                <ChevronRight className="text-2xl" />
+              </Button>
+            </div>
+          )}
+
+          {modalOpen && selectedItem && (
+            <div
+              aria-labelledby="modal-title"
+              aria-modal="true"
+              className="fixed inset-0 bg-background bg-opacity-80 flex items-center justify-center z-50 p-6"
+              role="dialog"
+              onClick={closeModal}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  closeModal();
+                }
+              }}
+            >
+              <div
+                className="bg-background border-1.5 border-[#242424] sm:p-5 p-2 rounded-xl max-w-5xl w-fit flex flex-col"
+                role="document"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                <div className="flex flex-col items-end">
+                  <button
+                    aria-label="Close modal"
+                    className="mb-2 text-2xl cursor-pointer hover:text-grey"
+                    onClick={closeModal}
+                  >
+                    <X />
+                  </button>
+                </div>
+                {selectedItem.fileType?.startsWith("video/") ? (
+                  <video
+                    autoPlay
+                    controls
+                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
+                  >
+                    <source
+                      src={`${CDNURL}${user?.id}/${selectedItem.name}`}
+                      type={selectedItem.fileType}
+                    />
+                    Your browser does not support the video tag.
+                  </video>
+                ) : selectedItem.fileType?.startsWith("image/") ? (
+                  <Image
+                    alt={selectedItem.description || "User uploaded image"}
+                    className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
+                    height={700}
+                    priority={true}
+                    src={`${CDNURL}${user?.id}/${selectedItem.name}`}
+                    unoptimized
+                    width={700}
+                  />
+                ) : (
+                  <div className="flex items-center justify-center w-full h-[400px] bg-[#1c1c1c] rounded-xl">
+                    <p className="text-white text-lg">
+                      File: {selectedItem.name}
+                    </p>
+                  </div>
+                )}
+                <p
+                  className="text-foreground font-medium text-center sm:text-md text-sm font-pop mb-1 mt-4"
+                  id="modal-title"
+                >
+                  {selectedItem.description}
+                </p>
+              </div>
+            </div>
           )}
         </div>
-
-        <div className="mt-4 flex flex-row justify-center w-full flex-wrap sm:gap-3 gap-3 mx-auto">
-          {currentItems.map((file) => (
-            <div
-              key={`file-${user.id}-${file.name}`}
-              className="hover:bg-[#1c1c1c] hover:shadow-md cursor-pointer flex flex-col justify-between items-center sm:w-fit w-[48%] p-4 border-1.5 border-[#242424] rounded-2xl"
-              role="button"
-              tabIndex={0}
-              onClick={() => openModal(file)}
-              onKeyDown={(e) => handleKeyDown(e, file)}
-            >
-              <div className="sm:p-2 p-1">{renderFilePreview(file)}</div>
-              <p className="text-foreground font-pop font-medium truncate w-[300px] text-center sm:text-md text-md mt-2">
-                {file.description}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {files.length > FILES_PER_PAGE && (
-          <div className="flex justify-center mt-6 gap-2">
-            <Button
-              aria-label="Previous page"
-              className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-              disabled={currentPage === 1}
-              onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            >
-              <ChevronLeft className="text-2xl" />
-            </Button>
-
-            {Array.from(
-              { length: Math.ceil(files.length / FILES_PER_PAGE) },
-              (_, i) => (
-                <Button
-                  key={i}
-                  aria-label={`Go to page ${i + 1}`}
-                  className={`px-3 py-1 rounded-full ${
-                    currentPage === i + 1
-                      ? "bg-[#9564b4] text-white"
-                      : "bg-black text-white hover:bg-[#333333]"
-                  }`}
-                  onClick={() => setCurrentPage(i + 1)}
-                >
-                  {i + 1}
-                </Button>
-              ),
-            )}
-
-            <Button
-              aria-label="Next page"
-              className="px-3 py-1 rounded-full bg-black text-white disabled:opacity-50"
-              disabled={
-                currentPage === Math.ceil(files.length / FILES_PER_PAGE)
-              }
-              onClick={() =>
-                setCurrentPage((prev) =>
-                  Math.min(Math.ceil(files.length / FILES_PER_PAGE), prev + 1),
-                )
-              }
-            >
-              <ChevronRight className="text-2xl" />
-            </Button>
-          </div>
-        )}
-
-        {modalOpen && selectedItem && (
-          <div
-            aria-labelledby="modal-title"
-            aria-modal="true"
-            className="fixed inset-0 bg-background bg-opacity-80 flex items-center justify-center z-50 p-6"
-            role="dialog"
-            onClick={closeModal}
-          >
-            <div
-              className="bg-background border-1.5 border-[#242424] sm:p-5 p-2 rounded-xl max-w-5xl w-fit flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex flex-col items-end">
-                <button
-                  aria-label="Close modal"
-                  className="mb-2 text-2xl cursor-pointer hover:text-grey"
-                  onClick={closeModal}
-                >
-                  <X />
-                </button>
-              </div>
-              {selectedItem.fileType?.startsWith("video/") ? (
-                <video
-                  autoPlay
-                  controls
-                  className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
-                >
-                  <source
-                    src={`${CDNURL}${user?.id}/${selectedItem.name}`}
-                    type={selectedItem.fileType}
-                  />
-                  Your browser does not support the video tag.
-                </video>
-              ) : selectedItem.fileType?.startsWith("image/") ? (
-                <Image
-                  alt={selectedItem.description || "User uploaded image"}
-                  className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
-                  height={700}
-                  priority={true}
-                  src={`${CDNURL}${user?.id}/${selectedItem.name}`}
-                  unoptimized
-                  width={700}
-                />
-              ) : (
-                <div className="flex items-center justify-center w-full h-[400px] bg-[#1c1c1c] rounded-xl">
-                  <p className="text-white text-lg">
-                    File: {selectedItem.name}
-                  </p>
-                </div>
-              )}
-              <p
-                className="text-foreground font-medium text-center sm:text-md text-sm font-pop mb-1 mt-4"
-                id="modal-title"
-              >
-                {selectedItem.description}
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+      </PageErrorBoundary>
     </DefaultLayout>
   );
 }

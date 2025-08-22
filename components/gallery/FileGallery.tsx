@@ -83,7 +83,7 @@ export default function FileGallery({
 
   return (
     <div
-      className="flex flex-row flex-wrap sm:gap-6 gap-3 mt-5 items-center"
+      className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-5"
       onKeyDown={handleNavigation}
       role="grid"
       aria-label="File gallery"
@@ -91,22 +91,23 @@ export default function FileGallery({
       {files.map((file, index) => (
         <div
           key={`file-${user?.id}-${file.name}`}
-          className={`flex flex-col items-center justify-between border-1 border-violet rounded-2xl w-fit p-4 ${
-            index === focusedIndex ? "ring-2 ring-purple-500" : ""
+          className={`flex flex-col items-center justify-between border border-brand-500/30 bg-neutral-900/50 rounded-2xl p-4 transition-all duration-300 hover:border-brand-500/50 hover:bg-neutral-800/50 ${
+            index === focusedIndex ? "ring-2 ring-brand-500" : ""
           }`}
           role="gridcell"
           tabIndex={index === focusedIndex ? 0 : -1}
           aria-label={`File: ${file.description || file.name}`}
         >
-          <div className="sm:p-2 p-1">{renderFilePreview(file)}</div>
-          <p className="text-[#9564b4] font-atirose sm:text-md text-md">
+          <div className="p-2 w-full flex justify-center">{renderFilePreview(file)}</div>
+          <p className="text-brand-500 font-heading text-sm text-center mt-3 mb-3 line-clamp-2">
             {file.description}
           </p>
-          <div className="p-3">
+          <div className="w-full">
             <Button
               aria-label={`Delete ${file.name}`}
-              className="text-white font-medium text-sm"
+              className="text-white font-medium text-sm w-full"
               color="danger"
+              size="sm"
               onClick={() => onDeleteFile(file)}
             >
               Delete File

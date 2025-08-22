@@ -8,10 +8,11 @@ export default function DocsPage() {
   return (
     <DefaultLayout>
       <section className="flex flex-col items-center gap-4 h-screen">
-        <h1 className="sm:text-7xl text-6xl font-atirose text-[#9564b4] ">
+        <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500 ">
           Ministries
         </h1>
-        <p className="max-w-5xl sm:text-md text-sm text-center px-4">
+        <p className="font-quad text-sm text-gray-400 text-center uppercase
+max-w-5xl">
           Ministries are House of Wizards sub-DAOs focused on a specific niche.
           While the Forgotten Council oversees DAO operations as a whole, the
           ministries are comprised of smaller, specialized teams, in order to
@@ -50,12 +51,12 @@ export default function DocsPage() {
 
         <div className="flex flex-row justify-center flex-wrap gap-6">
           <Link className="[&_a]:hover:text-green" href="/ministries/art">
-            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-darkviolet hover:scale-105 hover:border-violet cursor-pointer">
+            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-brand-900 hover:scale-105 hover:border-brand-500 cursor-pointer">
               <Image
                 alt="Ministry of Art illustration"
                 src="/img/ministry_art.png"
               />
-              <span className="font-atirose text-violet text-2xl">
+              <span className="font-atirose text-brand-500 text-2xl">
                 Ministry of Art
               </span>
             </Card>

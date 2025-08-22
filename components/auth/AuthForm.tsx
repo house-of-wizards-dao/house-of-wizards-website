@@ -26,7 +26,7 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
   const { success, error: showError } = useToast();
 
   const toggleVisibility = useCallback(
-    (): void => setIsVisible(!isVisible),
+    (): void => setIsVisible((prev) => !prev),
     [],
   );
 

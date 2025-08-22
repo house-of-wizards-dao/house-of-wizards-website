@@ -5,6 +5,7 @@ import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import DefaultLayout from "@/layouts/default";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import AdminPanel from "@/components/AdminPanel";
+import PageErrorBoundary from "@/components/PageErrorBoundary";
 
 const AdminPage = () => {
   const router = useRouter();
@@ -63,7 +64,9 @@ const AdminPage = () => {
 
   return (
     <DefaultLayout>
-      <AdminPanel />
+      <PageErrorBoundary pageTitle="Admin Panel" showHomeButton={false}>
+        <AdminPanel />
+      </PageErrorBoundary>
     </DefaultLayout>
   );
 };
