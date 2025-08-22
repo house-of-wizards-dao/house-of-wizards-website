@@ -2,8 +2,9 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
+import { useEffect, useState } from "react";
 
-export function Web3ConnectButton() {
+function Web3ConnectButtonInner() {
   const { address, isConnected } = useAccount();
   const { data: balance } = useBalance({ address });
 
@@ -101,4 +102,23 @@ export function Web3ConnectButton() {
       }}
     </ConnectButton.Custom>
   );
+}
+
+export function Web3ConnectButton() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Show loading state during SSR/hydration
+  if (!mounted) {
+    return (
+      <div className="px-4 py-2 bg-gray-700 text-white rounded-full text-sm font-medium animate-pulse">
+        Loading...
+      </div>
+    );
+  }
+
+  return <Web3ConnectButtonInner />;
 }
