@@ -16,6 +16,8 @@ import { Upload, ImageIcon, DollarSign, Clock, Info } from "lucide-react";
 
 import DefaultLayout from "@/layouts/default";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { getBlockchainTimeStandalone, calculateAuctionEndTime } from "@/lib/blockchain-time";
+import { logger } from "@/lib/logger";
 
 const categories = [
   { key: "art", label: "Digital Art" },
@@ -51,6 +53,7 @@ export default function CreateAuctionPage() {
   const [artworkPreview, setArtworkPreview] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [blockchainTimeWarning, setBlockchainTimeWarning] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -111,8 +114,22 @@ export default function CreateAuctionPage() {
         .from("files")
         .getPublicUrl(fileName);
 
-      // Calculate start and end times
-      let startTime = new Date();
+      // Get blockchain time for accurate timing
+      logger.info("Getting blockchain time for auction creation");
+      setBlockchainTimeWarning(""); // Clear any previous warnings
+      
+      // Use Sepolia RPC URL for blockchain time (or fallback to local time)
+      const rpcUrl = "https://ethereum-sepolia-rpc.publicnode.com";
+      const blockchainTimeResult = await getBlockchainTimeStandalone(rpcUrl);
+      
+      if (!blockchainTimeResult.isAccurate) {
+        const warning = "Warning: Using local time as blockchain time is unavailable. Auction timing may be less accurate.";
+        setBlockchainTimeWarning(warning);
+        logger.warn(warning);
+      }
+
+      // Calculate start time
+      let startTimestamp = blockchainTimeResult.timestamp; // Use blockchain time
       let status = "active";
 
       // If scheduled for later, parse the scheduled date/time
@@ -120,15 +137,30 @@ export default function CreateAuctionPage() {
         const scheduledDateTime = new Date(
           `${formData.scheduled_start_date}T${formData.scheduled_start_time || "00:00"}`,
         );
-        if (scheduledDateTime > new Date()) {
-          startTime = scheduledDateTime;
+        const scheduledTimestamp = Math.floor(scheduledDateTime.getTime() / 1000);
+        
+        if (scheduledTimestamp > blockchainTimeResult.timestamp) {
+          startTimestamp = scheduledTimestamp;
           status = "upcoming";
         }
       }
 
-      // Calculate end time based on start time
-      const endTime = new Date(startTime);
-      endTime.setHours(endTime.getHours() + parseInt(formData.duration_hours));
+      // Calculate end times with safety buffer
+      const durationHours = parseInt(formData.duration_hours);
+      const endTimes = calculateAuctionEndTime(startTimestamp, durationHours, true);
+      
+      logger.info("Auction timing calculated", {
+        startTimestamp,
+        durationHours,
+        userEndTime: endTimes.userEndTime,
+        actualEndTime: endTimes.actualEndTime,
+        bufferSeconds: endTimes.bufferSeconds,
+        blockchainTimeAccurate: blockchainTimeResult.isAccurate,
+      });
+
+      // Convert timestamps back to Date objects for database storage
+      const startTime = new Date(startTimestamp * 1000);
+      const endTime = new Date(endTimes.actualEndTime * 1000); // Use actual end time with buffer
 
       // Create auction
       const auctionData = {
@@ -143,8 +175,12 @@ export default function CreateAuctionPage() {
           ? parseFloat(formData.reserve_price)
           : null,
         start_time: startTime.toISOString(),
-        end_time: endTime.toISOString(),
+        end_time: endTime.toISOString(), // Actual end time with buffer
         status: status,
+        // Additional fields for buffer tracking
+        user_expected_end_time: new Date(endTimes.userEndTime * 1000).toISOString(), // What user expects
+        safety_buffer_seconds: endTimes.bufferSeconds, // Applied buffer
+        created_with_blockchain_time: blockchainTimeResult.isAccurate, // Whether we used accurate blockchain time
       };
 
       const { data, error: auctionError } = await supabase
@@ -497,6 +533,9 @@ export default function CreateAuctionPage() {
                         <ul className="text-blue-300 space-y-1 text-xs">
                           <li>• Auctions start immediately upon creation</li>
                           <li>
+                            • A 3-minute safety buffer is added to prevent timing issues
+                          </li>
+                          <li>
                             • Bids placed in the last 5 minutes extend the
                             auction
                           </li>
@@ -520,6 +559,15 @@ export default function CreateAuctionPage() {
               <Card className="border border-red-600 bg-red-600/10 backdrop-blur-sm">
                 <CardBody>
                   <p className="text-red-400 text-center">{error}</p>
+                </CardBody>
+              </Card>
+            )}
+
+            {/* Blockchain Time Warning */}
+            {blockchainTimeWarning && (
+              <Card className="border border-yellow-600 bg-yellow-600/10 backdrop-blur-sm">
+                <CardBody>
+                  <p className="text-yellow-400 text-center text-sm">{blockchainTimeWarning}</p>
                 </CardBody>
               </Card>
             )}

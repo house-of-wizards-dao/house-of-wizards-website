@@ -8,6 +8,7 @@ import { useAuctionContract } from "@/hooks/useAuctionContract";
 import { getContractAddress, formatEth } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 import { logger } from "@/lib/logger";
+import { useBlockchainTime } from "@/lib/blockchain-time";
 
 // Get Etherscan URL based on chain ID
 function getEtherscanUrl(chainId: number | undefined, txHash: string): string {
@@ -56,11 +57,13 @@ export function BidWithETH({
     error,
     txHash,
   } = useAuctionContract();
+  const { getTime, canAcceptBids } = useBlockchainTime();
   const [bidAmount, setBidAmount] = useState("");
   const [localError, setLocalError] = useState("");
   const [contractMinBid, setContractMinBid] = useState<bigint | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isLoadingContractData, setIsLoadingContractData] = useState(false);
+  const [hasEndedByBlockchainTime, setHasEndedByBlockchainTime] = useState(false);
 
   // Load contract data on mount and when onChainAuctionId changes
   useEffect(() => {
@@ -76,6 +79,23 @@ export function BidWithETH({
         // Get minimum bid from contract if auction exists on-chain
         const minBid = await getMinimumBid(onChainAuctionId);
         setContractMinBid(minBid);
+
+        // Check if auction has ended using blockchain time
+        if (endTime) {
+          const blockchainTimeResult = await getTime();
+          const endTimeTimestamp = Math.floor(new Date(endTime).getTime() / 1000);
+          const bidValidation = canAcceptBids(endTimeTimestamp, blockchainTimeResult);
+          setHasEndedByBlockchainTime(!bidValidation.canBid);
+          
+          if (!bidValidation.canBid) {
+            logger.info("Auction ended according to blockchain time", {
+              endTime,
+              endTimeTimestamp,
+              blockchainTime: blockchainTimeResult.timestamp,
+              reason: bidValidation.reason
+            });
+          }
+        }
       } catch (error) {
         console.error("Failed to load contract data:", error);
       } finally {
@@ -84,7 +104,7 @@ export function BidWithETH({
     };
 
     loadContractData();
-  }, [isConnected, onChainAuctionId, isContractPaused, getMinimumBid]);
+  }, [isConnected, onChainAuctionId, isContractPaused, getMinimumBid, endTime, getTime, canAcceptBids]);
 
   // Calculate minimum bid - prefer contract value if available
   const getCalculatedMinimumBid = () => {
@@ -100,8 +120,8 @@ export function BidWithETH({
   const contractAddress = chainId ? getContractAddress(chainId) : undefined;
   const isWrongNetwork = isConnected && !contractAddress;
 
-  // Check if auction has ended based on end time
-  const hasEnded = endTime ? new Date(endTime).getTime() <= Date.now() : false;
+  // Check if auction has ended - prefer blockchain time validation
+  const hasEnded = hasEndedByBlockchainTime || (endTime ? new Date(endTime).getTime() <= Date.now() : false);
 
   const handleBid = async () => {
     if (!isConnected) {

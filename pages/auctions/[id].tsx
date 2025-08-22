@@ -11,6 +11,7 @@ import { Heart, Twitter, Globe, AlertCircle } from "lucide-react";
 import DefaultLayout from "@/layouts/default";
 import { BidWithETH } from "@/components/auction/BidWithETH";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { formatAuctionDuration } from "@/lib/blockchain-time";
 
 interface AuctionDetail {
   id: string;
@@ -40,6 +41,10 @@ interface AuctionDetail {
   }>;
   category: string;
   on_chain_auction_id?: number;
+  // New fields for buffer management
+  user_expected_end_time?: string;
+  safety_buffer_seconds?: number;
+  created_with_blockchain_time?: boolean;
 }
 
 const AVATAR_CDN_URL =
@@ -97,27 +102,19 @@ export default function AuctionDetailPage() {
   const updateTimeRemaining = useCallback(() => {
     if (!auction) return;
 
-    const now = new Date();
-    const end = new Date(auction.end_time);
-    const diff = end.getTime() - now.getTime();
-
-    if (diff <= 0) {
-      setTimeRemaining("Auction Ended");
-      return;
-    }
-
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    if (days > 0) {
-      setTimeRemaining(`${days}d ${hours}h ${minutes}m`);
-    } else if (hours > 0) {
-      setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
-    } else {
-      setTimeRemaining(`${minutes}m ${seconds}s`);
-    }
+    const currentTime = Math.floor(Date.now() / 1000);
+    
+    // Use user-expected end time if available, otherwise use actual end time
+    const displayEndTime = auction.user_expected_end_time 
+      ? Math.floor(new Date(auction.user_expected_end_time).getTime() / 1000)
+      : Math.floor(new Date(auction.end_time).getTime() / 1000);
+    
+    const actualEndTime = Math.floor(new Date(auction.end_time).getTime() / 1000);
+    
+    // Format the duration display using blockchain time utilities
+    const durationInfo = formatAuctionDuration(displayEndTime, actualEndTime, currentTime);
+    
+    setTimeRemaining(durationInfo.userDisplay);
   }, [auction]);
 
   useEffect(() => {

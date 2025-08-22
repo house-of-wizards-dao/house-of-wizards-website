@@ -10,6 +10,7 @@ import { useState, useCallback } from "react";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { logger } from "@/lib/logger";
 import { AUCTION_ABI, getContractAddress } from "@/lib/web3-config";
+import { getBlockchainTime, canAcceptBids, AUCTION_SAFETY_BUFFER_SECONDS } from "@/lib/blockchain-time";
 
 export function useAuctionContract() {
   const { address, chainId } = useAccount();
@@ -65,29 +66,103 @@ export function useAuctionContract() {
           if (!auction) throw new Error("Auction not found");
 
           // Check if we already have an on-chain auction ID stored
+          let shouldCreateNewAuction = false;
+          
           if (auction.on_chain_auction_id !== null) {
-            auctionIdToUse = auction.on_chain_auction_id;
-            logger.info("Using existing on-chain auction ID", { 
-              auctionIdToUse, 
-              auctionId 
-            });
+            // Check if the existing on-chain auction is still valid
+            try {
+              if (!publicClient) {
+                throw new Error("PublicClient not available");
+              }
+              const blockchainTimeResult = await getBlockchainTime(publicClient);
+              const auctionData = await publicClient.readContract({
+                address: contractAddress as `0x${string}`,
+                abi: AUCTION_ABI,
+                functionName: "getAuction",
+                args: [BigInt(auction.on_chain_auction_id)],
+              });
+              
+              // Check if auction exists and is still active
+              if (Array.isArray(auctionData) && auctionData.length >= 4) {
+                const onChainEndTime = Number(auctionData[3]); // endTime
+                const isSettled = auctionData[5]; // settled flag
+                
+                // If auction has ended or is settled, we need to create a new one
+                if (onChainEndTime <= blockchainTimeResult.timestamp || isSettled) {
+                  logger.info("Existing on-chain auction has ended or is settled, creating new one", {
+                    onChainAuctionId: auction.on_chain_auction_id,
+                    onChainEndTime,
+                    currentTime: blockchainTimeResult.timestamp,
+                    isSettled
+                  });
+                  shouldCreateNewAuction = true;
+                } else {
+                  // Auction is still active, use it
+                  auctionIdToUse = auction.on_chain_auction_id;
+                  logger.info("Using existing active on-chain auction ID", { 
+                    auctionIdToUse, 
+                    auctionId,
+                    timeRemaining: onChainEndTime - blockchainTimeResult.timestamp
+                  });
+                }
+              } else {
+                // Invalid auction data, create new one
+                logger.warn("Invalid auction data from contract, creating new auction", {
+                  onChainAuctionId: auction.on_chain_auction_id
+                });
+                shouldCreateNewAuction = true;
+              }
+            } catch (error: any) {
+              // Error reading auction, it might not exist or have wrong ABI, create a new one
+              logger.warn("Error reading existing on-chain auction, creating new one", {
+                onChainAuctionId: auction.on_chain_auction_id,
+                errorMessage: error instanceof Error ? error.message : String(error),
+                errorType: error?.name || 'Unknown'
+              });
+              shouldCreateNewAuction = true;
+              
+              // Clear the old auction ID from database to avoid confusion
+              await supabase
+                .from("auctions")
+                .update({ on_chain_auction_id: null })
+                .eq("id", auctionId);
+            }
           } else {
+            shouldCreateNewAuction = true;
+          }
+          
+          if (shouldCreateNewAuction) {
             // We need to create a new on-chain auction
             logger.info("No existing on-chain auction found - will create new one", { 
               auctionId 
             });
 
-            // Calculate remaining duration (ensure minimum 1 hour)
-            const now = Date.now();
-            const endTime = new Date(auction.end_time).getTime();
-            const remainingSeconds = Math.floor((endTime - now) / 1000);
+            // Get blockchain time for accurate calculation
+            const blockchainTimeResult = await getBlockchainTime(publicClient);
+            const currentBlockchainTime = blockchainTimeResult.timestamp;
+            
+            const endTime = Math.floor(new Date(auction.end_time).getTime() / 1000);
+            const remainingSeconds = endTime - currentBlockchainTime;
 
-            if (remainingSeconds <= 0) {
-              throw new Error("This auction has already ended");
+            // Check if auction can accept bids using blockchain time
+            const bidValidation = canAcceptBids(endTime, blockchainTimeResult);
+            
+            if (!bidValidation.canBid) {
+              throw new Error(bidValidation.reason || "This auction has already ended");
             }
 
-            // Ensure minimum 1 hour duration
-            const duration = Math.max(remainingSeconds, 3600); // At least 1 hour
+            // Ensure minimum 1 hour duration, but account for the safety buffer
+            const minDurationWithBuffer = 3600 + AUCTION_SAFETY_BUFFER_SECONDS; // 1 hour + buffer
+            const duration = Math.max(remainingSeconds, minDurationWithBuffer);
+            
+            logger.info("Calculated auction duration for on-chain creation", {
+              auctionId,
+              endTime,
+              currentBlockchainTime,
+              remainingSeconds,
+              duration,
+              usedBlockchainTime: blockchainTimeResult.isAccurate
+            });
 
             console.log(
               "Creating auction on-chain for:",
@@ -205,9 +280,12 @@ export function useAuctionContract() {
           );
         }
 
-        // Check auction status before bidding
+        // Check auction status before bidding using blockchain time
         if (publicClient && contractAddress) {
           try {
+            // Get current blockchain time
+            const blockchainTimeResult = await getBlockchainTime(publicClient);
+            
             const auctionData = await publicClient.readContract({
               address: contractAddress as `0x${string}`,
               abi: AUCTION_ABI,
@@ -223,31 +301,53 @@ export function useAuctionContract() {
               );
             }
 
-            // Check if auction has ended
-            const endTime = Number(auctionData[3]); // endTime is the 4th element (index 3)
-            if (isNaN(endTime) || endTime <= 0) {
+            // Check if auction has ended using blockchain time
+            const contractEndTime = Number(auctionData[3]); // endTime is the 4th element (index 3)
+            if (isNaN(contractEndTime) || contractEndTime <= 0) {
               throw new Error(
                 "Invalid endTime value from contract - possible ABI mismatch",
               );
             }
 
-            const now = Math.floor(Date.now() / 1000);
-            if (endTime <= now) {
+            // Use blockchain time for validation
+            const bidValidation = canAcceptBids(contractEndTime, blockchainTimeResult);
+            if (!bidValidation.canBid) {
               throw new Error(
-                `Auction ${auctionIdToUse} has ended. End time: ${endTime}, Current time: ${now}`,
+                `Auction ${auctionIdToUse} has ended. ${bidValidation.reason}. Contract end time: ${contractEndTime}, Blockchain time: ${blockchainTimeResult.timestamp}`,
               );
             }
+
+            logger.info("Auction timing validation passed", {
+              auctionIdToUse,
+              contractEndTime,
+              blockchainTime: blockchainTimeResult.timestamp,
+              timeRemaining: bidValidation.timeRemaining,
+              isBlockchainTimeAccurate: blockchainTimeResult.isAccurate
+            });
+            
           } catch (readError: any) {
             console.error("Failed to read auction data:", readError);
-            // Only throw if it's specifically about auction being ended
-            if (readError.message?.includes("ended")) {
+            
+            // Check if this is an ABI decoding error (BytesBooleanError or similar)
+            const isABIError = readError.message?.includes("Bytes value") || 
+                             readError.message?.includes("Invalid") ||
+                             readError.message?.includes("ABI") ||
+                             readError.name?.includes("InvalidBytesBoolean");
+            
+            if (isABIError) {
+              // This is likely an old auction with incompatible ABI, skip validation
+              console.warn(
+                "ABI decoding error detected - likely an old auction format. Skipping validation.",
+              );
+            } else if (readError.message?.includes("ended")) {
+              // Only throw if it's specifically about auction being ended and not an ABI issue
               throw readError;
+            } else {
+              // For other errors, log but continue
+              console.warn(
+                "Continuing with bid despite read error - auction validation skipped",
+              );
             }
-            // For other errors (like ABI issues), log but continue with bidding
-            // since the auction was just created successfully
-            console.warn(
-              "Continuing with bid despite read error - auction just created",
-            );
           }
         }
 
