@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { env } from "./env";
+import { logger } from "./logger";
 
 interface RateLimitInfo {
   count: number;
@@ -28,12 +29,32 @@ class RateLimiter {
   }
 
   private async initializeTable() {
-    // Create rate_limits table if it doesn't exist
-    const { error } = await this.supabase.rpc(
-      "create_rate_limits_table_if_not_exists",
-    );
-    if (error && !error.message.includes("already exists")) {
-      console.error("Failed to initialize rate limits table:", error);
+    try {
+      // Create rate_limits table if it doesn't exist
+      const { error } = await this.supabase.rpc(
+        "create_rate_limits_table_if_not_exists",
+      );
+      if (error && !error.message.includes("already exists")) {
+        logger.error("Failed to initialize rate limits table", {
+          error,
+          method: "initializeTable"
+        });
+        
+        // Log critical security event if rate limiting table can't be created
+        logger.logSecurityEvent("rate_limit_table_init_failed", "critical", {
+          errorMessage: error.message,
+          code: error.code
+        });
+      }
+    } catch (error) {
+      logger.error("Critical error during rate limits table initialization", {
+        error: error instanceof Error ? error : new Error(String(error)),
+        method: "initializeTable"
+      });
+      
+      logger.logSecurityEvent("rate_limit_init_critical_failure", "critical", {
+        errorMessage: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 
@@ -44,7 +65,7 @@ class RateLimiter {
     return `${ip}:${endpoint}`;
   }
 
-  private getClientIp(req: NextApiRequest): string {
+  public getClientIp(req: NextApiRequest): string {
     const forwarded = req.headers["x-forwarded-for"];
     const ip = forwarded
       ? Array.isArray(forwarded)
@@ -122,7 +143,13 @@ class RateLimiter {
         retryAfter: allowed ? undefined : Math.ceil((resetTime - now) / 1000),
       };
     } catch (error) {
-      console.error("Rate limiting error:", error);
+      logger.error("Rate limiting error - failing closed for security", {
+        error: error instanceof Error ? error : new Error(String(error)),
+        key,
+        maxRequests: options.maxRequests,
+        windowMs: options.windowMs,
+        method: "checkLimit"
+      });
       // Fail closed - deny request if rate limiting fails for security
       return {
         allowed: false,
@@ -139,7 +166,11 @@ class RateLimiter {
     try {
       await this.supabase.from("rate_limits").delete().lt("reset_time", now);
     } catch (error) {
-      console.error("Failed to cleanup expired rate limits:", error);
+      logger.warn("Failed to cleanup expired rate limits", {
+        error: error instanceof Error ? error : new Error(String(error)),
+        method: "cleanupExpired",
+        cleanupTimestamp: now
+      });
     }
   }
 }
@@ -171,6 +202,18 @@ export function rateLimit(options: RateLimitOptions) {
       if (result.retryAfter) {
         res.setHeader("Retry-After", result.retryAfter);
       }
+
+      // Log rate limit violations for security monitoring
+      logger.logSecurityEvent("rate_limit_exceeded", "medium", {
+        key,
+        ip: rateLimiter.getClientIp(req),
+        method: req.method,
+        url: req.url,
+        userAgent: req.headers["user-agent"],
+        limit: result.limit,
+        remaining: result.remaining,
+        retryAfter: result.retryAfter
+      });
 
       return res.status(429).json({
         error: "Too Many Requests",

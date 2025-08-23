@@ -18,6 +18,7 @@ interface Auction {
   starting_bid: number;
   current_bid: number;
   reserve_price?: number;
+  start_time?: string;
   end_time: string;
   status: "upcoming" | "active" | "ended" | "settled" | "cancelled";
   creator_name: string;
@@ -40,14 +41,28 @@ export default function AuctionsPage() {
 
   const fetchAuctions = useCallback(async () => {
     try {
-      let query = supabase
-        .from("active_auctions")
+      // Use the appropriate view based on filter selection
+      let viewName: string;
+      switch (filter) {
+        case "active":
+          viewName = "active_auctions"; // This view now has proper time-based filtering
+          break;
+        case "upcoming":
+          viewName = "upcoming_auctions";
+          break;
+        case "ended":
+          viewName = "ended_auctions";
+          break;
+        case "all":
+        default:
+          viewName = "all_auctions_with_status";
+          break;
+      }
+
+      const query = supabase
+        .from(viewName)
         .select("*")
         .order("end_time", { ascending: true });
-
-      if (filter !== "all") {
-        query = query.eq("status", filter);
-      }
 
       const { data, error } = await query;
 
@@ -78,6 +93,17 @@ export default function AuctionsPage() {
     if (days > 0) return `${days}d ${hours}h`;
     if (hours > 0) return `${hours}h ${minutes}m`;
     return `${minutes}m`;
+  };
+
+  const getAuctionStatus = (auction: Auction): string => {
+    const now = new Date();
+    const start = auction.start_time ? new Date(auction.start_time) : null;
+    const end = new Date(auction.end_time);
+    
+    if (auction.status === 'cancelled') return 'cancelled';
+    if (end.getTime() <= now.getTime()) return 'ended';
+    if (start && start.getTime() > now.getTime()) return 'upcoming';
+    return 'active';
   };
 
   const formatPrice = (price: number) => {
@@ -197,20 +223,20 @@ mb-4 w-[600px] mx-auto">
                       <div className="absolute top-3 left-3">
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            auction.status === "active"
+                            getAuctionStatus(auction) === "active"
                               ? "bg-green-600 text-white"
-                              : auction.status === "upcoming"
+                              : getAuctionStatus(auction) === "upcoming"
                                 ? "bg-blue-600 text-white"
                                 : "bg-gray-600 text-white"
                           }`}
                         >
-                          {auction.status.charAt(0).toUpperCase() +
-                            auction.status.slice(1)}
+                          {getAuctionStatus(auction).charAt(0).toUpperCase() +
+                            getAuctionStatus(auction).slice(1)}
                         </span>
                       </div>
 
                       {/* Time Remaining */}
-                      {auction.status === "active" && (
+                      {getAuctionStatus(auction) === "active" && (
                         <div className="absolute top-3 right-3 bg-black/80 px-2 py-1 rounded-lg">
                           <div className="flex items-center space-x-1 text-white text-xs">
                             <Clock size={12} />

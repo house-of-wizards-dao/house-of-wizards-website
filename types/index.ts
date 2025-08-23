@@ -8,7 +8,7 @@ export interface Profile {
   email?: string;
   bio?: string;
   avatar_url?: string;
-  user_metadata?: Record<string, any>;
+  user_metadata?: Record<string, unknown>;
 }
 
 export interface Artist {
@@ -50,7 +50,7 @@ export interface User {
   user_metadata?: {
     name?: string;
     avatar_url?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
   created_at?: string;
 }
@@ -76,7 +76,7 @@ export interface FormData {
   bio: string;
   email?: string;
   avatar?: File | null;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 // Signup page specific types
@@ -85,7 +85,7 @@ export interface FileData {
   size?: number;
   description: string;
   fileType: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface FileDescriptions {
@@ -122,7 +122,7 @@ export interface AuthUser {
   email?: string;
   user_metadata?: {
     name?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 
@@ -135,7 +135,7 @@ export interface GalleryItemData {
   description?: string;
   fileType?: string;
   size?: number;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface DragPosition {

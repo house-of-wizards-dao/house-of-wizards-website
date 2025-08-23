@@ -221,7 +221,9 @@ CREATE INDEX idx_file_descriptions_deleted_at ON file_descriptions(deleted_at);
 -- Auctions indexes
 CREATE INDEX idx_auctions_creator_id ON auctions(creator_id);
 CREATE INDEX idx_auctions_status ON auctions(status);
+CREATE INDEX idx_auctions_start_time ON auctions(start_time);
 CREATE INDEX idx_auctions_end_time ON auctions(end_time);
+CREATE INDEX idx_auctions_time_range ON auctions(start_time, end_time) WHERE deleted_at IS NULL;
 CREATE INDEX idx_auctions_category ON auctions(category);
 CREATE INDEX idx_auctions_active ON auctions(id) WHERE deleted_at IS NULL;
 CREATE INDEX idx_auctions_active_status ON auctions(status, end_time) WHERE deleted_at IS NULL;
@@ -277,28 +279,106 @@ SELECT * FROM gallery_items WHERE deleted_at IS NULL;
 CREATE VIEW active_file_descriptions AS
 SELECT * FROM file_descriptions WHERE deleted_at IS NULL;
 
--- Active auctions view
+-- Real-time auction status calculation views
+-- Active auctions view (only shows auctions that are currently running)
 CREATE VIEW active_auctions AS
 SELECT 
     a.*,
+    'active' as real_time_status,
     p.name as creator_name,
     p.avatar_url as creator_avatar,
     (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as total_bids,
     (SELECT b.bidder_id FROM bids b WHERE b.auction_id = a.id AND b.is_winning = TRUE LIMIT 1) as current_winner_id,
-    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count
+    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count,
+    (a.end_time - NOW()) as time_remaining
+FROM auctions a
+LEFT JOIN profiles p ON a.creator_id = p.id
+WHERE a.deleted_at IS NULL
+  AND a.start_time <= NOW()
+  AND a.end_time > NOW()
+  AND a.status != 'cancelled';
+
+-- Upcoming auctions view (auctions that haven't started yet)
+CREATE VIEW upcoming_auctions AS
+SELECT 
+    a.*,
+    'upcoming' as real_time_status,
+    p.name as creator_name,
+    p.avatar_url as creator_avatar,
+    (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as total_bids,
+    (SELECT b.bidder_id FROM bids b WHERE b.auction_id = a.id AND b.is_winning = TRUE LIMIT 1) as current_winner_id,
+    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count,
+    (a.start_time - NOW()) as time_until_start
+FROM auctions a
+LEFT JOIN profiles p ON a.creator_id = p.id
+WHERE a.deleted_at IS NULL
+  AND a.start_time > NOW()
+  AND a.status != 'cancelled';
+
+-- Ended auctions view (auctions that have finished)
+CREATE VIEW ended_auctions AS
+SELECT 
+    a.*,
+    'ended' as real_time_status,
+    p.name as creator_name,
+    p.avatar_url as creator_avatar,
+    (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as total_bids,
+    (SELECT b.bidder_id FROM bids b WHERE b.auction_id = a.id AND b.is_winning = TRUE LIMIT 1) as current_winner_id,
+    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count,
+    (NOW() - a.end_time) as time_since_ended
+FROM auctions a
+LEFT JOIN profiles p ON a.creator_id = p.id
+WHERE a.deleted_at IS NULL
+  AND a.end_time <= NOW()
+  AND a.status != 'cancelled';
+
+-- All auctions view with real-time status calculation
+CREATE VIEW all_auctions_with_status AS
+SELECT 
+    a.*,
+    CASE 
+        WHEN a.status = 'cancelled' THEN 'cancelled'
+        WHEN a.end_time <= NOW() THEN 'ended'
+        WHEN a.start_time > NOW() THEN 'upcoming'
+        WHEN a.start_time <= NOW() AND a.end_time > NOW() THEN 'active'
+        ELSE a.status
+    END as real_time_status,
+    p.name as creator_name,
+    p.avatar_url as creator_avatar,
+    (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as total_bids,
+    (SELECT b.bidder_id FROM bids b WHERE b.auction_id = a.id AND b.is_winning = TRUE LIMIT 1) as current_winner_id,
+    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count,
+    CASE 
+        WHEN a.start_time > NOW() THEN a.start_time - NOW()
+        WHEN a.end_time > NOW() THEN a.end_time - NOW()
+        ELSE NULL
+    END as time_remaining_or_until_start
 FROM auctions a
 LEFT JOIN profiles p ON a.creator_id = p.id
 WHERE a.deleted_at IS NULL;
 
--- Auction details with bid history view
+-- Auction details with bid history view (with real-time status)
 CREATE VIEW auction_details AS
 SELECT 
     a.*,
+    CASE 
+        WHEN a.status = 'cancelled' THEN 'cancelled'
+        WHEN a.end_time <= NOW() THEN 'ended'
+        WHEN a.start_time > NOW() THEN 'upcoming'
+        WHEN a.start_time <= NOW() AND a.end_time > NOW() THEN 'active'
+        ELSE a.status
+    END as real_time_status,
     p.name as creator_name,
     p.avatar_url as creator_avatar,
     p.twitter as creator_twitter,
     p.website as creator_website,
     (SELECT COUNT(*) FROM bids b WHERE b.auction_id = a.id) as total_bids,
+    (SELECT COUNT(*) FROM auction_watchers aw WHERE aw.auction_id = a.id) as watchers_count,
+    CASE 
+        WHEN a.start_time > NOW() THEN a.start_time - NOW()
+        WHEN a.end_time > NOW() THEN a.end_time - NOW()
+        ELSE NULL
+    END as time_remaining_or_until_start,
     (SELECT JSON_AGG(
         JSON_BUILD_OBJECT(
             'id', b.id,
@@ -940,5 +1020,8 @@ COMMENT ON FUNCTION update_auction_statuses() IS 'Updates auction statuses based
 COMMENT ON TABLE auctions IS 'Auction listings for artwork and NFTs';
 COMMENT ON TABLE bids IS 'Bid history for auctions';
 COMMENT ON TABLE auction_watchers IS 'Users watching specific auctions';
-COMMENT ON VIEW active_auctions IS 'Active auctions with creator and bid summary';
+COMMENT ON VIEW active_auctions IS 'Currently active auctions with real-time status filtering (start_time <= NOW() AND end_time > NOW())';
+COMMENT ON VIEW upcoming_auctions IS 'Upcoming auctions that have not started yet (start_time > NOW())';
+COMMENT ON VIEW ended_auctions IS 'Ended auctions that have finished (end_time <= NOW())';
+COMMENT ON VIEW all_auctions_with_status IS 'All auctions with real-time status calculation based on current time';
 COMMENT ON VIEW auction_details IS 'Detailed auction view with complete bid history';

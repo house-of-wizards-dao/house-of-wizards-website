@@ -20,16 +20,17 @@ const auctionUpdateSchema = z.object({
   status: z.enum(['upcoming', 'active', 'ended', 'settled', 'cancelled']).optional(),
 });
 
-const auctionQuerySchema = z.preprocess((data: any) => {
+const auctionQuerySchema = z.preprocess((data: unknown) => {
+  const queryData = data as Record<string, unknown>;
   return {
-    page: data.page || "1",
-    limit: data.limit || "20",
-    search: data.search,
-    status: data.status || "all",
-    creator_id: data.creator_id,
-    category: data.category,
-    sort_by: data.sort_by || "created_at",
-    sort_order: data.sort_order || "desc",
+    page: queryData.page || "1",
+    limit: queryData.limit || "20",
+    search: queryData.search,
+    status: queryData.status || "all",
+    creator_id: queryData.creator_id,
+    category: queryData.category,
+    sort_by: queryData.sort_by || "created_at",
+    sort_order: queryData.sort_order || "desc",
   };
 }, z.object({
   page: z.string().transform(val => parseInt(val, 10)).refine(val => val > 0, "Page must be positive"),
@@ -152,8 +153,8 @@ async function getAuctions(
     }
 
     // Transform data to include computed fields
-    const transformedAuctions: AuctionWithDetails[] = (auctions || []).map((auction: any) => ({
-      ...auction,
+    const transformedAuctions: AuctionWithDetails[] = (auctions || []).map((auction) => ({
+      ...(auction as AuctionWithDetails),
       creator_name: 'Unknown Creator',
       creator_avatar: undefined,
       total_bids: 0,

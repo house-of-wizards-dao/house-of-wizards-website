@@ -19,12 +19,12 @@ export enum ApiErrorCode {
 export interface ApiError {
   code: ApiErrorCode;
   message: string;
-  details?: Record<string, any>;
+  details?: Record<string, unknown>;
   timestamp: string;
   path: string;
 }
 
-export interface ApiSuccess<T = any> {
+export interface ApiSuccess<T = unknown> {
   data: T;
   message?: string;
   meta?: {
@@ -35,14 +35,14 @@ export interface ApiSuccess<T = any> {
   };
 }
 
-export type ApiResponse<T = any> = ApiSuccess<T> | { error: ApiError };
+export type ApiResponse<T = unknown> = ApiSuccess<T> | { error: ApiError };
 
 // Custom API error class
 export class ApiValidationError extends Error {
   constructor(
     public code: ApiErrorCode,
     message: string,
-    public details?: Record<string, any>,
+    public details?: Record<string, unknown>,
   ) {
     super(message);
     this.name = "ApiValidationError";

@@ -67,22 +67,20 @@ export const config = getDefaultConfig({
   ssr: true, // Enable server-side rendering
 });
 
-// Contract addresses (deploy these to use)
-export const AUCTION_CONTRACT_ADDRESS = {
-  11155111: "0x172084988957cAC63766fa0495f3FfFb89256064", // Sepolia testnet
-  // Add other networks when contracts are deployed:
-  // 1: "0x...", // Mainnet
-  // 137: "0x...", // Polygon
-  // 10: "0x...", // Optimism
-  // 42161: "0x...", // Arbitrum
-} as const;
+// Import contract configuration
+import { 
+  getContractAddress as getConfiguredContractAddress,
+  validateContractAddress,
+  isChainSupported 
+} from './contract-config';
 
 // Get contract address for current chain
 export function getContractAddress(chainId: number): string | undefined {
-  return AUCTION_CONTRACT_ADDRESS[
-    chainId as keyof typeof AUCTION_CONTRACT_ADDRESS
-  ];
+  return getConfiguredContractAddress(chainId);
 }
+
+// Export additional contract utilities
+export { validateContractAddress, isChainSupported } from './contract-config';
 
 // Auction contract ABI (complete for hybrid functionality)
 export const AUCTION_ABI = [

@@ -158,7 +158,7 @@ export function sanitizeRequestBody(allowedFields: string[]) {
         return res.status(400).json({ error: "Invalid request body" });
       }
 
-      const sanitizedBody: Record<string, any> = {};
+      const sanitizedBody: Record<string, unknown> = {};
 
       for (const field of allowedFields) {
         if (req.body[field] !== undefined) {

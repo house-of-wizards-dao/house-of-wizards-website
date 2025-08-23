@@ -8,6 +8,12 @@ interface EnvConfig {
   SUPABASE_SERVICE_ROLE_KEY?: string;
   NODE_ENV: "development" | "test" | "production";
   REDIS_URL?: string;
+  // Contract addresses (optional, validated separately)
+  NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA?: string;
+  NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET?: string;
+  NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON?: string;
+  NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM?: string;
+  NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM?: string;
 }
 
 class EnvironmentError extends Error {
@@ -70,6 +76,22 @@ function validateSupabaseKey(key: string, type: "anon" | "service"): string {
   return key;
 }
 
+function validateContractAddress(address: string, networkName: string): string {
+  // Skip validation in test environment
+  if (process.env.NODE_ENV === "test") {
+    return address;
+  }
+
+  const addressRegex = /^0x[a-fA-F0-9]{40}$/;
+  if (!addressRegex.test(address)) {
+    throw new EnvironmentError(
+      `Invalid contract address format for ${networkName}: ${address}`,
+    );
+  }
+
+  return address;
+}
+
 /**
  * Validates and returns environment configuration
  * Throws EnvironmentError if validation fails
@@ -90,6 +112,25 @@ export function getValidatedEnv(): EnvConfig {
       false,
     );
 
+    // Validate contract addresses if present
+    const contractAddresses = {
+      NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA
+        ? validateContractAddress(process.env.NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA, "Sepolia")
+        : undefined,
+      NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET
+        ? validateContractAddress(process.env.NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET, "Mainnet")
+        : undefined,
+      NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON
+        ? validateContractAddress(process.env.NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON, "Polygon")
+        : undefined,
+      NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM
+        ? validateContractAddress(process.env.NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM, "Optimism")
+        : undefined,
+      NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM
+        ? validateContractAddress(process.env.NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM, "Arbitrum")
+        : undefined,
+    };
+
     return {
       NEXT_PUBLIC_SUPABASE_URL: validateSupabaseUrl(supabaseUrl),
       NEXT_PUBLIC_SUPABASE_ANON_KEY: validateSupabaseKey(
@@ -102,6 +143,7 @@ export function getValidatedEnv(): EnvConfig {
       NODE_ENV:
         (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
       REDIS_URL: process.env.REDIS_URL,
+      ...contractAddresses,
     };
   } catch (error) {
     if (error instanceof EnvironmentError) {
@@ -144,6 +186,12 @@ export function getEnvWithFallbacks(): EnvConfig {
         NODE_ENV:
           (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
         REDIS_URL: process.env.REDIS_URL,
+        // Contract addresses (no validation in fallback mode)
+        NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_SEPOLIA,
+        NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_MAINNET,
+        NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_POLYGON,
+        NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_OPTIMISM,
+        NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM: process.env.NEXT_PUBLIC_AUCTION_CONTRACT_ARBITRUM,
       };
     }
   }

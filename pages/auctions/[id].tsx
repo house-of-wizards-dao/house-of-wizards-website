@@ -12,6 +12,7 @@ import DefaultLayout from "@/layouts/default";
 import { BidWithETH } from "@/components/auction/BidWithETH";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { formatAuctionDuration } from "@/lib/blockchain-time";
+import { logger } from "@/lib/logger";
 
 interface AuctionDetail {
   id: string;
@@ -76,7 +77,11 @@ export default function AuctionDetailPage() {
       if (error) throw error;
       setAuction(data);
     } catch (error) {
-      console.error("Error fetching auction:", error);
+      logger.error("Error fetching auction", {
+        auctionId: id,
+        error: error instanceof Error ? error : new Error(String(error)),
+        method: "fetchAuction"
+      });
     } finally {
       setLoading(false);
     }
@@ -114,7 +119,10 @@ export default function AuctionDetailPage() {
     // Format the duration display using blockchain time utilities
     const durationInfo = formatAuctionDuration(displayEndTime, actualEndTime, currentTime);
     
-    setTimeRemaining(durationInfo.userDisplay);
+    setTimeRemaining(prevTime => {
+      // Only update if the time display has changed to prevent unnecessary re-renders
+      return prevTime !== durationInfo.userDisplay ? durationInfo.userDisplay : prevTime;
+    });
   }, [auction]);
 
   useEffect(() => {
@@ -126,10 +134,13 @@ export default function AuctionDetailPage() {
   }, [checkWatchingStatus]);
 
   useEffect(() => {
+    if (!auction) return;
+    
     const interval = setInterval(updateTimeRemaining, 1000);
-    updateTimeRemaining();
+    updateTimeRemaining(); // Run immediately
+    
     return () => clearInterval(interval);
-  }, [updateTimeRemaining]);
+  }, [auction, updateTimeRemaining]);
 
   const handleBid = async () => {
     if (!user || !auction || !bidAmount) return;
@@ -151,7 +162,13 @@ export default function AuctionDetailPage() {
         alert(data.error || "Failed to place bid");
       }
     } catch (error) {
-      console.error("Error placing bid:", error);
+      logger.error("Error placing bid", {
+        auctionId: auction.id,
+        userId: user.id,
+        bidAmount: parseFloat(bidAmount),
+        error: error instanceof Error ? error : new Error(String(error)),
+        method: "handleBid"
+      });
       alert("Failed to place bid. Please try again.");
     } finally {
       setBidding(false);
@@ -181,7 +198,13 @@ export default function AuctionDetailPage() {
         setIsWatching(true);
       }
     } catch (error) {
-      console.error("Error toggling watch:", error);
+      logger.error("Error toggling watch status", {
+        auctionId: auction.id,
+        userId: user.id,
+        previousWatchStatus: isWatching,
+        error: error instanceof Error ? error : new Error(String(error)),
+        method: "toggleWatch"
+      });
     }
   };
 
