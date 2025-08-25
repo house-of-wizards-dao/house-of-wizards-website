@@ -1,12 +1,12 @@
 import {nextui} from '@nextui-org/theme'
-import { designTokens } from './config/design-tokens'
+import { designTokens } from './src/config/design-tokens'
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    './layouts/**/*.{js,ts,jsx,tsx,mdx}',
-    './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/layouts/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {

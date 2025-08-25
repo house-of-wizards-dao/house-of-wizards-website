@@ -11,15 +11,15 @@ const customJestConfig = {
   testEnvironment: 'jest-environment-jsdom',
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/'],
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
   collectCoverageFrom: [
-    'components/**/*.{js,jsx,ts,tsx}',
-    'pages/**/*.{js,jsx,ts,tsx}',
-    'lib/**/*.{js,jsx,ts,tsx}',
-    '!pages/_app.tsx',
-    '!pages/_document.tsx',
-    '!pages/api/**',
+    'src/components/**/*.{js,jsx,ts,tsx}',
+    'src/pages/**/*.{js,jsx,ts,tsx}',
+    'src/lib/**/*.{js,jsx,ts,tsx}',
+    '!src/pages/_app.tsx',
+    '!src/pages/_document.tsx',
+    '!src/pages/api/**',
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
@@ -32,8 +32,8 @@ const customJestConfig = {
     },
   },
   testMatch: [
-    '<rootDir>/**/__tests__/**/*.{js,jsx,ts,tsx}',
-    '<rootDir>/**/*.(test|spec).{js,jsx,ts,tsx}',
+    '<rootDir>/tests/**/*.{js,jsx,ts,tsx}',
+    '<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}',
   ],
 }
 
