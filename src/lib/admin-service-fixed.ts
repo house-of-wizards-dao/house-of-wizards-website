@@ -1,6 +1,5 @@
 import { getServiceSupabase } from "./supabase";
 import { logger } from "./logger";
-import { cacheManager } from "./cache-manager";
 
 export interface ContentItem {
   name: string;
@@ -31,16 +30,8 @@ export class AdminService {
    */
   async fetchUsersWithContentCounts(): Promise<UserProfile[]> {
     const startTime = Date.now();
-    const cacheKey = 'admin:users:with_content_counts';
 
     try {
-      // Try to get from cache first
-      const cached = await cacheManager.get<UserProfile[]>(cacheKey);
-      if (cached) {
-        logger.debug('Returning cached users with content counts');
-        return cached;
-      }
-
       // Single query with LEFT JOIN to get content counts - using active profiles
       const { data, error } = await this.supabase
         .from("active_profiles")
@@ -70,12 +61,6 @@ export class AdminService {
           avatar_url: user.avatar_url,
           content_count: user.file_descriptions?.length || 0,
         })) || [];
-
-      // Cache the results for 5 minutes
-      await cacheManager.set(cacheKey, users, {
-        ttl: 300,
-        tags: ['admin', 'profiles', 'users']
-      });
 
       logger.logDatabaseOperation(
         "SELECT",
@@ -217,12 +202,21 @@ export class AdminService {
   }
 
   /**
-   * Efficient user deletion with proper cascade handling and cache invalidation
+   * Efficient user deletion with proper cascade handling
    */
   async deleteUserWithContent(userId: string): Promise<void> {
     const startTime = Date.now();
 
     try {
+      // Validate UUID format to prevent injection
+      if (
+        !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+          userId,
+        )
+      ) {
+        throw new Error("Invalid user ID format");
+      }
+
       // Perform soft delete operations directly without function
       // 1. Soft delete all user's file descriptions
       const { error: contentError } = await this.supabase
@@ -251,11 +245,6 @@ export class AdminService {
 
       if (profileError) throw profileError;
 
-      // Invalidate related cache entries
-      await cacheManager.invalidateByTags([
-        'admin', 'profiles', 'users', 'content', `user:${userId}`
-      ]);
-
       logger.logDatabaseOperation(
         "DELETE",
         "user_with_content",
@@ -283,6 +272,20 @@ export class AdminService {
     const startTime = Date.now();
 
     try {
+      // Validate all inputs before processing
+      for (const item of contentItems) {
+        if (
+          !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+            item.userId,
+          )
+        ) {
+          throw new Error("Invalid user ID format");
+        }
+        if (!item.fileName || item.fileName.length > 255) {
+          throw new Error("Invalid filename");
+        }
+      }
+
       // Perform batch soft delete operations directly
       const deletePromises = contentItems.map(async (item) => {
         const { error } = await this.supabase
@@ -296,15 +299,6 @@ export class AdminService {
       });
 
       await Promise.all(deletePromises);
-
-      // Invalidate content cache
-      await cacheManager.invalidateByTags(['content', 'admin']);
-      
-      // Invalidate user-specific caches
-      const userIds = [...new Set(contentItems.map(item => item.userId))];
-      for (const uid of userIds) {
-        await cacheManager.invalidateUserCache(uid);
-      }
 
       logger.logDatabaseOperation(
         "DELETE",
@@ -326,7 +320,7 @@ export class AdminService {
   }
 
   /**
-   * Get admin dashboard statistics efficiently with caching
+   * Get admin dashboard statistics efficiently
    */
   async getDashboardStats(): Promise<{
     totalUsers: number;
@@ -335,16 +329,8 @@ export class AdminService {
     recentUsers: number;
   }> {
     const startTime = Date.now();
-    const cacheKey = 'admin:dashboard:stats';
 
     try {
-      // Try cache first (shorter TTL for stats)
-      const cached = await cacheManager.get(cacheKey);
-      if (cached) {
-        logger.debug('Returning cached dashboard stats');
-        return cached;
-      }
-
       // Single query to get all stats
       const { data, error } = await this.supabase.rpc(
         "get_admin_dashboard_stats",
@@ -352,26 +338,20 @@ export class AdminService {
 
       if (error) throw error;
 
-      const stats = data[0] || {
-        totalUsers: 0,
-        totalContent: 0,
-        activeUsers: 0,
-        recentUsers: 0,
-      };
-
-      // Cache for 2 minutes (dashboard stats change frequently)
-      await cacheManager.set(cacheKey, stats, {
-        ttl: 120,
-        tags: ['admin', 'dashboard', 'stats']
-      });
-
       logger.logDatabaseOperation(
         "SELECT",
         "dashboard_stats",
         Date.now() - startTime,
       );
 
-      return stats;
+      return (
+        data[0] || {
+          totalUsers: 0,
+          totalContent: 0,
+          activeUsers: 0,
+          recentUsers: 0,
+        }
+      );
     } catch (error) {
       logger.logDatabaseOperation(
         "SELECT",
@@ -384,7 +364,7 @@ export class AdminService {
   }
 
   /**
-   * Search users and content efficiently
+   * Search users and content efficiently - FIXED SQL INJECTION
    */
   async searchUsersAndContent(
     query: string,
@@ -396,12 +376,15 @@ export class AdminService {
     const startTime = Date.now();
 
     try {
-      // Parallel searches using Promise.all for better performance
+      // Sanitize input to prevent SQL injection
+      const sanitizedQuery = query.replace(/[%_\\]/g, "\\$&").substring(0, 100);
+
+      // FIXED: Use proper parameterized queries with text search
       const [usersResult, contentResult] = await Promise.all([
         this.supabase
           .from("active_profiles")
           .select("id, name, email, role, created_at, avatar_url")
-          .or(`name.ilike.%${query}%, email.ilike.%${query}%`)
+          .textSearch("name", sanitizedQuery, { type: "websearch" })
           .limit(limit),
 
         this.supabase
@@ -416,7 +399,7 @@ export class AdminService {
             profiles!inner(name)
           `,
           )
-          .or(`file_name.ilike.%${query}%, description.ilike.%${query}%`)
+          .textSearch("file_name", sanitizedQuery, { type: "websearch" })
           .limit(limit),
       ]);
 

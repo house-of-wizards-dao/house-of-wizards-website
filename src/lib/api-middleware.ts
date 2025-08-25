@@ -224,7 +224,7 @@ export function validateMethods(allowedMethods: string[]) {
  * CORS middleware
  */
 export function corsMiddleware(
-  origin: string[] = ["http://localhost:3000"],
+  origin: string[] = ["http://localhost:3001"],
   methods: string[] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 ) {
   return (req: NextApiRequest, res: NextApiResponse, next: () => void) => {
@@ -251,49 +251,142 @@ export function corsMiddleware(
 }
 
 /**
- * Combines multiple middlewares into a single handler
+ * Enhanced API handler options with security and performance features
+ */
+export interface ApiHandlerOptions {
+  methods?: string[];
+  rateLimit?: { maxRequests: number; windowMs: number; skipSuccessfulRequests?: boolean };
+  cors?: boolean | { origins?: string[]; credentials?: boolean };
+  validation?: {
+    body?: z.ZodSchema;
+    query?: z.ZodSchema;
+    params?: z.ZodSchema;
+  };
+  auth?: {
+    required?: boolean;
+    roles?: string[];
+    adminOnly?: boolean;
+  };
+  csrf?: boolean;
+  cache?: {
+    maxAge?: number;
+    staleWhileRevalidate?: number;
+    tags?: string[];
+  };
+  monitoring?: {
+    trackPerformance?: boolean;
+    logRequests?: boolean;
+  };
+}
+
+/**
+ * Enhanced middleware composition with comprehensive security
  */
 export function createApiHandler(
   handler: (req: NextApiRequest, res: NextApiResponse) => Promise<void> | void,
-  options: {
-    methods?: string[];
-    rateLimit?: { maxRequests: number; windowMs: number };
-    cors?: boolean;
-    validation?: {
-      body?: z.ZodSchema;
-      query?: z.ZodSchema;
-    };
-  } = {},
+  options: ApiHandlerOptions = {},
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
+    const startTime = Date.now();
+    
     try {
+      // Set security headers first
+      res.setHeader('X-API-Version', '1.0');
+      res.setHeader('X-Content-Type-Options', 'nosniff');
+      res.setHeader('X-Frame-Options', 'DENY');
+
       // Apply CORS if enabled
       if (options.cors) {
-        corsMiddleware()(req, res, () => {});
+        const corsOptions = typeof options.cors === 'boolean' ? {} : options.cors;
+        corsMiddleware(corsOptions.origins, ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])(req, res, () => {});
       }
 
-      // Validate methods
+      // Method validation
       if (options.methods) {
         validateMethods(options.methods)(req, res, () => {});
       }
 
-      // Apply rate limiting if configured
+      // Rate limiting with enhanced options
       if (options.rateLimit) {
-        await withRateLimit(async () => {}, options.rateLimit)(req, res);
+        await withRateLimit(async () => {}, {
+          ...options.rateLimit,
+          skipSuccessfulRequests: options.rateLimit.skipSuccessfulRequests ?? false
+        })(req, res);
       }
 
-      // Validate request body
+      // Authentication and authorization
+      if (options.auth?.required) {
+        const { authenticateRequest, requireAuth, requireAdmin } = await import('./auth');
+        const user = await authenticateRequest(req);
+        
+        if (!user) {
+          throw new ApiValidationError(ApiErrorCode.AUTHENTICATION_ERROR, 'Authentication required');
+        }
+
+        if (options.auth.adminOnly && user.role !== 'admin') {
+          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'Admin access required');
+        }
+
+        if (options.auth.roles && !options.auth.roles.includes(user.role || 'user')) {
+          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'Insufficient permissions');
+        }
+
+        // Attach user to request
+        (req as any).user = user;
+      }
+
+      // CSRF protection for state-changing methods
+      if (options.csrf && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method || '')) {
+        const { csrfProtection } = await import('./csrf-middleware');
+        if (!csrfProtection.validateToken(req)) {
+          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'CSRF validation failed');
+        }
+      }
+
+      // Request validation
       if (options.validation?.body && req.body) {
         validateBody(options.validation.body)(req);
       }
 
-      // Validate query parameters
       if (options.validation?.query) {
         validateQuery(options.validation.query)(req);
       }
 
+      if (options.validation?.params && req.query) {
+        // Validate route parameters
+        const params = Object.keys(req.query).reduce((acc, key) => {
+          if (key.startsWith('[') && key.endsWith(']')) {
+            acc[key.slice(1, -1)] = req.query[key];
+          }
+          return acc;
+        }, {} as Record<string, any>);
+        options.validation.params.parse(params);
+      }
+
+      // Cache headers if specified
+      if (options.cache && req.method === 'GET') {
+        const { maxAge = 0, staleWhileRevalidate = 0 } = options.cache;
+        res.setHeader('Cache-Control', `public, max-age=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`);
+        
+        if (options.cache.tags) {
+          res.setHeader('Cache-Tags', options.cache.tags.join(', '));
+        }
+      }
+
       // Execute main handler
       await handler(req, res);
+
+      // Performance monitoring
+      if (options.monitoring?.trackPerformance) {
+        const duration = Date.now() - startTime;
+        logger.info(`API performance: ${req.method} ${req.url}`, {
+          duration,
+          statusCode: res.statusCode,
+          method: req.method,
+          url: req.url
+        });
+      }
+
     } catch (error) {
       handleApiError(error, req, res);
     }

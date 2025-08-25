@@ -9,8 +9,14 @@ import type { UserProfile } from "@/types";
 
 import DefaultLayout from "@/layouts/default";
 
-const CDNURL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
+const getAvatarCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/avatars/`;
+};
 
 export default function IndexPage(): JSX.Element {
   const user = useUser();
@@ -27,7 +33,7 @@ export default function IndexPage(): JSX.Element {
         const { data, error } = await supabase
           .from("active_profiles")
           .select(
-            "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+            "id, name, email, bio, twitter_handle, discord_handle, website_url, avatar_url, created_at",
           )
           .order("created_at", { ascending: false });
 
@@ -36,8 +42,17 @@ export default function IndexPage(): JSX.Element {
         }
 
         if (data) {
+          // Map database fields to application fields
+          const mappedData = data.map((user: any) => ({
+            ...user,
+            description: user.bio,
+            twitter: user.twitter_handle,
+            discord: user.discord_handle,
+            website: user.website_url,
+          }));
+
           startTransition(() => {
-            setAllUsers(data as UserProfile[]);
+            setAllUsers(mappedData as UserProfile[]);
           });
         }
       } catch (err) {
@@ -138,7 +153,7 @@ export default function IndexPage(): JSX.Element {
                         userProfile.avatar_url
                           ? userProfile.avatar_url.startsWith("http")
                             ? userProfile.avatar_url
-                            : `${CDNURL}${userProfile.avatar_url}`
+                            : `${getAvatarCDNURL()}${userProfile.avatar_url}`
                           : "/img/logo.png"
                       }
                       unoptimized

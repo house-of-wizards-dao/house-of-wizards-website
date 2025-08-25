@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, useCallback } from "react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { Button } from "@nextui-org/button";
-import type { FileData, UserProfile } from "@/types";
+import type { FileData } from "@/types";
 
 import DefaultLayout from "@/layouts/default";
 import AuthForm from "@/components/auth/AuthForm";
@@ -45,7 +45,7 @@ export default function IndexPage(): JSX.Element {
     // Fetch descriptions for these files
     const { data: descData, error: descError } = await supabase
       .from("file_descriptions")
-      .select("file_name, description, file_type, created_at")
+      .select("file_name, description, file_type, mime_type, created_at")
       .eq("user_id", user.id);
 
     if (descError) {
@@ -65,11 +65,12 @@ export default function IndexPage(): JSX.Element {
           descData?.find((desc) => desc.file_name === file.name)?.description ||
           "",
         fileType:
-          descData?.find((desc) => desc.file_name === file.name)?.file_type ||
+          descData?.find((desc) => desc.file_name === file.name)?.mime_type ||
           "",
       }));
 
       setFiles(filesWithDesc);
+      console.log("getFiles - Files loaded:", filesWithDesc);
     }
   }, [user, supabase]);
 
@@ -95,7 +96,9 @@ export default function IndexPage(): JSX.Element {
       try {
         const { data: profileData, error } = await supabase
           .from("profiles")
-          .select("description, twitter, discord, website, avatar_url")
+          .select(
+            "bio, twitter_handle, discord_handle, website_url, avatar_url",
+          )
           .eq("id", user.id)
           .single();
 
@@ -110,12 +113,12 @@ export default function IndexPage(): JSX.Element {
             });
           }
         } else {
-          const profile = profileData as UserProfile;
-          setUserDescription(profile.description || "");
-          setTwitter(profile.twitter || "");
-          setDiscord(profile.discord || "");
-          setWebsite(profile.website || "");
-          setAvatar(profile.avatar_url || "");
+          // Map database fields to application fields
+          setUserDescription(profileData.bio || "");
+          setTwitter(profileData.twitter_handle || "");
+          setDiscord(profileData.discord_handle || "");
+          setWebsite(profileData.website_url || "");
+          setAvatar(profileData.avatar_url || "");
         }
       } catch (err) {
         // Error loading profile data - handled gracefully
@@ -139,7 +142,7 @@ export default function IndexPage(): JSX.Element {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ description: userDescription })
+        .update({ bio: userDescription })
         .eq("id", user.id);
 
       if (error) {
@@ -259,7 +262,11 @@ export default function IndexPage(): JSX.Element {
     try {
       const { error } = await supabase
         .from("profiles")
-        .update({ twitter, discord, website })
+        .update({
+          twitter_handle: twitter,
+          discord_handle: discord,
+          website_url: website,
+        })
         .eq("id", user.id);
 
       if (error) {
@@ -281,13 +288,29 @@ export default function IndexPage(): JSX.Element {
 
       if (authError) throw authError;
 
-      // Also update the name in the profiles table
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ name: editableName })
-        .eq("id", user.id);
+      // Also update the name in the profiles table using API route
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
 
-      if (profileError) throw profileError;
+      if (!token) {
+        throw new Error("No authentication token available");
+      }
+
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: editableName,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update name");
+      }
     } catch (error) {
       throw error;
     }

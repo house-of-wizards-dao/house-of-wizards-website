@@ -4,8 +4,14 @@ import Image from "next/image";
 
 import { Profile } from "@/types";
 
-const CDNURL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
+const getCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/files/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/files/`;
+};
 
 interface ContentItem {
   name: string;
@@ -57,7 +63,7 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
   );
 
   const renderFilePreview = (item: ContentItem) => {
-    const fileUrl = `${CDNURL}${item.userId}/${item.name}`;
+    const fileUrl = `${getCDNURL()}${item.userId}/${item.name}`;
 
     if (item.fileType?.startsWith("image/")) {
       return (

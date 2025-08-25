@@ -13,7 +13,7 @@ const usernameSchema = z
   .string()
   .min(2, "Username too short")
   .max(50, "Username too long")
-  .regex(/^[a-zA-Z0-9._#-]+$/, "Invalid username format");
+  .regex(/^@?[a-zA-Z0-9._#-]+$/, "Invalid username format");
 const urlSchema = z
   .string()
   .url("Invalid URL format")

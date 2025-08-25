@@ -8,8 +8,14 @@ import { useUser } from "@supabase/auth-helpers-react";
 
 import { useToast } from "@/hooks/useToast";
 
-const AVATAR_CDN_URL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
+const getAvatarCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/avatars/`;
+};
 
 interface ProfileEditorProps {
   userDescription: string;
@@ -111,7 +117,7 @@ export default function ProfileEditor({
               src={
                 avatar.startsWith("http")
                   ? avatar
-                  : `${AVATAR_CDN_URL}${avatar}`
+                  : `${getAvatarCDNURL()}${avatar}`
               }
               unoptimized
               width={80}

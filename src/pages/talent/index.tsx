@@ -20,8 +20,14 @@ interface BioProps {
   user_id?: string;
 }
 
-const AVATAR_STORAGE_URL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/talent-avatars/";
+const getAvatarStorageURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/talent-avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/talent-avatars/`;
+};
 
 interface AddTalentModalProps {
   isOpen: boolean;
@@ -39,6 +45,17 @@ const Bio: FC<BioProps> = ({
   imageName = "",
   avatar_url = "",
 }) => {
+  // Debug avatar URL construction
+  const finalAvatarUrl = avatar_url
+    ? avatar_url.startsWith("http")
+      ? avatar_url
+      : `${getAvatarStorageURL()}${avatar_url}`
+    : `/img/talent/${imageName || `${name}.png`}`;
+
+  // Debug logging (can be removed in production)
+  if (process.env.NODE_ENV === "development" && avatar_url) {
+    console.log(`Avatar for ${name}: ${finalAvatarUrl}`);
+  }
   return (
     <div className="group relative overflow-hidden border border-brand-900 bg-transparent/50 backdrop-blur-sm rounded-xl hover:border-brand-500 hover:shadow-xl transition-all duration-300 hover:scale-[1.01]">
       <div className="flex flex-col sm:flex-row p-6 gap-4">
@@ -49,13 +66,7 @@ const Bio: FC<BioProps> = ({
               alt={`${name}'s avatar`}
               className="rounded-xl object-cover w-full h-full"
               height={112}
-              src={
-                avatar_url
-                  ? avatar_url.startsWith("http")
-                    ? avatar_url
-                    : `${AVATAR_STORAGE_URL}${avatar_url}`
-                  : `/img/talent/${imageName || `${name}.png`}`
-              }
+              src={finalAvatarUrl}
               width={112}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -210,6 +221,12 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
       return;
     }
 
+    // Validate skillset length
+    if (formData.skillset.trim().length < 3) {
+      setError("Skills & Expertise must be at least 3 characters long");
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -245,7 +262,12 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
       }
 
       const { error: insertError } = await supabase.from("talents").insert({
-        ...formData,
+        name: formData.name,
+        focus: formData.focus,
+        skillset: formData.skillset,
+        twitter_handle: formData.twitter,
+        discord_handle: formData.discord,
+        website_url: formData.site,
         avatar_url,
         user_id: user.id,
       });
@@ -382,7 +404,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
                 setFormData({ ...formData, skillset: e.target.value })
               }
               className="w-full bg-background/50 border border-brand-900 rounded-lg px-4 py-2 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-colors resize-none"
-              placeholder="Describe your skills and what you can offer..."
+              placeholder="Describe your skills and what you can offer (minimum 3 characters)..."
               rows={3}
               required
             />
@@ -823,14 +845,22 @@ const Talent: FC = () => {
       const { data, error } = await supabase
         .from("active_talents")
         .select(
-          "id, name, twitter, discord, focus, skillset, site, avatar_url, user_id, created_at",
+          "id, name, twitter_handle, discord_handle, focus, skillset, website_url, avatar_url, user_id, created_at",
         )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
 
+      // Map database fields to interface fields
+      const mappedTalents = (data || []).map((talent: any) => ({
+        ...talent,
+        twitter: talent.twitter_handle || "",
+        discord: talent.discord_handle || "",
+        site: talent.website_url || "",
+      }));
+
       // Only use database talents
-      setTalents(data || []);
+      setTalents(mappedTalents);
     } catch (error) {
       // Set empty array if database fetch fails
       setTalents([]);

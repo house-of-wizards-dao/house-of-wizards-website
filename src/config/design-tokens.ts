@@ -182,15 +182,37 @@ export const designTokens = {
   // Animation & Transitions
   animation: {
     duration: {
+      instant: "0ms",
       fast: "150ms",
       normal: "300ms",
       slow: "500ms",
+      slower: "750ms",
     },
     easing: {
       default: "cubic-bezier(0.4, 0, 0.2, 1)",
       in: "cubic-bezier(0.4, 0, 1, 1)",
       out: "cubic-bezier(0, 0, 0.2, 1)",
       inOut: "cubic-bezier(0.4, 0, 0.2, 1)",
+      spring: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+      bounce: "cubic-bezier(0.68, -0.55, 0.265, 1.55)",
+    },
+    keyframes: {
+      fadeIn: {
+        from: { opacity: 0 },
+        to: { opacity: 1 },
+      },
+      slideUp: {
+        from: { transform: "translateY(10px)", opacity: 0 },
+        to: { transform: "translateY(0)", opacity: 1 },
+      },
+      slideDown: {
+        from: { transform: "translateY(-10px)", opacity: 0 },
+        to: { transform: "translateY(0)", opacity: 1 },
+      },
+      scaleIn: {
+        from: { transform: "scale(0.95)", opacity: 0 },
+        to: { transform: "scale(1)", opacity: 1 },
+      },
     },
   },
 
@@ -213,11 +235,45 @@ export const designTokens = {
 
   // Breakpoints
   screens: {
+    xs: "475px",
     sm: "640px",
     md: "768px",
     lg: "1024px",
     xl: "1280px",
     "2xl": "1536px",
+    "3xl": "1920px",
+  },
+
+  // Component-specific tokens
+  components: {
+    button: {
+      height: {
+        sm: "32px",
+        md: "40px",
+        lg: "44px",
+        xl: "48px",
+      },
+      padding: {
+        sm: "0 12px",
+        md: "0 16px",
+        lg: "0 24px",
+        xl: "0 32px",
+      },
+    },
+    input: {
+      height: {
+        sm: "32px",
+        md: "40px",
+        lg: "44px",
+      },
+    },
+    card: {
+      padding: {
+        sm: "16px",
+        md: "24px",
+        lg: "32px",
+      },
+    },
   },
 } as const;
 

@@ -65,7 +65,7 @@ const AdminPanel = React.memo((): JSX.Element => {
       // Get file descriptions without join to avoid 400 error
       const { data: fileDescriptions, error: descError } = await supabase
         .from("active_file_descriptions")
-        .select("file_name, description, file_type, user_id, created_at")
+        .select("file_name, description, mime_type, user_id, created_at")
         .order("created_at", { ascending: false });
 
       if (descError) throw descError;
@@ -92,7 +92,7 @@ const AdminPanel = React.memo((): JSX.Element => {
         userId: desc.user_id,
         userName: userLookup.get(desc.user_id) || "Unknown User",
         description: desc.description || "",
-        fileType: desc.file_type || "",
+        fileType: desc.mime_type || "",
       }));
 
       setContent(contentItems);
@@ -114,7 +114,23 @@ const AdminPanel = React.memo((): JSX.Element => {
   const handleUserDelete = async (userId: string) => {
     if (
       !confirm(
-        "Are you sure you want to delete this user? This will soft delete the user and all their content (they can be restored later).",
+        "⚠️ PERMANENT DELETE: Are you sure you want to permanently delete this user? This will completely remove the user and ALL their data from the database. This action CANNOT be undone!",
+      )
+    ) {
+      return;
+    }
+
+    // Double confirmation for permanent deletion
+    if (
+      !confirm(
+        "🚨 FINAL WARNING: This will permanently delete:\n" +
+          "• User profile\n" +
+          "• All uploaded files\n" +
+          "• File descriptions\n" +
+          "• Talents records\n" +
+          "• User sessions\n" +
+          "• Everything related to this user\n\n" +
+          "Type 'DELETE' to confirm you understand this is permanent.",
       )
     ) {
       return;
@@ -123,36 +139,34 @@ const AdminPanel = React.memo((): JSX.Element => {
     try {
       setLoading(true);
 
-      // Perform soft delete operations directly without function
-      // 1. Soft delete all user's file descriptions
-      const { error: contentError } = await supabase
-        .from("file_descriptions")
-        .update({ deleted_at: new Date().toISOString() })
-        .eq("user_id", userId)
-        .is("deleted_at", null);
+      // Use the fixed version that handles admin check and column ambiguity
+      console.log("Attempting to delete user:", userId);
+      const { data, error } = await supabase.rpc(
+        "admin_hard_delete_user_fixed",
+        {
+          target_user_id: userId,
+        },
+      );
 
-      if (contentError) throw contentError;
+      console.log("Delete result:", { data, error });
 
-      // 2. Soft delete all user's talents
-      const { error: talentsError } = await supabase
-        .from("talents")
-        .update({ deleted_at: new Date().toISOString() })
-        .eq("user_id", userId)
-        .is("deleted_at", null);
+      if (error) {
+        console.error("Delete error:", error);
+        throw new Error(`Database error: ${error.message}`);
+      }
 
-      if (talentsError) throw talentsError;
-
-      // 3. Soft delete the user profile
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ deleted_at: new Date().toISOString() })
-        .eq("id", userId)
-        .is("deleted_at", null);
-
-      if (profileError) throw profileError;
+      // The v2 function returns JSON with success/error info
+      if (!data || data.success !== true) {
+        const errorMsg = data?.error || "Unknown error occurred";
+        console.error("Delete failed:", data);
+        throw new Error(`Delete failed: ${errorMsg}`);
+      }
 
       // Refresh data
       await Promise.all([fetchUsers(), fetchAllContent()]);
+
+      // Success message
+      alert("User has been permanently deleted successfully.");
     } catch (err: any) {
       setError("Failed to delete user: " + (err.message || "Unknown error"));
     } finally {
@@ -163,7 +177,7 @@ const AdminPanel = React.memo((): JSX.Element => {
   const handleContentDelete = async (item: ContentItem) => {
     if (
       !confirm(
-        `Are you sure you want to delete "${item.name}"? This will soft delete the content (it can be restored later).`,
+        `⚠️ PERMANENT DELETE: Are you sure you want to permanently delete "${item.name}"? This will remove both the file and database record. This action CANNOT be undone!`,
       )
     ) {
       return;
@@ -172,17 +186,29 @@ const AdminPanel = React.memo((): JSX.Element => {
     try {
       setLoading(true);
 
-      // Soft delete the file description (content will be hidden from views)
-      const { error } = await supabase
+      // Delete the actual file from storage
+      const { error: storageError } = await supabase.storage
+        .from("files")
+        .remove([`${item.userId}/${item.name}`]);
+
+      if (storageError) {
+        console.warn("Storage delete warning:", storageError);
+        // Continue with database delete even if storage fails
+      }
+
+      // Delete the file description record from database
+      const { error: dbError } = await supabase
         .from("file_descriptions")
-        .update({ deleted_at: new Date().toISOString() })
+        .delete()
         .eq("user_id", item.userId)
         .eq("file_name", item.name);
 
-      if (error) throw error;
+      if (dbError) throw dbError;
 
       // Refresh content
       await fetchAllContent();
+
+      alert(`"${item.name}" has been permanently deleted.`);
     } catch (err: any) {
       setError("Failed to delete content: " + (err.message || "Unknown error"));
     } finally {

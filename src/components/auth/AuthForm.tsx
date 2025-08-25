@@ -63,17 +63,8 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
         }
       }
 
-      // Update the profile
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .upsert(
-          { id: data.user.id, email: sanitizedEmail },
-          { onConflict: "id" },
-        );
-
-      if (updateError) {
-        // Error updating profile - handled gracefully
-      }
+      // Profile is automatically created by database trigger
+      // No manual profile creation needed here
 
       success("Successfully signed in!", "Welcome!");
       onSuccess?.();
@@ -112,27 +103,13 @@ export default function AuthForm({ onSuccess }: AuthFormProps): JSX.Element {
 
       if (!data.user) return;
 
-      // Create profile with default role
-      const { error: profileError } = await supabase.from("profiles").upsert(
-        {
-          id: data.user.id,
-          name: sanitizedName,
-          email: sanitizedEmail,
-        },
-        { onConflict: "id" },
-      );
+      // Profile is automatically created by database trigger
+      // No manual profile creation needed here
 
-      if (profileError) {
-        success(
-          "Account created! Please check your email for verification.",
-          "Sign Up Successful",
-        );
-      } else {
-        success(
-          "Signed up successfully! Please check your email for verification.",
-          "Sign Up Successful",
-        );
-      }
+      success(
+        "Account created successfully! Please check your email for verification.",
+        "Sign Up Successful",
+      );
     } catch (err) {
       showError(
         "An unexpected error occurred during sign up.",

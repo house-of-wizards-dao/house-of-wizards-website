@@ -35,7 +35,10 @@ const buttonVariants = cva(
           "border border-neutral-700 bg-transparent hover:bg-neutral-800 text-white",
 
         // Link style
-        link: "text-brand-500 underline-offset-4 hover:underline",
+        link: "text-brand-500 underline-offset-4 hover:underline p-0 h-auto",
+
+        // Loading variant
+        loading: "bg-brand-400 text-white cursor-not-allowed",
       },
       size: {
         sm: "h-9 px-3 text-xs",
@@ -48,6 +51,11 @@ const buttonVariants = cva(
         default: "rounded-lg",
         full: "rounded-full",
         none: "rounded-none",
+        sm: "rounded-md",
+      },
+      fullWidth: {
+        true: "w-full",
+        false: "w-auto",
       },
     },
     defaultVariants: {
@@ -65,6 +73,8 @@ export interface ButtonProps
   loading?: boolean;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
+  "aria-label"?: string;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(

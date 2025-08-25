@@ -1,13 +1,10 @@
 import React, { useMemo, useCallback, useState } from "react";
 import { Button } from "@nextui-org/button";
 import Image from "next/image";
-import { useUser } from "@supabase/auth-helpers-react";
+import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 
 import type { FileData } from "@/types";
 import { useFocusNavigation } from "@/hooks/useKeyboardNavigation";
-
-const CDNURL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
 
 interface FileGalleryProps {
   files: FileData[];
@@ -19,6 +16,7 @@ export default function FileGallery({
   onDeleteFile,
 }: FileGalleryProps): JSX.Element {
   const user = useUser();
+  const supabase = useSupabaseClient();
   const [focusedIndex, setFocusedIndex] = useState(0);
 
   const { onKeyDown: handleNavigation } = useFocusNavigation({
@@ -34,7 +32,12 @@ export default function FileGallery({
     (file: FileData): JSX.Element => {
       if (!user?.id) return <div>No preview available</div>;
 
-      const fileUrl = `${CDNURL}${user.id}/${file.name}`;
+      // Get the Supabase URL from the client
+      const supabaseUrl = (supabase as any).supabaseUrl;
+      const fileUrl = `${supabaseUrl}/storage/v1/object/public/files/${user.id}/${file.name}`;
+      console.log("FileGallery - Supabase URL:", supabaseUrl);
+      console.log("FileGallery - Generated URL:", fileUrl);
+      console.log("FileGallery - File data:", file);
 
       if (file.fileType?.startsWith("video/")) {
         return (
@@ -61,7 +64,7 @@ export default function FileGallery({
         );
       }
     },
-    [user?.id],
+    [user?.id, supabase],
   );
 
   const emptyState = useMemo(() => {

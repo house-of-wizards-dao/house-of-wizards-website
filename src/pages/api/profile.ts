@@ -16,11 +16,11 @@ async function profileHandler(
   const supabaseAdmin = getServiceSupabase();
 
   if (req.method === "GET") {
-    // Get current user's profile
+    // Get current user's profile (with field aliases to match database schema)
     const { data, error } = await supabaseAdmin
       .from("profiles")
       .select(
-        "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+        "id, name, email, bio as description, twitter_handle as twitter, discord_handle as discord, website_url as website, avatar_url, created_at",
       )
       .eq("id", user.id)
       .single();
@@ -34,13 +34,22 @@ async function profileHandler(
     // Validate and sanitize input data
     const validatedData = validateBody(profileUpdateSchema)(req);
 
+    // Map application fields to database fields for update
+    const dbFields = {
+      name: validatedData.name,
+      bio: validatedData.description,
+      twitter_handle: validatedData.twitter,
+      discord_handle: validatedData.discord,
+      website_url: validatedData.website,
+    };
+
     // Update current user's profile
     const { data, error } = await supabaseAdmin
       .from("profiles")
-      .update(validatedData)
+      .update(dbFields)
       .eq("id", user.id)
       .select(
-        "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+        "id, name, email, bio as description, twitter_handle as twitter, discord_handle as discord, website_url as website, avatar_url, created_at",
       )
       .single();
 

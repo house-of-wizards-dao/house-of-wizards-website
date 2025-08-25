@@ -6,7 +6,10 @@ export interface Profile {
   created_at: string;
   name?: string;
   email?: string;
-  bio?: string;
+  description?: string; // Maps to 'bio' in database
+  twitter?: string; // Maps to 'twitter_handle' in database
+  discord?: string; // Maps to 'discord_handle' in database
+  website?: string; // Maps to 'website_url' in database
   avatar_url?: string;
   user_metadata?: Record<string, unknown>;
 }

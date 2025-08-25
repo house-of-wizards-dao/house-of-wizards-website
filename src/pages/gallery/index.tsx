@@ -29,8 +29,14 @@ import type {
 
 import DefaultLayout from "@/layouts/default";
 
-const CDNURL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
+const getCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/files/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/files/`;
+};
 const IMAGES_PER_PAGE = 20;
 
 // Add file transformation parameters
@@ -39,7 +45,7 @@ const getFileUrl = (
   name: string,
   isThumb: boolean = false,
 ): string => {
-  const baseUrl = `${CDNURL}${userId}/${name}`;
+  const baseUrl = `${getCDNURL()}${userId}/${name}`;
 
   if (
     name.toLowerCase().endsWith(".gif") ||
@@ -374,7 +380,7 @@ const GalleryItem = React.memo<GalleryItemProps>(
           {isVideo ? (
             <video
               className="w-full h-full object-cover"
-              poster={`${CDNURL}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
+              poster={`${getCDNURL()}${item.userId}/${item.name}?width=150&height=150&format=webp&quality=30`}
               preload="none"
             >
               <source

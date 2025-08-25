@@ -22,8 +22,14 @@ interface TalentManagementProps {
   loading: boolean;
 }
 
-const AVATAR_STORAGE_URL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/talent-avatars/";
+const getAvatarStorageURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/talent-avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/talent-avatars/`;
+};
 
 const TalentManagement: React.FC<TalentManagementProps> = ({
   searchTerm,
@@ -43,12 +49,21 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
       const { data, error } = await supabase
         .from("active_talents")
         .select(
-          "id, name, twitter, discord, focus, skillset, site, avatar_url, user_id, created_at",
+          "id, name, twitter_handle, discord_handle, focus, skillset, website_url, avatar_url, user_id, created_at",
         )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setTalents(data || []);
+
+      // Map database fields to interface fields
+      const mappedTalents = (data || []).map((talent: any) => ({
+        ...talent,
+        twitter: talent.twitter_handle || "",
+        discord: talent.discord_handle || "",
+        site: talent.website_url || "",
+      }));
+
+      setTalents(mappedTalents);
     } catch (err: any) {
       setError("Failed to fetch talents");
     }
@@ -61,19 +76,31 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
   const handleDelete = async (talentId: string, talentName: string) => {
     if (
       !confirm(
-        `Are you sure you want to delete "${talentName}" from the talent board? This will soft delete the talent (it can be restored later).`,
+        `⚠️ PERMANENT DELETE: Are you sure you want to permanently delete "${talentName}" from the talent board? This will completely remove the talent record and avatar from the database. This action CANNOT be undone!`,
       )
     ) {
       return;
     }
 
     try {
-      // Use the soft delete function instead of hard delete
-      const { error } = await supabase.rpc("soft_delete_talent", {
+      // Use the hard delete function
+      const { data, error } = await supabase.rpc("hard_delete_talent", {
         talent_id: talentId,
       });
 
-      if (error) throw error;
+      console.log("Hard delete talent result:", { data, error });
+
+      if (error) {
+        console.error("Hard delete error:", error);
+        throw new Error(`Database error: ${error.message}`);
+      }
+
+      // The function returns JSON with success/error info
+      if (!data || data.success !== true) {
+        const errorMsg = data?.error || "Unknown error occurred";
+        console.error("Soft delete failed:", data);
+        throw new Error(`Delete failed: ${errorMsg}`);
+      }
 
       // Refresh talents list to reflect the change
       await fetchTalents();
@@ -96,11 +123,11 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
         .from("talents")
         .update({
           name: editForm.name,
-          twitter: editForm.twitter,
-          discord: editForm.discord,
+          twitter_handle: editForm.twitter,
+          discord_handle: editForm.discord,
           focus: editForm.focus,
           skillset: editForm.skillset,
-          site: editForm.site,
+          website_url: editForm.site,
         })
         .eq("id", editingTalent);
 
@@ -201,7 +228,7 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
                       talent.avatar_url
                         ? talent.avatar_url.startsWith("http")
                           ? talent.avatar_url
-                          : `${AVATAR_STORAGE_URL}${talent.avatar_url}`
+                          : `${getAvatarStorageURL()}${talent.avatar_url}`
                         : "/img/logo.png"
                     }
                     alt={`${talent.name}'s avatar`}

@@ -37,10 +37,16 @@ function Web3ConnectButtonInner() {
                 return (
                   <button
                     onClick={openConnectModal}
-                    className="px-4 py-2 bg-violet text-white rounded-full hover:bg-violet/80 transition-colors text-sm font-medium"
+                    className="px-4 py-2 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-full hover:from-brand-600 hover:to-brand-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2"
                     type="button"
+                    aria-label="Connect your Web3 wallet"
                   >
-                    Connect Wallet
+                    <span className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Connect Wallet
+                    </span>
                   </button>
                 );
               }
@@ -49,10 +55,16 @@ function Web3ConnectButtonInner() {
                 return (
                   <button
                     onClick={openChainModal}
-                    className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors text-sm font-medium"
+                    className="px-4 py-2 bg-red-600 text-white rounded-full hover:bg-red-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 animate-pulse"
                     type="button"
+                    aria-label="Switch to correct network"
                   >
-                    Wrong network
+                    <span className="flex items-center gap-2">
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                      Wrong Network
+                    </span>
                   </button>
                 );
               }

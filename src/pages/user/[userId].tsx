@@ -17,11 +17,24 @@ import DefaultLayout from "@/layouts/default";
 import { Profile } from "@/types";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 
-// CDN URLs
-const CDNURL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/files/";
-const AVATAR_CDN_URL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
+// CDN URLs - dynamically generated from environment
+const getCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/files/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/files/`;
+};
+
+const getAvatarCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/avatars/`;
+};
 const FILES_PER_PAGE = 15;
 
 interface FileItem {
@@ -62,15 +75,23 @@ export default function UserProfile() {
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "id, name, email, description, twitter, discord, website, avatar_url, created_at",
+        "id, name, email, bio, twitter_handle, discord_handle, website_url, avatar_url, created_at",
       )
       .eq("id", userId)
       .single();
 
     if (data) {
-      setUser(data);
+      // Map database fields to Profile interface fields
+      const mappedData = {
+        ...data,
+        description: data.bio,
+        twitter: data.twitter_handle,
+        discord: data.discord_handle,
+        website: data.website_url,
+      };
+      setUser(mappedData);
 
-      return data;
+      return mappedData;
     } else if (error) {
       setUser(null);
 
@@ -106,7 +127,7 @@ export default function UserProfile() {
 
         const { data: descData, error: descError } = await supabase
           .from("file_descriptions")
-          .select("file_name, description, file_type, created_at")
+          .select("file_name, description, mime_type, created_at")
           .eq("user_id", userData.id);
 
         if (descError || !descData) {
@@ -125,7 +146,7 @@ export default function UserProfile() {
                 ?.description || "",
             fileType:
               descData.find((desc: any) => desc.file_name === file.name)
-                ?.file_type || "",
+                ?.mime_type || "",
           }));
 
           setFiles(filesWithDesc);
@@ -139,7 +160,7 @@ export default function UserProfile() {
   );
 
   function renderFilePreview(file: FileItem): JSX.Element {
-    const fileUrl = `${CDNURL}${user?.id}/${file.name}`;
+    const fileUrl = `${getCDNURL()}${user?.id}/${file.name}`;
 
     if (file.fileType?.startsWith("video/")) {
       return (
@@ -222,7 +243,7 @@ export default function UserProfile() {
               user.avatar_url && user.avatar_url.startsWith("http")
                 ? user.avatar_url
                 : user.avatar_url
-                  ? `${AVATAR_CDN_URL}${user.avatar_url}`
+                  ? `${getCDNURL()}${user.id}/${user.avatar_url}`
                   : "/img/logo.png"
             }
             style={{ width: "150px", height: "150px", objectFit: "cover" }}
@@ -370,7 +391,7 @@ export default function UserProfile() {
                     className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
                   >
                     <source
-                      src={`${CDNURL}${user?.id}/${selectedItem.name}`}
+                      src={`${getCDNURL()}${user?.id}/${selectedItem.name}`}
                       type={selectedItem.fileType}
                     />
                     Your browser does not support the video tag.
@@ -381,7 +402,7 @@ export default function UserProfile() {
                     className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
                     height={700}
                     priority={true}
-                    src={`${CDNURL}${user?.id}/${selectedItem.name}`}
+                    src={`${getCDNURL()}${user?.id}/${selectedItem.name}`}
                     unoptimized
                     width={700}
                   />

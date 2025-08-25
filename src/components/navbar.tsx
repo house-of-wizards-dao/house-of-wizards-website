@@ -22,9 +22,15 @@ import Image from "next/image";
 import { TwitterIcon, DiscordIcon } from "@/components/icons";
 import { Web3ConnectButton } from "@/components/Web3ConnectButton";
 
-// Avatar CDN URL
-const AVATAR_CDN_URL =
-  "https://ctyeiwzxltrqyrbcbrii.supabase.co/storage/v1/object/public/avatars/";
+// Avatar CDN URL - dynamic based on environment
+const getAvatarCDNURL = () => {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl) {
+    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
+    return "https://placeholder.supabase.co/storage/v1/object/public/avatars/";
+  }
+  return `${supabaseUrl}/storage/v1/object/public/avatars/`;
+};
 
 export const Navbar = () => {
   const user = useUser();
@@ -77,7 +83,11 @@ export const Navbar = () => {
           </NavbarItem> */}
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
+              <button 
+                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
+                aria-expanded={false}
+                aria-haspopup="true"
+              >
                 Gallery
               </button>
             </DropdownTrigger>
@@ -102,7 +112,11 @@ export const Navbar = () => {
           </Dropdown>
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase">
+              <button 
+                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
+                aria-expanded={false}
+                aria-haspopup="true"
+              >
                 Community
               </button>
             </DropdownTrigger>
@@ -186,7 +200,7 @@ export const Navbar = () => {
                     src={
                       avatar && avatar.startsWith("http")
                         ? avatar
-                        : `${AVATAR_CDN_URL}${avatar || "default.png"}`
+                        : `${getAvatarCDNURL()}${avatar || "default.png"}`
                     }
                     unoptimized
                     width={32}
@@ -298,7 +312,7 @@ export const Navbar = () => {
                       src={
                         avatar && avatar.startsWith("http")
                           ? avatar
-                          : `${AVATAR_CDN_URL}${avatar || "default.png"}`
+                          : `${getAvatarCDNURL()}${avatar || "default.png"}`
                       }
                       unoptimized
                       width={24}

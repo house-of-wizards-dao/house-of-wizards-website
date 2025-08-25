@@ -160,8 +160,15 @@ export default function FileUpload({
             .insert({
               user_id: user.id,
               file_name: fullFileName,
+              original_name: file.name,
               description: description,
-              file_type: file.type,
+              file_type: file.type.startsWith("image/")
+                ? "image"
+                : file.type.startsWith("video/")
+                  ? "video"
+                  : "other",
+              mime_type: file.type,
+              file_size: file.size,
             });
 
           if (descError) {
