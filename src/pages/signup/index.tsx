@@ -281,20 +281,34 @@ export default function IndexPage(): JSX.Element {
     if (!user?.id) return;
 
     try {
+      console.log("🔍 Starting name update process...", {
+        userId: user.id,
+        editableName,
+        currentMetadata: user.user_metadata,
+      });
+
       // Update the user metadata in auth
       const { error: authError } = await supabase.auth.updateUser({
         data: { name: editableName },
       });
 
-      if (authError) throw authError;
+      if (authError) {
+        console.error("❌ Auth update error:", authError);
+        throw authError;
+      }
+
+      console.log("✅ Auth metadata updated successfully");
 
       // Also update the name in the profiles table using API route
       const session = await supabase.auth.getSession();
       const token = session.data.session?.access_token;
 
       if (!token) {
+        console.error("❌ No auth token available");
         throw new Error("No authentication token available");
       }
+
+      console.log("🔐 Token retrieved, making API request...");
 
       const response = await fetch("/api/profile", {
         method: "PUT",
@@ -307,11 +321,24 @@ export default function IndexPage(): JSX.Element {
         }),
       });
 
+      console.log(
+        "📡 API response status:",
+        response.status,
+        response.statusText,
+      );
+
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.message || "Failed to update name");
+        console.error("❌ API error response:", error);
+        throw new Error(
+          error.error?.message || error.message || "Failed to update name",
+        );
       }
+
+      const successData = await response.json();
+      console.log("✅ Profile updated successfully:", successData);
     } catch (error) {
+      console.error("❌ Name update failed:", error);
       throw error;
     }
   }, [user?.id, editableName, supabase]);

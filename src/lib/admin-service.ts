@@ -31,13 +31,13 @@ export class AdminService {
    */
   async fetchUsersWithContentCounts(): Promise<UserProfile[]> {
     const startTime = Date.now();
-    const cacheKey = 'admin:users:with_content_counts';
+    const cacheKey = "admin:users:with_content_counts";
 
     try {
       // Try to get from cache first
       const cached = await cacheManager.get<UserProfile[]>(cacheKey);
       if (cached) {
-        logger.debug('Returning cached users with content counts');
+        logger.debug("Returning cached users with content counts");
         return cached;
       }
 
@@ -74,7 +74,7 @@ export class AdminService {
       // Cache the results for 5 minutes
       await cacheManager.set(cacheKey, users, {
         ttl: 300,
-        tags: ['admin', 'profiles', 'users']
+        tags: ["admin", "profiles", "users"],
       });
 
       logger.logDatabaseOperation(
@@ -253,7 +253,11 @@ export class AdminService {
 
       // Invalidate related cache entries
       await cacheManager.invalidateByTags([
-        'admin', 'profiles', 'users', 'content', `user:${userId}`
+        "admin",
+        "profiles",
+        "users",
+        "content",
+        `user:${userId}`,
       ]);
 
       logger.logDatabaseOperation(
@@ -298,10 +302,10 @@ export class AdminService {
       await Promise.all(deletePromises);
 
       // Invalidate content cache
-      await cacheManager.invalidateByTags(['content', 'admin']);
-      
+      await cacheManager.invalidateByTags(["content", "admin"]);
+
       // Invalidate user-specific caches
-      const userIds = [...new Set(contentItems.map(item => item.userId))];
+      const userIds = [...new Set(contentItems.map((item) => item.userId))];
       for (const uid of userIds) {
         await cacheManager.invalidateUserCache(uid);
       }
@@ -335,13 +339,13 @@ export class AdminService {
     recentUsers: number;
   }> {
     const startTime = Date.now();
-    const cacheKey = 'admin:dashboard:stats';
+    const cacheKey = "admin:dashboard:stats";
 
     try {
       // Try cache first (shorter TTL for stats)
       const cached = await cacheManager.get(cacheKey);
       if (cached) {
-        logger.debug('Returning cached dashboard stats');
+        logger.debug("Returning cached dashboard stats");
         return cached;
       }
 
@@ -362,7 +366,7 @@ export class AdminService {
       // Cache for 2 minutes (dashboard stats change frequently)
       await cacheManager.set(cacheKey, stats, {
         ttl: 120,
-        tags: ['admin', 'dashboard', 'stats']
+        tags: ["admin", "dashboard", "stats"],
       });
 
       logger.logDatabaseOperation(

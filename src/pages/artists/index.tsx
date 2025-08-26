@@ -1,6 +1,6 @@
 import { useState, useEffect, startTransition } from "react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
-import Link from "next/link";
+import { useRouter } from "next/router";
 import { Globe, Twitter, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import { Spinner } from "@nextui-org/spinner";
@@ -21,6 +21,7 @@ const getAvatarCDNURL = () => {
 export default function IndexPage(): JSX.Element {
   const user = useUser();
   const supabase = useSupabaseClient();
+  const router = useRouter();
   const [allUsers, setAllUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -140,105 +141,116 @@ export default function IndexPage(): JSX.Element {
           {allUsers
             .filter((userProfile) => userProfile.role !== "admin")
             .map((userProfile) => (
-              <Link key={userProfile.id} href={`/user/${userProfile.id}`}>
-                <Card className="rounded-xl w-full h-full border border-brand-900 bg-transparent/50 backdrop-blur-sm hover:scale-[1.02] hover:border-brand-500 hover:shadow-xl cursor-pointer transition-all duration-300">
-                  <CardBody className="p-0">
-                    <Image
-                      alt={`${userProfile.name || "User"}'s avatar`}
-                      blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3C/svg%3E"
-                      className="w-full aspect-square object-cover rounded-t-xl"
-                      height={300}
-                      placeholder="blur"
-                      src={
-                        userProfile.avatar_url
-                          ? userProfile.avatar_url.startsWith("http")
-                            ? userProfile.avatar_url
-                            : `${getAvatarCDNURL()}${userProfile.avatar_url}`
-                          : "/img/logo.png"
-                      }
-                      unoptimized
-                      width={300}
-                    />
-                  </CardBody>
-                  <CardFooter className="flex flex-col items-start p-6 space-y-4">
-                    <div className="w-full">
-                      <h4 className="text-brand-500 font-atirose text-2xl truncate mb-2">
-                        {userProfile.name || "Anonymous"}
-                      </h4>
-                      <p className="text-gray-400 text-sm line-clamp-2">
-                        {userProfile.description || "No description available"}
-                      </p>
+              <Card
+                key={userProfile.id}
+                className="rounded-xl w-full h-full border border-brand-900 bg-transparent/50 backdrop-blur-sm hover:scale-[1.02] hover:border-brand-500 hover:shadow-xl cursor-pointer transition-all duration-300"
+                onClick={() => router.push(`/user/${userProfile.id}`)}
+                isPressable
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    router.push(`/user/${userProfile.id}`);
+                  }
+                }}
+              >
+                <CardBody className="p-0">
+                  <Image
+                    alt={`${userProfile.name || "User"}'s avatar`}
+                    blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3C/svg%3E"
+                    className="w-full aspect-square object-cover rounded-t-xl"
+                    height={300}
+                    placeholder="blur"
+                    src={
+                      userProfile.avatar_url
+                        ? userProfile.avatar_url.startsWith("http")
+                          ? userProfile.avatar_url
+                          : `${getAvatarCDNURL()}${userProfile.avatar_url}`
+                        : "/img/logo.png"
+                    }
+                    unoptimized
+                    width={300}
+                  />
+                </CardBody>
+                <CardFooter className="flex flex-col items-start p-6 space-y-4">
+                  <div className="w-full">
+                    <h4 className="text-brand-500 font-atirose text-2xl truncate mb-2">
+                      {userProfile.name || "Anonymous"}
+                    </h4>
+                    <p className="text-gray-400 text-sm line-clamp-2">
+                      {userProfile.description || "No description available"}
+                    </p>
+                  </div>
+                  <div className="flex flex-col w-full space-y-2 pt-2 border-t border-brand-900/50">
+                    <div className="flex flex-row items-center gap-3">
+                      <Globe
+                        aria-hidden="true"
+                        className="text-gray-400"
+                        size={16}
+                      />
+                      {userProfile?.website ? (
+                        <a
+                          aria-label={`Visit ${userProfile.name || "user"}'s website`}
+                          className="text-sm text-gray-300 truncate hover:text-brand-500 transition-colors"
+                          href={userProfile.website}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {userProfile.website.replace(/^https?:\/\//i, "")}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          No website
+                        </span>
+                      )}
                     </div>
-                    <div className="flex flex-col w-full space-y-2 pt-2 border-t border-brand-900/50">
-                      <div className="flex flex-row items-center gap-3">
-                        <Globe
-                          aria-hidden="true"
-                          className="text-gray-400"
-                          size={16}
-                        />
-                        {userProfile?.website ? (
-                          <a
-                            aria-label={`Visit ${userProfile.name || "user"}'s website`}
-                            className="text-sm text-gray-300 truncate hover:text-brand-500 transition-colors"
-                            href={userProfile.website}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            {userProfile.website.replace(/^https?:\/\//i, "")}
-                          </a>
-                        ) : (
-                          <span className="text-sm text-gray-500">
-                            No website
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-row items-center gap-3">
-                        <Twitter
-                          aria-hidden="true"
-                          className="text-gray-400"
-                          size={16}
-                        />
-                        {userProfile?.twitter ? (
-                          <a
-                            aria-label={`Visit ${userProfile.name || "user"}'s Twitter profile`}
-                            className="text-sm text-gray-300 hover:text-brand-500 transition-colors"
-                            href={`https://twitter.com/${userProfile.twitter}`}
-                            rel="noopener noreferrer"
-                            target="_blank"
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            @{userProfile.twitter}
-                          </a>
-                        ) : (
-                          <span className="text-sm text-gray-500">
-                            No Twitter
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex flex-row items-center gap-3">
-                        <MessageCircle
-                          aria-hidden="true"
-                          className="text-gray-400"
-                          size={16}
-                        />
-                        {userProfile?.discord ? (
-                          <span
-                            className="text-sm text-gray-300"
-                            title={`Discord: ${userProfile.discord}`}
-                          >
-                            {userProfile.discord}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-gray-500">
-                            No Discord
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex flex-row items-center gap-3">
+                      <Twitter
+                        aria-hidden="true"
+                        className="text-gray-400"
+                        size={16}
+                      />
+                      {userProfile?.twitter ? (
+                        <a
+                          aria-label={`Visit ${userProfile.name || "user"}'s Twitter profile`}
+                          className="text-sm text-gray-300 hover:text-brand-500 transition-colors"
+                          href={`https://twitter.com/${userProfile.twitter}`}
+                          rel="noopener noreferrer"
+                          target="_blank"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          @{userProfile.twitter}
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          No Twitter
+                        </span>
+                      )}
                     </div>
-                  </CardFooter>
-                </Card>
-              </Link>
+                    <div className="flex flex-row items-center gap-3">
+                      <MessageCircle
+                        aria-hidden="true"
+                        className="text-gray-400"
+                        size={16}
+                      />
+                      {userProfile?.discord ? (
+                        <span
+                          className="text-sm text-gray-300"
+                          title={`Discord: ${userProfile.discord}`}
+                        >
+                          {userProfile.discord}
+                        </span>
+                      ) : (
+                        <span className="text-sm text-gray-500">
+                          No Discord
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </CardFooter>
+              </Card>
             ))}
         </div>
       </div>

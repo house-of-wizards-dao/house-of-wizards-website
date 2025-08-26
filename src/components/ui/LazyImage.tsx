@@ -14,15 +14,8 @@ interface LazyImageProps extends Omit<ImageProps, "loading"> {
  */
 export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
   (
-    {
-      className,
-      threshold = 0.1,
-      fallback,
-      errorFallback,
-      alt,
-      ...props
-    },
-    ref
+    { className, threshold = 0.1, fallback, errorFallback, alt, ...props },
+    ref,
   ) => {
     const [isIntersecting, setIsIntersecting] = useState(false);
     const [hasError, setHasError] = useState(false);
@@ -37,7 +30,7 @@ export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
             observer.disconnect();
           }
         },
-        { threshold }
+        { threshold },
       );
 
       if (containerRef.current) {
@@ -89,7 +82,7 @@ export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 LazyImage.displayName = "LazyImage";

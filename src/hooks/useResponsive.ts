@@ -31,7 +31,7 @@ export function useResponsive(): Breakpoints & {
     const updateBreakpoints = () => {
       const width = window.innerWidth;
       setScreenWidth(width);
-      
+
       setBreakpoints({
         sm: width >= 640,
         md: width >= 768,

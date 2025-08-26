@@ -83,7 +83,7 @@ export const Navbar = () => {
           </NavbarItem> */}
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button 
+              <button
                 className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
                 aria-expanded={false}
                 aria-haspopup="true"
@@ -112,7 +112,7 @@ export const Navbar = () => {
           </Dropdown>
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
-              <button 
+              <button
                 className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
                 aria-expanded={false}
                 aria-haspopup="true"

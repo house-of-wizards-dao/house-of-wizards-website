@@ -1,10 +1,10 @@
-import { logger } from './logger';
-import { env } from './env';
+import { logger } from "./logger";
+import { env } from "./env";
 
 export interface Alert {
   id: string;
-  type: 'security' | 'performance' | 'error' | 'business';
-  severity: 'low' | 'medium' | 'high' | 'critical';
+  type: "security" | "performance" | "error" | "business";
+  severity: "low" | "medium" | "high" | "critical";
   title: string;
   description: string;
   context: Record<string, any>;
@@ -16,8 +16,8 @@ export interface AlertRule {
   id: string;
   name: string;
   condition: (event: any) => boolean;
-  severity: Alert['severity'];
-  type: Alert['type'];
+  severity: Alert["severity"];
+  type: Alert["type"];
   cooldown: number; // milliseconds between alerts
 }
 
@@ -33,57 +33,56 @@ export class AlertManager {
   private setupDefaultRules(): void {
     this.rules = [
       {
-        id: 'multiple_failed_logins',
-        name: 'Multiple Failed Login Attempts',
-        condition: (event) => 
-          event.type === 'auth_failure' && event.count >= 5,
-        severity: 'high',
-        type: 'security',
+        id: "multiple_failed_logins",
+        name: "Multiple Failed Login Attempts",
+        condition: (event) => event.type === "auth_failure" && event.count >= 5,
+        severity: "high",
+        type: "security",
         cooldown: 300000, // 5 minutes
       },
       {
-        id: 'sql_injection_detected',
-        name: 'SQL Injection Attempt Detected',
-        condition: (event) => 
-          event.type === 'security' && event.event === 'sql_injection_attempt',
-        severity: 'critical',
-        type: 'security',
+        id: "sql_injection_detected",
+        name: "SQL Injection Attempt Detected",
+        condition: (event) =>
+          event.type === "security" && event.event === "sql_injection_attempt",
+        severity: "critical",
+        type: "security",
         cooldown: 60000, // 1 minute
       },
       {
-        id: 'high_error_rate',
-        name: 'High API Error Rate',
-        condition: (event) => 
-          event.type === 'api_error' && event.errorRate > 0.1, // 10% error rate
-        severity: 'high',
-        type: 'performance',
+        id: "high_error_rate",
+        name: "High API Error Rate",
+        condition: (event) =>
+          event.type === "api_error" && event.errorRate > 0.1, // 10% error rate
+        severity: "high",
+        type: "performance",
         cooldown: 600000, // 10 minutes
       },
       {
-        id: 'slow_database_queries',
-        name: 'Slow Database Queries Detected',
-        condition: (event) => 
-          event.type === 'db_performance' && event.duration > 5000, // 5 seconds
-        severity: 'medium',
-        type: 'performance',
+        id: "slow_database_queries",
+        name: "Slow Database Queries Detected",
+        condition: (event) =>
+          event.type === "db_performance" && event.duration > 5000, // 5 seconds
+        severity: "medium",
+        type: "performance",
         cooldown: 300000, // 5 minutes
       },
       {
-        id: 'admin_bulk_operation',
-        name: 'Large Admin Bulk Operation',
-        condition: (event) => 
-          event.type === 'admin_action' && event.itemCount > 50,
-        severity: 'medium',
-        type: 'business',
+        id: "admin_bulk_operation",
+        name: "Large Admin Bulk Operation",
+        condition: (event) =>
+          event.type === "admin_action" && event.itemCount > 50,
+        severity: "medium",
+        type: "business",
         cooldown: 0, // No cooldown for business events
       },
       {
-        id: 'rate_limit_exceeded',
-        name: 'Rate Limit Frequently Exceeded',
-        condition: (event) => 
-          event.type === 'rate_limit' && event.violationCount >= 10,
-        severity: 'medium',
-        type: 'security',
+        id: "rate_limit_exceeded",
+        name: "Rate Limit Frequently Exceeded",
+        condition: (event) =>
+          event.type === "rate_limit" && event.violationCount >= 10,
+        severity: "medium",
+        type: "security",
         cooldown: 180000, // 3 minutes
       },
     ];
@@ -103,9 +102,9 @@ export class AlertManager {
   private triggerAlert(rule: AlertRule, event: any): void {
     const now = Date.now();
     const lastAlert = this.lastAlertTime.get(rule.id);
-    
+
     // Check cooldown period
-    if (lastAlert && (now - lastAlert) < rule.cooldown) {
+    if (lastAlert && now - lastAlert < rule.cooldown) {
       return;
     }
 
@@ -137,17 +136,17 @@ export class AlertManager {
 
   private generateAlertDescription(rule: AlertRule, event: any): string {
     switch (rule.id) {
-      case 'multiple_failed_logins':
+      case "multiple_failed_logins":
         return `${event.count} failed login attempts detected from IP ${event.ip}`;
-      case 'sql_injection_detected':
+      case "sql_injection_detected":
         return `SQL injection attempt detected in ${event.endpoint}`;
-      case 'high_error_rate':
+      case "high_error_rate":
         return `API error rate is ${(event.errorRate * 100).toFixed(1)}% over the last hour`;
-      case 'slow_database_queries':
+      case "slow_database_queries":
         return `Database query took ${event.duration}ms on table ${event.table}`;
-      case 'admin_bulk_operation':
+      case "admin_bulk_operation":
         return `Admin ${event.adminId} performed bulk ${event.operation} on ${event.itemCount} items`;
-      case 'rate_limit_exceeded':
+      case "rate_limit_exceeded":
         return `Rate limit exceeded ${event.violationCount} times from IP ${event.ip}`;
       default:
         return `Alert triggered for rule: ${rule.name}`;
@@ -157,11 +156,11 @@ export class AlertManager {
   private async sendNotification(alert: Alert): Promise<void> {
     // In production, integrate with notification services
     // For now, just log critical alerts prominently
-    if (alert.severity === 'critical') {
-      console.error('🚨 CRITICAL ALERT:', alert.title);
-      console.error('📋 Description:', alert.description);
-      console.error('🕐 Time:', alert.timestamp.toISOString());
-      
+    if (alert.severity === "critical") {
+      console.error("🚨 CRITICAL ALERT:", alert.title);
+      console.error("📋 Description:", alert.description);
+      console.error("🕐 Time:", alert.timestamp.toISOString());
+
       // TODO: Integrate with:
       // - Discord webhook for team notifications
       // - Email alerts for critical issues
@@ -170,17 +169,19 @@ export class AlertManager {
     }
 
     // For development, log all alerts to console
-    if (env.NODE_ENV === 'development') {
+    if (env.NODE_ENV === "development") {
       const emoji = {
-        critical: '🚨',
-        high: '⚠️',
-        medium: '⚡',
-        low: 'ℹ️'
+        critical: "🚨",
+        high: "⚠️",
+        medium: "⚡",
+        low: "ℹ️",
       }[alert.severity];
 
-      console.log(`${emoji} ${alert.severity.toUpperCase()} ALERT: ${alert.title}`);
+      console.log(
+        `${emoji} ${alert.severity.toUpperCase()} ALERT: ${alert.title}`,
+      );
       console.log(`Description: ${alert.description}`);
-      console.log('Context:', alert.context);
+      console.log("Context:", alert.context);
     }
   }
 
@@ -189,11 +190,12 @@ export class AlertManager {
    */
   getActiveAlerts(): Alert[] {
     return Array.from(this.alerts.values())
-      .filter(alert => !alert.acknowledged)
+      .filter((alert) => !alert.acknowledged)
       .sort((a, b) => {
         // Sort by severity (critical first) then by timestamp (newest first)
         const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        const severityDiff = severityOrder[a.severity] - severityOrder[b.severity];
+        const severityDiff =
+          severityOrder[a.severity] - severityOrder[b.severity];
         if (severityDiff !== 0) return severityDiff;
         return b.timestamp.getTime() - a.timestamp.getTime();
       });
@@ -216,23 +218,29 @@ export class AlertManager {
    */
   getAlertStats(): {
     total: number;
-    byType: Record<Alert['type'], number>;
-    bySeverity: Record<Alert['severity'], number>;
+    byType: Record<Alert["type"], number>;
+    bySeverity: Record<Alert["severity"], number>;
     acknowledged: number;
   } {
     const alerts = Array.from(this.alerts.values());
-    
+
     return {
       total: alerts.length,
-      byType: alerts.reduce((acc, alert) => {
-        acc[alert.type] = (acc[alert.type] || 0) + 1;
-        return acc;
-      }, {} as Record<Alert['type'], number>),
-      bySeverity: alerts.reduce((acc, alert) => {
-        acc[alert.severity] = (acc[alert.severity] || 0) + 1;
-        return acc;
-      }, {} as Record<Alert['severity'], number>),
-      acknowledged: alerts.filter(a => a.acknowledged).length,
+      byType: alerts.reduce(
+        (acc, alert) => {
+          acc[alert.type] = (acc[alert.type] || 0) + 1;
+          return acc;
+        },
+        {} as Record<Alert["type"], number>,
+      ),
+      bySeverity: alerts.reduce(
+        (acc, alert) => {
+          acc[alert.severity] = (acc[alert.severity] || 0) + 1;
+          return acc;
+        },
+        {} as Record<Alert["severity"], number>,
+      ),
+      acknowledged: alerts.filter((a) => a.acknowledged).length,
     };
   }
 
@@ -241,7 +249,7 @@ export class AlertManager {
    */
   cleanup(): void {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-    
+
     for (const [id, alert] of this.alerts.entries()) {
       if (alert.acknowledged && alert.timestamp.getTime() < dayAgo) {
         this.alerts.delete(id);
@@ -254,36 +262,39 @@ export class AlertManager {
 export const alertManager = new AlertManager();
 
 // Cleanup old alerts every hour
-if (typeof window === 'undefined') {
-  setInterval(() => {
-    alertManager.cleanup();
-  }, 60 * 60 * 1000);
+if (typeof window === "undefined") {
+  setInterval(
+    () => {
+      alertManager.cleanup();
+    },
+    60 * 60 * 1000,
+  );
 }
 
 // Enhanced logger integration
 const originalError = logger.error;
 const originalWarn = logger.warn;
 
-logger.error = function(message: string, context?: any) {
+logger.error = function (message: string, context?: any) {
   originalError.call(this, message, context);
-  
+
   // Trigger alert processing for error events
   if (context) {
     alertManager.processEvent({
-      type: 'error',
+      type: "error",
       message,
       ...context,
     });
   }
 };
 
-logger.warn = function(message: string, context?: any) {
+logger.warn = function (message: string, context?: any) {
   originalWarn.call(this, message, context);
-  
+
   // Process certain warnings as potential alerts
   if (context?.securityEvent) {
     alertManager.processEvent({
-      type: 'security',
+      type: "security",
       event: context.securityEvent,
       severity: context.severity,
       ...context,

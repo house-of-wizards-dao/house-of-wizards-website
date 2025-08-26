@@ -255,7 +255,11 @@ export function corsMiddleware(
  */
 export interface ApiHandlerOptions {
   methods?: string[];
-  rateLimit?: { maxRequests: number; windowMs: number; skipSuccessfulRequests?: boolean };
+  rateLimit?: {
+    maxRequests: number;
+    windowMs: number;
+    skipSuccessfulRequests?: boolean;
+  };
   cors?: boolean | { origins?: string[]; credentials?: boolean };
   validation?: {
     body?: z.ZodSchema;
@@ -288,17 +292,24 @@ export function createApiHandler(
 ) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const startTime = Date.now();
-    
+
     try {
       // Set security headers first
-      res.setHeader('X-API-Version', '1.0');
-      res.setHeader('X-Content-Type-Options', 'nosniff');
-      res.setHeader('X-Frame-Options', 'DENY');
+      res.setHeader("X-API-Version", "1.0");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("X-Frame-Options", "DENY");
 
       // Apply CORS if enabled
       if (options.cors) {
-        const corsOptions = typeof options.cors === 'boolean' ? {} : options.cors;
-        corsMiddleware(corsOptions.origins, ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'])(req, res, () => {});
+        const corsOptions =
+          typeof options.cors === "boolean" ? {} : options.cors;
+        corsMiddleware(corsOptions.origins, [
+          "GET",
+          "POST",
+          "PUT",
+          "DELETE",
+          "OPTIONS",
+        ])(req, res, () => {});
       }
 
       // Method validation
@@ -310,25 +321,40 @@ export function createApiHandler(
       if (options.rateLimit) {
         await withRateLimit(async () => {}, {
           ...options.rateLimit,
-          skipSuccessfulRequests: options.rateLimit.skipSuccessfulRequests ?? false
+          skipSuccessfulRequests:
+            options.rateLimit.skipSuccessfulRequests ?? false,
         })(req, res);
       }
 
       // Authentication and authorization
       if (options.auth?.required) {
-        const { authenticateRequest, requireAuth, requireAdmin } = await import('./auth');
+        const { authenticateRequest, requireAuth, requireAdmin } = await import(
+          "./auth"
+        );
         const user = await authenticateRequest(req);
-        
+
         if (!user) {
-          throw new ApiValidationError(ApiErrorCode.AUTHENTICATION_ERROR, 'Authentication required');
+          throw new ApiValidationError(
+            ApiErrorCode.AUTHENTICATION_ERROR,
+            "Authentication required",
+          );
         }
 
-        if (options.auth.adminOnly && user.role !== 'admin') {
-          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'Admin access required');
+        if (options.auth.adminOnly && user.role !== "admin") {
+          throw new ApiValidationError(
+            ApiErrorCode.AUTHORIZATION_ERROR,
+            "Admin access required",
+          );
         }
 
-        if (options.auth.roles && !options.auth.roles.includes(user.role || 'user')) {
-          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'Insufficient permissions');
+        if (
+          options.auth.roles &&
+          !options.auth.roles.includes(user.role || "user")
+        ) {
+          throw new ApiValidationError(
+            ApiErrorCode.AUTHORIZATION_ERROR,
+            "Insufficient permissions",
+          );
         }
 
         // Attach user to request
@@ -336,10 +362,16 @@ export function createApiHandler(
       }
 
       // CSRF protection for state-changing methods
-      if (options.csrf && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method || '')) {
-        const { csrfProtection } = await import('./csrf-middleware');
+      if (
+        options.csrf &&
+        ["POST", "PUT", "PATCH", "DELETE"].includes(req.method || "")
+      ) {
+        const { csrfProtection } = await import("./csrf-middleware");
         if (!csrfProtection.validateToken(req)) {
-          throw new ApiValidationError(ApiErrorCode.AUTHORIZATION_ERROR, 'CSRF validation failed');
+          throw new ApiValidationError(
+            ApiErrorCode.AUTHORIZATION_ERROR,
+            "CSRF validation failed",
+          );
         }
       }
 
@@ -354,22 +386,28 @@ export function createApiHandler(
 
       if (options.validation?.params && req.query) {
         // Validate route parameters
-        const params = Object.keys(req.query).reduce((acc, key) => {
-          if (key.startsWith('[') && key.endsWith(']')) {
-            acc[key.slice(1, -1)] = req.query[key];
-          }
-          return acc;
-        }, {} as Record<string, any>);
+        const params = Object.keys(req.query).reduce(
+          (acc, key) => {
+            if (key.startsWith("[") && key.endsWith("]")) {
+              acc[key.slice(1, -1)] = req.query[key];
+            }
+            return acc;
+          },
+          {} as Record<string, any>,
+        );
         options.validation.params.parse(params);
       }
 
       // Cache headers if specified
-      if (options.cache && req.method === 'GET') {
+      if (options.cache && req.method === "GET") {
         const { maxAge = 0, staleWhileRevalidate = 0 } = options.cache;
-        res.setHeader('Cache-Control', `public, max-age=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`);
-        
+        res.setHeader(
+          "Cache-Control",
+          `public, max-age=${maxAge}, stale-while-revalidate=${staleWhileRevalidate}`,
+        );
+
         if (options.cache.tags) {
-          res.setHeader('Cache-Tags', options.cache.tags.join(', '));
+          res.setHeader("Cache-Tags", options.cache.tags.join(", "));
         }
       }
 
@@ -383,10 +421,9 @@ export function createApiHandler(
           duration,
           statusCode: res.statusCode,
           method: req.method,
-          url: req.url
+          url: req.url,
         });
       }
-
     } catch (error) {
       handleApiError(error, req, res);
     }

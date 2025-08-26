@@ -1,21 +1,21 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import type { User } from '@supabase/auth-helpers-react';
-import type { UserProfile } from '@/types';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import type { User } from "@supabase/auth-helpers-react";
+import type { UserProfile } from "@/types";
 
 interface AuthState {
   user: User | null;
   profile: UserProfile | null;
   isLoading: boolean;
   error: string | null;
-  
+
   // Actions
   setUser: (user: User | null) => void;
   setProfile: (profile: UserProfile | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   signOut: () => void;
-  
+
   // Computed values
   isAuthenticated: boolean;
   isAdmin: boolean;
@@ -28,38 +28,39 @@ export const useAuthStore = create<AuthState>()(
       profile: null,
       isLoading: false,
       error: null,
-      
+
       get isAuthenticated() {
         return !!get().user;
       },
-      
+
       get isAdmin() {
-        return get().profile?.role === 'admin';
+        return get().profile?.role === "admin";
       },
-      
+
       setUser: (user) => set({ user, error: null }),
-      
+
       setProfile: (profile) => set({ profile }),
-      
+
       setLoading: (isLoading) => set({ isLoading }),
-      
+
       setError: (error) => set({ error, isLoading: false }),
-      
-      signOut: () => set({ 
-        user: null, 
-        profile: null, 
-        error: null, 
-        isLoading: false 
-      }),
+
+      signOut: () =>
+        set({
+          user: null,
+          profile: null,
+          error: null,
+          isLoading: false,
+        }),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
       partialize: (state) => ({
         // Only persist profile data, not user session
         profile: state.profile,
       }),
-    }
-  )
+    },
+  ),
 );
 
 // Selectors for better performance

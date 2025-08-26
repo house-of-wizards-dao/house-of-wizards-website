@@ -1,69 +1,80 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-import { getServiceSupabase } from '@/lib/supabase';
-import { requireAdmin, AuthenticatedUser } from '@/lib/auth';
-import { createApiHandler, sendSuccess, ApiValidationError, ApiErrorCode } from '@/lib/api-middleware';
-import { z } from 'zod';
-import { logger } from '@/lib/logger';
-import { cacheManager } from '@/lib/cache-manager';
+import { NextApiRequest, NextApiResponse } from "next";
+import { z } from "zod";
+import { getServiceSupabase } from "@/lib/supabase";
+import { requireAdmin, AuthenticatedUser } from "@/lib/auth";
+import {
+  createApiHandler,
+  sendSuccess,
+  ApiValidationError,
+  ApiErrorCode,
+} from "@/lib/api-middleware";
+import { logger } from "@/lib/logger";
+import { cacheManager } from "@/lib/cache-manager";
 
 // Validation schemas for bulk operations
 const bulkUserOperationSchema = z.object({
-  operation: z.enum(['delete', 'update_role', 'ban', 'unban']),
+  operation: z.enum(["delete", "update_role", "ban", "unban"]),
   userIds: z.array(z.string().uuid()).min(1).max(100), // Limit to 100 at a time
-  params: z.object({
-    role: z.enum(['user', 'admin', 'moderator', 'council_member']).optional(),
-    reason: z.string().max(500).optional(),
-  }).optional(),
+  params: z
+    .object({
+      role: z.enum(["user", "admin", "moderator", "council_member"]).optional(),
+      reason: z.string().max(500).optional(),
+    })
+    .optional(),
 });
 
 const bulkContentOperationSchema = z.object({
-  operation: z.enum(['delete', 'approve', 'reject', 'feature']),
+  operation: z.enum(["delete", "approve", "reject", "feature"]),
   contentIds: z.array(z.string().uuid()).min(1).max(200), // Limit to 200 at a time
-  params: z.object({
-    reason: z.string().max(500).optional(),
-  }).optional(),
+  params: z
+    .object({
+      reason: z.string().max(500).optional(),
+    })
+    .optional(),
 });
 
 const bulkExportSchema = z.object({
-  type: z.enum(['users', 'content', 'analytics']),
-  format: z.enum(['csv', 'json']).default('csv'),
-  filters: z.object({
-    dateFrom: z.string().datetime().optional(),
-    dateTo: z.string().datetime().optional(),
-    role: z.string().optional(),
-    status: z.string().optional(),
-  }).optional(),
+  type: z.enum(["users", "content", "analytics"]),
+  format: z.enum(["csv", "json"]).default("csv"),
+  filters: z
+    .object({
+      dateFrom: z.string().datetime().optional(),
+      dateTo: z.string().datetime().optional(),
+      role: z.string().optional(),
+      status: z.string().optional(),
+    })
+    .optional(),
 });
 
 async function bulkOperationsHandler(
   req: NextApiRequest,
   res: NextApiResponse,
-  user: AuthenticatedUser
+  user: AuthenticatedUser,
 ) {
   const supabaseAdmin = getServiceSupabase();
 
-  if (req.method === 'POST') {
+  if (req.method === "POST") {
     const { operation_type } = req.query;
 
     try {
       switch (operation_type) {
-        case 'users':
+        case "users":
           await handleBulkUserOperations(req, res, user, supabaseAdmin);
           break;
-        case 'content':
+        case "content":
           await handleBulkContentOperations(req, res, user, supabaseAdmin);
           break;
-        case 'export':
+        case "export":
           await handleBulkExport(req, res, user, supabaseAdmin);
           break;
         default:
           throw new ApiValidationError(
             ApiErrorCode.BAD_REQUEST,
-            'Invalid operation type. Must be: users, content, or export'
+            "Invalid operation type. Must be: users, content, or export",
           );
       }
     } catch (error) {
-      logger.error('Bulk operation failed', {
+      logger.error("Bulk operation failed", {
         error,
         operationType: operation_type,
         userId: user.id,
@@ -77,16 +88,16 @@ async function handleBulkUserOperations(
   req: NextApiRequest,
   res: NextApiResponse,
   user: AuthenticatedUser,
-  supabaseAdmin: any
+  supabaseAdmin: any,
 ) {
   const validatedData = bulkUserOperationSchema.parse(req.body);
   const { operation, userIds, params } = validatedData;
-  
+
   const startTime = Date.now();
   let successCount = 0;
   const errors: Array<{ userId: string; error: string }> = [];
 
-  logger.info('Starting bulk user operation', {
+  logger.info("Starting bulk user operation", {
     operation,
     userCount: userIds.length,
     adminId: user.id,
@@ -103,66 +114,79 @@ async function handleBulkUserOperations(
     const batchPromises = batch.map(async (userId) => {
       try {
         switch (operation) {
-          case 'delete':
+          case "delete":
             await supabaseAdmin
-              .from('profiles')
+              .from("profiles")
               .update({ deleted_at: new Date().toISOString() })
-              .eq('id', userId)
-              .is('deleted_at', null);
+              .eq("id", userId)
+              .is("deleted_at", null);
             break;
 
-          case 'update_role':
+          case "update_role":
             if (!params?.role) {
-              throw new Error('Role parameter required for update_role operation');
+              throw new Error(
+                "Role parameter required for update_role operation",
+              );
             }
             await supabaseAdmin
-              .from('profiles')
-              .update({ role: params.role, updated_at: new Date().toISOString() })
-              .eq('id', userId)
-              .is('deleted_at', null);
-            break;
-
-          case 'ban':
-            await supabaseAdmin
-              .from('profiles')
-              .update({ 
-                metadata: { banned: true, ban_reason: params?.reason || 'Admin action' },
-                updated_at: new Date().toISOString()
+              .from("profiles")
+              .update({
+                role: params.role,
+                updated_at: new Date().toISOString(),
               })
-              .eq('id', userId)
-              .is('deleted_at', null);
+              .eq("id", userId)
+              .is("deleted_at", null);
             break;
 
-          case 'unban':
+          case "ban":
             await supabaseAdmin
-              .from('profiles')
-              .update({ 
+              .from("profiles")
+              .update({
+                metadata: {
+                  banned: true,
+                  ban_reason: params?.reason || "Admin action",
+                },
+                updated_at: new Date().toISOString(),
+              })
+              .eq("id", userId)
+              .is("deleted_at", null);
+            break;
+
+          case "unban":
+            await supabaseAdmin
+              .from("profiles")
+              .update({
                 metadata: { banned: false },
-                updated_at: new Date().toISOString()
+                updated_at: new Date().toISOString(),
               })
-              .eq('id', userId)
-              .is('deleted_at', null);
+              .eq("id", userId)
+              .is("deleted_at", null);
             break;
         }
 
         // Log the action in audit log
-        await supabaseAdmin.from('admin_audit_log').insert({
+        await supabaseAdmin.from("admin_audit_log").insert({
           admin_user_id: user.id,
           action: `bulk_${operation}`,
-          target_table: 'profiles',
+          target_table: "profiles",
           target_id: userId,
           new_values: params,
-          ip_address: req.headers['x-forwarded-for'] || req.socket?.remoteAddress,
-          user_agent: req.headers['user-agent'],
+          ip_address:
+            req.headers["x-forwarded-for"] || req.socket?.remoteAddress,
+          user_agent: req.headers["user-agent"],
         });
 
         successCount++;
       } catch (error) {
         errors.push({
           userId,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : "Unknown error",
         });
-        logger.error('Bulk operation failed for user', { userId, error, operation });
+        logger.error("Bulk operation failed for user", {
+          userId,
+          error,
+          operation,
+        });
       }
     });
 
@@ -170,11 +194,11 @@ async function handleBulkUserOperations(
   }
 
   // Invalidate cache after bulk operations
-  await cacheManager.invalidateByTags(['admin', 'profiles', 'users']);
+  await cacheManager.invalidateByTags(["admin", "profiles", "users"]);
 
   const duration = Date.now() - startTime;
-  
-  logger.info('Bulk user operation completed', {
+
+  logger.info("Bulk user operation completed", {
     operation,
     totalUsers: userIds.length,
     successCount,
@@ -183,30 +207,34 @@ async function handleBulkUserOperations(
     adminId: user.id,
   });
 
-  sendSuccess(res, {
-    operation,
-    totalProcessed: userIds.length,
-    successCount,
-    errorCount: errors.length,
-    errors: errors.slice(0, 10), // Limit error details in response
-    duration,
-  }, `Bulk ${operation} operation completed`);
+  sendSuccess(
+    res,
+    {
+      operation,
+      totalProcessed: userIds.length,
+      successCount,
+      errorCount: errors.length,
+      errors: errors.slice(0, 10), // Limit error details in response
+      duration,
+    },
+    `Bulk ${operation} operation completed`,
+  );
 }
 
 async function handleBulkContentOperations(
   req: NextApiRequest,
   res: NextApiResponse,
   user: AuthenticatedUser,
-  supabaseAdmin: any
+  supabaseAdmin: any,
 ) {
   const validatedData = bulkContentOperationSchema.parse(req.body);
   const { operation, contentIds, params } = validatedData;
-  
+
   const startTime = Date.now();
   let successCount = 0;
   const errors: Array<{ contentId: string; error: string }> = [];
 
-  logger.info('Starting bulk content operation', {
+  logger.info("Starting bulk content operation", {
     operation,
     contentCount: contentIds.length,
     adminId: user.id,
@@ -223,46 +251,46 @@ async function handleBulkContentOperations(
     const batchPromises = batch.map(async (contentId) => {
       try {
         switch (operation) {
-          case 'delete':
+          case "delete":
             await supabaseAdmin
-              .from('file_descriptions')
+              .from("file_descriptions")
               .update({ deleted_at: new Date().toISOString() })
-              .eq('id', contentId)
-              .is('deleted_at', null);
+              .eq("id", contentId)
+              .is("deleted_at", null);
             break;
 
-          case 'approve':
+          case "approve":
             await supabaseAdmin
-              .from('file_descriptions')
-              .update({ 
-                status: 'published',
-                updated_at: new Date().toISOString()
+              .from("file_descriptions")
+              .update({
+                status: "published",
+                updated_at: new Date().toISOString(),
               })
-              .eq('id', contentId)
-              .is('deleted_at', null);
+              .eq("id", contentId)
+              .is("deleted_at", null);
             break;
 
-          case 'reject':
+          case "reject":
             await supabaseAdmin
-              .from('file_descriptions')
-              .update({ 
-                status: 'archived',
-                updated_at: new Date().toISOString()
+              .from("file_descriptions")
+              .update({
+                status: "archived",
+                updated_at: new Date().toISOString(),
               })
-              .eq('id', contentId)
-              .is('deleted_at', null);
+              .eq("id", contentId)
+              .is("deleted_at", null);
             break;
 
-          case 'feature':
+          case "feature":
             await supabaseAdmin
-              .from('file_descriptions')
-              .update({ 
+              .from("file_descriptions")
+              .update({
                 is_featured: true,
-                status: 'published',
-                updated_at: new Date().toISOString()
+                status: "published",
+                updated_at: new Date().toISOString(),
               })
-              .eq('id', contentId)
-              .is('deleted_at', null);
+              .eq("id", contentId)
+              .is("deleted_at", null);
             break;
         }
 
@@ -270,7 +298,7 @@ async function handleBulkContentOperations(
       } catch (error) {
         errors.push({
           contentId,
-          error: error instanceof Error ? error.message : 'Unknown error'
+          error: error instanceof Error ? error.message : "Unknown error",
         });
       }
     });
@@ -279,30 +307,34 @@ async function handleBulkContentOperations(
   }
 
   // Invalidate content cache
-  await cacheManager.invalidateByTags(['admin', 'content']);
+  await cacheManager.invalidateByTags(["admin", "content"]);
 
   const duration = Date.now() - startTime;
-  
-  sendSuccess(res, {
-    operation,
-    totalProcessed: contentIds.length,
-    successCount,
-    errorCount: errors.length,
-    errors: errors.slice(0, 10),
-    duration,
-  }, `Bulk ${operation} operation completed`);
+
+  sendSuccess(
+    res,
+    {
+      operation,
+      totalProcessed: contentIds.length,
+      successCount,
+      errorCount: errors.length,
+      errors: errors.slice(0, 10),
+      duration,
+    },
+    `Bulk ${operation} operation completed`,
+  );
 }
 
 async function handleBulkExport(
   req: NextApiRequest,
   res: NextApiResponse,
   user: AuthenticatedUser,
-  supabaseAdmin: any
+  supabaseAdmin: any,
 ) {
   const validatedData = bulkExportSchema.parse(req.body);
   const { type, format, filters } = validatedData;
 
-  logger.info('Starting bulk export', {
+  logger.info("Starting bulk export", {
     type,
     format,
     filters,
@@ -310,67 +342,73 @@ async function handleBulkExport(
   });
 
   let data: any[] = [];
-  let filename = '';
+  let filename = "";
 
   switch (type) {
-    case 'users':
+    case "users":
       const { data: users } = await supabaseAdmin
-        .from('active_profiles')
-        .select('id, name, email, role, created_at, updated_at')
-        .order('created_at', { ascending: false });
+        .from("active_profiles")
+        .select("id, name, email, role, created_at, updated_at")
+        .order("created_at", { ascending: false });
       data = users || [];
-      filename = `users_export_${new Date().toISOString().split('T')[0]}.${format}`;
+      filename = `users_export_${new Date().toISOString().split("T")[0]}.${format}`;
       break;
 
-    case 'content':
+    case "content":
       const { data: content } = await supabaseAdmin
-        .from('active_file_descriptions')
-        .select(`
+        .from("active_file_descriptions")
+        .select(
+          `
           id, file_name, description, file_type, status, 
           is_featured, created_at, user_id,
           profiles!inner(name, email)
-        `)
-        .order('created_at', { ascending: false });
+        `,
+        )
+        .order("created_at", { ascending: false });
       data = content || [];
-      filename = `content_export_${new Date().toISOString().split('T')[0]}.${format}`;
+      filename = `content_export_${new Date().toISOString().split("T")[0]}.${format}`;
       break;
 
-    case 'analytics':
+    case "analytics":
       // Get analytics data
-      const { data: analytics } = await supabaseAdmin.rpc('get_admin_dashboard_stats');
+      const { data: analytics } = await supabaseAdmin.rpc(
+        "get_admin_dashboard_stats",
+      );
       data = analytics || [];
-      filename = `analytics_export_${new Date().toISOString().split('T')[0]}.${format}`;
+      filename = `analytics_export_${new Date().toISOString().split("T")[0]}.${format}`;
       break;
   }
 
-  if (format === 'csv') {
+  if (format === "csv") {
     const csv = convertToCSV(data);
-    res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.send(csv);
   } else {
-    res.setHeader('Content-Type', 'application/json');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
     res.json(data);
   }
 }
 
 function convertToCSV(data: any[]): string {
-  if (data.length === 0) return '';
-  
-  const headers = Object.keys(data[0]).join(',');
-  const rows = data.map(row => 
-    Object.values(row).map(val => 
-      typeof val === 'string' ? `"${val.replace(/"/g, '""')}"` : val
-    ).join(',')
+  if (data.length === 0) return "";
+
+  const headers = Object.keys(data[0]).join(",");
+  const rows = data.map((row) =>
+    Object.values(row)
+      .map((val) =>
+        typeof val === "string" ? `"${val.replace(/"/g, '""')}"` : val,
+      )
+      .join(","),
   );
-  
-  return [headers, ...rows].join('\n');
+
+  return [headers, ...rows].join("\n");
 }
 
 // Create API handler with comprehensive middleware
 const handler = createApiHandler(requireAdmin(bulkOperationsHandler), {
-  methods: ['POST'],
+  methods: ["POST"],
   rateLimit: { maxRequests: 10, windowMs: 300000 }, // 10 requests per 5 minutes
   cors: true,
   monitoring: {
