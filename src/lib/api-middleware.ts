@@ -319,11 +319,17 @@ export function createApiHandler(
 
       // Rate limiting with enhanced options
       if (options.rateLimit) {
-        await withRateLimit(async () => {}, {
-          ...options.rateLimit,
+        const rateLimitHandler = withRateLimit(async () => {}, {
+          maxRequests: options.rateLimit.maxRequests,
+          windowMs: options.rateLimit.windowMs,
           skipSuccessfulRequests:
             options.rateLimit.skipSuccessfulRequests ?? false,
-        })(req, res);
+        });
+        
+        // Execute rate limiting check
+        await new Promise<void>((resolve, reject) => {
+          rateLimitHandler(req, res).then(resolve).catch(reject);
+        });
       }
 
       // Authentication and authorization
@@ -429,5 +435,8 @@ export function createApiHandler(
     }
   };
 }
+
+// Legacy alias for backwards compatibility
+export const withApiMiddleware = createApiHandler;
 
 export default createApiHandler;
