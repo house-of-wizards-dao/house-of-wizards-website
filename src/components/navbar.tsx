@@ -145,6 +145,11 @@ export const Navbar = () => {
             </DropdownMenu>
           </Dropdown>
           <NavbarItem className="text-sm hover:text-brand-500">
+            <NextLink className="flex items-center gap-2" href="/auctions">
+              Auctions
+            </NextLink>
+          </NavbarItem>
+          <NavbarItem className="text-sm hover:text-brand-500">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
             </NextLink>
@@ -262,6 +267,14 @@ export const Navbar = () => {
               href="/signup"
             >
               Join
+            </NextLink>
+          </NavbarMenuItem>
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2"
+              href="/auctions"
+            >
+              Auctions
             </NextLink>
           </NavbarMenuItem>
           <NavbarMenuItem>

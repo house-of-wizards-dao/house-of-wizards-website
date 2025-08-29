@@ -1,0 +1,41 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/Users/pleasures/Desktop/how-dao-revamp/contracts/AuctionSystem.sol": {
+      "lastModificationDate": 1756282228301,
+      "contentHash": "5c787f1d7457384bb6e0bf63cc4f170a",
+      "sourceName": "contracts/AuctionSystem.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "evmVersion": "paris",
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "0.8.24"
+      ],
+      "artifacts": [
+        "AuctionSystem"
+      ]
+    }
+  }
+}

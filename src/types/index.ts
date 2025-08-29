@@ -168,3 +168,83 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
   width?: number | string;
   height?: number | string;
 }
+
+// Re-export auction types
+export * from "./auction";
+
+// Auction-related types
+export interface Auction {
+  id: string;
+  title: string;
+  description?: string;
+  artwork_url: string;
+  artwork_metadata?: {
+    title?: string;
+    medium?: string;
+    dimensions?: string;
+    year?: string;
+  };
+  artist_id: string;
+  artist?: Artist;
+  start_price: string; // in wei as string
+  current_bid: string; // in wei as string
+  min_bid_increment: string; // in wei as string
+  start_time: string; // ISO timestamp
+  end_time: string; // ISO timestamp
+  status: "upcoming" | "active" | "ended" | "cancelled";
+  winner_address?: string | null;
+  total_bids: number;
+  contract_address?: string;
+  token_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Bid {
+  id: string;
+  auction_id: string;
+  bidder_address: string;
+  bidder_profile?: UserProfile;
+  amount: string; // in wei as string
+  transaction_hash: string;
+  block_number?: number;
+  created_at: string;
+  is_winning: boolean;
+}
+
+export interface AuctionActivity {
+  id: string;
+  auction_id: string;
+  type: "bid" | "auction_start" | "auction_end" | "price_update";
+  user_address?: string;
+  user_profile?: UserProfile;
+  amount?: string; // in wei for bids
+  metadata?: Record<string, unknown>;
+  transaction_hash?: string;
+  created_at: string;
+}
+
+export interface BidFormData {
+  amount: string; // ETH amount as string
+}
+
+export interface AuctionTimer {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  isActive: boolean;
+  hasEnded: boolean;
+}
+
+export interface ZoomState {
+  scale: number;
+  x: number;
+  y: number;
+}
+
+export interface AuctionPageProps {
+  auction: Auction;
+  initialBids: Bid[];
+  initialActivity: AuctionActivity[];
+}

@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { LogOut, Users, FolderOpen, UserPlus, Briefcase } from "lucide-react";
+import {
+  LogOut,
+  Users,
+  FolderOpen,
+  UserPlus,
+  Briefcase,
+  Hammer,
+} from "lucide-react";
 import { useRouter } from "next/router";
 
 import { Profile } from "@/types";
@@ -8,6 +15,7 @@ import UserManagement from "./admin/UserManagement";
 import ContentManagement from "./admin/ContentManagement";
 import CreateUser from "./admin/CreateUser";
 import TalentManagement from "./admin/TalentManagement";
+import CreateAuction from "./admin/CreateAuction";
 
 interface ContentItem {
   name: string;
@@ -27,7 +35,7 @@ const AdminPanel = React.memo((): JSX.Element => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<string>("all");
   const [activeTab, setActiveTab] = useState<
-    "users" | "content" | "create" | "talents"
+    "users" | "content" | "create" | "talents" | "auctions"
   >("users");
   const [expandedUser, setExpandedUser] = useState<string | null>(null);
 
@@ -269,6 +277,7 @@ const AdminPanel = React.memo((): JSX.Element => {
       content: FolderOpen,
       create: UserPlus,
       talents: Briefcase,
+      auctions: Hammer,
     }),
     [],
   );
@@ -340,30 +349,34 @@ const AdminPanel = React.memo((): JSX.Element => {
 
         {/* Tab Navigation */}
         <div className="flex flex-wrap gap-2 mb-8 justify-center">
-          {(["users", "content", "create", "talents"] as const).map((tab) => {
-            const Icon = tabIcons[tab];
+          {(["users", "content", "create", "talents", "auctions"] as const).map(
+            (tab) => {
+              const Icon = tabIcons[tab];
 
-            return (
-              <button
-                key={tab}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  activeTab === tab
-                    ? "bg-violet text-white shadow-lg transform scale-105"
-                    : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
-                }`}
-                onClick={() => setActiveTab(tab)}
-              >
-                <Icon size={16} />
-                {tab === "users"
-                  ? "Users"
-                  : tab === "content"
-                    ? "Content"
-                    : tab === "create"
-                      ? "Create User"
-                      : "Talents"}
-              </button>
-            );
-          })}
+              return (
+                <button
+                  key={tab}
+                  className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                    activeTab === tab
+                      ? "bg-violet text-white shadow-lg transform scale-105"
+                      : "bg-transparent border border-darkviolet text-gray-300 hover:border-violet hover:bg-violet/20"
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  <Icon size={16} />
+                  {tab === "users"
+                    ? "Users"
+                    : tab === "content"
+                      ? "Content"
+                      : tab === "create"
+                        ? "Create User"
+                        : tab === "talents"
+                          ? "Talents"
+                          : "Auctions"}
+                </button>
+              );
+            },
+          )}
         </div>
 
         {/* Stats */}
@@ -435,6 +448,8 @@ const AdminPanel = React.memo((): JSX.Element => {
               onSearchChange={setSearchTerm}
             />
           )}
+
+          {activeTab === "auctions" && <CreateAuction />}
         </div>
       </div>
     </div>

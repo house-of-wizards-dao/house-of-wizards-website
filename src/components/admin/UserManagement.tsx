@@ -195,7 +195,7 @@ const UserManagement: React.FC<UserManagementProps> = ({
                   <div className="md:col-span-2">
                     <span className="text-gray-400 block mb-1">Bio:</span>
                     <p className="text-white">
-                      {user.bio || "No bio provided"}
+                      {user.description || "No bio provided"}
                     </p>
                   </div>
                 </div>
