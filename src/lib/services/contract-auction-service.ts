@@ -277,7 +277,7 @@ export class ContractAuctionService {
       winner_id:
         structData.bidder !== "0x0000000000000000000000000000000000000000"
           ? structData.bidder
-          : undefined,
+          : null,
       created_by: "contract-owner",
       featured: false,
       contract_address: AUCTION_CONTRACT_ADDRESS,
