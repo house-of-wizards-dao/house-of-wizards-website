@@ -175,6 +175,7 @@ export * from "./auction";
 // Auction-related types
 export interface ContractAuction {
   id: string;
+  artwork_id: string; // Required for Auction compatibility
   title: string;
   description?: string;
   artwork_url: string;
@@ -187,13 +188,17 @@ export interface ContractAuction {
   artist_id: string;
   artist?: Artist;
   start_price: string; // in wei as string
+  starting_bid: number; // Required for Auction compatibility
   current_bid: string; // in wei as string
+  bid_increment: number; // Required for Auction compatibility
   min_bid_increment: string; // in wei as string
   start_time: string; // ISO timestamp
   end_time: string; // ISO timestamp
   status: "upcoming" | "active" | "ended" | "cancelled";
   winner_address?: string | null;
   total_bids: number;
+  created_by: string; // Required for Auction compatibility
+  featured: boolean; // Required for Auction compatibility
   contract_address?: string;
   token_id?: string;
   created_at: string;
