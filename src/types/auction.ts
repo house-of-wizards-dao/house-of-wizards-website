@@ -33,6 +33,7 @@ export interface Auction {
   artwork?: Artwork; // Populated via join
   artwork_metadata?: Record<string, any>; // For artwork metadata compatibility
   artwork_url?: string; // For Web3 compatibility (artwork image URL)
+  artist?: { name: string; image?: string }; // For artist compatibility
   contract_address?: string; // For Web3 integration compatibility
   token_id?: string; // For NFT/blockchain compatibility
   start_price?: number; // For Web3 compatibility (alias for starting_bid)
