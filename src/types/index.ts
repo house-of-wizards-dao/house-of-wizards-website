@@ -187,7 +187,8 @@ export interface ContractAuction {
   };
   artist_id: string;
   artist?: Artist;
-  start_price: string; // in wei as string
+  start_price?: number; // For Auction compatibility (alias for starting_bid)
+  start_price_wei?: string; // in wei as string for contract compatibility
   starting_bid: number; // Required for Auction compatibility
   current_bid: string; // in wei as string
   bid_increment: number; // Required for Auction compatibility
