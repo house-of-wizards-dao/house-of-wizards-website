@@ -120,7 +120,7 @@ async function handleGetAuctions(
     sort_by: validatedParams.sort_by,
     sort_order: validatedParams.sort_order,
     filters: {
-      status: validatedParams.status ? [validatedParams.status] : undefined,
+      status: validatedParams.status ? [validatedParams.status as import("@/types/auction").AuctionStatus] : undefined,
       created_by: validatedParams.created_by,
       featured: validatedParams.featured,
       start_date: validatedParams.date_from,
@@ -157,7 +157,7 @@ async function handleGetAuctions(
   };
 
   // Cache for 5 minutes
-  await cacheManager.set(cacheKey, enhancedResult, 300, ["admin", "auctions"]);
+  await cacheManager.set(cacheKey, enhancedResult, { ttl: 300, tags: ["admin", "auctions"] });
 
   logger.info("Admin auctions retrieved", {
     adminId: user.id,

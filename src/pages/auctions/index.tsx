@@ -205,8 +205,8 @@ function AuctionCard({
   onToggleFavorite,
 }: AuctionCardProps) {
   const timer = useTimer(auction.end_time);
-  const currentBid = formatEther(BigInt(auction.current_bid));
-  const startingPrice = formatEther(BigInt(auction.start_price));
+  const currentBid = formatEther(BigInt(auction.current_bid ?? 0));
+  const startingPrice = formatEther(BigInt(auction.start_price ?? 0));
 
   const getStatusConfig = () => {
     switch (auction.status) {
@@ -216,7 +216,7 @@ function AuctionCard({
           label: "Live",
           icon: <FireIcon className="w-4 h-4" />,
         };
-      case "upcoming":
+      case "draft":
         return {
           color: "warning" as const,
           label: "Upcoming",
@@ -383,7 +383,7 @@ function AuctionCard({
               >
                 {auction.status === "active"
                   ? "Place Bid"
-                  : auction.status === "upcoming"
+                  : auction.status === "draft"
                     ? "View Details"
                     : "View Results"}
               </Button>

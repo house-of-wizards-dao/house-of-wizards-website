@@ -117,7 +117,7 @@ export interface UpdateAuctionRequest {
   title?: string;
   description?: string;
   starting_bid?: number;
-  reserve_price?: number;
+  reserve_price?: number | null;
   bid_increment?: number;
   start_time?: string;
   end_time?: string;
@@ -136,8 +136,8 @@ export interface CreateArtworkRequest {
   title: string;
   description: string;
   artist_id: string;
-  image_urls: string[];
-  thumbnail_url: string;
+  image_urls?: string[];
+  thumbnail_url?: string;
   medium?: string;
   dimensions?: string;
   year_created?: number;
@@ -244,6 +244,7 @@ export interface AuctionSearchParams {
   filters?: AuctionFilters;
   sort_by?:
     | "created_at"
+    | "updated_at"
     | "start_time"
     | "end_time"
     | "current_bid"

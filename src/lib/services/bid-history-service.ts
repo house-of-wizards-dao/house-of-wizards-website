@@ -94,9 +94,10 @@ export class BidHistoryService {
     );
 
     const bids: Bid[] = [];
+    const logsArray = (logs as any[]) || [];
 
-    for (let i = 0; i < logs.length; i++) {
-      const log = logs[i];
+    for (let i = 0; i < logsArray.length; i++) {
+      const log = logsArray[i];
 
       try {
         // Try to decode the event - skip if it's not an UpdatedBid event

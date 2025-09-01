@@ -159,7 +159,7 @@ async function handleGetArtworks(
   };
 
   // Cache for 5 minutes
-  await cacheManager.set(cacheKey, enhancedResult, 300, ["admin", "artworks"]);
+  await cacheManager.set(cacheKey, enhancedResult, { ttl: 300, tags: ["admin", "artworks"] });
 
   logger.info("Admin artworks retrieved", {
     adminId: user.id,

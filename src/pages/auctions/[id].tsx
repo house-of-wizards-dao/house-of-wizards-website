@@ -118,23 +118,24 @@ export const getServerSideProps: GetServerSideProps<AuctionPageProps> = async (
       const auctionIndex = id.replace("contract-auction-", "");
       auction = {
         id: id,
+        artwork_id: `contract-artwork-${auctionIndex}`,
         title: `Contract Auction #${auctionIndex}`,
         description: "Live auction data from blockchain contract",
         artwork_url:
           "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&h=800&fit=crop&crop=center",
-        artist_id: "contract-artist",
         artist: {
-          id: "contract-artist",
           name: "Blockchain Artist",
-          bio: "Decentralized digital art",
         },
-        start_price: "1000000000000000000", // 1 ETH in wei
-        current_bid: "1000000000000000000", // Will be updated by contract data
-        min_bid_increment: "100000000000000000", // 0.1 ETH in wei
+        start_price: 1000000000000000000, // 1 ETH in wei
+        starting_bid: 1000000000000000000, // 1 ETH in wei
+        current_bid: 1000000000000000000, // Will be updated by contract data
+        bid_increment: 100000000000000000, // 0.1 ETH in wei
         start_time: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
         end_time: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
         status: "active",
         total_bids: 0,
+        created_by: "contract-owner",
+        featured: false,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };

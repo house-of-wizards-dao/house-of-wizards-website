@@ -253,6 +253,7 @@ export class ContractAuctionService {
 
     return {
       id: `contract-auction-${auctionIndex}`,
+      artwork_id: `contract-artwork-${auctionIndex}`,
       title: structData.name,
       description: description,
       artwork_url: artworkUrl,
@@ -262,23 +263,23 @@ export class ContractAuctionService {
         dimensions: "Variable",
         year: "2024",
       },
-      artist_id: "contract-owner",
       artist: {
-        id: "contract-owner",
         name: "House of Wizards DAO",
-        bio: "Decentralized autonomous organization for digital art",
       },
-      start_price: structData.initialPrice.toString(),
-      current_bid: displayPrice.toString(),
-      min_bid_increment: "10000000000000000", // 0.01 ETH in wei
+      start_price: Number(structData.initialPrice),
+      starting_bid: Number(structData.initialPrice),
+      current_bid: Number(displayPrice),
+      bid_increment: 10000000000000000, // 0.01 ETH in wei
       start_time: new Date((deadline - 7 * 24 * 60 * 60) * 1000).toISOString(), // Assume 7 day duration
       end_time: new Date(deadline * 1000).toISOString(),
       status,
       total_bids: Number(structData.bidCount),
-      winner_address:
+      winner_id:
         structData.bidder !== "0x0000000000000000000000000000000000000000"
           ? structData.bidder
-          : null,
+          : undefined,
+      created_by: "contract-owner",
+      featured: false,
       contract_address: AUCTION_CONTRACT_ADDRESS,
       token_id: `auction-${auctionIndex}`,
       created_at: new Date((deadline - 7 * 24 * 60 * 60) * 1000).toISOString(),
@@ -409,7 +410,7 @@ export class ContractAuctionService {
       // Calculate total volume
       let totalVolume = 0n;
       for (const auction of auctions) {
-        if (auction.status === "ended" && auction.winner_address) {
+        if (auction.status === "ended" && auction.winner_id && auction.current_bid) {
           totalVolume += BigInt(auction.current_bid);
         }
       }
