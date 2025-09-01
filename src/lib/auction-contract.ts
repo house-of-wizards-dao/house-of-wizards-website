@@ -171,7 +171,7 @@ export function useAuctionBid() {
 
       // Return the transaction hash
       return {
-        hash: typeof hash === 'string' ? hash : "pending",
+        hash: typeof hash === "string" ? hash : "pending",
         success: true,
       };
     } catch (err) {

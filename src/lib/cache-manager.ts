@@ -64,7 +64,10 @@ export class CacheManager {
       logger.info("Redis cache connected successfully");
 
       this.redis.on("error", (error: unknown) => {
-        logger.error("Redis cache error", createLogContext(error, { component: "cache-redis" }));
+        logger.error(
+          "Redis cache error",
+          createLogContext(error, { component: "cache-redis" }),
+        );
         // Don't set redis to null, keep trying to reconnect
       });
 
@@ -72,9 +75,12 @@ export class CacheManager {
         logger.info("Redis cache reconnected");
       });
     } catch (error: unknown) {
-      logger.warn("Failed to connect to Redis, using fallback cache", createLogContext(error, {
-        component: "cache-redis",
-      }));
+      logger.warn(
+        "Failed to connect to Redis, using fallback cache",
+        createLogContext(error, {
+          component: "cache-redis",
+        }),
+      );
       this.redis = null;
     }
   }
@@ -357,7 +363,10 @@ export const cacheManager = new CacheManager();
 /**
  * Decorator for caching method results
  */
-export function cached(key: string | ((...args: any[]) => string), options: CacheOptions = {}) {
+export function cached(
+  key: string | ((...args: any[]) => string),
+  options: CacheOptions = {},
+) {
   return function (
     target: any,
     propertyName: string,
@@ -370,7 +379,7 @@ export function cached(key: string | ((...args: any[]) => string), options: Cach
 
       return cacheManager.getOrSet(
         cacheKey,
-        () => method ? method.apply(this, args) : undefined,
+        () => (method ? method.apply(this, args) : undefined),
         options,
       );
     };

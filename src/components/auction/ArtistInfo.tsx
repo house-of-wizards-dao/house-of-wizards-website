@@ -9,6 +9,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import type { Artist } from "@/types";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 interface ArtistInfoProps {
   artist?: Artist;
@@ -48,10 +49,22 @@ export function ArtistInfo({ artist, className }: ArtistInfoProps) {
             <div className="flex items-center gap-4">
               <div className="relative">
                 {artist.image ? (
-                  <img
+                  <LazyImage
                     src={artist.image}
                     alt={artist.name}
+                    width={64}
+                    height={64}
                     className="w-16 h-16 rounded-full object-cover border-2 border-brand-500/30"
+                    fallback={
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500/20 to-brand-600/20 flex items-center justify-center animate-pulse">
+                        <UserIcon className="w-8 h-8 text-brand-400" />
+                      </div>
+                    }
+                    errorFallback={
+                      <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-semibold text-xl">
+                        {artist.name.charAt(0).toUpperCase()}
+                      </div>
+                    }
                   />
                 ) : (
                   <div className="w-16 h-16 rounded-full bg-gradient-to-br from-brand-500 to-brand-600 flex items-center justify-center text-white font-semibold text-xl">

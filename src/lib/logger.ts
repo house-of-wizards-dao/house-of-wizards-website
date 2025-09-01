@@ -109,16 +109,18 @@ class Logger {
   }
 
   error(message: string, context?: LogContext | unknown): void {
-    const safeContext = context && typeof context === 'object' && 'error' in context 
-      ? context as LogContext
-      : createLogContext(context);
+    const safeContext =
+      context && typeof context === "object" && "error" in context
+        ? (context as LogContext)
+        : createLogContext(context);
     this.log(LogLevel.ERROR, message, safeContext);
   }
 
   warn(message: string, context?: LogContext | unknown): void {
-    const safeContext = context && typeof context === 'object' && 'error' in context 
-      ? context as LogContext
-      : createLogContext(context);
+    const safeContext =
+      context && typeof context === "object" && "error" in context
+        ? (context as LogContext)
+        : createLogContext(context);
     this.log(LogLevel.WARN, message, safeContext);
   }
 

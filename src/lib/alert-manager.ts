@@ -250,7 +250,7 @@ export class AlertManager {
   cleanup(): void {
     const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
 
-    for (const [id, alert] of this.alerts.entries()) {
+    for (const [id, alert] of Array.from(this.alerts.entries())) {
       if (alert.acknowledged && alert.timestamp.getTime() < dayAgo) {
         this.alerts.delete(id);
       }

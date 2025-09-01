@@ -1,12 +1,12 @@
 /**
  * Enhanced Error Type Definitions
- * 
+ *
  * This module provides comprehensive type definitions for all error scenarios
  * encountered in the application, ensuring type safety across the codebase.
  */
 
 // Re-export LogContext from error-utils for consistency
-export type { LogContext } from '../lib/error-utils';
+export type { LogContext } from "../lib/error-utils";
 
 /**
  * Standard error response structure for API endpoints
@@ -79,7 +79,13 @@ export interface ContractError extends Web3Error {
  * Bidding specific error types
  */
 export interface BidError {
-  type: 'INSUFFICIENT_FUNDS' | 'BID_TOO_LOW' | 'AUCTION_ENDED' | 'AUCTION_NOT_STARTED' | 'NETWORK_ERROR' | 'UNKNOWN';
+  type:
+    | "INSUFFICIENT_FUNDS"
+    | "BID_TOO_LOW"
+    | "AUCTION_ENDED"
+    | "AUCTION_NOT_STARTED"
+    | "NETWORK_ERROR"
+    | "UNKNOWN";
   message: string;
   details?: {
     requiredAmount?: string;
@@ -95,7 +101,12 @@ export interface BidError {
  * Authentication and authorization error types
  */
 export interface AuthError {
-  type: 'UNAUTHORIZED' | 'FORBIDDEN' | 'TOKEN_EXPIRED' | 'INVALID_CREDENTIALS' | 'SESSION_EXPIRED';
+  type:
+    | "UNAUTHORIZED"
+    | "FORBIDDEN"
+    | "TOKEN_EXPIRED"
+    | "INVALID_CREDENTIALS"
+    | "SESSION_EXPIRED";
   message: string;
   redirectUrl?: string;
 }
@@ -104,7 +115,11 @@ export interface AuthError {
  * File upload error types
  */
 export interface UploadError {
-  type: 'FILE_TOO_LARGE' | 'INVALID_FILE_TYPE' | 'UPLOAD_FAILED' | 'STORAGE_ERROR';
+  type:
+    | "FILE_TOO_LARGE"
+    | "INVALID_FILE_TYPE"
+    | "UPLOAD_FAILED"
+    | "STORAGE_ERROR";
   message: string;
   fileName?: string;
   maxSize?: number;
@@ -115,7 +130,12 @@ export interface UploadError {
  * Database operation error types
  */
 export interface DatabaseError {
-  type: 'CONNECTION_ERROR' | 'QUERY_ERROR' | 'CONSTRAINT_VIOLATION' | 'NOT_FOUND' | 'TIMEOUT';
+  type:
+    | "CONNECTION_ERROR"
+    | "QUERY_ERROR"
+    | "CONSTRAINT_VIOLATION"
+    | "NOT_FOUND"
+    | "TIMEOUT";
   message: string;
   table?: string;
   operation?: string;
@@ -133,7 +153,7 @@ export interface ValidationError {
 }
 
 export interface ValidationErrorResponse {
-  type: 'VALIDATION_ERROR';
+  type: "VALIDATION_ERROR";
   message: string;
   errors: ValidationError[];
 }
@@ -142,7 +162,7 @@ export interface ValidationErrorResponse {
  * Rate limiting error types
  */
 export interface RateLimitError {
-  type: 'RATE_LIMIT_EXCEEDED';
+  type: "RATE_LIMIT_EXCEEDED";
   message: string;
   retryAfter?: number;
   limit?: number;
@@ -153,7 +173,7 @@ export interface RateLimitError {
 /**
  * Comprehensive error union type
  */
-export type AppError = 
+export type AppError =
   | SupabaseError
   | Web3Error
   | ContractError
@@ -183,18 +203,24 @@ export type ErrorRecoveryFn<T = any> = (error: unknown) => T | Promise<T>;
 /**
  * Error context builder function type
  */
-export type ErrorContextBuilder = (error: unknown, context?: any) => Record<string, any>;
+export type ErrorContextBuilder = (
+  error: unknown,
+  context?: any,
+) => Record<string, any>;
 
 /**
  * Type-safe wrapper for functions that might throw
  */
-export type SafeFunction<T extends any[], R> = (...args: T) => Promise<{
-  success: true;
-  data: R;
-} | {
-  success: false;
-  error: AppError;
-}>;
+export type SafeFunction<T extends any[], R> = (...args: T) => Promise<
+  | {
+      success: true;
+      data: R;
+    }
+  | {
+      success: false;
+      error: AppError;
+    }
+>;
 
 /**
  * Configuration for error handling behavior
@@ -222,7 +248,11 @@ export interface ErrorBoundaryState {
  * Error boundary props
  */
 export interface ErrorBoundaryProps {
-  fallback?: React.ComponentType<{ error: Error; errorInfo: any; retry: () => void }>;
+  fallback?: React.ComponentType<{
+    error: Error;
+    errorInfo: any;
+    retry: () => void;
+  }>;
   onError?: (error: Error, errorInfo: any) => void;
   isolate?: boolean;
   children: React.ReactNode;
@@ -232,7 +262,7 @@ export interface ErrorBoundaryProps {
  * Network error types
  */
 export interface NetworkError {
-  type: 'NETWORK_ERROR' | 'TIMEOUT' | 'CONNECTION_REFUSED' | 'DNS_ERROR';
+  type: "NETWORK_ERROR" | "TIMEOUT" | "CONNECTION_REFUSED" | "DNS_ERROR";
   message: string;
   url?: string;
   method?: string;
@@ -243,22 +273,48 @@ export interface NetworkError {
 /**
  * Type guards for error identification
  */
-export const isApiErrorResponse = (response: any): response is ApiErrorResponse => {
+export const isApiErrorResponse = (
+  response: any,
+): response is ApiErrorResponse => {
   return response && response.success === false && response.error;
 };
 
-export const isValidationError = (error: any): error is ValidationErrorResponse => {
-  return error && error.type === 'VALIDATION_ERROR' && Array.isArray(error.errors);
+export const isValidationError = (
+  error: any,
+): error is ValidationErrorResponse => {
+  return (
+    error && error.type === "VALIDATION_ERROR" && Array.isArray(error.errors)
+  );
 };
 
 export const isRateLimitError = (error: any): error is RateLimitError => {
-  return error && error.type === 'RATE_LIMIT_EXCEEDED';
+  return error && error.type === "RATE_LIMIT_EXCEEDED";
 };
 
 export const isBidError = (error: any): error is BidError => {
-  return error && error.type && ['INSUFFICIENT_FUNDS', 'BID_TOO_LOW', 'AUCTION_ENDED', 'AUCTION_NOT_STARTED', 'NETWORK_ERROR'].includes(error.type);
+  return (
+    error &&
+    error.type &&
+    [
+      "INSUFFICIENT_FUNDS",
+      "BID_TOO_LOW",
+      "AUCTION_ENDED",
+      "AUCTION_NOT_STARTED",
+      "NETWORK_ERROR",
+    ].includes(error.type)
+  );
 };
 
 export const isAuthError = (error: any): error is AuthError => {
-  return error && error.type && ['UNAUTHORIZED', 'FORBIDDEN', 'TOKEN_EXPIRED', 'INVALID_CREDENTIALS', 'SESSION_EXPIRED'].includes(error.type);
+  return (
+    error &&
+    error.type &&
+    [
+      "UNAUTHORIZED",
+      "FORBIDDEN",
+      "TOKEN_EXPIRED",
+      "INVALID_CREDENTIALS",
+      "SESSION_EXPIRED",
+    ].includes(error.type)
+  );
 };

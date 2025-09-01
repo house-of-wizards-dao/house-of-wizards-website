@@ -56,6 +56,7 @@ max-w-5xl"
             <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-brand-900 hover:scale-105 hover:border-brand-500 cursor-pointer">
               <Image
                 alt="Ministry of Art illustration"
+                loading="lazy"
                 src="/img/ministry_art.png"
               />
               <span className="font-atirose text-brand-500 text-2xl">

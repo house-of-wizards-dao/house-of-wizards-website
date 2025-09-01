@@ -76,6 +76,7 @@ export default function DocsPage() {
         <Image
           alt="Cultural content and art ministry information graphic"
           className="px-4"
+          loading="lazy"
           src="/img/cultcontent.png"
         />
         <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">

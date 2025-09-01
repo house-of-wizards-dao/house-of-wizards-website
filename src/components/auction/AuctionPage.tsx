@@ -207,7 +207,7 @@ export function AuctionPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Artwork */}
           <ArtworkZoom
-            imageUrl={auction.artwork_url || ''}
+            imageUrl={auction.artwork_url || ""}
             title={auction.title}
             artist={auction.artist?.name}
             metadata={auction.artwork_metadata}
@@ -328,7 +328,9 @@ export function AuctionPage({
           />
 
           {/* Artist Profile */}
-          {auction.artist && <ArtistProfile artist={{...auction.artist, id: 'unknown'}} />}
+          {auction.artist && (
+            <ArtistProfile artist={{ ...auction.artist, id: "unknown" }} />
+          )}
 
           {/* Desktop Bid History */}
           {!isMobile && !isTablet && (
@@ -352,7 +354,10 @@ export function AuctionPage({
                 <div className="flex justify-between">
                   <span className="text-gray-400">Highest Bid:</span>
                   <span className="text-white font-medium">
-                    {userBids[0] ? formatEther(BigInt(userBids[0].amount)) : "0"} ETH
+                    {userBids[0]
+                      ? formatEther(BigInt(userBids[0].amount))
+                      : "0"}{" "}
+                    ETH
                   </span>
                 </div>
                 <div className="flex justify-between">

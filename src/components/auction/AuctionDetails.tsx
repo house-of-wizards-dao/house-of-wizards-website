@@ -31,7 +31,9 @@ export function AuctionDetails({
     : formatEther(BigInt(auction.start_price || auction.starting_bid));
 
   const nextMinBidAmount = formatEther(BigInt(nextMinBid));
-  const startingPrice = formatEther(BigInt(auction.start_price || auction.starting_bid));
+  const startingPrice = formatEther(
+    BigInt(auction.start_price || auction.starting_bid),
+  );
   const bidIncrement = formatEther(BigInt(auction.bid_increment));
 
   const priceIncrease = currentBid

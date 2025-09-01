@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useSupabaseClient } from "@supabase/auth-helpers-react";
-import { Trash2, Eye, EyeOff, Edit2, Save, X } from "lucide-react";
-import Image from "next/image";
+import { Trash2, Eye, EyeOff, Edit2, Save, X, User } from "lucide-react";
+
+import { LazyImage } from "@/components/ui/LazyImage";
 
 interface Talent {
   id: string;
@@ -223,7 +224,7 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
               <div className="flex items-center space-x-4">
                 {/* Avatar */}
                 <div className="w-12 h-12 rounded-xl overflow-hidden bg-background/50 border border-darkviolet">
-                  <Image
+                  <LazyImage
                     src={
                       talent.avatar_url
                         ? talent.avatar_url.startsWith("http")
@@ -235,10 +236,16 @@ const TalentManagement: React.FC<TalentManagementProps> = ({
                     width={48}
                     height={48}
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = "/img/logo.png";
-                    }}
+                    fallback={
+                      <div className="flex items-center justify-center">
+                        <div className="w-4 h-4 border-2 border-violet/30 border-t-violet rounded-full animate-spin" />
+                      </div>
+                    }
+                    errorFallback={
+                      <div className="flex items-center justify-center">
+                        <User className="h-6 w-6 text-gray-400" />
+                      </div>
+                    }
                   />
                 </div>
 

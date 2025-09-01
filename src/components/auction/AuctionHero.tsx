@@ -157,6 +157,7 @@ export function AuctionHero({ auction, timer, className }: AuctionHeroProps) {
           <Image
             src={auction.artwork_url}
             alt={auction.title}
+            loading="lazy"
             className="w-full h-full object-cover"
             classNames={{
               img: "opacity-40 blur-sm scale-110",
@@ -181,6 +182,7 @@ export function AuctionHero({ auction, timer, className }: AuctionHeroProps) {
                     <Image
                       src={auction.artwork_url}
                       alt={auction.title}
+                      loading="lazy"
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       onLoad={() => setImageLoaded(true)}
                     />
@@ -350,6 +352,7 @@ export function AuctionHero({ auction, timer, className }: AuctionHeroProps) {
               <Image
                 src={auction.artwork_url}
                 alt={auction.title}
+                loading="lazy"
                 className="w-full h-full object-contain select-none"
                 style={{
                   transform: `scale(${zoomLevel}) translate(${panPosition.x / zoomLevel}px, ${panPosition.y / zoomLevel}px)`,

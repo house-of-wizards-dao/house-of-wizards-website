@@ -52,7 +52,9 @@ export function useAuctionData(
 
     // Calculate next minimum bid
     const currentBid = BigInt(state.auction.current_bid ?? 0);
-    const increment = BigInt((state.auction as any).min_bid_increment ?? state.auction.bid_increment);
+    const increment = BigInt(
+      (state.auction as any).min_bid_increment ?? state.auction.bid_increment,
+    );
     const nextMinBid = (currentBid + increment).toString();
 
     setState((prev) => ({

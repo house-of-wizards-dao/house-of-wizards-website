@@ -410,7 +410,11 @@ export class ContractAuctionService {
       // Calculate total volume
       let totalVolume = 0n;
       for (const auction of auctions) {
-        if (auction.status === "ended" && auction.winner_id && auction.current_bid) {
+        if (
+          auction.status === "ended" &&
+          auction.winner_id &&
+          auction.current_bid
+        ) {
           totalVolume += BigInt(auction.current_bid);
         }
       }

@@ -58,7 +58,15 @@ const teamMembers = [
 export default function IndexPage() {
   return (
     <DefaultLayout>
-      <div className="bg-[url('/img/banner.png')] h-[500px] bg-center" />
+      <div className="relative h-[500px]">
+        <NextImage
+          src="/img/banner.png"
+          alt="House of Wizards DAO Banner"
+          fill
+          className="object-cover object-center"
+          priority={true}
+        />
+      </div>
 
       <section className="p-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -115,6 +123,7 @@ export default function IndexPage() {
                     height={253}
                     src={member.image}
                     width={190}
+                    loading="lazy"
                   />
                 </div>
                 <div className="space-y-1">

@@ -61,7 +61,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
 
     // Upload images
-    const validImageFiles = imageFiles.filter((file) => file !== undefined) as unknown as File[];
+    const validImageFiles = imageFiles.filter(
+      (file) => file !== undefined,
+    ) as unknown as File[];
     const results = await imageUploadService.uploadArtworkImages(
       validImageFiles,
       userId,

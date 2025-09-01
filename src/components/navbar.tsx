@@ -67,6 +67,7 @@ export const Navbar = () => {
               alt="HowDAO logo"
               className="rounded-none"
               height={50}
+              priority={true}
               src="/img/logo-white.png"
               width={150}
             />
@@ -202,6 +203,7 @@ export const Navbar = () => {
                     alt="Avatar"
                     className="w-full h-full object-cover"
                     height={32}
+                    loading="lazy"
                     src={
                       avatar && avatar.startsWith("http")
                         ? avatar
@@ -322,6 +324,7 @@ export const Navbar = () => {
                       alt="Avatar"
                       className="w-full h-full object-cover"
                       height={24}
+                      loading="lazy"
                       src={
                         avatar && avatar.startsWith("http")
                           ? avatar

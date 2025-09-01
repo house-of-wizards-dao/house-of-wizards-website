@@ -12,6 +12,7 @@ import {
 import { Spinner } from "@nextui-org/spinner";
 import Image from "next/image";
 import { Button } from "@nextui-org/button";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 import DefaultLayout from "@/layouts/default";
 import { Profile } from "@/types";
@@ -176,13 +177,23 @@ export default function UserProfile() {
       );
     } else if (file.fileType?.startsWith("image/")) {
       return (
-        <Image
+        <LazyImage
           alt={file.description || "User uploaded image"}
           className="object-cover rounded-xl aspect-square"
           height={350}
           src={fileUrl}
           unoptimized
           width={350}
+          fallback={
+            <div className="w-[350px] h-[350px] bg-gray-800 rounded-xl animate-pulse flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+          errorFallback={
+            <div className="w-[350px] h-[350px] bg-gray-800 rounded-xl flex items-center justify-center">
+              <p className="text-gray-400 text-sm">Failed to load image</p>
+            </div>
+          }
         />
       );
     } else {
@@ -239,11 +250,12 @@ export default function UserProfile() {
             alt={`${user.name || "User"}'s avatar`}
             className="rounded-full mb-6 object-cover"
             height={150}
+            priority
             src={
               user.avatar_url && user.avatar_url.startsWith("http")
                 ? user.avatar_url
                 : user.avatar_url
-                  ? `${getCDNURL()}${user.id}/${user.avatar_url}`
+                  ? `${getAvatarCDNURL()}${user.avatar_url}`
                   : "/img/logo.png"
             }
             style={{ width: "150px", height: "150px", objectFit: "cover" }}
@@ -401,7 +413,7 @@ export default function UserProfile() {
                     alt={selectedItem.description || "User uploaded image"}
                     className="rounded-xl w-full h-auto max-h-[80vh] object-contain"
                     height={700}
-                    priority={true}
+                    priority
                     src={`${getCDNURL()}${user?.id}/${selectedItem.name}`}
                     unoptimized
                     width={700}

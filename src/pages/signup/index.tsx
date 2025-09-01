@@ -140,13 +140,29 @@ export default function IndexPage(): JSX.Element {
     if (!user?.id) return;
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ bio: userDescription })
-        .eq("id", user.id);
+      // Get the current session token
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
 
-      if (error) {
-        throw new Error(error.message);
+      if (!token) {
+        console.error("❌ No auth token available");
+        throw new Error("Authentication required");
+      }
+
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          description: userDescription,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update description");
       }
     } catch (err) {
       throw err;
@@ -260,17 +276,31 @@ export default function IndexPage(): JSX.Element {
     if (!user?.id) return;
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          twitter_handle: twitter,
-          discord_handle: discord,
-          website_url: website,
-        })
-        .eq("id", user.id);
+      // Get the current session token
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
 
-      if (error) {
-        throw new Error(error.message);
+      if (!token) {
+        console.error("❌ No auth token available");
+        throw new Error("Authentication required");
+      }
+
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          twitter,
+          discord,
+          website,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to update social media");
       }
     } catch (err) {
       throw err;

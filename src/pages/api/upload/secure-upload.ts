@@ -8,7 +8,9 @@ let sharp: any = null;
 try {
   sharp = require("sharp");
 } catch (e) {
-  console.warn("Sharp not available - image processing features will be limited");
+  console.warn(
+    "Sharp not available - image processing features will be limited",
+  );
 }
 import { getServiceSupabase } from "@/lib/supabase";
 import { requireAuth, AuthenticatedUser } from "@/lib/auth";
@@ -148,7 +150,9 @@ async function secureUploadHandler(
       supabaseAdmin,
       uploadResult,
       file,
-      Array.isArray(fields.description) ? fields.description[0] : fields.description || "",
+      Array.isArray(fields.description)
+        ? fields.description[0]
+        : fields.description || "",
       user.id,
       optimized,
     );

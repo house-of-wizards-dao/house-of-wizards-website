@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
-import Image from "next/image";
 import { v4 as uuidv4 } from "uuid";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 
@@ -11,6 +10,7 @@ import type {
   UploadProgressState,
 } from "@/types";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 interface FileUploadProps {
   onUploadComplete?: () => void;
@@ -253,13 +253,30 @@ export default function FileUpload({
         );
       } else {
         return (
-          <Image
+          <LazyImage
             alt={file.name}
             className="object-cover rounded-md"
             height={80}
-            src={preview}
-            unoptimized
             width={80}
+            src={preview}
+            priority
+            fallback={
+              <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-md flex items-center justify-center animate-pulse">
+                <svg
+                  className="w-6 h-6 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+            }
           />
         );
       }

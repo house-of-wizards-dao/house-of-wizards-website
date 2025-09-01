@@ -14,6 +14,17 @@ const usernameSchema = z
   .min(2, "Username too short")
   .max(50, "Username too long")
   .regex(/^@?[a-zA-Z0-9._#-]+$/, "Invalid username format");
+
+// Twitter-specific schema that removes @ and validates format
+const twitterHandleSchema = z
+  .string()
+  .transform((val) => val.replace(/^@/, "")) // Remove leading @
+  .transform((val) => (val.trim() === "" ? undefined : val)) // Convert empty string to undefined
+  .refine((val) => val === undefined || /^[A-Za-z0-9_]{1,15}$/.test(val), {
+    message:
+      "Twitter handle must be 1-15 characters, letters, numbers, and underscores only",
+  })
+  .optional();
 const urlSchema = z
   .string()
   .url("Invalid URL format")
@@ -40,7 +51,7 @@ export const profileCreateSchema = z.object({
   name: textSchema(100),
   password: passwordSchema,
   description: textSchema(500).optional(),
-  twitter: usernameSchema.optional(),
+  twitter: twitterHandleSchema,
   discord: usernameSchema.optional(),
   website: urlSchema,
 });
@@ -49,7 +60,7 @@ export const profileUpdateSchema = z
   .object({
     name: textSchema(100).optional(),
     description: textSchema(500).optional(),
-    twitter: usernameSchema.optional(),
+    twitter: twitterHandleSchema,
     discord: usernameSchema.optional(),
     website: urlSchema.optional(),
     avatar_url: textSchema(255).optional(),

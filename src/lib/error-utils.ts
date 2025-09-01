@@ -1,6 +1,6 @@
 /**
  * Comprehensive Error Handling Utilities
- * 
+ *
  * This module provides type-safe utilities to convert various error types
  * into LogContext-compatible objects for consistent error logging.
  */
@@ -46,7 +46,7 @@ export interface ContractError extends Web3Error {
  */
 export function createLogContext(
   error: unknown,
-  additionalContext?: Partial<LogContext>
+  additionalContext?: Partial<LogContext>,
 ): LogContext {
   const baseContext: LogContext = {
     ...additionalContext,
@@ -71,7 +71,7 @@ export function createLogContext(
       errorDetails: error.details,
       errorHint: error.hint,
       errorStatus: error.status,
-      errorType: 'SupabaseError',
+      errorType: "SupabaseError",
     };
   }
 
@@ -83,7 +83,7 @@ export function createLogContext(
       errorCode: error.code,
       errorReason: error.reason,
       errorData: error.data,
-      errorType: 'Web3Error',
+      errorType: "Web3Error",
     };
   }
 
@@ -97,38 +97,38 @@ export function createLogContext(
       contractMethod: error.method,
       contractArgs: error.args,
       contractAddress: error.contract,
-      errorType: 'ContractError',
+      errorType: "ContractError",
     };
   }
 
-  if (typeof error === 'string') {
+  if (typeof error === "string") {
     return {
       ...baseContext,
       error: new Error(error),
       errorMessage: error,
-      errorType: 'StringError',
+      errorType: "StringError",
     };
   }
 
-  if (typeof error === 'object' && error !== null) {
+  if (typeof error === "object" && error !== null) {
     const errorMessage = getErrorMessage(error);
     return {
       ...baseContext,
       error: new Error(errorMessage),
       errorMessage,
       errorObject: sanitizeErrorObject(error),
-      errorType: 'UnknownObjectError',
+      errorType: "UnknownObjectError",
     };
   }
 
   // Fallback for primitive types or null/undefined
-  const errorMessage = error?.toString() || 'Unknown error occurred';
+  const errorMessage = error?.toString() || "Unknown error occurred";
   return {
     ...baseContext,
     error: new Error(errorMessage),
     errorMessage,
     errorValue: error,
-    errorType: 'UnknownError',
+    errorType: "UnknownError",
   };
 }
 
@@ -137,11 +137,11 @@ export function createLogContext(
  */
 export function isSupabaseError(error: unknown): error is SupabaseError {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as any).message === 'string' &&
-    ('code' in error || 'details' in error || 'hint' in error)
+    "message" in error &&
+    typeof (error as any).message === "string" &&
+    ("code" in error || "details" in error || "hint" in error)
   );
 }
 
@@ -150,11 +150,11 @@ export function isSupabaseError(error: unknown): error is SupabaseError {
  */
 export function isWeb3Error(error: unknown): error is Web3Error {
   return (
-    typeof error === 'object' &&
+    typeof error === "object" &&
     error !== null &&
-    'message' in error &&
-    typeof (error as any).message === 'string' &&
-    ('code' in error || 'reason' in error || 'data' in error)
+    "message" in error &&
+    typeof (error as any).message === "string" &&
+    ("code" in error || "reason" in error || "data" in error)
   );
 }
 
@@ -164,7 +164,7 @@ export function isWeb3Error(error: unknown): error is Web3Error {
 export function isContractError(error: unknown): error is ContractError {
   return (
     isWeb3Error(error) &&
-    ('method' in error || 'contract' in error || 'args' in error)
+    ("method" in error || "contract" in error || "args" in error)
   );
 }
 
@@ -172,10 +172,10 @@ export function isContractError(error: unknown): error is ContractError {
  * Safely extracts error message from unknown error objects
  */
 function getErrorMessage(error: any): string {
-  if (typeof error.message === 'string') return error.message;
-  if (typeof error.error === 'string') return error.error;
-  if (typeof error.toString === 'function') return error.toString();
-  return 'Unknown error occurred';
+  if (typeof error.message === "string") return error.message;
+  if (typeof error.error === "string") return error.error;
+  if (typeof error.toString === "function") return error.toString();
+  return "Unknown error occurred";
 }
 
 /**
@@ -184,33 +184,36 @@ function getErrorMessage(error: any): string {
 function sanitizeErrorObject(error: any): any {
   try {
     const seen = new WeakSet();
-    return JSON.parse(JSON.stringify(error, (key, value) => {
-      // Remove circular references
-      if (typeof value === 'object' && value !== null) {
-        if (seen.has(value)) return '[Circular]';
-        seen.add(value);
-      }
+    return JSON.parse(
+      JSON.stringify(error, (key, value) => {
+        // Remove circular references
+        if (typeof value === "object" && value !== null) {
+          if (seen.has(value)) return "[Circular]";
+          seen.add(value);
+        }
 
-      // Remove sensitive fields
-      if (typeof key === 'string' && (
-        key.toLowerCase().includes('password') ||
-        key.toLowerCase().includes('secret') ||
-        key.toLowerCase().includes('token') ||
-        key.toLowerCase().includes('key') ||
-        key.toLowerCase().includes('private')
-      )) {
-        return '[REDACTED]';
-      }
+        // Remove sensitive fields
+        if (
+          typeof key === "string" &&
+          (key.toLowerCase().includes("password") ||
+            key.toLowerCase().includes("secret") ||
+            key.toLowerCase().includes("token") ||
+            key.toLowerCase().includes("key") ||
+            key.toLowerCase().includes("private"))
+        ) {
+          return "[REDACTED]";
+        }
 
-      // Truncate long strings
-      if (typeof value === 'string' && value.length > 500) {
-        return value.substring(0, 500) + '... [TRUNCATED]';
-      }
+        // Truncate long strings
+        if (typeof value === "string" && value.length > 500) {
+          return value.substring(0, 500) + "... [TRUNCATED]";
+        }
 
-      return value;
-    }));
+        return value;
+      }),
+    );
   } catch {
-    return { sanitizationError: 'Could not sanitize error object' };
+    return { sanitizationError: "Could not sanitize error object" };
   }
 }
 
@@ -221,13 +224,13 @@ export function createDatabaseErrorContext(
   error: unknown,
   operation: string,
   table: string,
-  additionalContext?: Partial<LogContext>
+  additionalContext?: Partial<LogContext>,
 ): LogContext {
   return createLogContext(error, {
     ...additionalContext,
     operation,
     table,
-    errorCategory: 'database',
+    errorCategory: "database",
   });
 }
 
@@ -238,13 +241,13 @@ export function createApiErrorContext(
   error: unknown,
   endpoint: string,
   method: string,
-  additionalContext?: Partial<LogContext>
+  additionalContext?: Partial<LogContext>,
 ): LogContext {
   return createLogContext(error, {
     ...additionalContext,
     endpoint,
     method,
-    errorCategory: 'api',
+    errorCategory: "api",
   });
 }
 
@@ -255,13 +258,13 @@ export function createWeb3ErrorContext(
   error: unknown,
   contractMethod: string,
   contractAddress?: string,
-  additionalContext?: Partial<LogContext>
+  additionalContext?: Partial<LogContext>,
 ): LogContext {
   return createLogContext(error, {
     ...additionalContext,
     contractMethod,
     contractAddress,
-    errorCategory: 'web3',
+    errorCategory: "web3",
   });
 }
 
@@ -272,13 +275,13 @@ export function createAuthErrorContext(
   error: unknown,
   authEvent: string,
   userId?: string,
-  additionalContext?: Partial<LogContext>
+  additionalContext?: Partial<LogContext>,
 ): LogContext {
   return createLogContext(error, {
     ...additionalContext,
     authEvent,
     userId,
-    errorCategory: 'auth',
+    errorCategory: "auth",
   });
 }
 
@@ -287,10 +290,10 @@ export function createAuthErrorContext(
  */
 export function safeParseNumber(
   value: string | number | undefined,
-  fallback: number = 0
+  fallback: number = 0,
 ): number {
-  if (typeof value === 'number') return value;
-  if (typeof value === 'string') {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? fallback : parsed;
   }
@@ -302,11 +305,11 @@ export function safeParseNumber(
  */
 export function safeParseBigInt(
   value: string | number | bigint | undefined,
-  fallback: bigint = BigInt(0)
+  fallback: bigint = BigInt(0),
 ): bigint {
-  if (typeof value === 'bigint') return value;
-  if (typeof value === 'number') return BigInt(Math.floor(value));
-  if (typeof value === 'string') {
+  if (typeof value === "bigint") return value;
+  if (typeof value === "number") return BigInt(Math.floor(value));
+  if (typeof value === "string") {
     try {
       return BigInt(value);
     } catch {

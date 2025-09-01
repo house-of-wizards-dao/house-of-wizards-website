@@ -114,6 +114,7 @@ export default function ProfileEditor({
               alt="User avatar"
               className="w-20 h-20 rounded-full object-cover border-2 border-purple-500/30"
               height={80}
+              priority
               src={
                 avatar.startsWith("http")
                   ? avatar

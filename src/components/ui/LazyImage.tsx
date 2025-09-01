@@ -6,6 +6,7 @@ interface LazyImageProps extends Omit<ImageProps, "loading"> {
   threshold?: number;
   fallback?: React.ReactNode;
   errorFallback?: React.ReactNode;
+  priority?: boolean;
 }
 
 /**
@@ -14,15 +15,29 @@ interface LazyImageProps extends Omit<ImageProps, "loading"> {
  */
 export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
   (
-    { className, threshold = 0.1, fallback, errorFallback, alt, ...props },
+    {
+      className,
+      threshold = 0.1,
+      fallback,
+      errorFallback,
+      alt,
+      priority = false,
+      ...props
+    },
     ref,
   ) => {
-    const [isIntersecting, setIsIntersecting] = useState(false);
+    const [isIntersecting, setIsIntersecting] = useState(priority);
     const [hasError, setHasError] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+      // Skip intersection observer if priority loading is enabled
+      if (priority) {
+        setIsIntersecting(true);
+        return;
+      }
+
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (entry.isIntersecting) {
@@ -38,7 +53,7 @@ export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
       }
 
       return () => observer.disconnect();
-    }, [threshold]);
+    }, [threshold, priority]);
 
     const handleError = () => {
       setHasError(true);
@@ -76,7 +91,8 @@ export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
               })}
               onError={handleError}
               onLoad={handleLoad}
-              loading="lazy"
+              loading={priority ? "eager" : "lazy"}
+              priority={priority}
             />
           </>
         )}

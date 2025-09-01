@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Trash2, Search, File, Image as ImageIcon } from "lucide-react";
-import Image from "next/image";
+
+import { LazyImage } from "@/components/ui/LazyImage";
 
 import { Profile } from "@/types";
 
@@ -67,13 +68,23 @@ const ContentManagement: React.FC<ContentManagementProps> = ({
 
     if (item.fileType?.startsWith("image/")) {
       return (
-        <Image
+        <LazyImage
           alt={item.description || item.name}
           className="w-full h-32 object-cover rounded-lg"
           height={150}
           src={fileUrl}
-          unoptimized
           width={150}
+          unoptimized
+          fallback={
+            <div className="flex items-center justify-center">
+              <div className="w-6 h-6 border-2 border-violet/30 border-t-violet rounded-full animate-spin" />
+            </div>
+          }
+          errorFallback={
+            <div className="flex items-center justify-center">
+              <ImageIcon className="h-8 w-8 text-gray-500" />
+            </div>
+          }
         />
       );
     } else if (item.fileType?.startsWith("video/")) {

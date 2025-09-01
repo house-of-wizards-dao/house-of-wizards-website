@@ -10,6 +10,7 @@ import {
 import { Image } from "@nextui-org/image";
 import { Button } from "@/components/ui/Button";
 import { ZoomState } from "@/types";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 interface ArtworkZoomProps {
   imageUrl: string;
@@ -125,6 +126,7 @@ export function ArtworkZoom({
           <Image
             src={imageUrl}
             alt={title}
+            loading="lazy"
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
             removeWrapper
           />
@@ -190,10 +192,13 @@ export function ArtworkZoom({
                     : "default",
               }}
             >
-              <img
+              <LazyImage
                 ref={imageRef}
                 src={imageUrl}
                 alt={title}
+                width={1000}
+                height={800}
+                priority
                 className="max-w-full max-h-full object-contain select-none"
                 style={{
                   transform: `scale(${zoomState.scale}) translate(${zoomState.x / zoomState.scale}px, ${zoomState.y / zoomState.scale}px)`,
@@ -201,6 +206,11 @@ export function ArtworkZoom({
                   transition: isDragging ? "none" : "transform 0.1s ease-out",
                 }}
                 draggable={false}
+                fallback={
+                  <div className="w-full h-[400px] bg-gray-200 dark:bg-gray-800 flex items-center justify-center animate-pulse">
+                    <div className="w-12 h-12 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                }
               />
             </div>
           </ModalBody>

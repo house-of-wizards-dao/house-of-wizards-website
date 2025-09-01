@@ -68,6 +68,7 @@ const Bio: FC<BioProps> = ({
               height={112}
               src={finalAvatarUrl}
               width={112}
+              loading="lazy"
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.src = `/img/talent/${name}.png`;
@@ -335,6 +336,7 @@ const AddTalentModal: FC<AddTalentModalProps> = ({
                     className="w-full h-full object-cover"
                     width={128}
                     height={128}
+                    loading="lazy"
                   />
                 ) : (
                   <div className="text-center">

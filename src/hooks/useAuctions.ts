@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
 import { logger } from "@/lib/logger";
-import { createApiErrorContext, createLogContext } from "@/lib/error-utils";
+import { createApiErrorContext } from "@/lib/error-utils";
 import type {
   Auction,
   Bid,
@@ -92,7 +92,7 @@ export function useAuctions(
       setError(err instanceof Error ? err.message : "Failed to fetch auctions");
       logger.error(
         "Error fetching auctions",
-        createApiErrorContext(err, "/api/auctions", "GET", { params })
+        createApiErrorContext(err, "/api/auctions", "GET", { params }),
       );
     } finally {
       setLoading(false);
@@ -154,7 +154,9 @@ export function useAuction(auctionId: string) {
       setError(err instanceof Error ? err.message : "Failed to fetch auction");
       logger.error(
         "Error fetching auction",
-        createApiErrorContext(err, `/api/auctions/${auctionId}`, "GET", { auctionId })
+        createApiErrorContext(err, `/api/auctions/${auctionId}`, "GET", {
+          auctionId,
+        }),
       );
     } finally {
       setLoading(false);
@@ -232,7 +234,14 @@ export function useBidding(auctionId: string) {
       setBids(result.bids);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch bids");
-      logger.error("Error fetching bids", createApiErrorContext(err, `/api/auctions/${auctionId}/bids`, "GET", { auctionId, page: 1, limit: 20 }));
+      logger.error(
+        "Error fetching bids",
+        createApiErrorContext(err, `/api/auctions/${auctionId}/bids`, "GET", {
+          auctionId,
+          page: 1,
+          limit: 20,
+        }),
+      );
     } finally {
       setLoading(false);
     }
@@ -293,7 +302,15 @@ export function useBidding(auctionId: string) {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to place bid";
         setError(errorMessage);
-        logger.error("Error placing bid", createApiErrorContext(err, `/api/auctions/${auctionId}/bids`, "POST", { auctionId, amount: bidData.amount }));
+        logger.error(
+          "Error placing bid",
+          createApiErrorContext(
+            err,
+            `/api/auctions/${auctionId}/bids`,
+            "POST",
+            { auctionId, amount: bidData.amount },
+          ),
+        );
         throw new Error(errorMessage);
       } finally {
         setPlacing(false);
@@ -340,7 +357,10 @@ export function useWatchlist() {
       setError(
         err instanceof Error ? err.message : "Failed to fetch watchlist",
       );
-      logger.error("Error fetching watchlist", createApiErrorContext(err, "/api/user/watchlist", "GET"));
+      logger.error(
+        "Error fetching watchlist",
+        createApiErrorContext(err, "/api/user/watchlist", "GET"),
+      );
     } finally {
       setLoading(false);
     }
@@ -451,7 +471,10 @@ export function useAuctionForm() {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to create auction";
         setError(errorMessage);
-        logger.error("Error creating auction", createApiErrorContext(err, "/api/auctions", "POST", data));
+        logger.error(
+          "Error creating auction",
+          createApiErrorContext(err, "/api/auctions", "POST", data),
+        );
         throw new Error(errorMessage);
       } finally {
         setLoading(false);
@@ -485,7 +508,13 @@ export function useAuctionForm() {
         const errorMessage =
           err instanceof Error ? err.message : "Failed to update auction";
         setError(errorMessage);
-        logger.error("Error updating auction", createApiErrorContext(err, `/api/auctions/${id}`, "PUT", { auctionId: id, ...data }));
+        logger.error(
+          "Error updating auction",
+          createApiErrorContext(err, `/api/auctions/${id}`, "PUT", {
+            auctionId: id,
+            ...data,
+          }),
+        );
         throw new Error(errorMessage);
       } finally {
         setLoading(false);

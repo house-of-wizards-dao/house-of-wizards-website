@@ -1,5 +1,6 @@
 import NextImage from "next/image";
 import { useState, FormEvent } from "react";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 import DefaultLayout from "@/layouts/default";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
@@ -151,7 +152,16 @@ export default function IndexPage() {
           </div>
         }
       >
-        <div className="bg-[url('/img/banner.png')] h-[700px] bg-center bg-cover" />
+        <div className="relative h-[700px] overflow-hidden">
+          <NextImage
+            src="/img/banner.png"
+            alt="House of Wizards Banner"
+            fill
+            priority={true}
+            className="object-cover object-center"
+            sizes="100vw"
+          />
+        </div>
 
         <section className="py-32 px-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
@@ -217,12 +227,24 @@ export default function IndexPage() {
                   className="w-[200px] sm:w-[220px] transform transition-all duration-300 hover:scale-105"
                 >
                   <div className="aspect-[3/4] mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
-                    <NextImage
+                    <LazyImage
                       alt={member.name}
                       className="w-full h-full object-cover"
                       height={253}
                       src={member.image}
                       width={190}
+                      fallback={
+                        <div className="w-full h-full bg-gradient-to-br from-violet/20 to-purple-500/20 animate-pulse flex items-center justify-center">
+                          <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      }
+                      errorFallback={
+                        <div className="w-full h-full bg-gradient-to-br from-violet/20 to-purple-500/20 flex items-center justify-center">
+                          <span className="text-violet text-lg font-medium">
+                            {member.name[0]}
+                          </span>
+                        </div>
+                      }
                     />
                   </div>
                   <div className="space-y-2">

@@ -1,27 +1,31 @@
 /**
  * Migration Utilities
- * 
+ *
  * This module provides utilities to help migrate existing code to use
  * the new type-safe error handling patterns.
  */
 
-import { 
-  createLogContext, 
-  createDatabaseErrorContext, 
+import {
+  createLogContext,
+  createDatabaseErrorContext,
   createApiErrorContext,
   createWeb3ErrorContext,
   createAuthErrorContext,
   safeParseNumber,
   safeParseBigInt,
-  type LogContext 
-} from './error-utils';
+  type LogContext,
+} from "./error-utils";
 
 /**
  * Legacy error handling patterns that need migration
  */
 
 // Pattern 1: Direct logger.error(message, error) calls
-export const migrateDirectLoggerError = (error: unknown, operation?: string, table?: string): LogContext => {
+export const migrateDirectLoggerError = (
+  error: unknown,
+  operation?: string,
+  table?: string,
+): LogContext => {
   if (operation && table) {
     return createDatabaseErrorContext(error, operation, table);
   }
@@ -33,7 +37,7 @@ export const migrateSupabaseError = (
   error: unknown,
   operation: string,
   table: string,
-  additionalContext?: Record<string, any>
+  additionalContext?: Record<string, any>,
 ): LogContext => {
   return createDatabaseErrorContext(error, operation, table, additionalContext);
 };
@@ -43,7 +47,7 @@ export const migrateWeb3Error = (
   error: unknown,
   method: string,
   contractAddress?: string,
-  args?: any[]
+  args?: any[],
 ): LogContext => {
   return createWeb3ErrorContext(error, method, contractAddress, { args });
 };
@@ -53,7 +57,7 @@ export const migrateApiError = (
   error: unknown,
   endpoint: string,
   method: string,
-  additionalContext?: Record<string, any>
+  additionalContext?: Record<string, any>,
 ): LogContext => {
   return createApiErrorContext(error, endpoint, method, additionalContext);
 };
@@ -62,7 +66,7 @@ export const migrateApiError = (
 export const migrateAuthError = (
   error: unknown,
   authEvent: string,
-  userId?: string
+  userId?: string,
 ): LogContext => {
   return createAuthErrorContext(error, authEvent, userId);
 };
@@ -77,36 +81,47 @@ export const fixBidAmount = (amount: string | number | undefined): number => {
 };
 
 // Fix bigint conversions for Web3 operations
-export const fixWeb3Amount = (amount: string | number | bigint | undefined): bigint => {
+export const fixWeb3Amount = (
+  amount: string | number | bigint | undefined,
+): bigint => {
   return safeParseBigInt(amount);
 };
 
 // Fix undefined parameter issues
-export const ensureString = (value: unknown, fallback: string = ''): string => {
-  if (typeof value === 'string') return value;
+export const ensureString = (value: unknown, fallback: string = ""): string => {
+  if (typeof value === "string") return value;
   if (value === null || value === undefined) return fallback;
   return String(value);
 };
 
 export const ensureNumber = (value: unknown, fallback: number = 0): number => {
-  if (typeof value === 'number' && !isNaN(value)) return value;
-  if (typeof value === 'string') {
+  if (typeof value === "number" && !isNaN(value)) return value;
+  if (typeof value === "string") {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? fallback : parsed;
   }
   return fallback;
 };
 
-export const ensureBigInt = (value: unknown, fallback: bigint = BigInt(0)): bigint => {
-  return safeParseBigInt(value as string | number | bigint | undefined, fallback);
+export const ensureBigInt = (
+  value: unknown,
+  fallback: bigint = BigInt(0),
+): bigint => {
+  return safeParseBigInt(
+    value as string | number | bigint | undefined,
+    fallback,
+  );
 };
 
-export const ensureBoolean = (value: unknown, fallback: boolean = false): boolean => {
-  if (typeof value === 'boolean') return value;
-  if (typeof value === 'string') {
-    return value.toLowerCase() === 'true' || value === '1';
+export const ensureBoolean = (
+  value: unknown,
+  fallback: boolean = false,
+): boolean => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    return value.toLowerCase() === "true" || value === "1";
   }
-  if (typeof value === 'number') {
+  if (typeof value === "number") {
     return value !== 0;
   }
   return fallback;
@@ -117,13 +132,19 @@ export const ensureBoolean = (value: unknown, fallback: boolean = false): boolea
  */
 
 // Fix Set iteration issues
-export const safeIterateSet = <T>(set: Set<T>, callback: (value: T) => void): void => {
+export const safeIterateSet = <T>(
+  set: Set<T>,
+  callback: (value: T) => void,
+): void => {
   const array = Array.from(set);
   array.forEach(callback);
 };
 
 // Fix Map iteration issues
-export const safeIterateMap = <K, V>(map: Map<K, V>, callback: (value: V, key: K) => void): void => {
+export const safeIterateMap = <K, V>(
+  map: Map<K, V>,
+  callback: (value: V, key: K) => void,
+): void => {
   const entries = Array.from(map.entries());
   entries.forEach(([key, value]) => callback(value, key));
 };
@@ -135,8 +156,10 @@ export const safeIterateMap = <K, V>(map: Map<K, V>, callback: (value: V, key: K
 // Wrap async operations with proper error handling
 export const wrapAsyncOperation = async <T>(
   operation: () => Promise<T>,
-  context: Partial<LogContext> = {}
-): Promise<{ success: true; data: T } | { success: false; error: LogContext }> => {
+  context: Partial<LogContext> = {},
+): Promise<
+  { success: true; data: T } | { success: false; error: LogContext }
+> => {
   try {
     const data = await operation();
     return { success: true, data };
@@ -148,7 +171,7 @@ export const wrapAsyncOperation = async <T>(
 // Wrap sync operations with proper error handling
 export const wrapSyncOperation = <T>(
   operation: () => T,
-  context: Partial<LogContext> = {}
+  context: Partial<LogContext> = {},
 ): { success: true; data: T } | { success: false; error: LogContext } => {
   try {
     const data = operation();
@@ -173,14 +196,17 @@ export interface RateLimitConfig {
 export const createRateLimitConfig = (
   windowMs: number,
   maxRequests: number,
-  options: Partial<RateLimitConfig> = {}
+  options: Partial<RateLimitConfig> = {},
 ): RateLimitConfig => {
   return {
     windowMs: ensureNumber(windowMs, 60000), // Default 1 minute
     maxRequests: ensureNumber(maxRequests, 100), // Default 100 requests
-    skipSuccessfulRequests: ensureBoolean(options.skipSuccessfulRequests, false),
+    skipSuccessfulRequests: ensureBoolean(
+      options.skipSuccessfulRequests,
+      false,
+    ),
     skipFailedRequests: ensureBoolean(options.skipFailedRequests, false),
-    keyGenerator: options.keyGenerator || ((req: any) => req.ip || 'anonymous'),
+    keyGenerator: options.keyGenerator || ((req: any) => req.ip || "anonymous"),
     onLimitReached: options.onLimitReached || (() => {}),
   };
 };
@@ -190,15 +216,15 @@ export const createRateLimitConfig = (
  */
 export const validateDatabaseResult = <T>(
   result: any,
-  expectedFields: (keyof T)[]
+  expectedFields: (keyof T)[],
 ): T | null => {
-  if (!result || typeof result !== 'object') {
+  if (!result || typeof result !== "object") {
     return null;
   }
 
-  const missingFields = expectedFields.filter(field => !(field in result));
+  const missingFields = expectedFields.filter((field) => !(field in result));
   if (missingFields.length > 0) {
-    console.warn(`Missing expected fields: ${missingFields.join(', ')}`);
+    console.warn(`Missing expected fields: ${missingFields.join(", ")}`);
   }
 
   return result as T;
@@ -208,13 +234,19 @@ export const validateDatabaseResult = <T>(
  * Contract interaction fixes
  */
 export const validateContractMethod = (
-  method: unknown
+  method: unknown,
 ): method is (...args: any[]) => any => {
-  return typeof method === 'function';
+  return typeof method === "function";
 };
 
-export const validateContractAddress = (address: unknown): address is string => {
-  return typeof address === 'string' && address.length === 42 && address.startsWith('0x');
+export const validateContractAddress = (
+  address: unknown,
+): address is string => {
+  return (
+    typeof address === "string" &&
+    address.length === 42 &&
+    address.startsWith("0x")
+  );
 };
 
 /**
@@ -227,6 +259,9 @@ export const isDefined = <T>(value: T | null | undefined): value is T => {
 /**
  * Utility to provide safe default values
  */
-export const withDefault = <T>(value: T | null | undefined, defaultValue: T): T => {
+export const withDefault = <T>(
+  value: T | null | undefined,
+  defaultValue: T,
+): T => {
   return isDefined(value) ? value : defaultValue;
 };

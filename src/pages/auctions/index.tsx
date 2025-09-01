@@ -6,7 +6,6 @@ import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Tabs, Tab } from "@nextui-org/tabs";
 import { Chip } from "@nextui-org/chip";
-import { Image } from "@nextui-org/image";
 import { formatEther } from "viem";
 import Link from "next/link";
 import {
@@ -16,6 +15,7 @@ import {
   EyeIcon,
   HeartIcon,
 } from "@heroicons/react/24/outline";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 import DefaultLayout from "@/layouts/default";
 import { useTimer } from "@/hooks/useTimer";
@@ -248,13 +248,22 @@ function AuctionCard({
       <Card className="group bg-gradient-to-b from-neutral-800/60 to-neutral-900/60 border border-neutral-700 hover:border-brand-500/50 transition-all duration-500 hover:shadow-brand overflow-hidden">
         {/* Artwork Image */}
         <div className="relative aspect-square overflow-hidden">
-          <Image
-            src={auction.artwork_url}
+          <LazyImage
+            src={auction.artwork_url || "/img/logo.png"}
             alt={auction.title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            classNames={{
-              img: "transition-transform duration-700",
-            }}
+            width={400}
+            height={400}
+            fallback={
+              <div className="w-full h-full bg-gradient-to-br from-neutral-800/60 to-neutral-900/60 animate-pulse flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+              </div>
+            }
+            errorFallback={
+              <div className="w-full h-full bg-gradient-to-br from-neutral-800/60 to-neutral-900/60 flex items-center justify-center">
+                <p className="text-neutral-400 text-sm">Artwork unavailable</p>
+              </div>
+            }
           />
 
           {/* Overlay Controls */}

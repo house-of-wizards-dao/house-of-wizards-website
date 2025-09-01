@@ -12,6 +12,7 @@ interface OptimizedImageProps {
   quality?: number;
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
+  loading?: "lazy" | "eager";
 }
 
 const OptimizedImage = memo<OptimizedImageProps>(
@@ -26,6 +27,7 @@ const OptimizedImage = memo<OptimizedImageProps>(
     quality = 75,
     placeholder = "empty",
     blurDataURL,
+    loading = "lazy",
   }) => {
     const [imgSrc, setImgSrc] = useState(src);
     const [hasError, setHasError] = useState(false);
@@ -48,6 +50,7 @@ const OptimizedImage = memo<OptimizedImageProps>(
         quality={quality}
         placeholder={placeholder}
         blurDataURL={blurDataURL}
+        loading={priority ? "eager" : loading}
         onError={handleError}
         style={{
           objectFit: "cover",

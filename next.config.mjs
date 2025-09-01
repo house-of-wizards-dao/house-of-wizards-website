@@ -8,13 +8,20 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "gptihsbiexsdxpkxkkwy.supabase.co",
+        port: "",
+        pathname: "/**",
       },
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "*.supabase.co",
+        port: "",
+        pathname: "/**",
       },
     ],
-    domains: ["gptihsbiexsdxpkxkkwy.supabase.co"], // Legacy format for compatibility
+    domains: ["gptihsbiexsdxpkxkkwy.supabase.co"],
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async headers() {
     return [
@@ -41,4 +48,4 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;

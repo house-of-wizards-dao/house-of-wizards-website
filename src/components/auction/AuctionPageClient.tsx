@@ -143,9 +143,12 @@ export function AuctionPageClient({
                   end_time={(auction || initialAuction).end_time}
                   start_time={(auction || initialAuction).start_time}
                   status={
-                    (auction || initialAuction).status === "draft" 
-                      ? "upcoming" 
-                      : (auction || initialAuction).status as "active" | "ended" | "cancelled"
+                    (auction || initialAuction).status === "draft"
+                      ? "upcoming"
+                      : ((auction || initialAuction).status as
+                          | "active"
+                          | "ended"
+                          | "cancelled")
                   }
                   className="mb-6"
                 />
@@ -291,7 +294,16 @@ export function AuctionPageClient({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <ArtistInfo artist={(auction || initialAuction).artist ? {...(auction || initialAuction).artist!, id: 'unknown'} : undefined} />
+                <ArtistInfo
+                  artist={
+                    (auction || initialAuction).artist
+                      ? {
+                          ...(auction || initialAuction).artist!,
+                          id: "unknown",
+                        }
+                      : undefined
+                  }
+                />
               </motion.div>
 
               {/* Quick Auction Stats */}
@@ -316,7 +328,9 @@ export function AuctionPageClient({
                         <span className="text-neutral-400">Starting Price</span>
                         <span className="text-white font-medium">
                           {formatEther(
-                            BigInt((auction || initialAuction).start_price ?? 0),
+                            BigInt(
+                              (auction || initialAuction).start_price ?? 0,
+                            ),
                           )}{" "}
                           ETH
                         </span>

@@ -2,10 +2,10 @@ import { useState, useEffect, startTransition } from "react";
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { Globe, Twitter, MessageCircle } from "lucide-react";
-import Image from "next/image";
 import { Spinner } from "@nextui-org/spinner";
 import { Card, CardBody, CardFooter } from "@nextui-org/card";
 import type { UserProfile } from "@/types";
+import { LazyImage } from "@/components/ui/LazyImage";
 
 import DefaultLayout from "@/layouts/default";
 
@@ -156,12 +156,10 @@ export default function IndexPage(): JSX.Element {
                 }}
               >
                 <CardBody className="p-0">
-                  <Image
+                  <LazyImage
                     alt={`${userProfile.name || "User"}'s avatar`}
-                    blurDataURL="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Crect width='10' height='10' fill='%23999999'/%3E%3C/svg%3E"
                     className="w-full aspect-square object-cover rounded-t-xl"
                     height={300}
-                    placeholder="blur"
                     src={
                       userProfile.avatar_url
                         ? userProfile.avatar_url.startsWith("http")
@@ -171,6 +169,18 @@ export default function IndexPage(): JSX.Element {
                     }
                     unoptimized
                     width={300}
+                    fallback={
+                      <div className="w-full aspect-square bg-gradient-to-br from-purple-500/20 to-violet-500/20 rounded-t-xl flex items-center justify-center animate-pulse">
+                        <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
+                      </div>
+                    }
+                    errorFallback={
+                      <div className="w-full aspect-square bg-gradient-to-br from-purple-500/20 to-violet-500/20 rounded-t-xl flex items-center justify-center">
+                        <span className="text-purple-300 text-lg font-medium">
+                          {userProfile.name?.[0]?.toUpperCase() || "?"}
+                        </span>
+                      </div>
+                    }
                   />
                 </CardBody>
                 <CardFooter className="flex flex-col items-start p-6 space-y-4">
