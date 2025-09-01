@@ -172,7 +172,7 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
 // Re-export auction types
 export * from "./auction";
 // Import specific types for use in ContractAuction
-import type { Artwork, AuctionStatus } from "./auction";
+import type { Artwork, AuctionStatus, Auction } from "./auction";
 
 // Auction-related types
 export interface ContractAuction {
@@ -196,7 +196,7 @@ export interface ContractAuction {
   end_time: string; // ISO timestamp
   status: AuctionStatus; // Use AuctionStatus type to match Auction interface
   total_bids: number;
-  winner_id?: string; // Changed from winner_address to match Auction interface
+  winner_id?: string | null; // Changed from winner_address to match Auction interface, allows null
   winner_name?: string; // Computed field - added for Auction compatibility
   created_by: string;
   created_by_name?: string; // Computed field - added for Auction compatibility
@@ -255,7 +255,7 @@ export interface ZoomState {
 }
 
 export interface AuctionPageProps {
-  auction: ContractAuction;
+  auction: Auction;
   initialBids: Bid[];
   initialActivity: AuctionActivity[];
 }
