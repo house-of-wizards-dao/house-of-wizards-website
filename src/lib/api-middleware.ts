@@ -224,7 +224,7 @@ export function validateMethods(allowedMethods: string[]) {
  * CORS middleware
  */
 export function corsMiddleware(
-  origin: string[] = ["http://localhost:3001"],
+  origin: string[] = ["http://localhost:3000", "http://localhost:3001"],
   methods: string[] = ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 ) {
   return (req: NextApiRequest, res: NextApiResponse, next: () => void) => {
@@ -325,7 +325,7 @@ export function createApiHandler(
           skipSuccessfulRequests:
             options.rateLimit.skipSuccessfulRequests ?? false,
         });
-        
+
         // Execute rate limiting check
         await new Promise<void>((resolve, reject) => {
           rateLimitHandler(req, res).then(resolve).catch(reject);

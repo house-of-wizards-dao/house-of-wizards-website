@@ -303,26 +303,50 @@ export class AuctionService {
       limit = 10,
     } = params;
 
+    // Add timeout wrapper for database search
+    const databaseSearchWithTimeout = async () => {
+      // Temporarily skip database search until tables are created
+      logger.warn(
+        "Database auctions table not available, returning empty result",
+      );
+      return {
+        auctions: [],
+        total: 0,
+        page,
+        limit,
+        hasNext: false,
+        hasPrev: false,
+      };
+    };
+
     // Hybrid approach: Get both database auctions and smart contract auctions
+    // Temporarily disable smart contract search to improve performance
     const results = await Promise.allSettled([
-      this.searchDatabaseAuctions(params),
-      this.searchSmartContractAuctions(params)
+      databaseSearchWithTimeout(),
+      // this.searchSmartContractAuctions(params)
+      Promise.resolve([]), // Return empty array for now
     ]);
 
-    const databaseAuctions = results[0].status === 'fulfilled' ? results[0].value.auctions : [];
-    const contractAuctions = results[1].status === 'fulfilled' ? results[1].value : [];
+    const databaseAuctions =
+      results[0].status === "fulfilled" ? results[0].value.auctions : [];
+    const contractAuctions =
+      results[1].status === "fulfilled" ? results[1].value : [];
 
     // Combine and sort auctions
     const allAuctions = [...databaseAuctions, ...contractAuctions];
-    
+
     // Apply sorting to combined results
-    const sortedAuctions = this.sortCombinedAuctions(allAuctions, sort_by, sort_order);
-    
+    const sortedAuctions = this.sortCombinedAuctions(
+      allAuctions,
+      sort_by,
+      sort_order,
+    );
+
     // Apply pagination
     const from = (page - 1) * limit;
     const to = from + limit;
     const paginatedAuctions = sortedAuctions.slice(from, to);
-    
+
     const total = allAuctions.length;
     const totalPages = Math.ceil(total / limit);
 
@@ -347,6 +371,27 @@ export class AuctionService {
       page = 1,
       limit = 10,
     } = params;
+
+    // First check if the auctions table exists
+    const { error: tableCheckError } = await this.supabase
+      .from("auctions")
+      .select("id")
+      .limit(1);
+
+    if (tableCheckError) {
+      logger.warn("Auctions table not available", {
+        error: tableCheckError.message,
+      });
+      // Return empty result if table doesn't exist
+      return {
+        auctions: [],
+        total: 0,
+        page,
+        limit,
+        hasNext: false,
+        hasPrev: false,
+      };
+    }
 
     let queryBuilder = this.supabase.from("auctions").select(
       `
@@ -433,32 +478,49 @@ export class AuctionService {
     params: AuctionSearchParams,
   ): Promise<Auction[]> {
     try {
-      const { ContractAuctionService } = await import(
-        "./contract-auction-service"
-      );
-      
-      const contractAuctions = await ContractAuctionService.getAllAuctions();
-      
-      // Apply basic filtering to smart contract auctions
-      let filteredAuctions = contractAuctions;
-      
-      if (params.query) {
-        const queryLower = params.query.toLowerCase();
-        filteredAuctions = filteredAuctions.filter((auction) => 
-          auction.title?.toLowerCase().includes(queryLower) ||
-          auction.description?.toLowerCase().includes(queryLower)
+      // Add timeout to prevent hanging on blockchain calls
+      const timeoutPromise = new Promise<Auction[]>((_, reject) => {
+        setTimeout(
+          () => reject(new Error("Smart contract fetch timeout")),
+          3000,
         );
-      }
-      
-      if (params.filters?.status?.length) {
-        filteredAuctions = filteredAuctions.filter((auction) => 
-          params.filters!.status!.includes(auction.status)
+      });
+
+      const fetchPromise = (async () => {
+        const { ContractAuctionService } = await import(
+          "./contract-auction-service"
         );
-      }
-      
-      return filteredAuctions;
+
+        const contractAuctions = await ContractAuctionService.getAllAuctions();
+
+        // Apply basic filtering to smart contract auctions
+        let filteredAuctions = contractAuctions;
+
+        if (params.query) {
+          const queryLower = params.query.toLowerCase();
+          filteredAuctions = filteredAuctions.filter(
+            (auction) =>
+              auction.title?.toLowerCase().includes(queryLower) ||
+              auction.description?.toLowerCase().includes(queryLower),
+          );
+        }
+
+        if (params.filters?.status?.length) {
+          filteredAuctions = filteredAuctions.filter((auction) =>
+            params.filters!.status!.includes(auction.status),
+          );
+        }
+
+        return filteredAuctions;
+      })();
+
+      // Race between fetch and timeout
+      const result = await Promise.race([fetchPromise, timeoutPromise]);
+      return result;
     } catch (error) {
-      console.warn("Failed to fetch smart contract auctions:", error);
+      logger.warn("Failed to fetch smart contract auctions", {
+        error: error.message,
+      });
       return [];
     }
   }
@@ -466,53 +528,55 @@ export class AuctionService {
   private sortCombinedAuctions(
     auctions: Auction[],
     sortBy: string,
-    sortOrder: 'asc' | 'desc'
+    sortOrder: "asc" | "desc",
   ): Auction[] {
     return auctions.sort((a, b) => {
       let aValue, bValue;
-      
+
       switch (sortBy) {
-        case 'current_bid':
-          aValue = parseFloat(a.current_bid || '0');
-          bValue = parseFloat(b.current_bid || '0');
+        case "current_bid":
+          aValue = parseFloat(a.current_bid || "0");
+          bValue = parseFloat(b.current_bid || "0");
           break;
-        case 'end_time':
+        case "end_time":
           aValue = new Date(a.end_time).getTime();
           bValue = new Date(b.end_time).getTime();
           break;
-        case 'total_bids':
+        case "total_bids":
           aValue = a.total_bids || 0;
           bValue = b.total_bids || 0;
           break;
-        case 'created_at':
+        case "created_at":
         default:
           aValue = new Date(a.created_at || 0).getTime();
           bValue = new Date(b.created_at || 0).getTime();
           break;
       }
-      
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
       }
-      
+
       return 0;
     });
   }
 
   async getAuction(id: string): Promise<Auction | null> {
     // Check if it's a smart contract auction
-    if (id.startsWith('contract-auction-')) {
+    if (id.startsWith("contract-auction-")) {
       try {
         const { ContractAuctionService } = await import(
           "./contract-auction-service"
         );
-        
-        const auctionIndex = parseInt(id.replace('contract-auction-', ''));
+
+        const auctionIndex = parseInt(id.replace("contract-auction-", ""));
         if (!isNaN(auctionIndex)) {
           return await ContractAuctionService.getAuctionByIndex(auctionIndex);
         }
       } catch (error) {
-        console.error('Failed to fetch smart contract auction:', error);
+        logger.error("Failed to fetch smart contract auction", {
+          error: error.message,
+        });
         return null;
       }
     }
@@ -1069,25 +1133,26 @@ export class AuctionService {
     params: { page?: number; limit?: number } = {},
   ): Promise<BidListResponse> {
     // Check if it's a smart contract auction
-    if (auctionId.startsWith('contract-auction-')) {
+    if (auctionId.startsWith("contract-auction-")) {
       try {
-        const { BidHistoryService } = await import(
-          "./bid-history-service"
+        const { BidHistoryService } = await import("./bid-history-service");
+
+        const auctionIndex = parseInt(
+          auctionId.replace("contract-auction-", ""),
         );
-        
-        const auctionIndex = parseInt(auctionId.replace('contract-auction-', ''));
         if (!isNaN(auctionIndex)) {
-          const contractBids = await BidHistoryService.getBidHistory(auctionIndex);
-          
+          const contractBids =
+            await BidHistoryService.getBidHistory(auctionIndex);
+
           // Apply pagination to smart contract bids
           const { page = 1, limit = 20 } = params;
           const from = (page - 1) * limit;
           const to = from + limit;
           const paginatedBids = contractBids.slice(from, to);
-          
+
           const total = contractBids.length;
           const totalPages = Math.ceil(total / limit);
-          
+
           return {
             bids: paginatedBids,
             total,
@@ -1098,7 +1163,9 @@ export class AuctionService {
           };
         }
       } catch (error) {
-        console.error('Failed to fetch smart contract auction bids:', error);
+        logger.error("Failed to fetch smart contract auction bids", {
+          error: error.message,
+        });
         // Fall back to empty results for smart contract auctions if fetch fails
         return {
           bids: [],

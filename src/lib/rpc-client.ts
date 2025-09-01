@@ -5,7 +5,7 @@ import { sepolia } from "viem/chains";
 // Browser-friendly RPC endpoints with proven reliability
 const RELIABLE_RPC_ENDPOINTS = [
   "https://ethereum-sepolia-rpc.publicnode.com",
-  "https://sepolia.gateway.tenderly.co", 
+  "https://sepolia.gateway.tenderly.co",
   "https://sepolia.drpc.org",
   "https://rpc.sepolia.org", // Backup endpoint
 ] as const;
@@ -35,7 +35,7 @@ const fallbackTransport = fallback(
   {
     rank: true, // Enable ranking to prioritize faster endpoints
     retryCount: 2, // Fallback-level retries
-  }
+  },
 );
 
 // Single instance of the public client with robust configuration
@@ -48,13 +48,13 @@ export function getRpcClient(): PublicClient {
   if (!publicClient) {
     console.log("🚀 Creating RPC client with fallback transport...");
     console.log("📡 Available endpoints:", RELIABLE_RPC_ENDPOINTS);
-    
+
     publicClient = createPublicClient({
       chain: sepolia,
       transport: fallbackTransport,
     });
   }
-  
+
   return publicClient;
 }
 
@@ -64,45 +64,45 @@ export function getRpcClient(): PublicClient {
 export async function executeWithRetry<T>(
   operation: () => Promise<T>,
   operationName: string,
-  maxRetries: number = 3
+  maxRetries: number = 3,
 ): Promise<T> {
   let lastError: Error | null = null;
-  
+
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
       console.log(
-        attempt > 1 
-          ? `🔄 Retry ${attempt}/${maxRetries}: ${operationName}` 
-          : `📡 Executing: ${operationName}`
+        attempt > 1
+          ? `🔄 Retry ${attempt}/${maxRetries}: ${operationName}`
+          : `📡 Executing: ${operationName}`,
       );
-      
+
       const result = await operation();
-      
+
       if (attempt > 1) {
         console.log(`✅ ${operationName} succeeded on retry ${attempt}`);
       }
-      
+
       return result;
     } catch (error) {
       lastError = error as Error;
-      
+
       console.warn(
         `❌ Attempt ${attempt}/${maxRetries} failed for ${operationName}:`,
-        error instanceof Error ? error.message : error
+        error instanceof Error ? error.message : error,
       );
-      
+
       // Don't wait after the last attempt
       if (attempt < maxRetries) {
         const delayMs = 1000 * Math.pow(2, attempt - 1); // Exponential backoff
         console.log(`⏳ Waiting ${delayMs}ms before retry...`);
-        await new Promise(resolve => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
     }
   }
-  
+
   console.error(`💥 All ${maxRetries} attempts failed for ${operationName}`);
   throw new Error(
-    `RPC operation "${operationName}" failed after ${maxRetries} attempts. Last error: ${lastError?.message || 'Unknown error'}`
+    `RPC operation "${operationName}" failed after ${maxRetries} attempts. Last error: ${lastError?.message || "Unknown error"}`,
   );
 }
 
@@ -116,12 +116,12 @@ export async function healthCheck(): Promise<{
   endpoint: string | null;
 }> {
   const startTime = Date.now();
-  
+
   try {
     const client = getRpcClient();
     const blockNumber = await client.getBlockNumber();
     const latency = Date.now() - startTime;
-    
+
     return {
       healthy: true,
       blockNumber: Number(blockNumber),
@@ -143,7 +143,7 @@ export async function healthCheck(): Promise<{
  */
 export async function readContractWithRetry<T>(
   contractCall: () => Promise<T>,
-  operationName: string
+  operationName: string,
 ): Promise<T> {
   return executeWithRetry(contractCall, `Contract Read: ${operationName}`, 3);
 }
@@ -153,7 +153,7 @@ export async function readContractWithRetry<T>(
  */
 export async function getLogsWithRetry<T>(
   getLogsCall: () => Promise<T>,
-  operationName: string
+  operationName: string,
 ): Promise<T> {
   return executeWithRetry(getLogsCall, `Event Logs: ${operationName}`, 2);
 }
@@ -163,7 +163,7 @@ export async function getLogsWithRetry<T>(
  */
 export async function getBlockWithRetry<T>(
   getBlockCall: () => Promise<T>,
-  operationName: string
+  operationName: string,
 ): Promise<T> {
   return executeWithRetry(getBlockCall, `Block Data: ${operationName}`, 2);
 }

@@ -2,7 +2,7 @@
 // Run this after applying the database fixes
 
 async function testRateLimitFix() {
-  const baseUrl = 'http://localhost:3000'; // Adjust if your dev server runs on a different port
+  const baseUrl = 'http://localhost:3001'; // Next.js dev server default port
   
   console.log('Testing rate limit functionality...');
   
@@ -38,9 +38,6 @@ async function testRateLimitFix() {
   }
 }
 
-// Measure response time
-const start = Date.now();
-
 // Run multiple tests
 async function runTests() {
   console.log('Running auction API tests...\n');
@@ -48,6 +45,7 @@ async function runTests() {
   const results = [];
   for (let i = 1; i <= 3; i++) {
     console.log(`Test ${i}:`);
+    const start = Date.now(); // Move timing inside the loop
     const result = await testRateLimitFix();
     results.push(result);
     console.log('');

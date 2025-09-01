@@ -2,12 +2,19 @@
 
 Clean, production-ready PostgreSQL schema for Supabase deployment.
 
+## Directory Structure
+
+- **`migrations/`** - SQL migration files in sequential order
+- **`schemas/`** - Complete database schema definitions  
+- **`functions/`** - Database functions, procedures, and operations
+- **`maintenance/`** - Cleanup scripts and optimization queries
+
 ## Quick Deployment Guide
 
 ### Step 1: Deploy Main Schema
 ```bash
 # In Supabase SQL Editor:
-# Copy and paste ALL contents of step1-main-schema.sql and run
+# Copy and paste ALL contents of migrations/001_main_schema.sql and run
 ```
 
 This creates:
@@ -21,8 +28,16 @@ This creates:
 ### Step 2: Add Performance Indexes
 ```bash
 # In Supabase SQL Editor:
-# Copy and run EACH CREATE INDEX command from step2-performance-indexes.sql ONE BY ONE
+# Copy and run EACH CREATE INDEX command from migrations/002_performance_indexes.sql ONE BY ONE
 # DO NOT run the entire file at once
+```
+
+### Step 3: Deploy Additional Features
+```bash
+# Apply remaining migrations in order:
+# - migrations/003_auction_system_schema.sql
+# - migrations/004_audit_system.sql  
+# - migrations/005_contract_auction_metadata.sql
 ```
 
 This adds:

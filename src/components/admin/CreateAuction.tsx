@@ -6,10 +6,9 @@ import { Textarea } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { createClient } from "@supabase/supabase-js";
 import { useCreateAuction } from "@/lib/auction-contract";
 import { useTotalAuctions } from "@/lib/auction-contract";
-import Image from "next/image";
-import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -41,7 +40,7 @@ export default function CreateAuction() {
 
     try {
       setSuccess(null);
-      
+
       // Upload image first if selected
       let imageUrl: string | null = null;
       if (selectedImage && !uploadedImageUrl) {
@@ -52,7 +51,7 @@ export default function CreateAuction() {
       } else if (uploadedImageUrl) {
         imageUrl = uploadedImageUrl;
       }
-      
+
       const durationInSeconds = parseInt(formData.duration) * 24 * 60 * 60;
 
       const result = await createAuction(
@@ -67,7 +66,7 @@ export default function CreateAuction() {
           const nextAuctionId = totalAuctions; // The next auction will have this index
           try {
             const { error: dbError } = await supabase
-              .from('contract_auction_metadata')
+              .from("contract_auction_metadata")
               .insert({
                 contract_auction_id: nextAuctionId,
                 name: formData.name,
@@ -81,15 +80,15 @@ export default function CreateAuction() {
                   transaction_hash: result.hash,
                 },
               });
-            
+
             if (dbError) {
-              console.error('Failed to save auction metadata:', dbError);
+              console.error("Failed to save auction metadata:", dbError);
             }
           } catch (dbErr) {
-            console.error('Database error:', dbErr);
+            console.error("Database error:", dbErr);
           }
         }
-        
+
         setSuccess(`Auction created successfully! Transaction: ${result.hash}`);
         // Reset form
         setFormData({
@@ -109,59 +108,62 @@ export default function CreateAuction() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Validate file type
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
-        return;
+  const handleImageSelect = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+          alert("Please select an image file");
+          return;
+        }
+
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          alert("Image must be smaller than 5MB");
+          return;
+        }
+
+        setSelectedImage(file);
+        const previewUrl = URL.createObjectURL(file);
+        setImagePreview(previewUrl);
       }
-      
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        alert('Image must be smaller than 5MB');
-        return;
-      }
-      
-      setSelectedImage(file);
-      const previewUrl = URL.createObjectURL(file);
-      setImagePreview(previewUrl);
-    }
-  }, []);
+    },
+    [],
+  );
 
   const uploadImage = useCallback(async (): Promise<string | null> => {
     if (!selectedImage) return null;
-    
+
     setImageUploading(true);
     try {
       const formData = new FormData();
-      formData.append('image', selectedImage);
-      formData.append('maxWidth', '800');
-      formData.append('maxHeight', '600');
-      formData.append('quality', '0.8');
-      formData.append('generateThumbnail', 'true');
-      
-      const response = await fetch('/api/upload/auction-image', {
-        method: 'POST',
+      formData.append("image", selectedImage);
+      formData.append("maxWidth", "800");
+      formData.append("maxHeight", "600");
+      formData.append("quality", "0.8");
+      formData.append("generateThumbnail", "true");
+
+      const response = await fetch("/api/upload/auction-image", {
+        method: "POST",
         body: formData,
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to upload image');
+        throw new Error("Failed to upload image");
       }
-      
+
       const result = await response.json();
       if (result.success && result.images?.[0]?.url) {
         const imageUrl = result.images[0].url;
         setUploadedImageUrl(imageUrl);
         return imageUrl;
       }
-      
-      throw new Error('Invalid response from upload service');
+
+      throw new Error("Invalid response from upload service");
     } catch (error) {
-      console.error('Image upload failed:', error);
-      alert('Failed to upload image. Please try again.');
+      console.error("Image upload failed:", error);
+      alert("Failed to upload image. Please try again.");
       return null;
     } finally {
       setImageUploading(false);
@@ -222,7 +224,7 @@ export default function CreateAuction() {
           {/* Image Upload Section */}
           <div className="space-y-3">
             <label className="text-sm font-medium">Auction Image</label>
-            
+
             {!imagePreview && (
               <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
                 <input
@@ -232,19 +234,33 @@ export default function CreateAuction() {
                   className="hidden"
                   id="image-upload"
                 />
-                <label 
-                  htmlFor="image-upload" 
+                <label
+                  htmlFor="image-upload"
                   className="cursor-pointer flex flex-col items-center"
                 >
-                  <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  <svg
+                    className="w-12 h-12 text-gray-400 mb-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                    />
                   </svg>
-                  <span className="text-sm text-gray-600 mb-1">Click to upload auction image</span>
-                  <span className="text-xs text-gray-400">PNG, JPG, GIF up to 5MB</span>
+                  <span className="text-sm text-gray-600 mb-1">
+                    Click to upload auction image
+                  </span>
+                  <span className="text-xs text-gray-400">
+                    PNG, JPG, GIF up to 5MB
+                  </span>
                 </label>
               </div>
             )}
-            
+
             {imagePreview && (
               <div className="relative">
                 <div className="border rounded-lg p-4">
@@ -257,12 +273,18 @@ export default function CreateAuction() {
                       className="object-cover rounded-md w-[120px] h-[120px]"
                     />
                     <div className="flex-1">
-                      <p className="text-sm font-medium">{selectedImage?.name}</p>
+                      <p className="text-sm font-medium">
+                        {selectedImage?.name}
+                      </p>
                       <p className="text-xs text-gray-500 mb-2">
-                        {selectedImage && (selectedImage.size / 1024).toFixed(1)} KB
+                        {selectedImage &&
+                          (selectedImage.size / 1024).toFixed(1)}{" "}
+                        KB
                       </p>
                       {uploadedImageUrl && (
-                        <p className="text-xs text-green-600 mb-2">✓ Image uploaded successfully</p>
+                        <p className="text-xs text-green-600 mb-2">
+                          ✓ Image uploaded successfully
+                        </p>
                       )}
                       <div className="flex gap-2">
                         {!uploadedImageUrl && (
@@ -274,7 +296,7 @@ export default function CreateAuction() {
                             onClick={uploadImage}
                             disabled={imageUploading}
                           >
-                            {imageUploading ? 'Uploading...' : 'Upload Now'}
+                            {imageUploading ? "Uploading..." : "Upload Now"}
                           </Button>
                         )}
                         <Button
@@ -345,10 +367,19 @@ export default function CreateAuction() {
             type="submit"
             color="primary"
             isLoading={isPending || imageUploading}
-            disabled={!formData.name || !formData.startingPrice || isPending || imageUploading}
+            disabled={
+              !formData.name ||
+              !formData.startingPrice ||
+              isPending ||
+              imageUploading
+            }
             className="w-full"
           >
-            {isPending ? "Creating Auction..." : imageUploading ? "Uploading Image..." : "Create Auction"}
+            {isPending
+              ? "Creating Auction..."
+              : imageUploading
+                ? "Uploading Image..."
+                : "Create Auction"}
           </Button>
         </form>
 

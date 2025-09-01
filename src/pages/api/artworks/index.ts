@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
-import { withApiMiddleware } from "@/lib/api-middleware";
+import { createApiHandler } from "@/lib/api-middleware";
 import { AuctionService } from "@/lib/services/auction-service";
 import { createArtworkSchema } from "@/lib/validation-schemas";
 import { logger } from "@/lib/logger";
@@ -78,10 +78,15 @@ async function handleCreateArtwork(
   }
 }
 
-export default withApiMiddleware(handler, {
-  requireAuth: false, // GET doesn't require auth, POST will check in handler
+export default createApiHandler(handler, {
+  methods: ["GET", "POST"],
   rateLimit: {
-    windowMs: 15 * 60 * 1000,
-    max: 100,
+    maxRequests: 100,
+    windowMs: 15 * 60 * 1000, // 15 minutes
+  },
+  cors: true,
+  monitoring: {
+    trackPerformance: true,
+    logRequests: true,
   },
 });

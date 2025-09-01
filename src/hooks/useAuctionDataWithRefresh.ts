@@ -46,7 +46,7 @@ export function useAuctionDataWithRefresh(
         // Get both auction data and bid history in parallel
         const [freshAuction, freshBids] = await Promise.all([
           ContractAuctionService.getAuctionByIndex(auctionIndex),
-          BidHistoryService.getBidHistory(auctionIndex)
+          BidHistoryService.getBidHistory(auctionIndex),
         ]);
 
         if (freshAuction) {
@@ -54,7 +54,7 @@ export function useAuctionDataWithRefresh(
             title: freshAuction.title,
             currentBid: freshAuction.current_bid,
             totalBids: freshAuction.total_bids,
-            bidHistoryCount: freshBids.length
+            bidHistoryCount: freshBids.length,
           });
 
           setState((prev) => ({

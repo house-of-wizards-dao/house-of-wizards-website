@@ -106,7 +106,10 @@ export default function AuctionManagement({
         setError(
           err instanceof Error ? err.message : "Failed to moderate auction",
         );
-        logger.error("Error moderating auction", err instanceof Error ? err : new Error(String(err)));
+        logger.error(
+          "Error moderating auction",
+          err instanceof Error ? err : new Error(String(err)),
+        );
       } finally {
         setLoading(false);
       }
@@ -155,7 +158,10 @@ export default function AuctionManagement({
       setError(
         err instanceof Error ? err.message : "Failed to perform bulk action",
       );
-      logger.error("Error in bulk moderation", err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        "Error in bulk moderation",
+        err instanceof Error ? err : new Error(String(err)),
+      );
     } finally {
       setLoading(false);
     }

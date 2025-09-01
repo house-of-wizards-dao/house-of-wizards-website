@@ -1,8 +1,8 @@
+import fs from "fs";
+import path from "path";
 import { NextApiRequest, NextApiResponse } from "next";
 import formidable from "formidable";
 import { createClient } from "@supabase/supabase-js";
-import fs from "fs";
-import path from "path";
 
 export const config = {
   api: {
@@ -17,7 +17,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
@@ -34,7 +34,7 @@ export default async function handler(
     });
 
     const [fields, files] = await form.parse(req);
-    
+
     // Get the uploaded file
     const fileArray = Array.isArray(files.image) ? files.image : [files.image];
     const file = fileArray[0];
@@ -45,7 +45,7 @@ export default async function handler(
 
     // Read file buffer
     const fileBuffer = fs.readFileSync(file.filepath);
-    
+
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(7);
@@ -64,7 +64,7 @@ export default async function handler(
 
     if (uploadError) {
       console.error("Upload error:", uploadError);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: "Failed to upload image",
         details: uploadError.message,
       });
@@ -80,13 +80,15 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      images: [{
-        url: publicUrlData.publicUrl,
-        path: filePath,
-        file_name: fileName,
-        file_size: file.size,
-        mime_type: file.mimetype,
-      }],
+      images: [
+        {
+          url: publicUrlData.publicUrl,
+          path: filePath,
+          file_name: fileName,
+          file_size: file.size,
+          mime_type: file.mimetype,
+        },
+      ],
     });
   } catch (error) {
     console.error("Error uploading auction image:", error);

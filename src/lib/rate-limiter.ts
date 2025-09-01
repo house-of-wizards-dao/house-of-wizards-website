@@ -193,10 +193,16 @@ export function rateLimit(options: RateLimitOptions) {
 
     const result = await rateLimiter.checkLimit(key, options);
 
-    // Set rate limit headers
-    res.setHeader("X-RateLimit-Limit", result.limit);
-    res.setHeader("X-RateLimit-Remaining", result.remaining);
-    res.setHeader("X-RateLimit-Reset", result.reset);
+    // Set rate limit headers (with safety checks)
+    if (result.limit !== undefined) {
+      res.setHeader("X-RateLimit-Limit", result.limit);
+    }
+    if (result.remaining !== undefined) {
+      res.setHeader("X-RateLimit-Remaining", result.remaining);
+    }
+    if (result.reset !== undefined) {
+      res.setHeader("X-RateLimit-Reset", result.reset);
+    }
 
     if (!result.allowed) {
       if (result.retryAfter) {

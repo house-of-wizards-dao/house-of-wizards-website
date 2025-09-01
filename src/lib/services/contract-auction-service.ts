@@ -5,12 +5,9 @@ import {
   AUCTION_CONTRACT_ABI,
   AuctionStatus,
 } from "@/lib/auction-contract";
-import {
-  getRpcClient,
-  executeWithRetry,
-  readContractWithRetry
-} from "@/lib/rpc-client";
+import { getRpcClient, readContractWithRetry } from "@/lib/rpc-client";
 import { supabase } from "@/lib/supabase";
+import { logger } from "@/lib/logger";
 import type { Auction } from "@/types";
 
 // Interface for raw contract auction data
@@ -39,25 +36,27 @@ export class ContractAuctionService {
    */
   static async getTotalAuctions(): Promise<number> {
     try {
-      console.log(`📊 Reading total auctions from contract ${AUCTION_CONTRACT_ADDRESS}...`);
+      console.log(
+        `📊 Reading total auctions from contract ${AUCTION_CONTRACT_ADDRESS}...`,
+      );
       const publicClient = getRpcClient();
-      
-      const result = await readContractWithRetry(
-        () => publicClient.readContract({
-          address: AUCTION_CONTRACT_ADDRESS,
-          abi: AUCTION_CONTRACT_ABI,
-          functionName: "getTotalAuctions",
-        }),
-        "total auctions count"
-      ) as bigint;
+
+      const result = (await readContractWithRetry(
+        () =>
+          publicClient.readContract({
+            address: AUCTION_CONTRACT_ADDRESS,
+            abi: AUCTION_CONTRACT_ABI,
+            functionName: "getTotalAuctions",
+          }),
+        "total auctions count",
+      )) as bigint;
 
       const totalAuctions = Number(result);
       console.log(`🎯 Found ${totalAuctions} total auctions`);
       return totalAuctions;
     } catch (error) {
-      console.error("❌ Failed to get total auctions:", error);
-      console.error("Error details:", {
-        message: (error as Error).message,
+      logger.error("Failed to get total auctions", {
+        error: (error as Error).message,
         contractAddress: AUCTION_CONTRACT_ADDRESS,
       });
       return 0;
@@ -73,16 +72,17 @@ export class ContractAuctionService {
     try {
       console.log(`📊 Reading auction struct for index ${auctionIndex}...`);
       const publicClient = getRpcClient();
-      
-      const result = await readContractWithRetry(
-        () => publicClient.readContract({
-          address: AUCTION_CONTRACT_ADDRESS,
-          abi: AUCTION_CONTRACT_ABI,
-          functionName: "auctions",
-          args: [BigInt(auctionIndex)],
-        }),
-        `auction struct for index ${auctionIndex}`
-      ) as [string, bigint, bigint, Address, bigint, bigint, number];
+
+      const result = (await readContractWithRetry(
+        () =>
+          publicClient.readContract({
+            address: AUCTION_CONTRACT_ADDRESS,
+            abi: AUCTION_CONTRACT_ABI,
+            functionName: "auctions",
+            args: [BigInt(auctionIndex)],
+          }),
+        `auction struct for index ${auctionIndex}`,
+      )) as [string, bigint, bigint, Address, bigint, bigint, number];
 
       const auctionData = {
         name: result[0],
@@ -93,23 +93,22 @@ export class ContractAuctionService {
         bidCount: result[5],
         status: result[6],
       };
-      
+
       console.log(`✅ Auction ${auctionIndex} data:`, {
         name: auctionData.name,
         bidCount: Number(auctionData.bidCount),
         currentPrice: formatEther(auctionData.currentPrice),
-        bidder: auctionData.bidder === "0x0000000000000000000000000000000000000000" ? "No bids" : `${auctionData.bidder.slice(0, 6)}...${auctionData.bidder.slice(-4)}`,
-        status: auctionData.status
+        bidder:
+          auctionData.bidder === "0x0000000000000000000000000000000000000000"
+            ? "No bids"
+            : `${auctionData.bidder.slice(0, 6)}...${auctionData.bidder.slice(-4)}`,
+        status: auctionData.status,
       });
-      
+
       return auctionData;
     } catch (error) {
-      console.error(
-        `❌ Failed to get auction struct for index ${auctionIndex}:`,
-        error,
-      );
-      console.error("Error details:", {
-        message: (error as Error).message,
+      logger.error(`Failed to get auction struct for index ${auctionIndex}`, {
+        error: (error as Error).message,
         contractAddress: AUCTION_CONTRACT_ADDRESS,
         auctionIndex,
       });
@@ -125,16 +124,17 @@ export class ContractAuctionService {
   ): Promise<RawAuctionDetails | null> {
     try {
       const publicClient = getRpcClient();
-      
-      const result = await readContractWithRetry(
-        () => publicClient.readContract({
-          address: AUCTION_CONTRACT_ADDRESS,
-          abi: AUCTION_CONTRACT_ABI,
-          functionName: "getAuctionDetails",
-          args: [BigInt(auctionIndex)],
-        }),
-        `auction details for index ${auctionIndex}`
-      ) as [Address, bigint, bigint, number];
+
+      const result = (await readContractWithRetry(
+        () =>
+          publicClient.readContract({
+            address: AUCTION_CONTRACT_ADDRESS,
+            abi: AUCTION_CONTRACT_ABI,
+            functionName: "getAuctionDetails",
+            args: [BigInt(auctionIndex)],
+          }),
+        `auction details for index ${auctionIndex}`,
+      )) as [Address, bigint, bigint, number];
 
       return {
         currentWinner: result[0],
@@ -143,10 +143,10 @@ export class ContractAuctionService {
         status: result[3],
       };
     } catch (error) {
-      console.error(
-        `Failed to get auction details for index ${auctionIndex}:`,
-        error,
-      );
+      logger.error(`Failed to get auction details for index ${auctionIndex}`, {
+        error: (error as Error).message,
+        auctionIndex,
+      });
       return null;
     }
   }
@@ -157,23 +157,24 @@ export class ContractAuctionService {
   static async getBidCount(auctionIndex: number): Promise<number> {
     try {
       const publicClient = getRpcClient();
-      
-      const result = await readContractWithRetry(
-        () => publicClient.readContract({
-          address: AUCTION_CONTRACT_ADDRESS,
-          abi: AUCTION_CONTRACT_ABI,
-          functionName: "getBidCount",
-          args: [BigInt(auctionIndex)],
-        }),
-        `bid count for auction ${auctionIndex}`
-      ) as bigint;
+
+      const result = (await readContractWithRetry(
+        () =>
+          publicClient.readContract({
+            address: AUCTION_CONTRACT_ADDRESS,
+            abi: AUCTION_CONTRACT_ABI,
+            functionName: "getBidCount",
+            args: [BigInt(auctionIndex)],
+          }),
+        `bid count for auction ${auctionIndex}`,
+      )) as bigint;
 
       return Number(result);
     } catch (error) {
-      console.error(
-        `Failed to get bid count for index ${auctionIndex}:`,
-        error,
-      );
+      logger.error(`Failed to get bid count for index ${auctionIndex}`, {
+        error: (error as Error).message,
+        auctionIndex,
+      });
       return 0;
     }
   }
@@ -190,13 +191,19 @@ export class ContractAuctionService {
         .single();
 
       if (error) {
-        console.warn(`No metadata found for auction ${auctionIndex}:`, error.message);
+        logger.warn(`No metadata found for auction ${auctionIndex}`, {
+          error: error.message,
+          auctionIndex,
+        });
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error(`Failed to get metadata for auction ${auctionIndex}:`, error);
+      logger.error(`Failed to get metadata for auction ${auctionIndex}`, {
+        error: (error as Error).message,
+        auctionIndex,
+      });
       return null;
     }
   }
@@ -236,10 +243,12 @@ export class ContractAuctionService {
     const metadata = await this.getAuctionMetadata(auctionIndex);
 
     // Use metadata if available, otherwise fallback to contract data
-    const artworkUrl = metadata?.image_url || 
+    const artworkUrl =
+      metadata?.image_url ||
       `https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=800&h=800&fit=crop&sig=${auctionIndex}`;
-    
-    const description = metadata?.description || 
+
+    const description =
+      metadata?.description ||
       `Blockchain auction created on smart contract. Bids: ${Number(structData.bidCount)}`;
 
     return {
@@ -307,7 +316,11 @@ export class ContractAuctionService {
           ]);
 
           if (structData && detailsData) {
-            const auction = await this.convertToAuction(i, structData, detailsData);
+            const auction = await this.convertToAuction(
+              i,
+              structData,
+              detailsData,
+            );
             auctions.push(auction);
             console.log(
               `✅ Auction ${i}: "${structData.name}" - ${auction.status}`,
@@ -316,7 +329,10 @@ export class ContractAuctionService {
             console.warn(`⚠️ Failed to get complete data for auction ${i}`);
           }
         } catch (error) {
-          console.error(`❌ Error fetching auction ${i}:`, error);
+          logger.error(`Error fetching auction ${i}`, {
+            error: (error as Error).message,
+            auctionIndex: i,
+          });
           // Continue with other auctions even if one fails
         }
       }
@@ -324,7 +340,9 @@ export class ContractAuctionService {
       console.log(`🎉 Successfully fetched ${auctions.length} auctions`);
       return auctions;
     } catch (error) {
-      console.error("❌ Failed to fetch auctions from contract:", error);
+      logger.error("Failed to fetch auctions from contract", {
+        error: (error as Error).message,
+      });
       return [];
     }
   }
@@ -342,12 +360,19 @@ export class ContractAuctionService {
       ]);
 
       if (structData && detailsData) {
-        return await this.convertToAuction(auctionIndex, structData, detailsData);
+        return await this.convertToAuction(
+          auctionIndex,
+          structData,
+          detailsData,
+        );
       }
 
       return null;
     } catch (error) {
-      console.error(`Failed to fetch auction ${auctionIndex}:`, error);
+      logger.error(`Failed to fetch auction ${auctionIndex}`, {
+        error: (error as Error).message,
+        auctionIndex,
+      });
       return null;
     }
   }
@@ -397,7 +422,9 @@ export class ContractAuctionService {
         contractAddress: AUCTION_CONTRACT_ADDRESS,
       };
     } catch (error) {
-      console.error("Failed to get contract stats:", error);
+      logger.error("Failed to get contract stats", {
+        error: (error as Error).message,
+      });
       return {
         totalAuctions: 0,
         activeAuctions: 0,

@@ -1,5 +1,5 @@
 // Client-side component that uses Wagmi hooks
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@nextui-org/button";
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
@@ -17,7 +17,7 @@ import { ArtworkDetails } from "@/components/auction/ArtworkDetails";
 import { useAuctionDataWithRefresh } from "@/hooks/useAuctionDataWithRefresh";
 import { useTimer } from "@/hooks/useTimer";
 
-import type { AuctionPageProps, BidFormData } from "@/types";
+import type { AuctionPageProps } from "@/types";
 
 export function AuctionPageClient({
   auction: initialAuction,
@@ -42,7 +42,6 @@ export function AuctionPageClient({
     activity: initialActivity,
   });
 
-
   // Countdown timer
   const timer = useTimer(auction?.end_time || initialAuction.end_time);
 
@@ -50,7 +49,6 @@ export function AuctionPageClient({
     "details" | "history" | "activity"
   >("details");
   const [showMobileActions, setShowMobileActions] = useState(false);
-
 
   if (error) {
     return (

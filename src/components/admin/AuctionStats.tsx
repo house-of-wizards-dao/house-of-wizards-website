@@ -48,7 +48,10 @@ export default function AuctionStats({
       setError(
         err instanceof Error ? err.message : "Failed to fetch statistics",
       );
-      logger.error("Error fetching auction stats", err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        "Error fetching auction stats",
+        err instanceof Error ? err : new Error(String(err)),
+      );
     } finally {
       setLoading(false);
     }

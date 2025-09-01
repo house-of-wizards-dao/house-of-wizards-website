@@ -61,12 +61,12 @@ export function BidHistoryWithData({
       }
 
       console.log(`🔍 Loading bid history for auction ${auctionIndex}...`);
-      
+
       // Use the improved BidHistoryService which has multiple fallback methods
       const bidHistory = await BidHistoryService.getBidHistory(auctionIndex);
-      
+
       console.log(`📊 Bid history result: ${bidHistory.length} bids found`);
-      
+
       if (bidHistory.length > 0) {
         setBids(bidHistory);
         console.log(`✅ Loaded ${bidHistory.length} bids for display`);
@@ -74,10 +74,10 @@ export function BidHistoryWithData({
         console.log("📭 No bids found for this auction");
         setBids([]);
       }
-      
     } catch (err) {
       console.error("❌ Failed to load bid history:", err);
-      const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+      const errorMessage =
+        err instanceof Error ? err.message : "Unknown error occurred";
       setError(`Failed to load bid history: ${errorMessage}`);
       setBids([]); // Clear any existing bids on error
     } finally {
@@ -97,7 +97,10 @@ export function BidHistoryWithData({
   // Update bids when initialBids change (when parent component refreshes)
   useEffect(() => {
     if (initialBids.length > 0 && initialBids !== bids) {
-      console.log("🔄 BidHistoryWithData: Updating with fresh initialBids:", initialBids.length);
+      console.log(
+        "🔄 BidHistoryWithData: Updating with fresh initialBids:",
+        initialBids.length,
+      );
       setBids(initialBids);
     }
   }, [initialBids]);
@@ -163,11 +166,12 @@ export function BidHistoryWithData({
             </div>
             <p className="text-red-400 text-sm mb-2">{error}</p>
             <p className="text-gray-500 text-xs mb-4">
-              There might be a network issue or the auction data is not yet available.
+              There might be a network issue or the auction data is not yet
+              available.
             </p>
-            <Button 
-              size="sm" 
-              onPress={loadBidHistory} 
+            <Button
+              size="sm"
+              onPress={loadBidHistory}
               variant="bordered"
               color="danger"
             >
@@ -234,24 +238,25 @@ export function BidHistoryWithData({
                         </Chip>
                       )}
                     </div>
-                      <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1">
                       <p className="text-xs text-gray-400 font-mono">
                         {bid.transaction_hash === "Direct from contract"
                           ? "Current state"
-                          : bid.transaction_hash.startsWith("0x") 
+                          : bid.transaction_hash.startsWith("0x")
                             ? `${bid.transaction_hash?.slice(0, 10)}...`
                             : bid.transaction_hash}
                       </p>
-                      {bid.transaction_hash.startsWith("0x") && bid.transaction_hash !== "0x" && (
-                        <a
-                          href={`https://sepolia.etherscan.io/tx/${bid.transaction_hash}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-brand-400 hover:text-brand-300 text-xs"
-                        >
-                          ↗
-                        </a>
-                      )}
+                      {bid.transaction_hash.startsWith("0x") &&
+                        bid.transaction_hash !== "0x" && (
+                          <a
+                            href={`https://sepolia.etherscan.io/tx/${bid.transaction_hash}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-brand-400 hover:text-brand-300 text-xs"
+                          >
+                            ↗
+                          </a>
+                        )}
                     </div>
                   </div>
                 </div>

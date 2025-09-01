@@ -1,21 +1,21 @@
 // Service to fetch bid history from smart contract events
-import { formatEther, decodeEventLog, keccak256, toHex } from "viem";
+import { formatEther, decodeEventLog } from "viem";
 import {
   AUCTION_CONTRACT_ADDRESS,
   AUCTION_CONTRACT_ABI,
 } from "@/lib/auction-contract";
-import { 
-  getRpcClient, 
-  executeWithRetry, 
+import {
+  getRpcClient,
   readContractWithRetry,
   getLogsWithRetry,
-  getBlockWithRetry 
+  getBlockWithRetry,
 } from "@/lib/rpc-client";
 import type { Bid } from "@/types";
 
 // UpdatedBid event signature hash for filtering
 // UpdatedBid(uint256,uint256,address) -> keccak256("UpdatedBid(uint256,uint256,address)")
-const UPDATED_BID_EVENT_HASH = "0x2f2317489eb3b025da5521ea9c4a7bd075188f0b72c209b7d7a29ff80e7b6220";
+const UPDATED_BID_EVENT_HASH =
+  "0x2f2317489eb3b025da5521ea9c4a7bd075188f0b72c209b7d7a29ff80e7b6220";
 
 export class BidHistoryService {
   /**
@@ -28,64 +28,76 @@ export class BidHistoryService {
 
       // Try multiple methods to get bid history
       let bids: Bid[] = [];
-      
+
       // Method 1: Get events using event signature filtering
       try {
-        console.log(`🔎 Method 1: Searching for UpdatedBid events using topic filtering...`);
+        console.log(
+          `🔎 Method 1: Searching for UpdatedBid events using topic filtering...`,
+        );
         bids = await this.getBidHistoryFromEvents(auctionIndex);
         if (bids.length > 0) {
-          console.log(`✅ Method 1 successful: Found ${bids.length} bids from events`);
+          console.log(
+            `✅ Method 1 successful: Found ${bids.length} bids from events`,
+          );
           return bids;
         }
       } catch (eventError) {
         console.warn("⚠️ Method 1 (events) failed:", eventError);
       }
-      
+
       // Method 2: Get events using standard event definition
       try {
-        console.log(`🔎 Method 2: Searching for UpdatedBid events using standard definition...`);
+        console.log(
+          `🔎 Method 2: Searching for UpdatedBid events using standard definition...`,
+        );
         bids = await this.getBidHistoryFromEventsStandard(auctionIndex);
         if (bids.length > 0) {
-          console.log(`✅ Method 2 successful: Found ${bids.length} bids from events`);
+          console.log(
+            `✅ Method 2 successful: Found ${bids.length} bids from events`,
+          );
           return bids;
         }
       } catch (eventError) {
         console.warn("⚠️ Method 2 (standard events) failed:", eventError);
       }
-      
+
       // Method 3: Fallback to contract state
       console.log(`🔎 Method 3: Fallback to reading current auction state...`);
       return await this.getBidHistoryFromContractState(auctionIndex);
-      
     } catch (error) {
       console.error("❌ All methods failed to fetch bid history:", error);
       return [];
     }
   }
-  
+
   /**
    * Method 1: Get bid history using topic-based event filtering
    */
-  private static async getBidHistoryFromEvents(auctionIndex: number): Promise<Bid[]> {
+  private static async getBidHistoryFromEvents(
+    auctionIndex: number,
+  ): Promise<Bid[]> {
     const publicClient = getRpcClient();
-    
+
     const logs = await getLogsWithRetry(
-      () => publicClient.getLogs({
-        address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
-        topics: [UPDATED_BID_EVENT_HASH], // Use the event signature hash directly
-        fromBlock: "earliest",
-        toBlock: "latest",
-      }),
-      `UpdatedBid events for auction ${auctionIndex}`
+      () =>
+        publicClient.getLogs({
+          address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
+          topics: [UPDATED_BID_EVENT_HASH], // Use the event signature hash directly
+          fromBlock: "earliest",
+          toBlock: "latest",
+        }),
+      `UpdatedBid events for auction ${auctionIndex}`,
     );
 
-    console.log(`📊 Found ${logs.length} UpdatedBid events using topic filtering`);
-    
+    console.log(
+      `📊 Found ${logs.length} UpdatedBid events using topic filtering`,
+    );
+
     const bids: Bid[] = [];
 
     for (let i = 0; i < logs.length; i++) {
       const log = logs[i];
-      
+
       try {
         // Try to decode the event - skip if it's not an UpdatedBid event
         let decoded;
@@ -101,7 +113,7 @@ export class BidHistoryService {
         }
 
         // Check if this is an UpdatedBid event and extract args
-        if (decoded.eventName === 'UpdatedBid' && decoded.args) {
+        if (decoded.eventName === "UpdatedBid" && decoded.args) {
           const eventAuctionIndex = Number(decoded.args._auctionIndex);
           console.log(
             `📝 Event ${i}: auction ${eventAuctionIndex} (looking for ${auctionIndex}), amount: ${formatEther(decoded.args._newOffer as bigint)} ETH`,
@@ -114,13 +126,15 @@ export class BidHistoryService {
             try {
               const block = await getBlockWithRetry(
                 () => publicClient.getBlock({ blockNumber: log.blockNumber }),
-                `block ${log.blockNumber} timestamp`
+                `block ${log.blockNumber} timestamp`,
               );
-              blockTime = new Date(Number(block.timestamp) * 1000).toISOString();
+              blockTime = new Date(
+                Number(block.timestamp) * 1000,
+              ).toISOString();
             } catch (blockError) {
               console.warn("Failed to get block timestamp:", blockError);
             }
-            
+
             const bid: Bid = {
               id: `bid-${log.transactionHash}-${log.logIndex}`,
               auction_id: `contract-auction-${auctionIndex}`,
@@ -141,36 +155,41 @@ export class BidHistoryService {
         console.warn(`Failed to decode log ${i}:`, decodeError);
       }
     }
-    
+
     return this.processBids(bids, auctionIndex);
   }
-  
+
   /**
    * Method 2: Get bid history using standard event definition
    */
-  private static async getBidHistoryFromEventsStandard(auctionIndex: number): Promise<Bid[]> {
+  private static async getBidHistoryFromEventsStandard(
+    auctionIndex: number,
+  ): Promise<Bid[]> {
     const publicClient = getRpcClient();
-    
+
     const logs = await getLogsWithRetry(
-      () => publicClient.getLogs({
-        address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
-        event: {
-          type: "event",
-          name: "UpdatedBid",
-          inputs: [
-            { name: "_auctionIndex", type: "uint256", indexed: false },
-            { name: "_newOffer", type: "uint256", indexed: false },
-            { name: "_bidderAddress", type: "address", indexed: false },
-          ],
-        },
-        fromBlock: "earliest",
-        toBlock: "latest",
-      }),
-      `UpdatedBid events (standard) for auction ${auctionIndex}`
+      () =>
+        publicClient.getLogs({
+          address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
+          event: {
+            type: "event",
+            name: "UpdatedBid",
+            inputs: [
+              { name: "_auctionIndex", type: "uint256", indexed: false },
+              { name: "_newOffer", type: "uint256", indexed: false },
+              { name: "_bidderAddress", type: "address", indexed: false },
+            ],
+          },
+          fromBlock: "earliest",
+          toBlock: "latest",
+        }),
+      `UpdatedBid events (standard) for auction ${auctionIndex}`,
     );
 
-    console.log(`📊 Found ${logs.length} total bid events using standard definition`);
-    
+    console.log(
+      `📊 Found ${logs.length} total bid events using standard definition`,
+    );
+
     const bids: Bid[] = [];
 
     for (let i = 0; i < logs.length; i++) {
@@ -197,13 +216,13 @@ export class BidHistoryService {
           try {
             const block = await getBlockWithRetry(
               () => publicClient.getBlock({ blockNumber: log.blockNumber }),
-              `block ${log.blockNumber} timestamp`
+              `block ${log.blockNumber} timestamp`,
             );
             blockTime = new Date(Number(block.timestamp) * 1000).toISOString();
           } catch (blockError) {
             console.warn("Failed to get block timestamp:", blockError);
           }
-          
+
           const bid: Bid = {
             id: `bid-${log.transactionHash}-${log.logIndex}`,
             auction_id: `contract-auction-${auctionIndex}`,
@@ -223,24 +242,30 @@ export class BidHistoryService {
         console.warn(`Failed to decode log ${i}:`, decodeError);
       }
     }
-    
+
     return this.processBids(bids, auctionIndex);
   }
-  
+
   /**
    * Method 3: Get bid history from current contract state as fallback
    */
-  private static async getBidHistoryFromContractState(auctionIndex: number): Promise<Bid[]> {
+  private static async getBidHistoryFromContractState(
+    auctionIndex: number,
+  ): Promise<Bid[]> {
     try {
-      console.log(`📊 Reading auction state for auction ${auctionIndex} as fallback...`);
+      console.log(
+        `📊 Reading auction state for auction ${auctionIndex} as fallback...`,
+      );
       const auctionState = await this.getAuctionState(auctionIndex);
-      
+
       if (
         auctionState &&
         auctionState.bidder !== "0x0000000000000000000000000000000000000000" &&
         auctionState.bidCount > 0
       ) {
-        console.log(`✅ Found current bid from contract state: ${formatEther(auctionState.currentPrice)} ETH`);
+        console.log(
+          `✅ Found current bid from contract state: ${formatEther(auctionState.currentPrice)} ETH`,
+        );
         const currentBid: Bid = {
           id: `current-bid-${auctionIndex}`,
           auction_id: `contract-auction-${auctionIndex}`,
@@ -252,7 +277,9 @@ export class BidHistoryService {
         };
         return [currentBid];
       } else {
-        console.log(`📭 No bids found in auction ${auctionIndex} (bidCount: ${auctionState?.bidCount || 0})`);
+        console.log(
+          `📭 No bids found in auction ${auctionIndex} (bidCount: ${auctionState?.bidCount || 0})`,
+        );
         return [];
       }
     } catch (stateError) {
@@ -260,20 +287,20 @@ export class BidHistoryService {
       return [];
     }
   }
-  
+
   /**
    * Process and sort bids for display
    */
   private static processBids(bids: Bid[], auctionIndex: number): Bid[] {
     if (bids.length === 0) return bids;
-    
+
     // Sort by block number and log index for chronological order
     bids.sort((a, b) => {
       // If we have transaction hashes, we can't easily sort by block time here
       // So we'll sort by amount (highest first) which is what users expect to see
       return Number(BigInt(b.amount) - BigInt(a.amount));
     });
-    
+
     // Update is_winning status - highest bid wins
     if (bids.length > 0) {
       const highestAmount = bids[0].amount;
@@ -293,16 +320,17 @@ export class BidHistoryService {
     try {
       console.log(`📊 Reading auction state for auction ${auctionIndex}...`);
       const publicClient = getRpcClient();
-      
-      const auctionStruct = await readContractWithRetry(
-        () => publicClient.readContract({
-          address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
-          abi: AUCTION_CONTRACT_ABI,
-          functionName: "auctions",
-          args: [BigInt(auctionIndex)],
-        }),
-        `auction state for index ${auctionIndex}`
-      ) as [string, bigint, bigint, string, bigint, bigint, number];
+
+      const auctionStruct = (await readContractWithRetry(
+        () =>
+          publicClient.readContract({
+            address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
+            abi: AUCTION_CONTRACT_ABI,
+            functionName: "auctions",
+            args: [BigInt(auctionIndex)],
+          }),
+        `auction state for index ${auctionIndex}`,
+      )) as [string, bigint, bigint, string, bigint, bigint, number];
 
       const state = {
         name: auctionStruct[0],
@@ -313,14 +341,14 @@ export class BidHistoryService {
         bidCount: Number(auctionStruct[5]),
         status: auctionStruct[6],
       };
-      
+
       console.log(`📊 Auction state:`, {
         name: state.name,
         bidCount: state.bidCount,
         currentPrice: formatEther(state.currentPrice),
-        bidder: state.bidder
+        bidder: state.bidder,
       });
-      
+
       return state;
     } catch (error) {
       console.error("Failed to get auction state:", error);

@@ -1,4 +1,11 @@
-import { Redis } from "ioredis";
+// Conditional import for Redis support
+let Redis: any = null;
+try {
+  Redis = require("ioredis").Redis;
+} catch {
+  // ioredis not installed, will use in-memory cache
+}
+
 import { env } from "./env";
 import { logger } from "./logger";
 
@@ -16,7 +23,7 @@ export interface CacheStats {
 }
 
 export class CacheManager {
-  private redis: Redis | null = null;
+  private redis: any | null = null;
   private fallbackCache: Map<
     string,
     { value: any; expires: number; tags: string[] }
@@ -37,8 +44,10 @@ export class CacheManager {
   }
 
   private async initializeRedis() {
-    if (!env.REDIS_URL) {
-      logger.warn("Redis URL not configured, using in-memory fallback cache");
+    if (!env.REDIS_URL || !Redis) {
+      logger.warn(
+        "Redis not available or URL not configured, using in-memory fallback cache",
+      );
       return;
     }
 

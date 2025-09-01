@@ -89,7 +89,10 @@ export function useAuctions(
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch auctions");
-      logger.error("Error fetching auctions", err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        "Error fetching auctions",
+        err instanceof Error ? err : new Error(String(err)),
+      );
     } finally {
       setLoading(false);
     }
@@ -148,7 +151,10 @@ export function useAuction(auctionId: string) {
       setAuction(auctionData);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch auction");
-      logger.error("Error fetching auction", err instanceof Error ? err : new Error(String(err)));
+      logger.error(
+        "Error fetching auction",
+        err instanceof Error ? err : new Error(String(err)),
+      );
     } finally {
       setLoading(false);
     }
