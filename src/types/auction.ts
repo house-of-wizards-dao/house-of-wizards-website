@@ -47,7 +47,7 @@ export interface Auction {
   end_time: string;
   status: AuctionStatus;
   total_bids: number;
-  winner_id?: string;
+  winner_id?: string | null;
   winner_name?: string; // Computed field
   created_by: string;
   created_by_name?: string; // Computed field
