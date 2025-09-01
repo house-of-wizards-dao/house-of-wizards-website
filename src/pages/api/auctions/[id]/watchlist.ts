@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { withApiMiddleware } from "@/lib/api-middleware";
 import { AuctionService } from "@/lib/services/auction-service";
 import { logger } from "@/lib/logger";
+import "@/types/api";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -80,9 +81,9 @@ async function handleRemoveFromWatchlist(
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: true,
+  auth: { required: true },
   rateLimit: {
+    maxRequests: 100,
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100,
   },
 });

@@ -31,6 +31,11 @@ export interface Auction {
   id: string;
   artwork_id: string;
   artwork?: Artwork; // Populated via join
+  artwork_metadata?: Record<string, any>; // For artwork metadata compatibility
+  artwork_url?: string; // For Web3 compatibility (artwork image URL)
+  contract_address?: string; // For Web3 integration compatibility
+  token_id?: string; // For NFT/blockchain compatibility
+  start_price?: number; // For Web3 compatibility (alias for starting_bid)
   title: string;
   description: string;
   starting_bid: number;
@@ -122,6 +127,7 @@ export interface UpdateAuctionRequest {
 
 export interface PlaceBidRequest {
   amount: number;
+  auction_id?: string; // Optional for context
   max_bid?: number; // For proxy bidding
 }
 
@@ -222,6 +228,7 @@ export interface AuctionEvent {
 export interface AuctionFilters {
   status?: AuctionStatus[];
   artist_id?: string;
+  created_by?: string;
   price_min?: number;
   price_max?: number;
   start_date?: string;

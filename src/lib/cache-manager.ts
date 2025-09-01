@@ -8,6 +8,7 @@ try {
 
 import { env } from "./env";
 import { logger } from "./logger";
+import { createLogContext } from "./error-utils";
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds
@@ -62,18 +63,18 @@ export class CacheManager {
       await this.redis.ping();
       logger.info("Redis cache connected successfully");
 
-      this.redis.on("error", (error) => {
-        logger.error("Redis cache error", { error });
+      this.redis.on("error", (error: unknown) => {
+        logger.error("Redis cache error", createLogContext(error, { component: "cache-redis" }));
         // Don't set redis to null, keep trying to reconnect
       });
 
       this.redis.on("connect", () => {
         logger.info("Redis cache reconnected");
       });
-    } catch (error) {
-      logger.warn("Failed to connect to Redis, using fallback cache", {
-        error,
-      });
+    } catch (error: unknown) {
+      logger.warn("Failed to connect to Redis, using fallback cache", createLogContext(error, {
+        component: "cache-redis",
+      }));
       this.redis = null;
     }
   }
@@ -171,8 +172,8 @@ export class CacheManager {
     if (!this.redis || this.redis.status !== "ready") {
       // Fallback cache tag invalidation
       let deleted = 0;
-      for (const [key, cached] of this.fallbackCache.entries()) {
-        if (cached.tags.some((tag) => tags.includes(tag))) {
+      for (const [key, cached] of Array.from(this.fallbackCache.entries())) {
+        if (cached.tags.some((tag: string) => tags.includes(tag))) {
           this.fallbackCache.delete(key);
           deleted++;
         }
@@ -337,7 +338,7 @@ export class CacheManager {
     const now = Date.now();
     let cleaned = 0;
 
-    for (const [key, cached] of this.fallbackCache.entries()) {
+    for (const [key, cached] of Array.from(this.fallbackCache.entries())) {
       if (cached.expires <= now) {
         this.fallbackCache.delete(key);
         cleaned++;
@@ -369,7 +370,7 @@ export function cached(key: string, options: CacheOptions = {}) {
 
       return cacheManager.getOrSet(
         cacheKey,
-        () => method.apply(this, args),
+        () => method ? method.apply(this, args) : undefined,
         options,
       );
     };

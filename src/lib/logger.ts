@@ -1,4 +1,5 @@
 import { env } from "./env";
+import { createLogContext, type LogContext } from "./error-utils";
 
 export enum LogLevel {
   ERROR = "error",
@@ -7,18 +8,8 @@ export enum LogLevel {
   DEBUG = "debug",
 }
 
-interface LogContext {
-  userId?: string;
-  requestId?: string;
-  method?: string;
-  url?: string;
-  userAgent?: string;
-  ip?: string;
-  duration?: number;
-  statusCode?: number;
-  error?: Error;
-  [key: string]: any;
-}
+// Re-export LogContext for backward compatibility and easier imports
+export type { LogContext } from "./error-utils";
 
 interface LogEntry {
   timestamp: string;
@@ -117,12 +108,18 @@ class Logger {
     console.error("CRITICAL ERROR:", JSON.stringify(logEntry, null, 2));
   }
 
-  error(message: string, context?: LogContext): void {
-    this.log(LogLevel.ERROR, message, context);
+  error(message: string, context?: LogContext | unknown): void {
+    const safeContext = context && typeof context === 'object' && 'error' in context 
+      ? context as LogContext
+      : createLogContext(context);
+    this.log(LogLevel.ERROR, message, safeContext);
   }
 
-  warn(message: string, context?: LogContext): void {
-    this.log(LogLevel.WARN, message, context);
+  warn(message: string, context?: LogContext | unknown): void {
+    const safeContext = context && typeof context === 'object' && 'error' in context 
+      ? context as LogContext
+      : createLogContext(context);
+    this.log(LogLevel.WARN, message, safeContext);
   }
 
   info(message: string, context?: LogContext): void {

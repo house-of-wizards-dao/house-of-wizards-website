@@ -137,13 +137,9 @@ async function handlePlaceBid(
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: false, // GET doesn't require auth, POST will check in handler
+  auth: { required: false }, // GET doesn't require auth, POST will check in handler
   rateLimit: {
+    maxRequests: 30, // More restrictive for bidding
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 30, // More restrictive for bidding
-    keyGenerator: (req) => {
-      // Rate limit by user ID if authenticated, otherwise by IP
-      return req.user?.id || req.ip || "unknown";
-    },
   },
 });

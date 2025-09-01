@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import createApiHandler from "@/lib/api-middleware";
 import { AuctionService } from "@/lib/services/auction-service";
 import { logger } from "@/lib/logger";
+import "@/types/api";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "GET") {

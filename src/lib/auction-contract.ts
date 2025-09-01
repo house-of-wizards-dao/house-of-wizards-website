@@ -171,7 +171,7 @@ export function useAuctionBid() {
 
       // Return the transaction hash
       return {
-        hash: hash || "pending",
+        hash: typeof hash === 'string' ? hash : "pending",
         success: true,
       };
     } catch (err) {
@@ -357,7 +357,7 @@ export function useAuctionEvents(auctionIndex: number) {
         const { _auctionIndex, _newOffer, _bidderAddress } = log.args;
         if (_auctionIndex === BigInt(auctionIndex)) {
           console.log(
-            `New bid of ${formatEther(_newOffer)} ETH from ${_bidderAddress}`,
+            `New bid of ${formatEther(_newOffer ?? BigInt(0))} ETH from ${_bidderAddress}`,
           );
           // You can trigger refetch of auction data here
         }

@@ -3,7 +3,13 @@ import path from "path";
 import crypto from "crypto";
 import formidable, { File } from "formidable";
 import { NextApiRequest, NextApiResponse } from "next";
-import sharp from "sharp";
+// import sharp from "sharp"; // Optional dependency - install if needed
+let sharp: any = null;
+try {
+  sharp = require("sharp");
+} catch (e) {
+  console.warn("Sharp not available - image processing features will be limited");
+}
 import { getServiceSupabase } from "@/lib/supabase";
 import { requireAuth, AuthenticatedUser } from "@/lib/auth";
 import {
@@ -142,7 +148,7 @@ async function secureUploadHandler(
       supabaseAdmin,
       uploadResult,
       file,
-      fields.description as string,
+      Array.isArray(fields.description) ? fields.description[0] : fields.description || "",
       user.id,
       optimized,
     );
@@ -387,7 +393,7 @@ async function uploadToStorage(
   const { data, error } = await supabaseAdmin.storage
     .from(bucket)
     .upload(fileName, fileBuffer, {
-      contentType: file.mimetype,
+      contentType: file.mimetype || "application/octet-stream",
       cacheControl: "3600",
       upsert: false, // Don't overwrite existing files
     });

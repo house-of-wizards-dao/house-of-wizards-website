@@ -173,7 +173,7 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
 export * from "./auction";
 
 // Auction-related types
-export interface Auction {
+export interface ContractAuction {
   id: string;
   title: string;
   description?: string;
@@ -244,7 +244,7 @@ export interface ZoomState {
 }
 
 export interface AuctionPageProps {
-  auction: Auction;
+  auction: ContractAuction;
   initialBids: Bid[];
   initialActivity: AuctionActivity[];
 }

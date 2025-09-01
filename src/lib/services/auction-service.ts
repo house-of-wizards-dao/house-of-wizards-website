@@ -1,5 +1,6 @@
 import { getServiceSupabase } from "../supabase";
 import { logger } from "../logger";
+import { createDatabaseErrorContext, createLogContext } from "../error-utils";
 import type {
   Auction,
   Artwork,
@@ -51,7 +52,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error creating artwork", error);
+      logger.error("Error creating artwork", createDatabaseErrorContext(error, "insert", "artworks", { artistId: data.artist_id, title: data.title }));
       throw new Error(`Failed to create artwork: ${error.message}`);
     }
 
@@ -91,7 +92,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error updating artwork", error);
+      logger.error("Error updating artwork", createDatabaseErrorContext(error, "update", "artworks", { artworkId: id }));
       throw new Error(`Failed to update artwork: ${error.message}`);
     }
 
@@ -119,7 +120,7 @@ export class AuctionService {
 
     if (error) {
       if (error.code === "PGRST116") return null;
-      logger.error("Error fetching artwork", error);
+      logger.error("Error fetching artwork", createDatabaseErrorContext(error, "select", "artworks", { artworkId: id }));
       throw new Error(`Failed to fetch artwork: ${error.message}`);
     }
 
@@ -185,7 +186,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error creating auction", error);
+      logger.error("Error creating auction", createDatabaseErrorContext(error, "insert", "auctions", { artworkId: data.artwork_id, startingBid: data.starting_bid }));
       throw new Error(`Failed to create auction: ${error.message}`);
     }
 
@@ -249,7 +250,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error updating auction", error);
+      logger.error("Error updating auction", createDatabaseErrorContext(error, "update", "auctions", { auctionId: id }));
       throw new Error(`Failed to update auction: ${error.message}`);
     }
 
@@ -280,7 +281,7 @@ export class AuctionService {
 
     if (error) {
       if (error.code === "PGRST116") return null;
-      logger.error("Error fetching auction", error);
+      logger.error("Error fetching auction", createDatabaseErrorContext(error, "select", "auctions", { auctionId: id }));
       throw new Error(`Failed to fetch auction: ${error.message}`);
     }
 
@@ -453,7 +454,7 @@ export class AuctionService {
     const { data: auctions, error, count } = await queryBuilder;
 
     if (error) {
-      logger.error("Error searching auctions", error);
+      logger.error("Error searching auctions", createDatabaseErrorContext(error, "select", "auctions", { params }));
       throw new Error(`Failed to search auctions: ${error.message}`);
     }
 
@@ -507,7 +508,7 @@ export class AuctionService {
 
         if (params.filters?.status?.length) {
           filteredAuctions = filteredAuctions.filter((auction) =>
-            params.filters!.status!.includes(auction.status),
+            params.filters!.status!.includes(auction.status as any),
           );
         }
 
@@ -518,9 +519,7 @@ export class AuctionService {
       const result = await Promise.race([fetchPromise, timeoutPromise]);
       return result;
     } catch (error) {
-      logger.warn("Failed to fetch smart contract auctions", {
-        error: error.message,
-      });
+      logger.warn("Failed to fetch smart contract auctions", createLogContext(error));
       return [];
     }
   }
@@ -535,8 +534,8 @@ export class AuctionService {
 
       switch (sortBy) {
         case "current_bid":
-          aValue = parseFloat(a.current_bid || "0");
-          bValue = parseFloat(b.current_bid || "0");
+          aValue = parseFloat(String(a.current_bid || "0"));
+          bValue = parseFloat(String(b.current_bid || "0"));
           break;
         case "end_time":
           aValue = new Date(a.end_time).getTime();
@@ -561,7 +560,7 @@ export class AuctionService {
     });
   }
 
-  async getAuction(id: string): Promise<Auction | null> {
+  async getAuctionWithContract(id: string): Promise<Auction | null> {
     // Check if it's a smart contract auction
     if (id.startsWith("contract-auction-")) {
       try {
@@ -574,9 +573,7 @@ export class AuctionService {
           return await ContractAuctionService.getAuctionByIndex(auctionIndex);
         }
       } catch (error) {
-        logger.error("Failed to fetch smart contract auction", {
-          error: error.message,
-        });
+        logger.error("Failed to fetch smart contract auction", createLogContext(error));
         return null;
       }
     }
@@ -597,7 +594,7 @@ export class AuctionService {
 
     if (error) {
       if (error.code === "PGRST116") return null;
-      logger.error("Error fetching auction", error);
+      logger.error("Error fetching auction", createDatabaseErrorContext(error, "select", "auctions", { auctionId: id }));
       throw new Error(`Failed to fetch auction: ${error.message}`);
     }
 
@@ -720,7 +717,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error placing bid", error);
+      logger.error("Error placing bid", createDatabaseErrorContext(error, "insert", "bids", { auctionId: data.auction_id, amount: data.amount }));
       throw new Error(`Failed to place bid: ${error.message}`);
     }
 
@@ -744,6 +741,7 @@ export class AuctionService {
         bidder_name: bid.bidder?.name,
         placed_at: bid.placed_at,
       },
+      timestamp: new Date().toISOString(),
     });
 
     await this.logActivity("bid_placed", auctionId, userId, {
@@ -776,7 +774,7 @@ export class AuctionService {
 
     if (error) {
       if (error.code === "PGRST116") return null;
-      logger.error("Error fetching current winning bid", error);
+      logger.error("Error fetching current winning bid", createDatabaseErrorContext(error, "select", "bids", { auctionId }));
       return null;
     }
 
@@ -814,7 +812,7 @@ export class AuctionService {
       .range(from, to);
 
     if (error) {
-      logger.error("Error fetching user bids", error);
+      logger.error("Error fetching user bids", createDatabaseErrorContext(error, "select", "bids", { userId }));
       throw new Error(`Failed to fetch user bids: ${error.message}`);
     }
 
@@ -859,7 +857,7 @@ export class AuctionService {
       if (error.code === "23505") {
         throw new Error("Auction already in watchlist");
       }
-      logger.error("Error adding to watchlist", error);
+      logger.error("Error adding to watchlist", createDatabaseErrorContext(error, "insert", "auction_watchlist", { auctionId, userId }));
       throw new Error(`Failed to add to watchlist: ${error.message}`);
     }
 
@@ -877,7 +875,7 @@ export class AuctionService {
       .eq("auction_id", auctionId);
 
     if (error) {
-      logger.error("Error removing from watchlist", error);
+      logger.error("Error removing from watchlist", createDatabaseErrorContext(error, "delete", "auction_watchlist", { auctionId, userId }));
       throw new Error(`Failed to remove from watchlist: ${error.message}`);
     }
   }
@@ -895,7 +893,7 @@ export class AuctionService {
       .order("created_at", { ascending: false });
 
     if (error) {
-      logger.error("Error fetching watchlist", error);
+      logger.error("Error fetching watchlist", createDatabaseErrorContext(error, "select", "auction_watchlist", { userId }));
       throw new Error(`Failed to fetch watchlist: ${error.message}`);
     }
 
@@ -1014,7 +1012,7 @@ export class AuctionService {
     );
 
     if (error) {
-      logger.error("Error updating auction bid info", error);
+      logger.error("Error updating auction bid info", createDatabaseErrorContext(error, "update", "auctions", { auctionId }));
     }
   }
 
@@ -1063,6 +1061,7 @@ export class AuctionService {
       await this.emitAuctionEvent("auction_extended", auctionId, {
         message: "Auction extended by 10 minutes due to recent bid",
         auction: { end_time: newEndTime.toISOString() },
+        timestamp: new Date().toISOString(),
       });
     }
   }
@@ -1080,7 +1079,7 @@ export class AuctionService {
       .gte("placed_at", cutoff);
 
     if (error) {
-      logger.error("Error fetching recent bids", error);
+      logger.error("Error fetching recent bids", createDatabaseErrorContext(error, "select", "bids", { userId, seconds }));
       return [];
     }
 
@@ -1163,9 +1162,7 @@ export class AuctionService {
           };
         }
       } catch (error) {
-        logger.error("Failed to fetch smart contract auction bids", {
-          error: error.message,
-        });
+        logger.error("Failed to fetch smart contract auction bids", createLogContext(error));
         // Fall back to empty results for smart contract auctions if fetch fails
         return {
           bids: [],
@@ -1203,7 +1200,7 @@ export class AuctionService {
       .range(from, to);
 
     if (error) {
-      logger.error("Error fetching auction bids", error);
+      logger.error("Error fetching auction bids", createDatabaseErrorContext(error, "select", "bids", { auctionId, page, limit }));
       throw new Error(`Failed to fetch auction bids: ${error.message}`);
     }
 
@@ -1239,7 +1236,7 @@ export class AuctionService {
         viewed_at: new Date().toISOString(),
       });
     } catch (error) {
-      logger.error("Error tracking auction view", error);
+      logger.error("Error tracking auction view", createLogContext(error, { auctionId, userId }));
       // Don't throw error for tracking failures
     }
   }
@@ -1253,7 +1250,7 @@ export class AuctionService {
       .eq("id", id);
 
     if (error) {
-      logger.error("Error deleting auction", error);
+      logger.error("Error deleting auction", createDatabaseErrorContext(error, "delete", "auctions", { auctionId: id }));
       throw new Error(`Failed to delete auction: ${error.message}`);
     }
 
@@ -1299,7 +1296,7 @@ export class AuctionService {
     const { data: artworks, error, count } = await queryBuilder;
 
     if (error) {
-      logger.error("Error searching artworks", error);
+      logger.error("Error searching artworks", createDatabaseErrorContext(error, "select", "artworks", { params }));
       throw new Error(`Failed to search artworks: ${error.message}`);
     }
 
@@ -1328,7 +1325,7 @@ export class AuctionService {
       .limit(1);
 
     if (error) {
-      logger.error("Error checking active auctions", error);
+      logger.error("Error checking active auctions", createDatabaseErrorContext(error, "select", "auctions", { artworkId }));
       return false;
     }
 
@@ -1344,7 +1341,7 @@ export class AuctionService {
       .eq("id", id);
 
     if (error) {
-      logger.error("Error deleting artwork", error);
+      logger.error("Error deleting artwork", createDatabaseErrorContext(error, "delete", "artworks", { artworkId: id }));
       throw new Error(`Failed to delete artwork: ${error.message}`);
     }
 
@@ -1403,7 +1400,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error moderating auction", error);
+      logger.error("Error moderating auction", createDatabaseErrorContext(error, "update", "auctions", { auctionId: auction_id, action, reason }));
       throw new Error(`Failed to moderate auction: ${error.message}`);
     }
 
@@ -1481,7 +1478,7 @@ export class AuctionService {
       .single();
 
     if (error) {
-      logger.error("Error moderating artwork", error);
+      logger.error("Error moderating artwork", createDatabaseErrorContext(error, "update", "artworks", { artworkId: artwork_id, action, reason }));
       throw new Error(`Failed to moderate artwork: ${error.message}`);
     }
 

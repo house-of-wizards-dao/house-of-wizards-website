@@ -7,6 +7,7 @@ import {
   auctionSearchSchema,
 } from "@/lib/validation-schemas";
 import { logger } from "@/lib/logger";
+import "@/types/api";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const auctionService = new AuctionService();
@@ -119,9 +120,9 @@ async function handleCreateAuction(
 }
 
 export default createApiHandler(handler, {
-  requireAuth: false, // GET doesn't require auth, POST will check in handler
+  auth: { required: false }, // GET doesn't require auth, POST will check in handler
   rateLimit: {
+    maxRequests: 100, // Limit each IP to 100 requests per windowMs
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
   },
 });

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { withApiMiddleware } from "@/lib/api-middleware";
 import { imageUploadService } from "@/lib/services/image-upload-service";
 import { logger } from "@/lib/logger";
+import "@/types/api";
 
 export const config = {
   api: {
@@ -60,8 +61,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
 
     // Upload images
+    const validImageFiles = imageFiles.filter((file): file is File => file !== undefined);
     const results = await imageUploadService.uploadArtworkImages(
-      imageFiles,
+      validImageFiles,
       userId,
       options,
     );
@@ -95,9 +97,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: true,
+  auth: { required: true },
   rateLimit: {
+    maxRequests: 20, // Limit file uploads
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 20, // Limit file uploads
   },
 });

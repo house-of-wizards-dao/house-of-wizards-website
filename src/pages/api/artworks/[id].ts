@@ -133,9 +133,9 @@ async function handleDeleteArtwork(
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: false, // Auth checking happens in individual handlers
+  auth: { required: false }, // Auth checking happens in individual handlers
   rateLimit: {
+    maxRequests: 200,
     windowMs: 15 * 60 * 1000,
-    max: 200,
   },
 });

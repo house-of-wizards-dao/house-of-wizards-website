@@ -28,11 +28,11 @@ export function AuctionDetails({
 }: AuctionDetailsProps) {
   const currentBidAmount = currentBid
     ? formatEther(BigInt(currentBid.amount))
-    : formatEther(BigInt(auction.start_price));
+    : formatEther(BigInt(auction.start_price || auction.starting_bid));
 
   const nextMinBidAmount = formatEther(BigInt(nextMinBid));
-  const startingPrice = formatEther(BigInt(auction.start_price));
-  const bidIncrement = formatEther(BigInt(auction.min_bid_increment));
+  const startingPrice = formatEther(BigInt(auction.start_price || auction.starting_bid));
+  const bidIncrement = formatEther(BigInt(auction.bid_increment));
 
   const priceIncrease = currentBid
     ? ((Number(currentBidAmount) - Number(startingPrice)) /
@@ -243,7 +243,7 @@ export function AuctionDetails({
                           ? "success"
                           : auction.status === "ended"
                             ? "danger"
-                            : auction.status === "upcoming"
+                            : auction.status === "draft"
                               ? "warning"
                               : "default"
                       }

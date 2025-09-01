@@ -305,7 +305,7 @@ export class AdminService {
       await cacheManager.invalidateByTags(["content", "admin"]);
 
       // Invalidate user-specific caches
-      const userIds = [...new Set(contentItems.map((item) => item.userId))];
+      const userIds = Array.from(new Set(contentItems.map((item) => item.userId)));
       for (const uid of userIds) {
         await cacheManager.invalidateUserCache(uid);
       }
@@ -346,7 +346,7 @@ export class AdminService {
       const cached = await cacheManager.get(cacheKey);
       if (cached) {
         logger.debug("Returning cached dashboard stats");
-        return cached;
+        return cached as { totalUsers: number; totalContent: number; activeUsers: number; recentUsers: number; };
       }
 
       // Single query to get all stats

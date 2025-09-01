@@ -3,6 +3,7 @@ import { z } from "zod";
 import { withApiMiddleware } from "@/lib/api-middleware";
 import { AuctionService } from "@/lib/services/auction-service";
 import { logger } from "@/lib/logger";
+import "@/types/api";
 
 const validateBidQuerySchema = z.object({
   amount: z.coerce.number().min(0.01, "Amount must be positive"),
@@ -49,9 +50,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: true,
+  auth: { required: true },
   rateLimit: {
+    maxRequests: 60, // Allow frequent validation checks
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 60, // Allow frequent validation checks
   },
 });

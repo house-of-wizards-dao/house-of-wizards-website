@@ -4,6 +4,7 @@ import { withApiMiddleware } from "@/lib/api-middleware";
 import { AuctionService } from "@/lib/services/auction-service";
 import { updateAuctionSchema } from "@/lib/validation-schemas";
 import { logger } from "@/lib/logger";
+import "@/types/api"; // Import for NextApiRequest extension
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { id } = req.query;
@@ -146,9 +147,9 @@ async function handleDeleteAuction(
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: false, // Auth checking happens in individual handlers
+  auth: { required: false }, // Auth checking happens in individual handlers
   rateLimit: {
+    maxRequests: 200,
     windowMs: 15 * 60 * 1000,
-    max: 200,
   },
 });

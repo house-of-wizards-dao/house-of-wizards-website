@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { parseEther } from "viem";
 import { useAccount } from "wagmi";
 import { useAuctionBid } from "@/lib/auction-contract";
+import { safeParseNumber } from "@/lib/error-utils";
 
 interface BidData {
   amount: string;
@@ -40,7 +41,9 @@ export function useBidding(auctionId: string): UseBiddingReturn {
         }
 
         // Place bid through smart contract
-        const result = await placeBidContract(auctionId, amount);
+        // Convert auctionId string to number for contract call
+        const auctionIndex = safeParseNumber(auctionId, 0);
+        const result = await placeBidContract(auctionIndex, amount);
 
         // Also record the bid in our backend
         const response = await fetch(`/api/auctions/${auctionId}/bids`, {

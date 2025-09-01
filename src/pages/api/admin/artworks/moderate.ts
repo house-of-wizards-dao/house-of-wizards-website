@@ -97,10 +97,12 @@ async function handleBulkAction(
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: true,
-  requireRole: ["admin", "moderator"],
+  auth: {
+    required: true,
+    roles: ["admin", "moderator"],
+  },
   rateLimit: {
+    maxRequests: 50,
     windowMs: 15 * 60 * 1000,
-    max: 50,
   },
 });

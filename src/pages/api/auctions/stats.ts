@@ -24,9 +24,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 }
 
 export default withApiMiddleware(handler, {
-  requireAuth: false, // Public stats
+  auth: { required: false }, // Public stats
   rateLimit: {
+    maxRequests: 100,
     windowMs: 5 * 60 * 1000, // 5 minutes
-    max: 100,
   },
 });
