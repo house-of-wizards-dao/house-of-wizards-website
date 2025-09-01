@@ -171,39 +171,44 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
 
 // Re-export auction types
 export * from "./auction";
+// Import specific types for use in ContractAuction
+import type { Artwork, AuctionStatus } from "./auction";
 
 // Auction-related types
 export interface ContractAuction {
   id: string;
   artwork_id: string; // Required for Auction compatibility
+  artwork?: Artwork; // Populated via join - matches Auction interface
+  artwork_metadata?: Record<string, any>; // For artwork metadata compatibility - matches Auction interface
+  artwork_url?: string; // For Web3 compatibility (artwork image URL) - made optional to match Auction
+  artist?: { name: string; image?: string }; // For artist compatibility - matches Auction interface exactly
+  contract_address?: string; // For Web3 integration compatibility
+  token_id?: string; // For NFT/blockchain compatibility
+  start_price?: number; // For Web3 compatibility (alias for starting_bid)
   title: string;
-  description?: string;
-  artwork_url: string;
-  artwork_metadata?: {
-    title?: string;
-    medium?: string;
-    dimensions?: string;
-    year?: string;
-  };
-  artist_id: string;
-  artist?: Artist;
-  start_price?: number; // For Auction compatibility (alias for starting_bid)
-  start_price_wei?: string; // in wei as string for contract compatibility
-  starting_bid: number; // Required for Auction compatibility
-  current_bid: string; // in wei as string
-  bid_increment: number; // Required for Auction compatibility
-  min_bid_increment: string; // in wei as string
+  description: string;
+  starting_bid: number;
+  reserve_price?: number; // Added for Auction compatibility
+  current_bid?: number; // Changed from string to optional number to match Auction
+  bid_increment: number;
+  min_bid_increment?: string; // in wei as string - made optional for contract compatibility
   start_time: string; // ISO timestamp
   end_time: string; // ISO timestamp
-  status: "upcoming" | "active" | "ended" | "cancelled";
-  winner_address?: string | null;
+  status: AuctionStatus; // Use AuctionStatus type to match Auction interface
   total_bids: number;
-  created_by: string; // Required for Auction compatibility
-  featured: boolean; // Required for Auction compatibility
-  contract_address?: string;
-  token_id?: string;
+  winner_id?: string; // Changed from winner_address to match Auction interface
+  winner_name?: string; // Computed field - added for Auction compatibility
+  created_by: string;
+  created_by_name?: string; // Computed field - added for Auction compatibility
+  featured: boolean;
+  metadata?: Record<string, any>; // Added for Auction compatibility
   created_at: string;
   updated_at: string;
+  // Web3/Contract specific fields
+  artist_id?: string; // Made optional since artist object is primary
+  start_price_wei?: string; // in wei as string for contract compatibility
+  current_bid_wei?: string; // in wei as string for contract compatibility
+  winner_address?: string; // Keep for Web3 compatibility
 }
 
 export interface Bid {
