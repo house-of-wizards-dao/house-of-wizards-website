@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 import { ToastProvider } from "@/hooks/useToast";
 import { Web3Provider } from "@/components/Web3Provider";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { PageLoader } from "@/components/PageLoader";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -67,6 +68,7 @@ export default function App({ Component, pageProps }: AppProps) {
           <SessionContextProvider supabaseClient={supabase}>
             <Web3Provider>
               <ToastProvider>
+                <PageLoader />
                 <RenderedComponent {...pageProps} />
               </ToastProvider>
             </Web3Provider>

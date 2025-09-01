@@ -85,7 +85,7 @@ export const Navbar = () => {
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button
-                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
+                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded transition-colors cursor-pointer"
                 aria-expanded={false}
                 aria-haspopup="true"
               >
@@ -99,22 +99,18 @@ export const Navbar = () => {
                 base: "gap-4",
               }}
             >
-              <DropdownItem key="artists" textValue="Artist">
-                <NextLink className="uppercase" href="/artists">
-                  Artist
-                </NextLink>
+              <DropdownItem key="artists" textValue="Artist" href="/artists">
+                <span className="uppercase">Artist</span>
               </DropdownItem>
-              <DropdownItem key="gallery" textValue="Gallery">
-                <NextLink className="uppercase" href="/gallery">
-                  Gallery
-                </NextLink>
+              <DropdownItem key="gallery" textValue="Gallery" href="/gallery">
+                <span className="uppercase">Gallery</span>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
           <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button
-                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded"
+                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded transition-colors cursor-pointer"
                 aria-expanded={false}
                 aria-haspopup="true"
               >
@@ -128,34 +124,28 @@ export const Navbar = () => {
                 base: "gap-4",
               }}
             >
-              <DropdownItem key="talent" textValue="Talent">
-                <NextLink className="uppercase" href="/talent">
-                  Talent
-                </NextLink>
+              <DropdownItem key="talent" textValue="Talent" href="/talent">
+                <span className="uppercase">Talent</span>
               </DropdownItem>
-              <DropdownItem key="community" textValue="Community">
-                <NextLink className="uppercase" href="/community">
-                  Community
-                </NextLink>
+              <DropdownItem key="community" textValue="Community" href="/community">
+                <span className="uppercase">Community</span>
               </DropdownItem>
-              <DropdownItem key="signup" textValue="Join">
-                <NextLink className="uppercase" href="/signup">
-                  Join
-                </NextLink>
+              <DropdownItem key="signup" textValue="Join" href="/signup">
+                <span className="uppercase">Join</span>
               </DropdownItem>
             </DropdownMenu>
           </Dropdown>
-          <NavbarItem className="text-sm hover:text-brand-500">
+          <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
             <NextLink className="flex items-center gap-2" href="/auctions">
               Auctions
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="text-sm hover:text-brand-500">
+          <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
             </NextLink>
           </NavbarItem>
-          <NavbarItem className="text-sm hover:text-brand-500">
+          <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
             <NextLink
               className="flex items-center gap-2"
               href="https://snapshot.org/#/forgottengov.eth"
