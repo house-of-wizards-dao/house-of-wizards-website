@@ -957,7 +957,7 @@ export class AuctionService {
         existing.total_amount += bid.amount;
       } else {
         bidderStats.set(bid.bidder_id, {
-          name: bid.bidder?.name || "Unknown",
+          name: (bid as any).bidder?.name || "Unknown",
           total_bids: 1,
           total_amount: bid.amount,
         });
@@ -1083,7 +1083,7 @@ export class AuctionService {
       return [];
     }
 
-    return bids || [];
+    return (bids as Bid[]) || [];
   }
 
   private async emitAuctionEvent(
@@ -1153,7 +1153,7 @@ export class AuctionService {
           const totalPages = Math.ceil(total / limit);
 
           return {
-            bids: paginatedBids,
+            bids: paginatedBids as any,
             total,
             page,
             limit,

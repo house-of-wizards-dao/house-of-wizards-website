@@ -88,9 +88,9 @@ export function AuctionPageClient({
   const nextMinBid = currentBid
     ? (
         BigInt(currentBid.amount) +
-        BigInt((auction || initialAuction).min_bid_increment)
+        BigInt((auction || initialAuction).bid_increment)
       ).toString()
-    : (auction || initialAuction).start_price;
+    : ((auction || initialAuction).start_price ?? 0).toString();
 
   return (
     <>
@@ -142,7 +142,11 @@ export function AuctionPageClient({
                 <AuctionTimer
                   end_time={(auction || initialAuction).end_time}
                   start_time={(auction || initialAuction).start_time}
-                  status={(auction || initialAuction).status}
+                  status={
+                    (auction || initialAuction).status === "draft" 
+                      ? "upcoming" 
+                      : (auction || initialAuction).status as "active" | "ended" | "cancelled"
+                  }
                   className="mb-6"
                 />
               </motion.div>
@@ -287,7 +291,7 @@ export function AuctionPageClient({
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <ArtistInfo artist={(auction || initialAuction).artist} />
+                <ArtistInfo artist={(auction || initialAuction).artist ? {...(auction || initialAuction).artist!, id: 'unknown'} : undefined} />
               </motion.div>
 
               {/* Quick Auction Stats */}
@@ -312,17 +316,17 @@ export function AuctionPageClient({
                         <span className="text-neutral-400">Starting Price</span>
                         <span className="text-white font-medium">
                           {formatEther(
-                            BigInt((auction || initialAuction).start_price),
+                            BigInt((auction || initialAuction).start_price ?? 0),
                           )}{" "}
                           ETH
                         </span>
                       </div>
                       {(auction || initialAuction).status === "ended" &&
-                        (auction || initialAuction).winner_address && (
+                        ((auction || initialAuction) as any).winner_address && (
                           <div className="flex justify-between text-sm">
                             <span className="text-neutral-400">Winner</span>
                             <span className="text-brand-400 font-medium font-mono">
-                              {`${(auction || initialAuction).winner_address!.slice(0, 6)}...${(auction || initialAuction).winner_address!.slice(-4)}`}
+                              {`${((auction || initialAuction) as any).winner_address.slice(0, 6)}...${((auction || initialAuction) as any).winner_address.slice(-4)}`}
                             </span>
                           </div>
                         )}

@@ -152,8 +152,8 @@ export function AuctionPage({
     }
   };
 
-  const currentBidEth = formatEther(BigInt(auction.current_bid));
-  const startPriceEth = formatEther(BigInt(auction.start_price));
+  const currentBidEth = formatEther(BigInt(auction.current_bid ?? 0));
+  const startPriceEth = formatEther(BigInt(auction.start_price ?? 0));
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -169,10 +169,10 @@ export function AuctionPage({
                 color={
                   auction.status === "active"
                     ? "success"
-                    : auction.status === "upcoming"
-                      ? "warning"
-                      : auction.status === "ended"
-                        ? "default"
+                    : auction.status === "ended"
+                      ? "default"
+                      : auction.status === "draft"
+                        ? "warning"
                         : "danger"
                 }
                 variant="flat"
@@ -207,7 +207,7 @@ export function AuctionPage({
         <div className="lg:col-span-2 space-y-6">
           {/* Artwork */}
           <ArtworkZoom
-            imageUrl={auction.artwork_url}
+            imageUrl={auction.artwork_url || ''}
             title={auction.title}
             artist={auction.artist?.name}
             metadata={auction.artwork_metadata}
@@ -316,7 +316,7 @@ export function AuctionPage({
           <AuctionTimer
             end_time={auction.end_time}
             start_time={auction.start_time}
-            status={auction.status}
+            status={auction.status === "draft" ? "upcoming" : auction.status}
           />
 
           {/* Bidding Interface */}
@@ -328,7 +328,7 @@ export function AuctionPage({
           />
 
           {/* Artist Profile */}
-          {auction.artist && <ArtistProfile artist={auction.artist} />}
+          {auction.artist && <ArtistProfile artist={{...auction.artist, id: 'unknown'}} />}
 
           {/* Desktop Bid History */}
           {!isMobile && !isTablet && (
@@ -352,7 +352,7 @@ export function AuctionPage({
                 <div className="flex justify-between">
                   <span className="text-gray-400">Highest Bid:</span>
                   <span className="text-white font-medium">
-                    {formatEther(BigInt(userBids[0].amount))} ETH
+                    {userBids[0] ? formatEther(BigInt(userBids[0].amount)) : "0"} ETH
                   </span>
                 </div>
                 <div className="flex justify-between">

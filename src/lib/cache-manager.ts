@@ -357,7 +357,7 @@ export const cacheManager = new CacheManager();
 /**
  * Decorator for caching method results
  */
-export function cached(key: string, options: CacheOptions = {}) {
+export function cached(key: string | ((...args: any[]) => string), options: CacheOptions = {}) {
   return function (
     target: any,
     propertyName: string,

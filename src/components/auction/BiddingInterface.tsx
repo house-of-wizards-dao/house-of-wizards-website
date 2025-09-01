@@ -34,7 +34,7 @@ export function BiddingInterface({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const nextMinBidEth = formatEther(BigInt(nextMinBid));
-  const currentBidEth = formatEther(BigInt(auction.current_bid));
+  const currentBidEth = formatEther(BigInt(auction.current_bid ?? 0));
 
   const isAuctionActive =
     auction.status === "active" && new Date() < new Date(auction.end_time);
@@ -141,7 +141,7 @@ export function BiddingInterface({
         ) : !isAuctionActive ? (
           <div className="text-center py-6">
             <p className="text-gray-400">
-              {auction.status === "upcoming"
+              {auction.status === "draft"
                 ? "Auction has not started yet"
                 : "Auction has ended"}
             </p>

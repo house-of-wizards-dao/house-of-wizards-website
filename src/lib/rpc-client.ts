@@ -21,10 +21,7 @@ const RPC_CONFIG = {
 function createRetryTransport(endpoint: string) {
   return http(endpoint, {
     retryCount: RPC_CONFIG.retryCount,
-    retryDelay: ({ count }) => {
-      // Exponential backoff: 1s, 2s, 4s
-      return RPC_CONFIG.retryDelay * Math.pow(2, count - 1);
-    },
+    retryDelay: RPC_CONFIG.retryDelay,
     timeout: RPC_CONFIG.timeout,
   });
 }

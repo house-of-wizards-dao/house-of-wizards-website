@@ -34,7 +34,7 @@ export function useAuctionDataClient(
     error: null,
     userBids: [],
     isUserWinning: false,
-    nextMinBid: initialData?.auction?.min_bid_increment || "0",
+    nextMinBid: initialData?.auction?.bid_increment?.toString() || "0",
   });
 
   // Simplified refresh function

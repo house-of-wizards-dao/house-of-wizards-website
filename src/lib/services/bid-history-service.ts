@@ -80,7 +80,7 @@ export class BidHistoryService {
 
     const logs = await getLogsWithRetry(
       () =>
-        publicClient.getLogs({
+        (publicClient as any).getLogs({
           address: AUCTION_CONTRACT_ADDRESS as `0x${string}`,
           topics: [UPDATED_BID_EVENT_HASH], // Use the event signature hash directly
           fromBlock: "earliest",
@@ -90,7 +90,7 @@ export class BidHistoryService {
     );
 
     console.log(
-      `📊 Found ${logs.length} UpdatedBid events using topic filtering`,
+      `📊 Found ${(logs as any)?.length || 0} UpdatedBid events using topic filtering`,
     );
 
     const bids: Bid[] = [];

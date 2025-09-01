@@ -283,8 +283,43 @@ export const secureSchemas = {
     .object({
       name: secureString(100).optional(),
       description: secureString(500).optional(),
-      twitter: secureString(50)
+      twitter: z
+        .string()
+        .max(50, "Text too long (max 50 characters)")
         .regex(/^[a-zA-Z0-9_]{1,15}$/, "Invalid Twitter handle")
+        .refine(
+          (val) => {
+            // Check for XSS patterns
+            for (const pattern of DANGEROUS_PATTERNS) {
+              if (pattern.test(val)) {
+                logger.logSecurityEvent("xss_attempt_detected", "high", {
+                  pattern: pattern.source,
+                  value: val.substring(0, 100) + "...",
+                });
+                return false;
+              }
+            }
+            return true;
+          },
+          { message: "Potentially dangerous content detected" },
+        )
+        .refine(
+          (val) => {
+            // Check for SQL injection patterns
+            for (const pattern of SQL_INJECTION_PATTERNS) {
+              if (pattern.test(val)) {
+                logger.logSecurityEvent("sql_injection_attempt", "critical", {
+                  pattern: pattern.source,
+                  value: val.substring(0, 100) + "...",
+                });
+                return false;
+              }
+            }
+            return true;
+          },
+          { message: "Potentially malicious SQL patterns detected" },
+        )
+        .transform((val) => val.trim())
         .optional(),
       discord: secureString(50).optional(),
       website: secureUrl.optional(),
