@@ -45,7 +45,7 @@ export function useResponsive(): Breakpoints & {
     updateBreakpoints();
 
     // Add event listener with debouncing
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
     const debouncedUpdate = () => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(updateBreakpoints, 150);

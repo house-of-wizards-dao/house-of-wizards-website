@@ -1,16 +1,17 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { User } from "@supabase/auth-helpers-react";
+// Supabase removed: use a minimal user shape or null
+type User = null | { id?: string };
 import type { UserProfile } from "@/types";
 
 interface AuthState {
-  user: User | null;
+  user: User;
   profile: UserProfile | null;
   isLoading: boolean;
   error: string | null;
 
   // Actions
-  setUser: (user: User | null) => void;
+  setUser: (user: User) => void;
   setProfile: (profile: UserProfile | null) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;

@@ -7,7 +7,7 @@ export default {
     './src/layouts/**/*.{js,ts,jsx,tsx,mdx}',
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}',
+    './node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     fontSize: designTokens.typography.fontSize,
@@ -30,18 +30,18 @@ export default {
         // Brand colors with semantic names
         brand: designTokens.colors.brand.violet,
         accent: designTokens.colors.brand.green,
-        
+
         // Legacy support (deprecated - use brand.500 instead)
         violet: designTokens.colors.brand.violet[500],
         darkviolet: designTokens.colors.brand.violet[900],
         green: designTokens.colors.brand.green[400],
-        
+
         // Semantic colors
         success: designTokens.colors.semantic.success,
         warning: designTokens.colors.semantic.warning,
         error: designTokens.colors.semantic.error,
         info: designTokens.colors.semantic.info,
-        
+
         // Neutral colors for dark theme
         neutral: designTokens.colors.neutral,
       },

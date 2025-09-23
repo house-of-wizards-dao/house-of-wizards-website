@@ -15,46 +15,18 @@ import {
 } from "@nextui-org/dropdown";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { TwitterIcon, DiscordIcon } from "@/components/icons";
 import { Web3ConnectButton } from "@/components/Web3ConnectButton";
 
-// Avatar CDN URL - dynamic based on environment
-const getAvatarCDNURL = () => {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    console.error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
-    return "https://placeholder.supabase.co/storage/v1/object/public/avatars/";
-  }
-  return `${supabaseUrl}/storage/v1/object/public/avatars/`;
-};
+// Avatar URL placeholder (Supabase removed)
+const getAvatarCDNURL = () =>
+  "/img/logo-white.png";
 
 export const Navbar = () => {
-  const user = useUser();
-  const supabase = useSupabaseClient();
-  const [avatar, setAvatar] = useState<string | null>(null);
-
-  // Fetch the user's avatar from the profiles table
-  useEffect(() => {
-    const fetchUserAvatar = async () => {
-      if (user) {
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("avatar_url")
-          .eq("id", user.id)
-          .single();
-
-        if (!error && data && data.avatar_url) {
-          setAvatar(data.avatar_url);
-        }
-      }
-    };
-
-    fetchUserAvatar();
-  }, [user, supabase]);
+  const [avatar] = useState<string | null>(null);
 
   // User data and metadata are available through the user object
 
@@ -77,12 +49,7 @@ export const Navbar = () => {
 
       <NavbarContent>
         <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
-          {/*           <NavbarItem className="text-sm hover:text-brand-500">
-            <NextLink href="/about">
-              About
-            </NextLink>
-          </NavbarItem> */}
-          <Dropdown className="border border-violet mt-2">
+          {/* <Dropdown className="border border-violet mt-2">
             <DropdownTrigger>
               <button
                 className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded transition-colors cursor-pointer"
@@ -139,7 +106,7 @@ export const Navbar = () => {
             <NextLink className="flex items-center gap-2" href="/auctions">
               Auctions
             </NextLink>
-          </NavbarItem>
+          </NavbarItem> */}
           <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
@@ -174,7 +141,7 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-4">
-          <Web3ConnectButton />
+          {/* <Web3ConnectButton /> */}
           <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
             <TwitterIcon className="text-white hover:text-brand-500" />
           </Link>
@@ -185,7 +152,7 @@ export const Navbar = () => {
           >
             <DiscordIcon className="text-white hover:text-brand-500" />
           </Link>
-          {user && (
+          {false && (
             <NextLink href="/signup" title="Your Profile">
               <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500 hover:border-white transition-colors">
                 {avatar ? (
@@ -194,19 +161,13 @@ export const Navbar = () => {
                     className="w-full h-full object-cover"
                     height={32}
                     loading="lazy"
-                    src={
-                      avatar && avatar.startsWith("http")
-                        ? avatar
-                        : `${getAvatarCDNURL()}${avatar || "default.png"}`
-                    }
+                    src={getAvatarCDNURL()}
                     unoptimized
                     width={32}
                   />
                 ) : (
                   <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold">
-                    {user.user_metadata?.name
-                      ? user.user_metadata.name.charAt(0).toUpperCase()
-                      : "U"}
+                    U
                   </div>
                 )}
               </div>
@@ -302,7 +263,7 @@ export const Navbar = () => {
               </svg>
             </NextLink>
           </NavbarMenuItem>
-          {user && (
+          {false && (
             <NavbarMenuItem className="pt-4 border-t border-gray-600 mt-4">
               <NextLink
                 className="text-white text-lg uppercase w-full block py-2 flex items-center gap-2"
@@ -315,19 +276,13 @@ export const Navbar = () => {
                       className="w-full h-full object-cover"
                       height={24}
                       loading="lazy"
-                      src={
-                        avatar && avatar.startsWith("http")
-                          ? avatar
-                          : `${getAvatarCDNURL()}${avatar || "default.png"}`
-                      }
+                      src={getAvatarCDNURL()}
                       unoptimized
                       width={24}
                     />
                   ) : (
                     <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold">
-                      {user.user_metadata?.name
-                        ? user.user_metadata.name.charAt(0).toUpperCase()
-                        : "U"}
+                      U
                     </div>
                   )}
                 </div>

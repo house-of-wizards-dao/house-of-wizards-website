@@ -7,10 +7,7 @@ import { useRouter } from "next/router";
 import { fontSans, fontMono } from "@/config/fonts";
 import "@/styles/globals.css";
 
-import { SessionContextProvider } from "@supabase/auth-helpers-react";
-import { supabase } from "@/lib/supabase";
 import { ToastProvider } from "@/hooks/useToast";
-import { Web3Provider } from "@/components/Web3Provider";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageLoader } from "@/components/PageLoader";
 
@@ -65,14 +62,10 @@ export default function App({ Component, pageProps }: AppProps) {
           enableSystem={false}
           forcedTheme="dark"
         >
-          <SessionContextProvider supabaseClient={supabase}>
-            <Web3Provider>
-              <ToastProvider>
-                <PageLoader />
-                <RenderedComponent {...pageProps} />
-              </ToastProvider>
-            </Web3Provider>
-          </SessionContextProvider>
+          <ToastProvider>
+            <PageLoader />
+            <RenderedComponent {...pageProps} />
+          </ToastProvider>
         </NextThemesProvider>
       </NextUIProvider>
     </ErrorBoundary>

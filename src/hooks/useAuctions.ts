@@ -36,7 +36,7 @@ export function useAuctions(
   });
 
   const { autoRefresh = true, refreshInterval = 30000 } = options;
-  const refreshTimer = useRef<NodeJS.Timeout | null>(null);
+  const refreshTimer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const fetchAuctions = useCallback(async () => {
     try {

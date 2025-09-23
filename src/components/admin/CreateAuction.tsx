@@ -6,15 +6,11 @@ import { Textarea } from "@nextui-org/input";
 import { Select, SelectItem } from "@nextui-org/select";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { createClient } from "@supabase/supabase-js";
 import { useCreateAuction } from "@/lib/auction-contract";
 import { useTotalAuctions } from "@/lib/auction-contract";
 import { LazyImage } from "@/components/ui/LazyImage";
 
-// Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Supabase removed
 
 export default function CreateAuction() {
   const { address, isConnected } = useAccount();
@@ -28,10 +24,7 @@ export default function CreateAuction() {
     duration: "7", // days
   });
 
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [imageUploading, setImageUploading] = useState(false);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
+  // Image upload removed
 
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -41,17 +34,7 @@ export default function CreateAuction() {
 
     try {
       setSuccess(null);
-
-      // Upload image first if selected
-      let imageUrl: string | null = null;
-      if (selectedImage && !uploadedImageUrl) {
-        imageUrl = await uploadImage();
-        if (!imageUrl) {
-          return; // Upload failed, don't proceed
-        }
-      } else if (uploadedImageUrl) {
-        imageUrl = uploadedImageUrl;
-      }
+      // Supabase removed
 
       const durationInSeconds = parseInt(formData.duration) * 24 * 60 * 60;
 
@@ -62,33 +45,7 @@ export default function CreateAuction() {
       );
 
       if (result.success) {
-        // Save metadata to database
-        if (imageUrl) {
-          const nextAuctionId = totalAuctions; // The next auction will have this index
-          try {
-            const { error: dbError } = await supabase
-              .from("contract_auction_metadata")
-              .insert({
-                contract_auction_id: nextAuctionId,
-                name: formData.name,
-                description: formData.description,
-                image_url: imageUrl,
-                thumbnail_url: imageUrl, // Using same URL for now
-                created_by: address,
-                metadata: {
-                  starting_price: formData.startingPrice,
-                  duration_days: formData.duration,
-                  transaction_hash: result.hash,
-                },
-              });
-
-            if (dbError) {
-              console.error("Failed to save auction metadata:", dbError);
-            }
-          } catch (dbErr) {
-            console.error("Database error:", dbErr);
-          }
-        }
+        // Supabase removed
 
         setSuccess(`Auction created successfully! Transaction: ${result.hash}`);
         // Reset form
@@ -98,7 +55,7 @@ export default function CreateAuction() {
           startingPrice: "",
           duration: "7",
         });
-        removeImage();
+        // removeImage();
       }
     } catch (err) {
       console.error("Failed to create auction:", err);
@@ -109,76 +66,7 @@ export default function CreateAuction() {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleImageSelect = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        // Validate file type
-        if (!file.type.startsWith("image/")) {
-          alert("Please select an image file");
-          return;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          alert("Image must be smaller than 5MB");
-          return;
-        }
-
-        setSelectedImage(file);
-        const previewUrl = URL.createObjectURL(file);
-        setImagePreview(previewUrl);
-      }
-    },
-    [],
-  );
-
-  const uploadImage = useCallback(async (): Promise<string | null> => {
-    if (!selectedImage) return null;
-
-    setImageUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("image", selectedImage);
-      formData.append("maxWidth", "800");
-      formData.append("maxHeight", "600");
-      formData.append("quality", "0.8");
-      formData.append("generateThumbnail", "true");
-
-      const response = await fetch("/api/upload/auction-image", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to upload image");
-      }
-
-      const result = await response.json();
-      if (result.success && result.images?.[0]?.url) {
-        const imageUrl = result.images[0].url;
-        setUploadedImageUrl(imageUrl);
-        return imageUrl;
-      }
-
-      throw new Error("Invalid response from upload service");
-    } catch (error) {
-      console.error("Image upload failed:", error);
-      alert("Failed to upload image. Please try again.");
-      return null;
-    } finally {
-      setImageUploading(false);
-    }
-  }, [selectedImage]);
-
-  const removeImage = useCallback(() => {
-    setSelectedImage(null);
-    setUploadedImageUrl(null);
-    if (imagePreview) {
-      URL.revokeObjectURL(imagePreview);
-      setImagePreview(null);
-    }
-  }, [imagePreview]);
+  // Image selection/upload removed
 
   if (!isConnected) {
     return (
@@ -222,117 +110,7 @@ export default function CreateAuction() {
             minRows={3}
           />
 
-          {/* Image Upload Section */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium">Auction Image</label>
-
-            {!imagePreview && (
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageSelect}
-                  className="hidden"
-                  id="image-upload"
-                />
-                <label
-                  htmlFor="image-upload"
-                  className="cursor-pointer flex flex-col items-center"
-                >
-                  <svg
-                    className="w-12 h-12 text-gray-400 mb-2"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    />
-                  </svg>
-                  <span className="text-sm text-gray-600 mb-1">
-                    Click to upload auction image
-                  </span>
-                  <span className="text-xs text-gray-400">
-                    PNG, JPG, GIF up to 5MB
-                  </span>
-                </label>
-              </div>
-            )}
-
-            {imagePreview && (
-              <div className="relative">
-                <div className="border rounded-lg p-4">
-                  <div className="flex items-start gap-4">
-                    <LazyImage
-                      src={imagePreview}
-                      alt="Auction preview"
-                      width={120}
-                      height={120}
-                      className="object-cover rounded-md w-[120px] h-[120px]"
-                      priority
-                      fallback={
-                        <div className="w-[120px] h-[120px] bg-gray-200 dark:bg-gray-800 rounded-md flex items-center justify-center animate-pulse">
-                          <svg
-                            className="w-8 h-8 text-gray-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                            />
-                          </svg>
-                        </div>
-                      }
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">
-                        {selectedImage?.name}
-                      </p>
-                      <p className="text-xs text-gray-500 mb-2">
-                        {selectedImage &&
-                          (selectedImage.size / 1024).toFixed(1)}{" "}
-                        KB
-                      </p>
-                      {uploadedImageUrl && (
-                        <p className="text-xs text-green-600 mb-2">
-                          ✓ Image uploaded successfully
-                        </p>
-                      )}
-                      <div className="flex gap-2">
-                        {!uploadedImageUrl && (
-                          <Button
-                            size="sm"
-                            color="primary"
-                            variant="flat"
-                            isLoading={imageUploading}
-                            onClick={uploadImage}
-                            disabled={imageUploading}
-                          >
-                            {imageUploading ? "Uploading..." : "Upload Now"}
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          color="danger"
-                          variant="light"
-                          onClick={removeImage}
-                        >
-                          Remove
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Image upload removed */}
 
           <Input
             label="Starting Price (ETH)"
@@ -385,20 +163,11 @@ export default function CreateAuction() {
           <Button
             type="submit"
             color="primary"
-            isLoading={isPending || imageUploading}
-            disabled={
-              !formData.name ||
-              !formData.startingPrice ||
-              isPending ||
-              imageUploading
-            }
+            isLoading={isPending}
+            disabled={!formData.name || !formData.startingPrice || isPending}
             className="w-full"
           >
-            {isPending
-              ? "Creating Auction..."
-              : imageUploading
-                ? "Uploading Image..."
-                : "Create Auction"}
+            {isPending ? "Creating Auction..." : "Create Auction"}
           </Button>
         </form>
 

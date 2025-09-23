@@ -1,7 +1,6 @@
 import React from "react";
 import { AlertTriangle, X, RefreshCw, Info } from "lucide-react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
 
 const errorMessageVariants = cva(
   "flex items-start gap-3 p-4 rounded-lg border",
@@ -49,11 +48,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   };
 
   return (
-    <div
-      className={cn(errorMessageVariants({ variant }), className)}
-      role="alert"
-      aria-live="polite"
-    >
+    <div className={className} role="alert" aria-live="polite">
       {getIcon()}
       <div className="flex-1 min-w-0">
         {title && <h3 className="font-medium mb-1">{title}</h3>}
