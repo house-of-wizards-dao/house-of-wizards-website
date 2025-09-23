@@ -16,8 +16,7 @@ import { TwitterIcon, DiscordIcon } from "@/components/icons";
 import { InstagramIcon } from "lucide-react";
 
 // Avatar URL placeholder (Supabase removed)
-const getAvatarCDNURL = () =>
-  "/img/logo-white.png";
+const getAvatarCDNURL = () => "/img/logo-white.png";
 
 export const Navbar = () => {
   const [avatar] = useState<string | null>(null);
@@ -85,7 +84,11 @@ export const Navbar = () => {
           <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
             <TwitterIcon className="text-white hover:text-brand-500" />
           </Link>
-          <Link isExternal href="https://instagram.com/house_of_wizards_dao" title="Instagram">
+          <Link
+            isExternal
+            href="https://instagram.com/house_of_wizards_dao"
+            title="Instagram"
+          >
             <InstagramIcon className="text-white hover:text-brand-500" />
           </Link>
           <Link

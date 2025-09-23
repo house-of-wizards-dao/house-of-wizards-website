@@ -8,42 +8,47 @@ const teamMembers = [
   {
     name: "Bridge",
 
-    image: "/img/council/bridge.png",
+    image: "/img/council/head_Wizzy_purple.png",
   },
   {
     name: "DFI",
 
-    image: "/img/council/dfi.png",
+    image: "/img/council/head_Chookie.png",
   },
   {
     name: "MeepleDad",
 
-    image: "/img/council/meeple.png",
+    image: "/img/council/head_Marlow.png",
   },
   {
     name: "Madotsuki",
 
-    image: "/img/council/madotsuki.png",
+    image: "/img/council/head_Carly.png",
   },
   {
     name: "SharkChild",
 
-    image: "/img/council/sharkchild.png",
+    image: "/img/council/head_Eyebol.png",
   },
   {
     name: "Sharon",
 
-    image: "/img/council/sharon.png",
+    image: "/img/council/head_Artis.png",
   },
   {
     name: "TadMajor",
 
-    image: "/img/council/jitcy.png",
+    image: "/img/council/head_Woomba.png",
   },
   {
     name: "R3ptar",
 
-    image: "/img/council/reptar.png",
+    image: "/img/council/head_Pino.png",
+  },
+  {
+    name: "vmark",
+
+    image: "/img/council/head_Jack.png",
   },
 ];
 
@@ -160,15 +165,15 @@ export default function IndexPage() {
               {teamMembers.map((member, index) => (
                 <div
                   key={index}
-                  className="w-[200px] sm:w-[220px] transform transition-all duration-300 hover:scale-105"
+                  className="w-[200px] sm:w-[220px] flex flex-col items-center transform transition-all duration-300 hover:scale-105"
                 >
-                  <div className="aspect-[3/4] mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
+                  <div className="mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
                     <LazyImage
                       alt={member.name}
                       className="w-full h-full object-cover"
-                      height={253}
+                      height={96}
                       src={member.image}
-                      width={190}
+                      width={96}
                       fallback={
                         <div className="w-full h-full bg-gradient-to-br from-violet/20 to-purple-500/20 animate-pulse flex items-center justify-center">
                           <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />
@@ -195,7 +200,6 @@ export default function IndexPage() {
             </div>
           </div>
         </div>
-
       </ErrorBoundary>
     </DefaultLayout>
   );

@@ -59,7 +59,7 @@ export const PageLoader = () => {
                   }}
                   className="w-20 h-20 rounded-full border-4 border-brand-500/20 border-t-brand-500"
                 />
-                
+
                 {/* Inner ring */}
                 <motion.div
                   animate={{ rotate: -360 }}
@@ -70,7 +70,7 @@ export const PageLoader = () => {
                   }}
                   className="absolute inset-2 rounded-full border-4 border-brand-400/20 border-b-brand-400"
                 />
-                
+
                 {/* Center dot */}
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
@@ -163,7 +163,7 @@ export const MinimalPageLoader = () => {
               boxShadow: "0 0 20px rgba(139, 92, 246, 0.5)",
             }}
           />
-          
+
           {/* Optional subtle overlay */}
           <motion.div
             initial={{ opacity: 0 }}
