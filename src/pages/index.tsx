@@ -1,18 +1,10 @@
 import NextImage from "next/image";
-import { useState, FormEvent } from "react";
 import { LazyImage } from "@/components/ui/LazyImage";
 
 import DefaultLayout from "@/layouts/default";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
-import ErrorMessage from "@/components/ui/ErrorMessage";
 import ErrorBoundary from "@/components/ErrorBoundary";
 
 const teamMembers = [
-  {
-    name: "Acid",
-
-    image: "/img/council/acid.png",
-  },
   {
     name: "Bridge",
 
@@ -32,11 +24,6 @@ const teamMembers = [
     name: "Madotsuki",
 
     image: "/img/council/madotsuki.png",
-  },
-  {
-    name: "Meph",
-
-    image: "/img/council/R Y F.png",
   },
   {
     name: "SharkChild",
@@ -61,57 +48,6 @@ const teamMembers = [
 ];
 
 export default function IndexPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState<"success" | "error" | null>(
-    null,
-  );
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (
-      !formData.name.trim() ||
-      !formData.email.trim() ||
-      !formData.message.trim()
-    ) {
-      setSubmitStatus("error");
-      setErrorMessage("Please fill in all fields");
-
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitStatus(null);
-
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      // Reset form on success
-      setFormData({ name: "", email: "", message: "" });
-      setSubmitStatus("success");
-    } catch (error) {
-      setSubmitStatus("error");
-      setErrorMessage("Failed to send message. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <DefaultLayout>
       <ErrorBoundary
@@ -260,100 +196,6 @@ export default function IndexPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-center py-32 px-8">
-          <div className="max-w-6xl w-full mx-auto flex md:flex-row flex-col gap-20 items-center">
-            {/* Text Section */}
-            <div className="text-white space-y-8 w-full md:w-1/2">
-              <div>
-                <h2 className="text-5xl md:text-6xl font-atirose leading-tight">
-                  Contact <i className="font-atirose text-brand-500">Us</i>
-                </h2>
-              </div>
-              <p className="text-gray-400 text-base leading-relaxed">
-                It is very important for us to keep in touch with you, so we are
-                always ready to answer any question that interests you. Shoot!
-              </p>
-            </div>
-
-            {/* Form Section */}
-            <div className="w-full md:w-1/2 max-w-lg">
-              {submitStatus === "success" && (
-                <div className="mb-6 p-6 bg-green-900 border border-green-700 rounded-xl text-green-200 shadow-lg">
-                  <p className="font-medium">Message sent successfully!</p>
-                  <p className="text-sm mt-1">We'll get back to you soon.</p>
-                </div>
-              )}
-
-              {submitStatus === "error" && (
-                <ErrorMessage
-                  className="mb-4"
-                  message={errorMessage}
-                  onDismiss={() => setSubmitStatus(null)}
-                />
-              )}
-
-              <form className="space-y-8" onSubmit={handleSubmit}>
-                <div>
-                  <input
-                    required
-                    aria-label="Your name"
-                    className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-all duration-300"
-                    disabled={isSubmitting}
-                    name="name"
-                    placeholder="Your Name"
-                    type="text"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div>
-                  <input
-                    required
-                    aria-label="Your email"
-                    className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-all duration-300"
-                    disabled={isSubmitting}
-                    name="email"
-                    placeholder="Your Email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <div>
-                  <textarea
-                    required
-                    aria-label="Your message"
-                    className="w-full bg-transparent border-b-2 border-gray-700 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-brand-500 transition-all duration-300 resize-none"
-                    disabled={isSubmitting}
-                    name="message"
-                    placeholder="Share your thoughts"
-                    rows={4}
-                    value={formData.message}
-                    onChange={handleInputChange}
-                  />
-                </div>
-
-                <button
-                  aria-label="Send message"
-                  className="w-full bg-white text-black py-3 px-6 rounded-full font-medium hover:bg-brand-500 hover:text-white transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg hover:shadow-xl mt-8"
-                  disabled={isSubmitting}
-                  type="submit"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <LoadingSpinner message="" size="sm" />
-                      SENDING...
-                    </>
-                  ) : (
-                    "SEND"
-                  )}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
       </ErrorBoundary>
     </DefaultLayout>
   );

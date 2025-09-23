@@ -7,19 +7,13 @@ import {
   NavbarItem,
   NavbarMenuItem,
 } from "@nextui-org/navbar";
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/dropdown";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Image from "next/image";
 
 import { TwitterIcon, DiscordIcon } from "@/components/icons";
-import { Web3ConnectButton } from "@/components/Web3ConnectButton";
+import { InstagramIcon } from "lucide-react";
 
 // Avatar URL placeholder (Supabase removed)
 const getAvatarCDNURL = () =>
@@ -49,64 +43,11 @@ export const Navbar = () => {
 
       <NavbarContent>
         <div className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
-          {/* <Dropdown className="border border-violet mt-2">
-            <DropdownTrigger>
-              <button
-                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded transition-colors cursor-pointer"
-                aria-expanded={false}
-                aria-haspopup="true"
-              >
-                Gallery
-              </button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Gallery options"
-              className="w-auto text-center"
-              itemClasses={{
-                base: "gap-4",
-              }}
-            >
-              <DropdownItem key="artists" textValue="Artist" href="/artists">
-                <span className="uppercase">Artist</span>
-              </DropdownItem>
-              <DropdownItem key="gallery" textValue="Gallery" href="/gallery">
-                <span className="uppercase">Gallery</span>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-          <Dropdown className="border border-violet mt-2">
-            <DropdownTrigger>
-              <button
-                className="hover:text-brand-500 text-sm p-0 bg-transparent data-[hover=true]:bg-transparent uppercase focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 rounded transition-colors cursor-pointer"
-                aria-expanded={false}
-                aria-haspopup="true"
-              >
-                Community
-              </button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Gallery options"
-              className="w-auto text-center"
-              itemClasses={{
-                base: "gap-4",
-              }}
-            >
-              <DropdownItem key="talent" textValue="Talent" href="/talent">
-                <span className="uppercase">Talent</span>
-              </DropdownItem>
-              <DropdownItem key="community" textValue="Community" href="/community">
-                <span className="uppercase">Community</span>
-              </DropdownItem>
-              <DropdownItem key="signup" textValue="Join" href="/signup">
-                <span className="uppercase">Join</span>
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
           <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
-            <NextLink className="flex items-center gap-2" href="/auctions">
-              Auctions
+            <NextLink className="flex items-center gap-2" href="/community">
+              Community
             </NextLink>
-          </NavbarItem> */}
+          </NavbarItem>
           <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
             <NextLink className="flex items-center gap-2" href="/ministries">
               Ministries
@@ -141,9 +82,11 @@ export const Navbar = () => {
         justify="end"
       >
         <NavbarItem className="hidden sm:flex gap-4">
-          {/* <Web3ConnectButton /> */}
           <Link isExternal href="https://x.com/FRWCCouncil" title="Twitter">
             <TwitterIcon className="text-white hover:text-brand-500" />
+          </Link>
+          <Link isExternal href="https://instagram.com/house_of_wizards_dao" title="Instagram">
+            <InstagramIcon className="text-white hover:text-brand-500" />
           </Link>
           <Link
             isExternal
@@ -152,27 +95,6 @@ export const Navbar = () => {
           >
             <DiscordIcon className="text-white hover:text-brand-500" />
           </Link>
-          {false && (
-            <NextLink href="/signup" title="Your Profile">
-              <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-brand-500 hover:border-white transition-colors">
-                {avatar ? (
-                  <Image
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                    height={32}
-                    loading="lazy"
-                    src={getAvatarCDNURL()}
-                    unoptimized
-                    width={32}
-                  />
-                ) : (
-                  <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white font-bold">
-                    U
-                  </div>
-                )}
-              </div>
-            </NextLink>
-          )}
         </NavbarItem>
       </NavbarContent>
 
@@ -185,49 +107,9 @@ export const Navbar = () => {
           <NavbarMenuItem>
             <NextLink
               className="text-white text-lg uppercase w-full block py-2"
-              href="/artists"
-            >
-              Artist
-            </NextLink>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <NextLink
-              className="text-white text-lg uppercase w-full block py-2"
-              href="/gallery"
-            >
-              Gallery
-            </NextLink>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <NextLink
-              className="text-white text-lg uppercase w-full block py-2"
-              href="/talent"
-            >
-              Talent
-            </NextLink>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <NextLink
-              className="text-white text-lg uppercase w-full block py-2"
               href="/community"
             >
-              Community
-            </NextLink>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <NextLink
-              className="text-white text-lg uppercase w-full block py-2"
-              href="/signup"
-            >
-              Join
-            </NextLink>
-          </NavbarMenuItem>
-          <NavbarMenuItem>
-            <NextLink
-              className="text-white text-lg uppercase w-full block py-2"
-              href="/auctions"
-            >
-              Auctions
+              Members
             </NextLink>
           </NavbarMenuItem>
           <NavbarMenuItem>
@@ -263,33 +145,6 @@ export const Navbar = () => {
               </svg>
             </NextLink>
           </NavbarMenuItem>
-          {false && (
-            <NavbarMenuItem className="pt-4 border-t border-gray-600 mt-4">
-              <NextLink
-                className="text-white text-lg uppercase w-full block py-2 flex items-center gap-2"
-                href="/signup"
-              >
-                <div className="w-6 h-6 rounded-full overflow-hidden border border-brand-500">
-                  {avatar ? (
-                    <Image
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                      height={24}
-                      loading="lazy"
-                      src={getAvatarCDNURL()}
-                      unoptimized
-                      width={24}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-brand-500 flex items-center justify-center text-white text-xs font-bold">
-                      U
-                    </div>
-                  )}
-                </div>
-                Profile
-              </NextLink>
-            </NavbarMenuItem>
-          )}
         </div>
       </NavbarMenu>
     </NextUINavbar>
