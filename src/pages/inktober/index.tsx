@@ -242,9 +242,9 @@ const prompts = [
   },
   {
     day: 25,
-    title: "Bugbear Chieftain",
-    desc: "Force of the nature.",
-    href: "https://wizzypedia.forgottenrunes.com/Bugbear_Chieftain",
+    title: "Eternal Rose",
+    desc: "Beautiful and eternal.",
+    href: "https://wizzypedia.forgottenrunes.com/Eternal_Rose",
   },
   {
     day: 26,
