@@ -54,26 +54,53 @@ export default function InktoberPage() {
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {prompts.map((p) => (
-              <a
-                key={p.day}
-                id={`day-${p.day}`}
-                href={p.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block rounded-lg border border-content3/20 hover:border-brand-500/60 hover:bg-content1/40 transition-colors p-4"
-              >
-                <div className="flex items-start justify-between">
-                  <h2 className="text-xl font-semibold">
-                    Day {p.day}:{" "}
-                    <span className="font-atirose text-brand-500">
-                      {p.title}
-                    </span>
-                  </h2>
-                </div>
-                <p className="text-sm mt-2 text-foreground-600">{p.desc}</p>
-              </a>
-            ))}
+            {/* Column 1: first half of prompts (fills down the first column) */}
+            <div className="flex flex-col gap-4">
+              {prompts.slice(0, Math.ceil(prompts.length / 2)).map((p) => (
+                <a
+                  key={p.day}
+                  id={`day-${p.day}`}
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg border border-content3/20 hover:border-brand-500/60 hover:bg-content1/40 transition-colors p-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <h2 className="text-xl font-semibold">
+                      Day {p.day}:{" "}
+                      <span className="font-atirose text-brand-500">
+                        {p.title}
+                      </span>
+                    </h2>
+                  </div>
+                  <p className="text-sm mt-2 text-foreground-600">{p.desc}</p>
+                </a>
+              ))}
+            </div>
+
+            {/* Column 2: second half of prompts (fills down the second column) */}
+            <div className="flex flex-col gap-4">
+              {prompts.slice(Math.ceil(prompts.length / 2)).map((p) => (
+                <a
+                  key={p.day}
+                  id={`day-${p.day}`}
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-lg border border-content3/20 hover:border-brand-500/60 hover:bg-content1/40 transition-colors p-4"
+                >
+                  <div className="flex items-start justify-between">
+                    <h2 className="text-xl font-semibold">
+                      Day {p.day}:{" "}
+                      <span className="font-atirose text-brand-500">
+                        {p.title}
+                      </span>
+                    </h2>
+                  </div>
+                  <p className="text-sm mt-2 text-foreground-600">{p.desc}</p>
+                </a>
+              ))}
+            </div>
           </div>
           <p id="rules" className="text-lg text-center max-w-3xl mx-auto">
             Rules: follow our{" "}
