@@ -102,20 +102,41 @@ export default function InktoberPage() {
               ))}
             </div>
           </div>
-          <p id="rules" className="text-lg text-center max-w-3xl mx-auto">
-            Rules: follow our{" "}
-            <a
-              href="https://instagram.com/house_of_wizards_dao"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-500 underline underline-offset-4"
-            >
-              instagram account
-            </a>
-            , post your illustration and tag @house_of_wizards_dao, and use the
-            #inktober #wizardinktober hashtags. Judging criteria: aesthetics,
-            style, details, how much it fits the Forgotten Runes franchise
-          </p>
+          <section id="rules" className="max-w-3xl">
+            <p className="text-lg text-center max-w-3xl mx-auto">Rules</p>
+            <li>
+              follow our{" "}
+              <a
+                href="https://instagram.com/house_of_wizards_dao"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-500 underline underline-offset-4"
+              >
+                instagram account
+              </a>
+                {" "}and like{" "}
+              <a
+                href="https://instagram.com/p/DPB-mtsjBcA/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-500 underline underline-offset-4"
+              >
+                this post
+              </a>
+            </li>
+            <li>
+              based on the daily prompt create an art piece with ink or pen
+            </li>
+            <li>
+              post your illustration on IG (or X if not possible on IG) and tag
+              @house_of_wizards_dao, and use the #inktober #wizardinktober
+              hashtags, and the daily prompt
+            </li>
+            <li>
+              Judging criteria: aesthetics, style, details, how much it fits the
+              Forgotten Runes franchise
+            </li>
+          </section>
         </div>
       </div>
     </DefaultLayout>
