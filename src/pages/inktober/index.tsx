@@ -302,9 +302,9 @@ const prompts = [
   },
   {
     day: 27,
-    title: "Chimera",
-    desc: "They are cute when they are young.",
-    href: "https://www.forgottenrunes.com/gallery/spawn?species=Chimera",
+    title: "Bread Friend",
+    desc: "My God, I'm delicious!!!",
+    href: "https://wizzypedia.forgottenrunes.com/Bread_Friend",
   },
   {
     day: 28,
