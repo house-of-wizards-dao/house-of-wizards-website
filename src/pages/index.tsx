@@ -93,14 +93,14 @@ export default function IndexPage() {
           </div>
         }
       >
-        <div className="relative h-[700px] overflow-hidden">
+        <div className="relative h-[450px] overflow-hidden">
           <NextImage
-            src="/img/banner.png"
+            src="/img/merlin_last_supper.png"
             alt="House of Wizards Banner"
             fill
             priority={true}
             className="object-cover object-center"
-            sizes="100vw"
+            // sizes="100vw"
           />
         </div>
 

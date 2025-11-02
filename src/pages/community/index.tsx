@@ -44,7 +44,7 @@ export default function DocsPage() {
           <p className="text-md text-center">
             The House of Wizards includes nearly all{" "}
             <i className="font-atirose text-xl text-brand-500">
-              Forgoten Runes
+              Forgotten Runes
             </i>{" "}
             token holders. The{" "}
             <i className="font-atirose text-xl text-brand-500">Beast Spawn</i>{" "}

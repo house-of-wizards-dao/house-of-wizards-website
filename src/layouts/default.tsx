@@ -21,16 +21,6 @@ export default function DefaultLayout({
             src="/img/logo-white.png"
             width={150}
           />
-          {/* <div className="flex flex-row gap-3">
-            <Link href="/about" className="text-white text-xs cursor-pointer hover:text-brand-500">About</Link>
-            <Link href="/artists" className="text-white text-xs cursor-pointer hover:text-brand-500">Artists</Link>
-            <Link href="/gallery" className="text-white text-xs cursor-pointer hover:text-brand-500">Gallery</Link>
-            <Link href="/community" className="text-white text-xs cursor-pointer hover:text-brand-500">Community</Link>
-            <Link href="/about" className="text-white text-xs cursor-pointer hover:text-brand-500">Council</Link>
-            <Link href="/talent" className="text-white text-xs cursor-pointer hover:text-brand-500">Talent</Link>
-            <Link href="/ministries" className="text-white text-xs cursor-pointer hover:text-brand-500">Ministires</Link>
-            <Link href="https://snapshot.org/#/forgottengov.eth" className="text-white text-xs cursor-pointer hover:text-brand-500">Vote</Link>
-          </div> */}
           <div className="flex flex-col items-center sm:w-[700px] w-full">
             <p className="text-xs text-white uppercase">
               All right reserved. 2024.
