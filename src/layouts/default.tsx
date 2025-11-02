@@ -23,7 +23,7 @@ export default function DefaultLayout({
           />
           <div className="flex flex-col items-center sm:w-[700px] w-full">
             <p className="text-xs text-white uppercase">
-              All right reserved. 2024.
+              All right reserved. 2025.
             </p>
             <p className="text-xs text-white uppercase">HoW</p>
           </div>

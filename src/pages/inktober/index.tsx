@@ -113,8 +113,8 @@ export default function InktoberPage() {
                 className="text-brand-500 underline underline-offset-4"
               >
                 instagram account
-              </a>
-                {" "}and like{" "}
+              </a>{" "}
+              and like{" "}
               <a
                 href="https://instagram.com/p/DPB-mtsjBcA/"
                 target="_blank"
