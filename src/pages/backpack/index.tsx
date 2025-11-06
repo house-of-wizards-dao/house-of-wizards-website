@@ -7,7 +7,6 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { traits, type Trait } from "@/data/traits";
 import { wizardsWithTraits } from "@/data/wizardsWithTraits";
 
-
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
 };
@@ -30,7 +29,9 @@ export default function PfpPage() {
   useEffect(() => setIsClient(true), []);
   const [nameQuery, setNameQuery] = useState("");
   const [idQuery, setIdQuery] = useState("");
-  const [selectedTraits, setSelectedTraits] = useState<Partial<Record<TraitPart, number>>>({});
+  const [selectedTraits, setSelectedTraits] = useState<
+    Partial<Record<TraitPart, number>>
+  >({});
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
 
@@ -42,7 +43,10 @@ export default function PfpPage() {
     return map;
   }, []);
 
-  const partToTraitOptions: Record<TraitPart, Array<{ value: number; label: string }>> = useMemo(() => {
+  const partToTraitOptions: Record<
+    TraitPart,
+    Array<{ value: number; label: string }>
+  > = useMemo(() => {
     const byPart = new Map<
       TraitPart | "other",
       Array<{ value: number; label: string }>
@@ -119,19 +123,20 @@ export default function PfpPage() {
     return filteredWizards.slice(start, end);
   }, [filteredWizards, currentPage, pageSize]);
 
-  const onSelectTrait = (part: TraitPart) => (e: ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setPage(1);
-    setSelectedTraits((prev) => {
-      const next = { ...prev };
-      if (!value) {
-        delete next[part];
-      } else {
-        next[part] = Number(value);
-      }
-      return next;
-    });
-  };
+  const onSelectTrait =
+    (part: TraitPart) => (e: ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setPage(1);
+      setSelectedTraits((prev) => {
+        const next = { ...prev };
+        if (!value) {
+          delete next[part];
+        } else {
+          next[part] = Number(value);
+        }
+        return next;
+      });
+    };
 
   return (
     <DefaultLayout>
@@ -155,8 +160,12 @@ export default function PfpPage() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white mb-2">Error Loading Page</h2>
-                <p className="text-gray-400 mb-6">There was an error loading the wizards page.</p>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  Error Loading Page
+                </h2>
+                <p className="text-gray-400 mb-6">
+                  There was an error loading the wizards page.
+                </p>
               </div>
               <button
                 onClick={() => window.location.reload()}
@@ -171,7 +180,9 @@ export default function PfpPage() {
         <Web3Provider>
           <div className="max-w-7xl mx-auto px-6">
             <div className="flex items-center justify-between gap-4 mb-8">
-              <h1 className="text-2xl md:text-3xl font-bold text-white">Forgotten Runes Wizards</h1>
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Forgotten Runes Wizards
+              </h1>
               {isClient ? <ConnectButton /> : null}
             </div>
 
@@ -217,7 +228,9 @@ export default function PfpPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3 mb-6">
               {TRAIT_PARTS.map((part) => (
                 <div key={part} className="flex flex-col gap-1">
-                  <label className="text-sm text-gray-300 capitalize">{part}</label>
+                  <label className="text-sm text-gray-300 capitalize">
+                    {part}
+                  </label>
                   <select
                     className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
                     value={selectedTraits[part] ?? ""}
@@ -246,7 +259,9 @@ export default function PfpPage() {
                 >
                   Prev
                 </button>
-                <span className="text-sm">Page {currentPage} / {totalPages}</span>
+                <span className="text-sm">
+                  Page {currentPage} / {totalPages}
+                </span>
                 <button
                   className="px-3 py-1 rounded-md bg-[#111015] border border-gray-700 text-white disabled:opacity-50"
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -259,7 +274,10 @@ export default function PfpPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {paginated.map((w) => (
-                <div key={w.idx} className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden">
+                <div
+                  key={w.idx}
+                  className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden"
+                >
                   <div className="w-full aspect-square bg-black/40">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -273,7 +291,12 @@ export default function PfpPage() {
                     <div className="flex items-center justify-between">
                       <div className="text-white font-semibold">#{w.idx}</div>
                     </div>
-                    <div className="text-gray-300 text-sm truncate" title={w.name}>{w.name}</div>
+                    <div
+                      className="text-gray-300 text-sm truncate"
+                      title={w.name}
+                    >
+                      {w.name}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -287,7 +310,9 @@ export default function PfpPage() {
               >
                 Prev
               </button>
-              <span className="text-sm text-gray-300">Page {currentPage} / {totalPages}</span>
+              <span className="text-sm text-gray-300">
+                Page {currentPage} / {totalPages}
+              </span>
               <button
                 className="px-3 py-1 rounded-md bg-[#111015] border border-gray-700 text-white disabled:opacity-50"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
@@ -302,5 +327,3 @@ export default function PfpPage() {
     </DefaultLayout>
   );
 }
-
-
