@@ -1,15 +1,15 @@
 ---
 title: 'Wizard Inktober Concluded!'
-date: '2025-11-02'
+date: '2025-11-11'
 ---
 
-The first-ever [Wizard Inktober](https://houseofwizards.xyz/inktober) came to an end. It was amazing to see all the creative submissions throughout the month.
+As the first-ever [Wizard Inktober](https://houseofwizards.xyz/inktober) comes to a close, a trace of magic still lingers in the air. For thirty-one days, artists and wizards from across the Runiverse conjured incredible creations from ink and imagination—each one a spark that added to the growing light of the Cult.
 
-We are extremely grateful for everyone who participated, bringing their unique vision and talent to each prompt. We also want to thank the Cult members who helped make this event possible through their support and engagement.
+We’re deeply grateful to everyone who joined the gathering, bringing their unique vision and creative spirit to every prompt. A special thanks goes to the Cult members whose support and enthusiasm helped shape this event into something truly unforgettable.
 
-Each day we had to pick one piece from the submissions, which was often difficult given the quality and creativity on display. The winner could decide to take a cash prize or receive a warrior of their choice. We are happy to say that every winner chose to receive a warrior at least once, so we have a few new cult members!
+Each day, the judges faced an almost impossible challenge—choosing just one piece among so many works of talent and wonder. The winner could claim either a treasure of gold or a warrior of their choosing. To our delight, every winner chose to receive a warrior at least once, meaning the Cult has welcomed several new members into its ranks.
 
-Here's a submission from each artist who won at least one day.
+Below you’ll find a glimpse of the artistry that defined this magical month—a selection from each artist who claimed victory at least once during the first Wizard Inktober. May their creations continue to inspire others to summon new worlds from imagination and ink.
 
 ### [javierece](https://www.instagram.com/javierece/)
 ![javierece](/img/blog/javierece.jpg)
@@ -35,5 +35,4 @@ Here's a submission from each artist who won at least one day.
 ### [ilias](https://www.instagram.com/iliasrizzi_art/)
 ![ilias](/img/blog/ilias.jpeg)
 
-We hope you enjoyed following us the past months. We're planning to continue with more events to spark creativity!
-
+Until the next Inktober rises, may your quills stay sharp, your runes stay bright, and your magic never fade.
