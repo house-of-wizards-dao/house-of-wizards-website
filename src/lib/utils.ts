@@ -48,38 +48,6 @@ export function truncateText(text: string, maxLength: number = 100): string {
 }
 
 /**
- * Generate consistent avatar URLs using environment variable
- */
-export function getAvatarUrl(
-  avatarPath: string | null,
-  fallback: string = "default.png",
-): string {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
-  }
-  const AVATAR_CDN_URL = `${supabaseUrl}/storage/v1/object/public/avatars/`;
-
-  if (!avatarPath) return `${AVATAR_CDN_URL}${fallback}`;
-  if (avatarPath.startsWith("http")) return avatarPath;
-  return `${AVATAR_CDN_URL}${avatarPath}`;
-}
-
-/**
- * Generate consistent artwork URLs using environment variable
- */
-export function getArtworkUrl(artworkPath: string): string {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!supabaseUrl) {
-    throw new Error("NEXT_PUBLIC_SUPABASE_URL environment variable is not set");
-  }
-  const ARTWORK_CDN_URL = `${supabaseUrl}/storage/v1/object/public/files/`;
-
-  if (artworkPath.startsWith("http")) return artworkPath;
-  return `${ARTWORK_CDN_URL}${artworkPath}`;
-}
-
-/**
  * Debounce function for search and other rapid inputs
  */
 export function debounce<T extends (...args: any[]) => any>(

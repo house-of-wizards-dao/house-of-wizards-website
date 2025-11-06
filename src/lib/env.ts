@@ -3,9 +3,6 @@
  */
 
 interface EnvConfig {
-  NEXT_PUBLIC_SUPABASE_URL: string;
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: string;
-  SUPABASE_SERVICE_ROLE_KEY?: string;
   NODE_ENV: "development" | "test" | "production";
   REDIS_URL?: string;
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID?: string;
@@ -77,29 +74,7 @@ function validateSupabaseKey(key: string, type: "anon" | "service"): string {
  */
 export function getValidatedEnv(): EnvConfig {
   try {
-    const supabaseUrl = validateEnvVar(
-      "NEXT_PUBLIC_SUPABASE_URL",
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-    );
-    const supabaseAnonKey = validateEnvVar(
-      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    );
-    const supabaseServiceKey = validateEnvVar(
-      "SUPABASE_SERVICE_ROLE_KEY",
-      process.env.SUPABASE_SERVICE_ROLE_KEY,
-      false,
-    );
-
     return {
-      NEXT_PUBLIC_SUPABASE_URL: validateSupabaseUrl(supabaseUrl),
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: validateSupabaseKey(
-        supabaseAnonKey,
-        "anon",
-      ),
-      SUPABASE_SERVICE_ROLE_KEY: supabaseServiceKey
-        ? validateSupabaseKey(supabaseServiceKey, "service")
-        : undefined,
       NODE_ENV:
         (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
       REDIS_URL: process.env.REDIS_URL,
@@ -138,12 +113,6 @@ export function getEnvWithFallbacks(): EnvConfig {
 
       // Provide safe fallbacks for development builds
       return {
-        NEXT_PUBLIC_SUPABASE_URL:
-          process.env.NEXT_PUBLIC_SUPABASE_URL ||
-          "https://placeholder.supabase.co",
-        NEXT_PUBLIC_SUPABASE_ANON_KEY:
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "placeholder-key",
-        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
         NODE_ENV:
           (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
         REDIS_URL: process.env.REDIS_URL,
