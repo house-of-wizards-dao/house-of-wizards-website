@@ -43,7 +43,7 @@
     "@nextui-org/tabs": "^2.0.35",
     "@nextui-org/theme": "2.4.5",
     "@openzeppelin/contracts": "^5.4.0",
-    "@rainbow-me/rainbowkit": "2.0.0",
+    "@rainbow-me/rainbowkit": "2.2.9",
     "@react-aria/visually-hidden": "3.8.12",
     "@tanstack/react-query": "5.85.3",
     "@types/formidable": "^3.4.5",
@@ -65,8 +65,8 @@
     "remark-breaks": "^4.0.0",
     "tailwind-merge": "^2.2.0",
     "uuid": "^11.0.2",
-    "viem": "2.9.0",
-    "wagmi": "2.9.0",
+    "viem": "2.38.6",
+    "wagmi": "2.19.2",
     "zod": "^3.25.63"
   },
   "devDependencies": {

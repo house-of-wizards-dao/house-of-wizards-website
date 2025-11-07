@@ -37,18 +37,22 @@ const sepoliaEnhanced = {
 const getWalletConnectProjectId = () => {
   const projectId = process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID;
 
-  if (
-    !projectId ||
-    projectId === "YOUR_PROJECT_ID" ||
-    projectId === "your-walletconnect-project-id-here"
-  ) {
-    console.warn(
-      "⚠️  WalletConnect Project ID not set or using placeholder. " +
-        "Get a real Project ID from https://cloud.walletconnect.com for production use.",
-    );
-    // Return a development-safe placeholder that won't cause crashes
-    return "0123456789abcdef0123456789abcdef";
+  if (projectId == null) {
+    throw new Error("NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID is not set");
   }
+
+  // if (
+  //   !projectId ||
+  //   projectId === "YOUR_PROJECT_ID" ||
+  //   projectId === "your-walletconnect-project-id-here"
+  // ) {
+  //   console.warn(
+  //     "⚠️  WalletConnect Project ID not set or using placeholder. " +
+  //       "Get a real Project ID from https://cloud.walletconnect.com for production use.",
+  //   );
+  //   // Return a development-safe placeholder that won't cause crashes
+  //   return "0123456789abcdef0123456789abcdef";
+  // }
 
   return projectId;
 };
@@ -58,11 +62,7 @@ export const config = getDefaultConfig({
   appName: "House of Wizards DAO",
   projectId: getWalletConnectProjectId(),
   chains: [
-    sepoliaEnhanced, // Use enhanced Sepolia with multiple RPC endpoints
     mainnet,
-    polygon,
-    optimism,
-    arbitrum,
   ],
   ssr: true, // Enable server-side rendering
 });
