@@ -5,7 +5,7 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Web3Provider } from "@/components/Web3Provider";
 import WizardBrowser from "@/components/WizardBrowser";
 
-export default function PfpPage() {
+export default function BackpackPage() {
   const [isClient, setIsClient] = useState(false);
   useEffect(() => setIsClient(true), []);
 
