@@ -1,6 +1,9 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
+import Snowfall from "react-snowfall";
 import DefaultLayout from "@/layouts/default";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { Web3Provider } from "@/components/Web3Provider";
@@ -8,10 +11,52 @@ import WizardBrowser from "@/components/WizardBrowser";
 
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
+  const [snowflakes, setSnowflakes] = useState<HTMLImageElement[]>([]);
+
+  useEffect(() => {
+    setIsClient(true);
+
+    // Create snowflake images only on the client side
+    const snowflake1 = document.createElement("img");
+    snowflake1.src = "/img/snow/1.svg";
+    const snowflake2 = document.createElement("img");
+    snowflake2.src = "/img/snow/2.svg";
+    const snowflake3 = document.createElement("img");
+    snowflake3.src = "/img/snow/3.svg";
+    const snowflake4 = document.createElement("img");
+    snowflake4.src = "/img/snow/4.svg";
+    const snowflake5 = document.createElement("img");
+    snowflake5.src = "/img/snow/5.svg";
+    const snowflake6 = document.createElement("img");
+    snowflake6.src = "/img/snow/6.svg";
+
+    setSnowflakes([
+      snowflake1,
+      snowflake2,
+      snowflake3,
+      snowflake4,
+      snowflake5,
+      snowflake6,
+    ]);
+  }, []);
 
   return (
     <DefaultLayout>
+      {isClient && snowflakes.length > 0 && (
+        <Snowfall
+          color="#FFFFFF"
+          // style={{ background: "#FFFFFF" }}
+          snowflakeCount={200}
+          speed={[0.5, 1.5]}
+          images={snowflakes}
+          style={{
+            position: "fixed",
+            width: "100vw",
+            height: "100vh",
+          }}
+          radius={[2, 20]}
+        />
+      )}
       <ErrorBoundary
         fallback={
           <div className="min-h-screen flex items-center justify-center">
