@@ -45,7 +45,7 @@ export const Navbar = () => {
 
       <NavbarContent className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
         <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
-          <NextLink className="flex items-center gap-2" href="/community">
+          <NextLink className="flex items-center gap-2" href="/blog">
             Blog
           </NextLink>
         </NavbarItem>
