@@ -4,7 +4,6 @@
 
 interface EnvConfig {
   NODE_ENV: "development" | "test" | "production";
-  REDIS_URL?: string;
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID?: string;
 }
 
@@ -77,7 +76,6 @@ export function getValidatedEnv(): EnvConfig {
     return {
       NODE_ENV:
         (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
-      REDIS_URL: process.env.REDIS_URL,
       NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
         process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
     };
@@ -115,7 +113,6 @@ export function getEnvWithFallbacks(): EnvConfig {
       return {
         NODE_ENV:
           (process.env.NODE_ENV as EnvConfig["NODE_ENV"]) || "development",
-        REDIS_URL: process.env.REDIS_URL,
         NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID:
           process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID,
       };

@@ -1,4 +1,4 @@
-import { useMemo, useState, ChangeEvent } from "react";
+import { useMemo, useState, ChangeEvent, MouseEventHandler } from "react";
 import {
   useAccount,
   useReadContract,
@@ -50,9 +50,28 @@ const TRAIT_PARTS: TraitPart[] = [
   "rune",
 ];
 
-export default function WizardBrowser() {
+type Props = {
+  onClick?: (v: number) => void;
+}
+
+export default function WizardBrowser({ onClick }: Props) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
+  const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
+  const selectItemHandler = (idx: number) => {
+    if (selectedTokens.includes(idx)) {
+      const s = new Set(selectedTokens);
+      s.delete(idx);
+      setSelectedTokens(Array.from(s));
+    } else {
+      setSelectedTokens((prev) => {
+        prev.push(idx);
+        return [...prev];
+      });
+    }
+  };
+  const onClickHandler = onClick ?? selectItemHandler;
+
   const [nameQuery, setNameQuery] = useState("");
   const [idQuery, setIdQuery] = useState("");
   const [selectedTraits, setSelectedTraits] = useState<
@@ -370,28 +389,7 @@ export default function WizardBrowser() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {paginated.map((w) => (
-          <div
-            key={w.idx}
-            className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden"
-          >
-            <div className="w-full aspect-square bg-black/40">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={getWizardImage(w.idx)}
-                alt={`Wizard #${w.idx}`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            </div>
-            <div className="p-3">
-              <div className="flex items-center justify-between">
-                <div className="text-white font-semibold">#{w.idx}</div>
-              </div>
-              <div className="text-gray-300 text-sm truncate" title={w.name}>
-                {w.name}
-              </div>
-            </div>
-          </div>
+          <Thumbnail key={w.idx} {...w} onClick={onClickHandler} />
         ))}
       </div>
 
@@ -417,3 +415,34 @@ export default function WizardBrowser() {
     </>
   );
 }
+
+const Thumbnail = ({
+  idx,
+  name,
+  onClick,
+}: Wizard & { onClick: (v: number) => void }) => {
+  return (
+    <button
+      className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden"
+      onClick={() => onClick(idx)}
+    >
+      <div className="w-full aspect-square bg-black/40">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={getWizardImage(idx)}
+          alt={`Wizard #${idx}`}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      </div>
+      <div className="p-3">
+        <div className="flex items-center justify-between">
+          <div className="text-white font-semibold">#{idx}</div>
+        </div>
+        <div className="text-gray-300 text-sm truncate" title={name}>
+          {name}
+        </div>
+      </div>
+    </button>
+  );
+};

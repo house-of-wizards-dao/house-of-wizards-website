@@ -100,11 +100,9 @@ export default function IndexPage() {
             fill
             priority={true}
             className="object-cover object-center"
-            // sizes="100vw"
           />
         </div>
-
-        <section className="py-32 px-8">
+        <section className="pt-64 pb-32 px-8">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
             <div className="space-y-10">
               <h1 className="text-4xl md:text-5xl font-atirose text-violet font-bold leading-tight">
@@ -140,13 +138,19 @@ export default function IndexPage() {
             <div className="relative h-[600px]">
               <div className="absolute inset-0">
                 {/* Replace with your actual hero image */}
-                <div className="bg-gradient-to-br from-violet/20 to-purple-100/30 rounded-3xl h-full w-full backdrop-blur-sm shadow-2xl" />
+                <NextImage
+                  src="/img/dao.jpg"
+                  alt="dao"
+                  fill
+                  className="object-cover object-center"
+                />
+                {/* <div className="bg-gradient-to-br from-violet/20 to-purple-100/30 rounded-3xl h-full w-full backdrop-blur-sm shadow-2xl" /> */}
               </div>
             </div>
           </div>
         </section>
 
-        <div className="bg-neutral-darkGray py-32 px-8" id="team-section">
+        <section className="bg-neutral-darkGray py-32 px-8" id="team-section">
           <div className="max-w-7xl mx-auto">
             <div className="text-center max-w-4xl mx-auto mb-20">
               <h2 className="text-brand-500 text-5xl md:text-6xl font-atirose mb-10">
@@ -199,7 +203,7 @@ export default function IndexPage() {
               ))}
             </div>
           </div>
-        </div>
+        </section>
       </ErrorBoundary>
     </DefaultLayout>
   );

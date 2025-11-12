@@ -46,6 +46,11 @@ export const Navbar = () => {
       <NavbarContent className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
         <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
           <NextLink className="flex items-center gap-2" href="/community">
+            Blog
+          </NextLink>
+        </NavbarItem>
+        <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
+          <NextLink className="flex items-center gap-2" href="/community">
             Community
           </NextLink>
         </NavbarItem>
@@ -122,6 +127,15 @@ export const Navbar = () => {
 
       <NavbarMenu className="bg-black/95 backdrop-blur-sm !opacity-100 !visible z-[9999] fixed top-0 left-0 right-0 bottom-0">
         <div className="mx-4 mt-14 flex flex-col gap-2">
+          <NavbarMenuItem>
+            <NextLink
+              className="text-white text-lg uppercase w-full block py-2 hover:text-brand-500 transition-colors"
+              href="/blog"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Blog
+            </NextLink>
+          </NavbarMenuItem>
           <NavbarMenuItem>
             <NextLink
               className="text-white text-lg uppercase w-full block py-2 hover:text-brand-500 transition-colors"
