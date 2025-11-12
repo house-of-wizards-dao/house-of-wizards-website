@@ -27,14 +27,8 @@ export default function BlogPost({ postData }: BlogPostProps) {
             {postData.title || "Untitled"}
           </h1>
 
-          {postData.date && (
-            <p className="text-gray-400 mb-8">
-              {new Date(postData.date).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </p>
+          {postData.formattedDate && (
+            <p className="text-gray-400 mb-8">{postData.formattedDate}</p>
           )}
 
           <div className="w-full my-4 mb-8">

@@ -4,10 +4,28 @@ import matter from "gray-matter";
 
 const postsDirectory = path.join(process.cwd(), "posts");
 
+/**
+ * Format a date string consistently for display, avoiding timezone issues.
+ * Uses UTC to ensure the same date is displayed on server and client.
+ */
+export function formatPostDate(dateString: string): string {
+  // Parse the date string and treat it as UTC to avoid timezone shifts
+  // Dates like "2025-11-12" are parsed as UTC midnight
+  const date = new Date(dateString + "T00:00:00Z");
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 export interface PostData {
   id: string;
   title?: string;
   date?: string;
+  formattedDate?: string;
   content?: string;
   [key: string]: unknown;
 }
@@ -16,6 +34,7 @@ export interface Post {
   id: string;
   title?: string;
   date?: string;
+  formattedDate?: string;
   [key: string]: unknown;
 }
 
@@ -33,10 +52,16 @@ export function getSortedPostsData(): Post[] {
     // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
+    // Format the date during static generation to avoid hydration mismatches
+    const formattedDate = matterResult.data.date
+      ? formatPostDate(matterResult.data.date as string)
+      : undefined;
+
     // Combine the data with the id
     return {
       id,
       ...matterResult.data,
+      formattedDate,
     } as Post;
   });
   // Sort posts by date
@@ -70,10 +95,16 @@ export function getPostData(id: string): PostData {
   // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);
 
+  // Format the date during static generation to avoid hydration mismatches
+  const formattedDate = matterResult.data.date
+    ? formatPostDate(matterResult.data.date as string)
+    : undefined;
+
   // Combine the data with the id
   return {
     id,
     content: matterResult.content,
     ...matterResult.data,
+    formattedDate,
   } as PostData;
 }

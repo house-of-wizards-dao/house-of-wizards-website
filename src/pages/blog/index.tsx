@@ -60,13 +60,9 @@ export default function BlogIndex({ allPostsData }: BlogIndexProps) {
                     <h2 className="text-xl font-semibold mb-2 font-atirose text-brand-500">
                       {post.title || "Untitled"}
                     </h2>
-                    {post.date && (
+                    {post.formattedDate && (
                       <p className="text-sm text-gray-400 mb-4">
-                        {new Date(post.date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {post.formattedDate}
                       </p>
                     )}
                     <div className="mt-auto">
