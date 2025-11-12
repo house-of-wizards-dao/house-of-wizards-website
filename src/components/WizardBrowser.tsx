@@ -52,7 +52,7 @@ const TRAIT_PARTS: TraitPart[] = [
 
 type Props = {
   onClick?: (v: number) => void;
-}
+};
 
 export default function WizardBrowser({ onClick }: Props) {
   const { address, isConnected } = useAccount();
