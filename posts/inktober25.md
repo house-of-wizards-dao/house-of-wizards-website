@@ -1,6 +1,6 @@
 ---
 title: 'Wizard Inktober Concluded!'
-date: '2025-11-11'
+date: '2025-11-12'
 ---
 
 As the first-ever [Wizard Inktober](https://houseofwizards.xyz/inktober) comes to a close, a trace of magic still lingers in the air. For thirty-one days, artists and wizards from across the Runiverse conjured incredible creations from ink and imagination—each one a spark that added to the growing light of the Cult.
@@ -34,5 +34,9 @@ Below you’ll find a glimpse of the artistry that defined this magical month—
 
 ### [ilias](https://www.instagram.com/iliasrizzi_art/)
 ![ilias](/img/blog/ilias.jpeg)
+
+And a special shoutout goes to [marcofine](https://x.com/marcofine_/status/1988319628381352157/photo/1), who created this incredible piece, including all prompts from the Wizard Inktober challenge.
+
+![marcofine](/img/blog/marcofine.jpeg)
 
 Until the next Inktober rises, may your quills stay sharp, your runes stay bright, and your magic never fade.
