@@ -1,4 +1,5 @@
 import { GetStaticProps } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import { Card } from "@nextui-org/card";
 
@@ -12,10 +13,27 @@ interface BlogIndexProps {
 export default function BlogIndex({ allPostsData }: BlogIndexProps) {
   return (
     <DefaultLayout>
+      <Head>
+        <link
+          rel="alternate"
+          type="application/rss+xml"
+          title="RSS Feed"
+          href="/feed.xml"
+        />
+      </Head>
       <div className="flex flex-col items-center gap-4 max-w-8xl min-h-screen py-12">
-        <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
-          Blog
-        </h1>
+        <div className="flex flex-col items-center gap-2">
+          <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
+            Blog
+          </h1>
+          <Link
+            href="/feed.xml"
+            className="text-sm text-gray-400 hover:text-brand-500 transition-colors flex items-center gap-1"
+            title="RSS Feed"
+          >
+            RSS Feed
+          </Link>
+        </div>
 
         <div className="w-full my-4">
           <svg

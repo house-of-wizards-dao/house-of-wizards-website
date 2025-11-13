@@ -10,7 +10,14 @@ const nextConfig = {
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
-  // Removed custom API headers (no Next.js API routes in use)
+  async rewrites() {
+    return [
+      {
+        source: "/feed.xml",
+        destination: "/api/feed.xml",
+      },
+    ];
+  },
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
