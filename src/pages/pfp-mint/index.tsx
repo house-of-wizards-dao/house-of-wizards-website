@@ -121,28 +121,25 @@ export default function PfpMintPage() {
                     , making this celebration accessible to all who wish to join
                     the magic.
                   </p>
-                  {selectedTokens.length > 0 && (
-                    <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
-                      <div className="text-center space-y-4">
-                        <div className="text-gray-300">
-                          <span className="text-lg font-semibold">
-                            {selectedTokens.length}
-                          </span>{" "}
-                          token{selectedTokens.length !== 1 ? "s" : ""} selected
-                        </div>
-                        <div className="text-white text-2xl font-bold">
-                          Total: {(selectedTokens.length * 0.0005).toFixed(4)}{" "}
-                          ETH
-                        </div>
-                        <button
-                          className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg"
-                          disabled={selectedTokens.length === 0}
-                        >
-                          Mint
-                        </button>
+                  <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
+                    <div className="text-center space-y-4">
+                      <div className="text-gray-300">
+                        <span className="text-lg font-semibold">
+                          {selectedTokens.length}
+                        </span>{" "}
+                        token{selectedTokens.length !== 1 ? "s" : ""} selected
                       </div>
+                      <div className="text-white text-2xl font-bold">
+                        Total: {(selectedTokens.length * 0.0005).toFixed(4)} ETH
+                      </div>
+                      <button
+                        className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg"
+                        disabled={selectedTokens.length === 0}
+                      >
+                        Mint
+                      </button>
                     </div>
-                  )}
+                  </div>
                   <p className="text-gray-300 text-lg leading-relaxed">
                     Below, you can select the wizards you want to mint the PFP
                     for.
