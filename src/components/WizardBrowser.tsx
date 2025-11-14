@@ -406,7 +406,7 @@ export default function WizardBrowser({
             key={w.idx}
             {...w}
             onClick={onClickHandler}
-            selected={selectedTokens.includes(w.idx)}
+            selected={selectedTokens?.includes(w.idx) ?? false}
           />
         ))}
       </div>
