@@ -1,4 +1,10 @@
-import { useMemo, useState, ChangeEvent, MouseEventHandler } from "react";
+import {
+  useMemo,
+  useState,
+  ChangeEvent,
+  SetStateAction,
+  Dispatch,
+} from "react";
 import {
   useAccount,
   useReadContract,
@@ -7,6 +13,7 @@ import {
 } from "wagmi";
 import { type Address } from "viem";
 import { mainnet } from "wagmi/chains";
+import { cn } from "@/lib/utils";
 import { addresses } from "@/config/addresses";
 
 import { traits } from "@/data/traits";
@@ -52,13 +59,19 @@ const TRAIT_PARTS: TraitPart[] = [
 
 type Props = {
   onClick?: (v: number) => void;
+  selectedTokens?: number[];
+  setSelectedTokens?: Dispatch<SetStateAction<number[]>>;
 };
 
-export default function WizardBrowser({ onClick }: Props) {
+export default function WizardBrowser({
+  onClick,
+  selectedTokens,
+  setSelectedTokens,
+}: Props) {
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
   const selectItemHandler = (idx: number) => {
+    if (selectedTokens == null || setSelectedTokens == null) return;
     if (selectedTokens.includes(idx)) {
       const s = new Set(selectedTokens);
       s.delete(idx);
@@ -389,7 +402,12 @@ export default function WizardBrowser({ onClick }: Props) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {paginated.map((w) => (
-          <Thumbnail key={w.idx} {...w} onClick={onClickHandler} />
+          <Thumbnail
+            key={w.idx}
+            {...w}
+            onClick={onClickHandler}
+            selected={selectedTokens.includes(w.idx)}
+          />
         ))}
       </div>
 
@@ -420,10 +438,14 @@ const Thumbnail = ({
   idx,
   name,
   onClick,
-}: Wizard & { onClick: (v: number) => void }) => {
+  selected,
+}: Wizard & { onClick: (v: number) => void; selected: boolean }) => {
   return (
     <button
-      className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden"
+      className={cn(
+        "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden",
+        selected && "border-brand-500",
+      )}
       onClick={() => onClick(idx)}
     >
       <div className="w-full aspect-square bg-black/40">

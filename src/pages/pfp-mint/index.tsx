@@ -12,7 +12,7 @@ import WizardBrowser from "@/components/WizardBrowser";
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
   const [snowflakes, setSnowflakes] = useState<HTMLImageElement[]>([]);
-
+  const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
   useEffect(() => {
     setIsClient(true);
 
@@ -45,7 +45,6 @@ export default function PfpMintPage() {
       {isClient && snowflakes.length > 0 && (
         <Snowfall
           color="#FFFFFF"
-          // style={{ background: "#FFFFFF" }}
           snowflakeCount={200}
           speed={[0.5, 1.5]}
           images={snowflakes}
@@ -104,7 +103,7 @@ export default function PfpMintPage() {
                 {isClient && <ConnectButton />}
               </div>
               <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="flex-1 max-w-3xl">
+                <div className="flex flex-col flex-1 max-w-3xl items-center">
                   <p className="text-gray-300 text-lg leading-relaxed mb-3">
                     As the winter solstice brings this magical moment to our
                     doorstep like a precious gift, let's celebrate our creative
@@ -112,16 +111,38 @@ export default function PfpMintPage() {
                   </p>
                   <p className="text-gray-300 text-lg leading-relaxed mb-3">
                     These tokens are{" "}
-                    <span className="font-semibold text-violet">soulbound</span>
-                    —forever connected to their wizards—and will find their home
-                    in the backpack wallet of each respective wizard. Best of
-                    all? It's a{" "}
+                    <span className="font-semibold text-violet">soulbound</span>{" "}
+                    — forever connected to their wizards—and will find their
+                    home in the backpack wallet of each respective wizard. Best
+                    of all? It's{" "}
                     <span className="font-semibold text-violet">
-                      very cheap mint
+                      0.0005 ETH
                     </span>
                     , making this celebration accessible to all who wish to join
                     the magic.
                   </p>
+                  {selectedTokens.length > 0 && (
+                    <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
+                      <div className="text-center space-y-4">
+                        <div className="text-gray-300">
+                          <span className="text-lg font-semibold">
+                            {selectedTokens.length}
+                          </span>{" "}
+                          token{selectedTokens.length !== 1 ? "s" : ""} selected
+                        </div>
+                        <div className="text-white text-2xl font-bold">
+                          Total: {(selectedTokens.length * 0.0005).toFixed(4)}{" "}
+                          ETH
+                        </div>
+                        <button
+                          className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg"
+                          disabled={selectedTokens.length === 0}
+                        >
+                          Mint
+                        </button>
+                      </div>
+                    </div>
+                  )}
                   <p className="text-gray-300 text-lg leading-relaxed">
                     Below, you can select the wizards you want to mint the PFP
                     for.
@@ -142,7 +163,10 @@ export default function PfpMintPage() {
             </div>
             {isClient && (
               <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-                <WizardBrowser />
+                <WizardBrowser
+                  selectedTokens={selectedTokens}
+                  setSelectedTokens={setSelectedTokens}
+                />
               </div>
             )}
           </div>
