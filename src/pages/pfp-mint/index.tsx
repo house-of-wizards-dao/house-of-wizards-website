@@ -9,10 +9,16 @@ import ErrorBoundary from "@/components/ErrorBoundary";
 import { Web3Provider } from "@/components/Web3Provider";
 import WizardBrowser from "@/components/WizardBrowser";
 
+const getWizardImage = (idx: number): string => {
+  return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
+};
+
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
   const [snowflakes, setSnowflakes] = useState<HTMLImageElement[]>([]);
   const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
+  const [showMintOverlay, setShowMintOverlay] = useState(false);
+  const [currentWizardIndex, setCurrentWizardIndex] = useState(0);
   useEffect(() => {
     setIsClient(true);
 
@@ -98,7 +104,7 @@ export default function PfpMintPage() {
             <div className="mb-24">
               <div className="flex items-center justify-between gap-4 mb-4">
                 <h1 className="text-2xl md:text-3xl font-bold text-white">
-                  The Wizard PFP Mint
+                  PFPWizard Mint
                 </h1>
                 {isClient && <ConnectButton />}
               </div>
@@ -133,8 +139,12 @@ export default function PfpMintPage() {
                         Total: {(selectedTokens.length * 0.0005).toFixed(4)} ETH
                       </div>
                       <button
-                        className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg"
+                        className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={selectedTokens.length === 0}
+                        onClick={() => {
+                          setCurrentWizardIndex(0);
+                          setShowMintOverlay(true);
+                        }}
                       >
                         Mint
                       </button>
@@ -169,6 +179,146 @@ export default function PfpMintPage() {
           </div>
         </Web3Provider>
       </ErrorBoundary>
+
+      {/* Mint Success Overlay */}
+      {showMintOverlay && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="mint-overlay-title"
+        >
+          <button
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowMintOverlay(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") {
+                setShowMintOverlay(false);
+              }
+            }}
+            aria-label="Close overlay"
+            tabIndex={-1}
+          />
+          <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border-2 border-violet/50 shadow-2xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto z-10">
+            <button
+              onClick={() => setShowMintOverlay(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              aria-label="Close"
+            >
+              <svg
+                className="w-6 h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+
+            <div className="text-center mb-8">
+              <h2
+                id="mint-overlay-title"
+                className="text-4xl font-bold text-white mb-4"
+              >
+                🎉 Congratulations! 🎉
+              </h2>
+              <p className="text-xl text-gray-300">
+                You've successfully minted {selectedTokens.length} PFPWizard
+                {selectedTokens.length !== 1 ? "s" : ""}!
+              </p>
+            </div>
+
+            {selectedTokens.length > 0 && (
+              <div className="flex flex-col items-center gap-6">
+                <div className="w-full max-w-md rounded-lg border-2 border-violet/30 bg-gray-800/50 overflow-hidden">
+                  <div className="w-full aspect-square bg-black/40 relative">
+                    <Image
+                      src={getWizardImage(selectedTokens[currentWizardIndex])}
+                      alt={`Wizard #${selectedTokens[currentWizardIndex]}`}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  </div>
+                  <div className="p-4 text-center">
+                    <div className="text-white font-semibold text-xl">
+                      #{selectedTokens[currentWizardIndex]}
+                    </div>
+                    <div className="text-gray-400 text-sm mt-1">
+                      {currentWizardIndex + 1} of {selectedTokens.length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <button
+                    onClick={() =>
+                      setCurrentWizardIndex((prev) =>
+                        prev > 0 ? prev - 1 : selectedTokens.length - 1,
+                      )
+                    }
+                    className="bg-violet hover:bg-violet/80 text-white font-medium py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    aria-label="Previous wizard"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                    Previous
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentWizardIndex((prev) =>
+                        prev < selectedTokens.length - 1 ? prev + 1 : 0,
+                      )
+                    }
+                    className="bg-violet hover:bg-violet/80 text-white font-medium py-2 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    aria-label="Next wizard"
+                  >
+                    Next
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => setShowMintOverlay(false)}
+                className="bg-violet hover:bg-violet/80 text-white font-medium py-3 px-8 rounded-lg transition-colors text-lg"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </DefaultLayout>
   );
 }
