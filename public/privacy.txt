@@ -1,0 +1,32 @@
+Privacy Policy
+
+Last updated: 2025.11.27
+
+This API provides access to data that originates from a public, user-editable source. Because the underlying data is publicly available and may be edited by anyone, users should be aware that its content may change over time and may include contributions from anonymous or pseudonymous editors.
+
+1. Information We Collect
+
+We do not collect, store, or process any personal data from users of this API.
+We do not track IP addresses, user identities, usage logs, or any other identifying information.
+
+2. Data Provided by the API
+
+All data served by this API comes from a public, open source dataset that is editable by anyone.
+We do not verify the identity of data contributors, and we cannot guarantee the accuracy, completeness, or reliability of the data.
+
+3. Cookies and Tracking
+
+This API does not use cookies, analytics tools, tracking technologies, or profiling of any kind.
+
+4. Third-Party Services
+
+We do not share user information with third parties.
+Because no personal data is collected, no data can be transferred, sold, or disclosed.
+
+5. Security
+
+Although no personal data is collected, we maintain standard technical measures to ensure the stability and integrity of the API.
+
+6. Changes to This Policy
+
+We may update this Privacy Policy from time to time. Updates will be posted on this page with a revised “Last updated” date.
