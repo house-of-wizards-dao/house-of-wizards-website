@@ -18,6 +18,7 @@ import { addresses } from "@/config/addresses";
 
 import { traits } from "@/data/traits";
 import { wizardsWithTraits } from "@/data/wizardsWithTraits";
+import { wizardNames } from "@/data/names";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
@@ -44,7 +45,34 @@ const ERC721_ENUMERABLE_ABI = [
   },
 ] as const;
 
-type Wizard = (typeof wizardsWithTraits)[number];
+type Wizard = (typeof wizardsWithTraits)[number] & {
+  title?: string;
+  firstName?: string;
+  origin?: string;
+};
+
+// Merge wizardNames with wizardsWithTraits
+const namesMap = new Map<
+  number,
+  { title: string; firstName: string; location: string }
+>();
+for (const nameEntry of wizardNames) {
+  namesMap.set(nameEntry.idx, {
+    title: nameEntry.title,
+    firstName: nameEntry.firstName,
+    location: nameEntry.location,
+  });
+}
+
+const mergedWizards: Wizard[] = wizardsWithTraits.map((wizard) => {
+  const nameData = namesMap.get(wizard.idx);
+  return {
+    ...wizard,
+    title: nameData?.title || "",
+    firstName: nameData?.firstName || "",
+    origin: nameData?.location || "",
+  };
+});
 
 type TraitPart = "background" | "body" | "familiar" | "head" | "prop" | "rune";
 
@@ -87,6 +115,9 @@ export default function WizardBrowser({
 
   const [nameQuery, setNameQuery] = useState("");
   const [idQuery, setIdQuery] = useState("");
+  const [selectedTitle, setSelectedTitle] = useState("");
+  const [selectedFirstName, setSelectedFirstName] = useState("");
+  const [selectedOrigin, setSelectedOrigin] = useState("");
   const [selectedTraits, setSelectedTraits] = useState<
     Partial<Record<TraitPart, number>>
   >({});
@@ -180,8 +211,8 @@ export default function WizardBrowser({
 
     // Backgrounds: infer from wizards' background values that exist in traits
     const backgroundSet = new Set<number>();
-    for (let i = 0; i < wizardsWithTraits.length; i++) {
-      backgroundSet.add(wizardsWithTraits[i].background);
+    for (let i = 0; i < mergedWizards.length; i++) {
+      backgroundSet.add(mergedWizards[i].background);
     }
     const backgroundOptions: Array<{ value: number; label: string }> = [];
     for (const idx of backgroundSet) {
@@ -202,8 +233,39 @@ export default function WizardBrowser({
     };
   }, [traitIndexToDisplayName]);
 
+  // Generate dropdown options for title, firstName, and origin
+  const titleOptions = useMemo(() => {
+    const titles = new Set<string>();
+    for (const wizard of mergedWizards) {
+      if (wizard.title && wizard.title.trim()) {
+        titles.add(wizard.title);
+      }
+    }
+    return Array.from(titles).sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  const firstNameOptions = useMemo(() => {
+    const firstNames = new Set<string>();
+    for (const wizard of mergedWizards) {
+      if (wizard.firstName && wizard.firstName.trim()) {
+        firstNames.add(wizard.firstName);
+      }
+    }
+    return Array.from(firstNames).sort((a, b) => a.localeCompare(b));
+  }, []);
+
+  const originOptions = useMemo(() => {
+    const origins = new Set<string>();
+    for (const wizard of mergedWizards) {
+      if (wizard.origin && wizard.origin.trim()) {
+        origins.add(wizard.origin);
+      }
+    }
+    return Array.from(origins).sort((a, b) => a.localeCompare(b));
+  }, []);
+
   const filteredWizards: Wizard[] = useMemo(() => {
-    let result = wizardsWithTraits as Wizard[];
+    let result = mergedWizards;
 
     if (nameQuery.trim()) {
       const q = nameQuery.trim().toLowerCase();
@@ -215,6 +277,18 @@ export default function WizardBrowser({
       if (!Number.isNaN(id)) {
         result = result.filter((w) => w.idx === id);
       }
+    }
+
+    if (selectedTitle) {
+      result = result.filter((w) => w.title === selectedTitle);
+    }
+
+    if (selectedFirstName) {
+      result = result.filter((w) => w.firstName === selectedFirstName);
+    }
+
+    if (selectedOrigin) {
+      result = result.filter((w) => w.origin === selectedOrigin);
     }
 
     for (const part of TRAIT_PARTS) {
@@ -243,6 +317,9 @@ export default function WizardBrowser({
   }, [
     nameQuery,
     idQuery,
+    selectedTitle,
+    selectedFirstName,
+    selectedOrigin,
     selectedTraits,
     filterMyWizards,
     ownedTokenIds,
@@ -275,7 +352,7 @@ export default function WizardBrowser({
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <input
           value={nameQuery}
           onChange={(e) => {
@@ -308,6 +385,62 @@ export default function WizardBrowser({
             {[12, 24, 36, 48, 96].map((s) => (
               <option key={s} value={s}>
                 {s}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="flex flex-col gap-1">
+          <label className="text-sm text-gray-300">Title</label>
+          <select
+            className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
+            value={selectedTitle}
+            onChange={(e) => {
+              setPage(1);
+              setSelectedTitle(e.target.value);
+            }}
+          >
+            <option value="">Any</option>
+            {titleOptions.map((title) => (
+              <option key={title} value={title}>
+                {title}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm text-gray-300">First Name</label>
+          <select
+            className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
+            value={selectedFirstName}
+            onChange={(e) => {
+              setPage(1);
+              setSelectedFirstName(e.target.value);
+            }}
+          >
+            <option value="">Any</option>
+            {firstNameOptions.map((firstName) => (
+              <option key={firstName} value={firstName}>
+                {firstName}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-sm text-gray-300">Origin</label>
+          <select
+            className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
+            value={selectedOrigin}
+            onChange={(e) => {
+              setPage(1);
+              setSelectedOrigin(e.target.value);
+            }}
+          >
+            <option value="">Any</option>
+            {originOptions.map((origin) => (
+              <option key={origin} value={origin}>
+                {origin}
               </option>
             ))}
           </select>
