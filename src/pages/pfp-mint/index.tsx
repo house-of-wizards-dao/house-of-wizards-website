@@ -1,17 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  useWriteContract,
+  useWaitForTransactionReceipt,
+  useAccount,
+  useChainId,
+  useSwitchChain,
+} from "wagmi";
+import { baseSepolia } from "wagmi/chains";
+import { parseEther, formatEther, type Address } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Snowfall from "react-snowfall";
 import DefaultLayout from "@/layouts/default";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { Web3Provider } from "@/components/Web3Provider";
 import WizardBrowser from "@/components/WizardBrowser";
+import { addresses } from "@/config/addresses";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
 };
+
+// Mint price in wei (0.00069 ETH = 690000000000000 wei)
+const MINT_PRICE_WEI = parseEther("0.0069");
+
+// PFP Mint Contract ABI
+const PFP_MINT_ABI = [
+  {
+    inputs: [
+      { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
+    ],
+    name: "mint",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+] as const;
 
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
@@ -19,6 +44,60 @@ export default function PfpMintPage() {
   const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
   const [showMintOverlay, setShowMintOverlay] = useState(false);
   const [currentWizardIndex, setCurrentWizardIndex] = useState(0);
+
+  const { address, isConnected } = useAccount();
+  const chainId = useChainId();
+  const isCorrectChain = chainId === baseSepolia.id;
+  const { switchChain } = useSwitchChain();
+
+  const {
+    writeContract,
+    data: hash,
+    isPending,
+    error: writeError,
+  } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash,
+    });
+
+  const handleMint = () => {
+    if (
+      !isConnected ||
+      !address ||
+      !isCorrectChain ||
+      selectedTokens.length === 0
+    ) {
+      return;
+    }
+
+    const tokenIds = selectedTokens.map((id) => BigInt(id));
+    const totalPrice = MINT_PRICE_WEI * BigInt(selectedTokens.length);
+
+    writeContract({
+      address: addresses.pfpMint as Address,
+      abi: PFP_MINT_ABI,
+      functionName: "mint",
+      args: [tokenIds],
+      value: totalPrice,
+      chainId: baseSepolia.id,
+    });
+  };
+
+  useEffect(() => {
+    if (isConfirmed) {
+      setShowMintOverlay(true);
+    }
+  }, [isConfirmed]);
+
+  // Automatically switch to Base Sepolia when page loads and wallet is connected
+  useEffect(() => {
+    if (isConnected && chainId !== baseSepolia.id && switchChain) {
+      switchChain({ chainId: baseSepolia.id });
+    }
+  }, [isConnected, chainId, switchChain]);
+
   useEffect(() => {
     setIsClient(true);
 
@@ -99,85 +178,109 @@ export default function PfpMintPage() {
           </div>
         }
       >
-        <Web3Provider>
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="mb-24">
-              <div className="flex items-center justify-between gap-4 mb-4">
-                <h1 className="text-2xl md:text-3xl font-bold text-white">
-                  PFPWizard Mint
-                </h1>
-                {isClient && <ConnectButton />}
-              </div>
-              <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="flex flex-col flex-1 max-w-3xl items-center">
-                  <p className="text-gray-300 text-lg leading-relaxed mb-3">
-                    As the winter solstice brings this magical moment to our
-                    doorstep like a precious gift, let's celebrate our creative
-                    minds and the wondrous journey we've embarked upon together.
-                  </p>
-                  <p className="text-gray-300 text-lg leading-relaxed mb-3">
-                    These tokens are{" "}
-                    <span className="font-semibold text-violet">soulbound</span>{" "}
-                    — forever connected to their wizards—and will find their
-                    home in the backpack wallet of each respective wizard. Best
-                    of all? It's{" "}
-                    <span className="font-semibold text-violet">
-                      0.0005 ETH
-                    </span>
-                    , making this celebration accessible to all who wish to join
-                    the magic.
-                  </p>
-                  <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
-                    <div className="text-center space-y-4">
-                      <div className="text-gray-300">
-                        <span className="text-lg font-semibold">
-                          {selectedTokens.length}
-                        </span>{" "}
-                        token{selectedTokens.length !== 1 ? "s" : ""} selected
-                      </div>
-                      <div className="text-white text-2xl font-bold">
-                        Total: {(selectedTokens.length * 0.0005).toFixed(4)} ETH
-                      </div>
-                      <button
-                        className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={selectedTokens.length === 0}
-                        onClick={() => {
-                          setCurrentWizardIndex(0);
-                          setShowMintOverlay(true);
-                        }}
-                      >
-                        Mint
-                      </button>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="mb-24">
+            <div className="flex items-center justify-between gap-4 mb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                Wizzy PFP by Shadows
+              </h1>
+              {isClient && <ConnectButton />}
+            </div>
+            <div className="flex flex-col md:flex-row gap-6 items-start">
+              <div className="flex flex-col flex-1 max-w-3xl items-center">
+                <p className="text-gray-300 text-lg leading-relaxed mb-3">
+                  As the winter solstice brings this magical moment to our
+                  doorstep like a precious gift, let's celebrate our creative
+                  minds and the wondrous journey we've embarked upon together.
+                </p>
+                <p className="text-gray-300 text-lg leading-relaxed mb-3">
+                  These tokens are{" "}
+                  <span className="font-semibold text-violet">soulbound</span> —
+                  forever connected to their wizards—and will find their home in
+                  the backpack wallet of each respective wizard. Best of all?
+                  It's{" "}
+                  <span className="font-semibold text-violet">
+                    {formatEther(MINT_PRICE_WEI)} ETH
+                  </span>
+                  , making this celebration accessible to all who wish to join
+                  the magic.
+                </p>
+                <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
+                  <div className="text-center space-y-4">
+                    <div className="text-gray-300">
+                      <span className="text-lg font-semibold">
+                        {selectedTokens.length}
+                      </span>{" "}
+                      token{selectedTokens.length !== 1 ? "s" : ""} selected
                     </div>
+                    <div className="text-white text-2xl font-bold">
+                      Total:{" "}
+                      {formatEther(
+                        MINT_PRICE_WEI * BigInt(selectedTokens.length || 0),
+                      )}{" "}
+                      ETH
+                    </div>
+                    {writeError && (
+                      <div className="text-red-400 text-sm">
+                        Error: {writeError.message}
+                      </div>
+                    )}
+                    <button
+                      className="w-full bg-violet hover:bg-violet/80 text-white font-medium py-3 px-6 rounded-lg transition-colors text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={
+                        selectedTokens.length === 0 ||
+                        !isConnected ||
+                        !isCorrectChain ||
+                        isPending ||
+                        isConfirming
+                      }
+                      onClick={handleMint}
+                    >
+                      {isPending || isConfirming
+                        ? "Minting..."
+                        : isConfirmed
+                          ? "Minted!"
+                          : "Mint"}
+                    </button>
+                    {!isConnected && (
+                      <p className="text-yellow-400 text-sm mt-2">
+                        Please connect your wallet to mint
+                      </p>
+                    )}
+                    {isConnected && !isCorrectChain && (
+                      <p className="text-yellow-400 text-sm mt-2">
+                        Please switch to Base Sepolia
+                      </p>
+                    )}
                   </div>
-                  <p className="text-gray-300 text-lg leading-relaxed">
-                    Below, you can select the wizards you want to mint the PFP
-                    for.
-                  </p>
                 </div>
-                <div className="flex-shrink-0 p-4 bg-gradient-to-br from-gray-100/40 to-gray-200/40 rounded-lg border-4 border-gray-300/60 shadow-2xl">
-                  <div className="p-2 bg-gradient-to-br from-gray-200/30 to-gray-100/30 rounded border-2 border-gray-300/50">
-                    <Image
-                      src="/img/brekk.png"
-                      alt="Wizard PFP Example"
-                      width={400}
-                      height={400}
-                      className="rounded border-2 border-gray-400/40 shadow-inner"
-                    />
-                  </div>
+                <p className="text-gray-300 text-lg leading-relaxed">
+                  Below, you can select the wizards you want to mint the PFP
+                  for.
+                </p>
+              </div>
+              <div className="flex-shrink-0 p-4 bg-gradient-to-br from-gray-100/40 to-gray-200/40 rounded-lg border-4 border-gray-300/60 shadow-2xl">
+                <div className="p-2 bg-gradient-to-br from-gray-200/30 to-gray-100/30 rounded border-2 border-gray-300/50">
+                  <Image
+                    src="/img/brekk.png"
+                    alt="Wizard PFP Example"
+                    width={400}
+                    height={400}
+                    className="rounded border-2 border-gray-400/40 shadow-inner"
+                  />
                 </div>
               </div>
             </div>
-            {isClient && (
-              <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-                <WizardBrowser
-                  selectedTokens={selectedTokens}
-                  setSelectedTokens={setSelectedTokens}
-                />
-              </div>
-            )}
           </div>
-        </Web3Provider>
+          {isClient && (
+            <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
+              <WizardBrowser
+                selectedTokens={selectedTokens}
+                setSelectedTokens={setSelectedTokens}
+              />
+            </div>
+          )}
+        </div>
       </ErrorBoundary>
 
       {/* Mint Success Overlay */}

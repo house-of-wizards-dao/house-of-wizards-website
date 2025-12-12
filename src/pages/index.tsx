@@ -50,6 +50,11 @@ const teamMembers = [
 
     image: "/img/council/head_Jack.png",
   },
+  {
+    name: "feckless",
+
+    image: "/img/council/head_Ratko.png",
+  },
 ];
 
 export default function IndexPage() {

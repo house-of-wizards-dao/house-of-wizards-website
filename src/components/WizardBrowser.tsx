@@ -125,8 +125,6 @@ export default function WizardBrowser({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(24);
 
-  const isCorrectChain = chainId === mainnet.id;
-
   // Query balance of connected wallet
   const {
     data: balance,
@@ -139,7 +137,7 @@ export default function WizardBrowser({
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: {
-      enabled: isConnected && !!address && filterMyWizards && isCorrectChain,
+      enabled: isConnected && !!address && filterMyWizards,
       retry: 1,
       retryOnMount: true,
     },
@@ -147,7 +145,7 @@ export default function WizardBrowser({
   });
   // Create batch queries for all token IDs
   const tokenQueries = useMemo(() => {
-    if (!balance || !address || !filterMyWizards || !isCorrectChain) return [];
+    if (!balance || !address || !filterMyWizards) return [];
     const count = Number(balance);
     return Array.from({ length: count }, (_, i) => ({
       address: addresses.wizards as Address,
@@ -156,7 +154,7 @@ export default function WizardBrowser({
       args: [address, BigInt(i)],
       chainId: mainnet.id,
     }));
-  }, [balance, address, filterMyWizards, isCorrectChain]);
+  }, [balance, address, filterMyWizards]);
 
   // Query all token IDs owned by the wallet
   const { data: tokenResults, isLoading: isLoadingTokens } = useReadContracts({
@@ -449,11 +447,6 @@ export default function WizardBrowser({
 
       {isConnected && (
         <div className="mb-6">
-          {!isCorrectChain && (
-            <div className="mb-3 p-3 rounded-md bg-yellow-500/20 border border-yellow-500/50 text-yellow-200 text-sm">
-              ⚠️ Please switch to Ethereum Mainnet to view your wizards
-            </div>
-          )}
           <label className="flex items-center gap-2 cursor-pointer">
             <input
               type="checkbox"
@@ -462,7 +455,6 @@ export default function WizardBrowser({
                 setFilterMyWizards(e.target.checked);
                 setPage(1);
               }}
-              disabled={!isCorrectChain}
               className="w-4 h-4 rounded border-gray-700 bg-[#111015] text-violet focus:ring-2 focus:ring-violet disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <span className="text-gray-300">

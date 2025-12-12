@@ -10,11 +10,10 @@ import "@/styles/globals.css";
 import { ToastProvider } from "@/hooks/useToast";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import { PageLoader } from "@/components/PageLoader";
+import { Web3Provider } from "@/components/Web3Provider";
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
-
-  const RenderedComponent = Component as unknown as React.FC;
 
   return (
     <ErrorBoundary
@@ -62,10 +61,12 @@ export default function App({ Component, pageProps }: AppProps) {
           enableSystem={false}
           forcedTheme="dark"
         >
-          <ToastProvider>
-            <PageLoader />
-            <RenderedComponent {...pageProps} />
-          </ToastProvider>
+          <Web3Provider>
+            <ToastProvider>
+              <PageLoader />
+              <Component {...pageProps} />
+            </ToastProvider>
+          </Web3Provider>
         </NextThemesProvider>
       </NextUIProvider>
     </ErrorBoundary>
