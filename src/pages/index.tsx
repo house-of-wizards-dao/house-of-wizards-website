@@ -16,14 +16,24 @@ const teamMembers = [
     image: "/img/council/head_Chookie.png",
   },
   {
-    name: "MeepleDad",
+    name: "feckless",
 
-    image: "/img/council/head_Marlow.png",
+    image: "/img/council/head_Ratko.png",
   },
   {
     name: "Madotsuki",
 
     image: "/img/council/head_Carly.png",
+  },
+  {
+    name: "MeepleDad",
+
+    image: "/img/council/head_Marlow.png",
+  },
+  {
+    name: "R3ptar",
+
+    image: "/img/council/head_Pino.png",
   },
   {
     name: "SharkChild",
@@ -41,19 +51,9 @@ const teamMembers = [
     image: "/img/council/head_Woomba.png",
   },
   {
-    name: "R3ptar",
-
-    image: "/img/council/head_Pino.png",
-  },
-  {
     name: "vmark",
 
     image: "/img/council/head_Jack.png",
-  },
-  {
-    name: "feckless",
-
-    image: "/img/council/head_Ratko.png",
   },
 ];
 
