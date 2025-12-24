@@ -17,6 +17,7 @@ import DefaultLayout from "@/layouts/default";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import WizardBrowser from "@/components/WizardBrowser";
 import { addresses } from "@/config/addresses";
+import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
@@ -25,25 +26,14 @@ const getWizardImage = (idx: number): string => {
 // Mint price in wei (0.00069 ETH = 690000000000000 wei)
 const MINT_PRICE_WEI = parseEther("0.0069");
 
-// PFP Mint Contract ABI
-const PFP_MINT_ABI = [
-  {
-    inputs: [
-      { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
-    ],
-    name: "mint",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-] as const;
-
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
   const [snowflakes, setSnowflakes] = useState<HTMLImageElement[]>([]);
   const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
   const [showMintOverlay, setShowMintOverlay] = useState(false);
   const [currentWizardIndex, setCurrentWizardIndex] = useState(0);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [mintedTokenIds, setMintedTokenIds] = useState<number[]>([]);
 
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
@@ -77,8 +67,8 @@ export default function PfpMintPage() {
 
     writeContract({
       address: addresses.pfpMint as Address,
-      abi: PFP_MINT_ABI,
-      functionName: "mint",
+      abi: wizzyPfpAbi,
+      functionName: "revealTokens",
       args: [tokenIds],
       value: totalPrice,
       chainId: baseSepolia.id,
@@ -86,10 +76,42 @@ export default function PfpMintPage() {
   };
 
   useEffect(() => {
-    if (isConfirmed) {
-      setShowMintOverlay(true);
+    if (isConfirmed && selectedTokens.length > 0 && !isVerifying) {
+      const verifyMint = async () => {
+        setIsVerifying(true);
+        try {
+          const response = await fetch("/api/verify-mint", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ids: selectedTokens,
+            }),
+          });
+          await response.json();
+          // Verification complete
+        } catch (error) {
+          // Verification failed silently (mint was already successful on-chain)
+        } finally {
+          setIsVerifying(false);
+          setShowMintOverlay(true);
+          // Refresh minted tokens to update disabled state
+          try {
+            const mintedResponse = await fetch("/api/wizzy-pfp/minted");
+            if (mintedResponse.ok) {
+              const mintedData = await mintedResponse.json();
+              setMintedTokenIds(mintedData.ids || []);
+            }
+          } catch (error) {
+            // Failed to refresh minted tokens - silently fail
+          }
+        }
+      };
+
+      verifyMint();
     }
-  }, [isConfirmed]);
+  }, [isConfirmed, selectedTokens, isVerifying]);
 
   // Automatically switch to Base Sepolia when page loads and wallet is connected
   useEffect(() => {
@@ -123,6 +145,23 @@ export default function PfpMintPage() {
       snowflake5,
       snowflake6,
     ]);
+  }, []);
+
+  // Load minted token IDs from API
+  useEffect(() => {
+    const loadMintedTokens = async () => {
+      try {
+        const response = await fetch("/api/wizzy-pfp/minted");
+        if (response.ok) {
+          const data = await response.json();
+          setMintedTokenIds(data.ids || []);
+        }
+      } catch (error) {
+        // Failed to load minted tokens - silently fail
+      }
+    };
+
+    loadMintedTokens();
   }, []);
 
   return (
@@ -232,15 +271,18 @@ export default function PfpMintPage() {
                         !isConnected ||
                         !isCorrectChain ||
                         isPending ||
-                        isConfirming
+                        isConfirming ||
+                        isVerifying
                       }
                       onClick={handleMint}
                     >
                       {isPending || isConfirming
                         ? "Minting..."
-                        : isConfirmed
-                          ? "Minted!"
-                          : "Mint"}
+                        : isVerifying
+                          ? "Verifying..."
+                          : isConfirmed
+                            ? "Minted!"
+                            : "Mint"}
                     </button>
                     {!isConnected && (
                       <p className="text-yellow-400 text-sm mt-2">
@@ -275,6 +317,7 @@ export default function PfpMintPage() {
           {isClient && (
             <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
               <WizardBrowser
+                disabledTokenIds={mintedTokenIds}
                 selectedTokens={selectedTokens}
                 setSelectedTokens={setSelectedTokens}
               />

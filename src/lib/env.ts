@@ -43,7 +43,7 @@ function validateSupabaseUrl(url: string): string {
     }
     return url;
   } catch (error) {
-    throw new EnvironmentError(`Invalid SUPABASE_URL format: ${url}`);
+    throw new EnvironmentError(`Invalid SUPABASE_PROJECT_URL format: ${url}`);
   }
 }
 

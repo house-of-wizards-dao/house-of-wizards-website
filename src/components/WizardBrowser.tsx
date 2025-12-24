@@ -5,12 +5,7 @@ import {
   SetStateAction,
   Dispatch,
 } from "react";
-import {
-  useAccount,
-  useReadContract,
-  useReadContracts,
-  useChainId,
-} from "wagmi";
+import { useAccount, useReadContract, useReadContracts } from "wagmi";
 import { type Address } from "viem";
 import { mainnet } from "wagmi/chains";
 import { cn } from "@/lib/utils";
@@ -89,15 +84,16 @@ type Props = {
   onClick?: (v: number) => void;
   selectedTokens?: number[];
   setSelectedTokens?: Dispatch<SetStateAction<number[]>>;
+  disabledTokenIds?: number[];
 };
 
 export default function WizardBrowser({
   onClick,
   selectedTokens,
   setSelectedTokens,
+  disabledTokenIds = [],
 }: Props) {
   const { address, isConnected } = useAccount();
-  const chainId = useChainId();
   const selectItemHandler = (idx: number) => {
     if (selectedTokens == null || setSelectedTokens == null) return;
     if (selectedTokens.includes(idx)) {
@@ -532,6 +528,7 @@ export default function WizardBrowser({
             {...w}
             onClick={onClickHandler}
             selected={selectedTokens?.includes(w.idx) ?? false}
+            disabled={disabledTokenIds.includes(w.idx)}
           />
         ))}
       </div>
@@ -564,21 +561,28 @@ const Thumbnail = ({
   name,
   onClick,
   selected,
-}: Wizard & { onClick: (v: number) => void; selected: boolean }) => {
+  disabled,
+}: Wizard & {
+  onClick: (v: number) => void;
+  selected: boolean;
+  disabled: boolean;
+}) => {
   return (
     <button
       className={cn(
         "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden",
         selected && "border-brand-500",
+        disabled && "opacity-50 cursor-not-allowed",
       )}
-      onClick={() => onClick(idx)}
+      onClick={() => !disabled && onClick(idx)}
+      disabled={disabled}
     >
       <div className="w-full aspect-square bg-black/40">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getWizardImage(idx)}
           alt={`Wizard #${idx}`}
-          className="w-full h-full object-cover"
+          className={cn("w-full h-full object-cover", disabled && "opacity-50")}
           loading="lazy"
         />
       </div>
