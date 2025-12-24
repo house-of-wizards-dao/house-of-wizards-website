@@ -14,7 +14,7 @@ class EnvironmentError extends Error {
   }
 }
 
-function validateEnvVar(
+export function validateEnvVar(
   key: string,
   value: string | undefined,
   required = true,
