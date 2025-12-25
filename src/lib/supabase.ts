@@ -9,9 +9,7 @@ export function getSupabaseClient() {
   }
 
   if (!supabaseServiceKey) {
-    throw new Error(
-      "SUPABASE_API_KEY environment variable is not set",
-    );
+    throw new Error("SUPABASE_API_KEY environment variable is not set");
   }
 
   return createClient(supabaseUrl, supabaseServiceKey, {

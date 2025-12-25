@@ -55,7 +55,8 @@ export default async function handler(
       // If no rows found, Supabase returns an error
       if (error.code === "PGRST116") {
         return res.status(404).json({
-          error: "NFT token not found or not minted",
+          //   error: "1 NFT token not found or not minted",
+          error: JSON.stringify(error),
           tokenId: tokenId,
         });
       }
@@ -69,7 +70,7 @@ export default async function handler(
 
     if (!data) {
       return res.status(404).json({
-        error: "NFT token not found or not minted",
+        error: "2 NFT token not found or not minted",
         tokenId: tokenId,
       });
     }
@@ -85,7 +86,7 @@ export default async function handler(
 
     // Build response data
     const responseData = {
-      image: `${process.env.SUPABASE_PROJECT_URL}/storage/v1/object/public/wizards-pfp-derivative/${data.image}.png`,
+      image: `${process.env.SUPABASE_PROJECT_URL}/storage/v1/object/public/wizards-pfp-derivative/${data.image_url}.png`,
       name: wizard.name,
       attributes: attributes,
     };

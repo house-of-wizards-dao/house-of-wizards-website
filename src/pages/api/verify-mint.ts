@@ -1,32 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createPublicClient, http, type Address } from "viem";
-import { mainnet } from "viem/chains";
+import { base } from "viem/chains";
 import { addresses } from "@/config/addresses";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
-
-// ERC721 ABI - ownerOf function
-const ERC721_ABI = [
-  {
-    inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "ownerOf",
-    outputs: [{ internalType: "address", name: "", type: "address" }],
-    stateMutability: "view",
-    type: "function",
-  },
-] as const;
+import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
 
 // Null address constant
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000" as Address;
-
-// Contract address - can be overridden via env var, defaults to wizards
-const getContractAddress = (): Address => {
-  const envAddress = process.env.ERC721_CONTRACT_ADDRESS;
-  if (envAddress) {
-    return envAddress as Address;
-  }
-  return addresses.wizards as Address;
-};
 
 type TokenResult = {
   tokenId: number;
@@ -73,11 +54,10 @@ export default async function handler(
 
     // Create a public client for reading from the blockchain
     const publicClient = createPublicClient({
-      chain: mainnet,
+      chain: base,
       transport: http(),
     });
 
-    const contractAddress = getContractAddress();
     const supabase = getSupabaseClient();
 
     // First, check all tokens in parallel to see which ones exist
@@ -87,8 +67,8 @@ export default async function handler(
           // Check if the token exists (owner != nullAddress)
           // Note: ownerOf will revert if token doesn't exist, which we catch below
           const owner = await publicClient.readContract({
-            address: contractAddress,
-            abi: ERC721_ABI,
+            address: addresses.pfpMint as Address,
+            abi: wizzyPfpAbi, // erc721
             functionName: "ownerOf",
             args: [BigInt(tokenId)],
           });
@@ -190,7 +170,7 @@ export default async function handler(
 
     return res.status(200).json({
       success: true,
-      contractAddress: contractAddress,
+      contractAddress: addresses.pfpMint as Address,
       total: results.length,
       successful: successCount,
       failed: failureCount,
