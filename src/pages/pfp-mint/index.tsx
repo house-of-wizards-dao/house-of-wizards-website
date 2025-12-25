@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   useWriteContract,
   useWaitForTransactionReceipt,
@@ -8,7 +8,7 @@ import {
   useChainId,
   useSwitchChain,
 } from "wagmi";
-import { baseSepolia } from "wagmi/chains";
+import { base } from "wagmi/chains";
 import { parseEther, formatEther, type Address } from "viem";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
@@ -17,26 +17,14 @@ import DefaultLayout from "@/layouts/default";
 import ErrorBoundary from "@/components/ErrorBoundary";
 import WizardBrowser from "@/components/WizardBrowser";
 import { addresses } from "@/config/addresses";
+import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
 };
 
 // Mint price in wei (0.00069 ETH = 690000000000000 wei)
-const MINT_PRICE_WEI = parseEther("0.0069");
-
-// PFP Mint Contract ABI
-const PFP_MINT_ABI = [
-  {
-    inputs: [
-      { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
-    ],
-    name: "mint",
-    outputs: [],
-    stateMutability: "payable",
-    type: "function",
-  },
-] as const;
+const MINT_PRICE_WEI = parseEther("0.00069");
 
 export default function PfpMintPage() {
   const [isClient, setIsClient] = useState(false);
@@ -44,10 +32,14 @@ export default function PfpMintPage() {
   const [selectedTokens, setSelectedTokens] = useState<number[]>([]);
   const [showMintOverlay, setShowMintOverlay] = useState(false);
   const [currentWizardIndex, setCurrentWizardIndex] = useState(0);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [mintedTokenIds, setMintedTokenIds] = useState<number[]>([]);
+  const verifiedHashes = useRef<Set<string>>(new Set());
 
+  console.log("mintedTokenIds", mintedTokenIds);
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
-  const isCorrectChain = chainId === baseSepolia.id;
+  const isCorrectChain = chainId === base.id;
   const { switchChain } = useSwitchChain();
 
   const {
@@ -77,24 +69,67 @@ export default function PfpMintPage() {
 
     writeContract({
       address: addresses.pfpMint as Address,
-      abi: PFP_MINT_ABI,
-      functionName: "mint",
+      abi: wizzyPfpAbi,
+      functionName: "revealTokens",
       args: [tokenIds],
       value: totalPrice,
-      chainId: baseSepolia.id,
+      chainId: base.id,
     });
   };
 
   useEffect(() => {
-    if (isConfirmed) {
-      setShowMintOverlay(true);
+    if (
+      isConfirmed &&
+      hash &&
+      selectedTokens.length > 0 &&
+      !isVerifying &&
+      !verifiedHashes.current.has(hash)
+    ) {
+      verifiedHashes.current.add(hash);
+      const tokensToVerify = [...selectedTokens]; // Capture current tokens
+      const verifyMint = async () => {
+        setIsVerifying(true);
+        try {
+          const response = await fetch("/api/verify-mint", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ids: tokensToVerify,
+            }),
+          });
+          await response.json();
+          // Verification complete
+        } catch (error) {
+          console.error("@@@ Failed to verify mint:", error);
+        } finally {
+          setIsVerifying(false);
+          setShowMintOverlay(true);
+          // Refresh minted tokens to update disabled state
+          try {
+            const mintedResponse = await fetch("/api/wizzy-pfp/minted");
+            console.log("@@@ minted response", mintedResponse);
+            if (mintedResponse.ok) {
+              const mintedData = await mintedResponse.json();
+              setMintedTokenIds(mintedData.ids || []);
+            }
+          } catch (error) {
+            console.error("Failed to refresh minted tokens:", error);
+            // Failed to refresh minted tokens - silently fail
+          }
+        }
+      };
+
+      verifyMint();
     }
-  }, [isConfirmed]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConfirmed, hash, selectedTokens.join(",")]);
 
   // Automatically switch to Base Sepolia when page loads and wallet is connected
   useEffect(() => {
-    if (isConnected && chainId !== baseSepolia.id && switchChain) {
-      switchChain({ chainId: baseSepolia.id });
+    if (isConnected && chainId !== base.id && switchChain) {
+      switchChain({ chainId: base.id });
     }
   }, [isConnected, chainId, switchChain]);
 
@@ -123,6 +158,25 @@ export default function PfpMintPage() {
       snowflake5,
       snowflake6,
     ]);
+  }, []);
+
+  // Load minted token IDs from API
+  useEffect(() => {
+    const loadMintedTokens = async () => {
+      try {
+        const response = await fetch("/api/wizzy-pfp/minted");
+        console.log("@@@ minted response", response);
+        if (response.ok) {
+          const data = await response.json();
+          console.log("@@@ minted data", data);
+          setMintedTokenIds(data.ids || []);
+        }
+      } catch (error) {
+        console.error("Failed to refresh minted tokens:", error);
+      }
+    };
+
+    loadMintedTokens();
   }, []);
 
   return (
@@ -232,15 +286,18 @@ export default function PfpMintPage() {
                         !isConnected ||
                         !isCorrectChain ||
                         isPending ||
-                        isConfirming
+                        isConfirming ||
+                        isVerifying
                       }
                       onClick={handleMint}
                     >
                       {isPending || isConfirming
                         ? "Minting..."
-                        : isConfirmed
-                          ? "Minted!"
-                          : "Mint"}
+                        : isVerifying
+                          ? "Verifying..."
+                          : isConfirmed
+                            ? "Minted!"
+                            : "Mint"}
                     </button>
                     {!isConnected && (
                       <p className="text-yellow-400 text-sm mt-2">
@@ -275,6 +332,7 @@ export default function PfpMintPage() {
           {isClient && (
             <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
               <WizardBrowser
+                disabledTokenIds={mintedTokenIds}
                 selectedTokens={selectedTokens}
                 setSelectedTokens={setSelectedTokens}
               />
@@ -340,13 +398,7 @@ export default function PfpMintPage() {
               <div className="flex flex-col items-center gap-6">
                 <div className="w-full max-w-md rounded-lg border-2 border-violet/30 bg-gray-800/50 overflow-hidden">
                   <div className="w-full aspect-square bg-black/40 relative">
-                    <Image
-                      src={getWizardImage(selectedTokens[currentWizardIndex])}
-                      alt={`Wizard #${selectedTokens[currentWizardIndex]}`}
-                      fill
-                      className="object-cover"
-                      unoptimized
-                    />
+                    <MintedImage tokenId={selectedTokens[currentWizardIndex]} />
                   </div>
                   <div className="p-4 text-center">
                     <div className="text-white font-semibold text-xl">
@@ -425,3 +477,60 @@ export default function PfpMintPage() {
     </DefaultLayout>
   );
 }
+
+const MintedImage = ({ tokenId }: { tokenId: number }) => {
+  const [imageUri, setImageUri] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchImageUri = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(`/api/wizzy-pfp/${tokenId}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image for token ${tokenId}`);
+        }
+        const data = await response.json();
+        console.log("@@@ data", data);
+        setImageUri(data.image);
+      } catch (err) {
+        console.error("Failed to load image:", err);
+        setError(err instanceof Error ? err.message : "Failed to load image");
+        // Fallback to the default wizard image if API fails
+        setImageUri(getWizardImage(tokenId));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchImageUri();
+  }, [tokenId]);
+
+  if (isLoading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+        <div className="text-gray-400">Loading...</div>
+      </div>
+    );
+  }
+
+  if (error && !imageUri) {
+    return (
+      <div className="w-full h-full flex items-center justify-center bg-gray-800">
+        <div className="text-red-400 text-sm">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={imageUri || getWizardImage(tokenId)}
+      alt={`Wizard #${tokenId}`}
+      fill
+      className="object-cover"
+      unoptimized
+    />
+  );
+};

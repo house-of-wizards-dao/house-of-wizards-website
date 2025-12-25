@@ -1,17 +1,15 @@
 import { createClient } from "@supabase/supabase-js";
 
 export function getSupabaseClient() {
-  const supabaseUrl = process.env.SUPABASE_URL;
-  const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const supabaseUrl = process.env.SUPABASE_PROJECT_URL;
+  const supabaseServiceKey = process.env.SUPABASE_API_KEY;
 
   if (!supabaseUrl) {
-    throw new Error("SUPABASE_URL environment variable is not set");
+    throw new Error("SUPABASE_PROJECT_URL environment variable is not set");
   }
 
   if (!supabaseServiceKey) {
-    throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY environment variable is not set",
-    );
+    throw new Error("SUPABASE_API_KEY environment variable is not set");
   }
 
   return createClient(supabaseUrl, supabaseServiceKey, {

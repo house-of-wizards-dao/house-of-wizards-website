@@ -14,7 +14,7 @@ class EnvironmentError extends Error {
   }
 }
 
-function validateEnvVar(
+export function validateEnvVar(
   key: string,
   value: string | undefined,
   required = true,
@@ -43,7 +43,7 @@ function validateSupabaseUrl(url: string): string {
     }
     return url;
   } catch (error) {
-    throw new EnvironmentError(`Invalid SUPABASE_URL format: ${url}`);
+    throw new EnvironmentError(`Invalid SUPABASE_PROJECT_URL format: ${url}`);
   }
 }
 
