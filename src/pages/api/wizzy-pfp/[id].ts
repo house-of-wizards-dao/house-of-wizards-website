@@ -95,7 +95,7 @@ export default async function handler(
     responseCache.set(tokenId, responseData);
 
     // Set cache headers for HTTP caching (indefinite - 1 year with immutable flag)
-    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    // res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
 
     // Return the NFT entry
     return res.status(200).json(responseData);

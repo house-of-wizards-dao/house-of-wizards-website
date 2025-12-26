@@ -47,6 +47,7 @@ export default function CharacterBackpack() {
   const [isLoadingNFTs, setIsLoadingNFTs] = useState(false);
   const [nftsError, setNftsError] = useState<string | null>(null);
 
+  console.log("nfts", nfts);
   const tbaAccount = useMemo(
     () => ({
       tokenContract: addresses.wizards,

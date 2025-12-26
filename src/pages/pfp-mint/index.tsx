@@ -36,7 +36,6 @@ export default function PfpMintPage() {
   const [mintedTokenIds, setMintedTokenIds] = useState<number[]>([]);
   const verifiedHashes = useRef<Set<string>>(new Set());
 
-  console.log("mintedTokenIds", mintedTokenIds);
   const { address, isConnected } = useAccount();
   const chainId = useChainId();
   const isCorrectChain = chainId === base.id;
@@ -118,6 +117,7 @@ export default function PfpMintPage() {
             console.error("Failed to refresh minted tokens:", error);
             // Failed to refresh minted tokens - silently fail
           }
+          setSelectedTokens([]);
         }
       };
 
