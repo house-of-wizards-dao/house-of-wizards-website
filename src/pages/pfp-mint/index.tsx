@@ -117,7 +117,6 @@ export default function PfpMintPage() {
             console.error("Failed to refresh minted tokens:", error);
             // Failed to refresh minted tokens - silently fail
           }
-          setSelectedTokens([]);
         }
       };
 
@@ -351,10 +350,14 @@ export default function PfpMintPage() {
         >
           <button
             className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-            onClick={() => setShowMintOverlay(false)}
+            onClick={() => {
+              setShowMintOverlay(false);
+              setSelectedTokens([]);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Escape") {
                 setShowMintOverlay(false);
+                setSelectedTokens([]);
               }
             }}
             aria-label="Close overlay"
@@ -362,7 +365,10 @@ export default function PfpMintPage() {
           />
           <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border-2 border-violet/50 shadow-2xl p-8 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto z-10">
             <button
-              onClick={() => setShowMintOverlay(false)}
+              onClick={() => {
+                setShowMintOverlay(false);
+                setSelectedTokens([]);
+              }}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
               aria-label="Close"
             >
@@ -465,7 +471,10 @@ export default function PfpMintPage() {
 
             <div className="mt-8 text-center">
               <button
-                onClick={() => setShowMintOverlay(false)}
+                onClick={() => {
+                  setShowMintOverlay(false);
+                  setSelectedTokens([]);
+                }}
                 className="bg-violet hover:bg-violet/80 text-white font-medium py-3 px-8 rounded-lg transition-colors text-lg"
               >
                 Close
