@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Navbar as NextUINavbar,
   NavbarContent,
@@ -78,6 +80,11 @@ export const Navbar = () => {
                 clipRule="evenodd"
               />
             </svg>
+          </NextLink>
+        </NavbarItem>
+        <NavbarItem className="text-sm hover:text-brand-500 transition-colors">
+          <NextLink className="flex items-center gap-2" href="/pfp-mint">
+            PFP Mint
           </NextLink>
         </NavbarItem>
       </NavbarContent>

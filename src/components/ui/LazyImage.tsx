@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import Image, { ImageProps } from "next/image";
+"use client";
+
+import { useState, useRef, useEffect, forwardRef, type ReactNode, type ForwardedRef } from "react";
+import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LazyImageProps extends Omit<ImageProps, "loading"> {
   threshold?: number;
-  fallback?: React.ReactNode;
-  errorFallback?: React.ReactNode;
+  fallback?: ReactNode;
+  errorFallback?: ReactNode;
   priority?: boolean;
 }
 
@@ -13,7 +15,7 @@ interface LazyImageProps extends Omit<ImageProps, "loading"> {
  * Optimized lazy loading image component with intersection observer
  * Provides better performance for image-heavy pages
  */
-export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
+export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
   (
     {
       className,
@@ -23,8 +25,8 @@ export const LazyImage = React.forwardRef<HTMLImageElement, LazyImageProps>(
       alt,
       priority = false,
       ...props
-    },
-    ref,
+    }: LazyImageProps,
+    ref: ForwardedRef<HTMLImageElement>,
   ) => {
     const [isIntersecting, setIsIntersecting] = useState(priority);
     const [hasError, setHasError] = useState(false);

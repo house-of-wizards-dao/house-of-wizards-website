@@ -1,32 +1,50 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+"use client";
+
+import { useEffect, useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const PageLoader = () => {
-  const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const prevPathnameRef = useRef(pathname);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    const handleStart = (url: string) => {
-      if (url !== router.asPath) {
-        setLoading(true);
+    // When pathname changes, show loading briefly
+    if (pathname !== prevPathnameRef.current) {
+      // Clear any existing timer
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
-    };
+      
+      setLoading(true);
+      prevPathnameRef.current = pathname;
+      
+      // Hide loading after a short delay
+      timerRef.current = setTimeout(() => {
+        setLoading(false);
+        timerRef.current = null;
+      }, 300);
 
-    const handleComplete = () => {
+      return () => {
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+          timerRef.current = null;
+        }
+      };
+    }
+  }, [pathname]);
+
+  // Safety: ensure loading is cleared on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
       setLoading(false);
     };
-
-    router.events.on("routeChangeStart", handleStart);
-    router.events.on("routeChangeComplete", handleComplete);
-    router.events.on("routeChangeError", handleComplete);
-
-    return () => {
-      router.events.off("routeChangeStart", handleStart);
-      router.events.off("routeChangeComplete", handleComplete);
-      router.events.off("routeChangeError", handleComplete);
-    };
-  }, [router]);
+  }, []);
 
   return (
     <AnimatePresence>
@@ -39,7 +57,6 @@ export const PageLoader = () => {
           className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-sm"
         >
           <div className="relative">
-            {/* Main loader container */}
             <motion.div
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -47,9 +64,7 @@ export const PageLoader = () => {
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center gap-6"
             >
-              {/* Animated logo or spinner */}
               <div className="relative">
-                {/* Outer ring */}
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{
@@ -59,8 +74,6 @@ export const PageLoader = () => {
                   }}
                   className="w-20 h-20 rounded-full border-4 border-brand-500/20 border-t-brand-500"
                 />
-
-                {/* Inner ring */}
                 <motion.div
                   animate={{ rotate: -360 }}
                   transition={{
@@ -70,8 +83,6 @@ export const PageLoader = () => {
                   }}
                   className="absolute inset-2 rounded-full border-4 border-brand-400/20 border-b-brand-400"
                 />
-
-                {/* Center dot */}
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{
@@ -84,8 +95,6 @@ export const PageLoader = () => {
                   <div className="w-3 h-3 bg-brand-500 rounded-full" />
                 </motion.div>
               </div>
-
-              {/* Loading text */}
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -121,38 +130,28 @@ export const PageLoader = () => {
   );
 };
 
-// Alternative minimalist loader
 export const MinimalPageLoader = () => {
-  const router = useRouter();
+  const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const prevPathnameRef = useRef(pathname);
 
   useEffect(() => {
-    const handleStart = (url: string) => {
-      if (url !== router.asPath) {
-        setLoading(true);
-      }
-    };
+    if (pathname !== prevPathnameRef.current) {
+      setLoading(true);
+      prevPathnameRef.current = pathname;
+      
+      const timer = setTimeout(() => {
+        setLoading(false);
+      }, 300);
 
-    const handleComplete = () => {
-      setLoading(false);
-    };
-
-    router.events.on("routeChangeStart", handleStart);
-    router.events.on("routeChangeComplete", handleComplete);
-    router.events.on("routeChangeError", handleComplete);
-
-    return () => {
-      router.events.off("routeChangeStart", handleStart);
-      router.events.off("routeChangeComplete", handleComplete);
-      router.events.off("routeChangeError", handleComplete);
-    };
-  }, [router]);
+      return () => clearTimeout(timer);
+    }
+  }, [pathname]);
 
   return (
     <AnimatePresence>
       {loading && (
         <>
-          {/* Top loading bar */}
           <motion.div
             initial={{ scaleX: 0 }}
             animate={{ scaleX: 1 }}
@@ -163,8 +162,6 @@ export const MinimalPageLoader = () => {
               boxShadow: "0 0 20px rgba(139, 92, 246, 0.5)",
             }}
           />
-
-          {/* Optional subtle overlay */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

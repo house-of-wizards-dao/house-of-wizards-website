@@ -27,6 +27,14 @@ const nextConfig = {
         tls: false,
       };
     }
+    
+    // Ignore optional dependencies that cause warnings
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@react-native-async-storage/async-storage": false,
+      "pino-pretty": false,
+    };
+    
     return config;
   },
 };
