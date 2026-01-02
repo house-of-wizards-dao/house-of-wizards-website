@@ -16,8 +16,9 @@ export function TraitFilters({
   onSearchChange,
 }: TraitFiltersProps) {
   return (
-    <div className="flex justify-center gap-4 mb-8 flex-wrap p-1">
-      <select
+    <div className="md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4 w-screen">
+      <div className="flex justify-center gap-4 flex-wrap">
+        <select
         value={selectedType}
         onChange={(e) => onTypeChange(e.target.value)}
         className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm md:text-base cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
@@ -34,8 +35,9 @@ export function TraitFilters({
         placeholder="Search trait name..."
         value={searchQuery}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm md:text-base min-w-[200px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent placeholder-gray-500"
+        className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-sm md:text-base min-w-[200px] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent         placeholder-gray-500"
       />
+      </div>
     </div>
   );
 }

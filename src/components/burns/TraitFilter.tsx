@@ -172,7 +172,7 @@ export function TraitFilter({ traits, wizardIds, onFilterChange }: TraitFilterPr
   }, [selection]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4">
       <div className="flex justify-center items-center gap-4 flex-wrap">
         {traitList.map((trait) => (
           <TraitSelector
