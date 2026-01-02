@@ -102,10 +102,6 @@ export async function fetchNFTsForCollection(
       if (data.nfts) {
         allNFTs.push(...data.nfts);
         const batchSize = data.nfts.length;
-        console.log(
-          `Fetched page with ${batchSize} NFTs (total: ${allNFTs.length})`
-        );
-
         // Check if we got fewer than the page size (100), which means we've reached the end
         // Don't check against the limit parameter since Alchemy caps at 100 per page
         if (batchSize < pageSize) {
@@ -125,9 +121,7 @@ export async function fetchNFTsForCollection(
       const nextToken = data.nextToken || data.pageKey;
       if (nextToken && String(nextToken).trim()) {
         pageKey = nextToken;
-        console.log(`Continuing pagination with nextToken: ${nextToken}`);
       } else {
-        console.log("No nextToken found, pagination complete");
         break;
       }
     } catch (error) {
@@ -246,9 +240,7 @@ export function extractTokenId(nft: Soul | Wizard): string | null {
   return String(tokenIdRaw);
 }
 
-export function extractAttributes(
-  nft: Soul | Wizard
-): Attribute[] {
+export function extractAttributes(nft: Soul | Wizard): Attribute[] {
   let attributes: Attribute[] = [];
 
   // First try the 'raw' field which often contains the full metadata
@@ -275,9 +267,7 @@ export function extractAttributes(
       }
     }
     if (metadata && typeof metadata === "object" && !Array.isArray(metadata)) {
-      attributes =
-        (metadata as { attributes?: Attribute[] })
-          .attributes || [];
+      attributes = (metadata as { attributes?: Attribute[] }).attributes || [];
     }
   }
 
