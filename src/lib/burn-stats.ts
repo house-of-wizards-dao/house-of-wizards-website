@@ -6,7 +6,6 @@ import {
 } from "./alchemy";
 
 const TRAITS = ["head", "body", "prop", "familiar", "rune", "background"];
-const WIZARDS_CONTRACT = "0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42";
 const SOULS_CONTRACT = "0x251b5f14a825c537ff788604ea1b58e49b70726f";
 const FLAMES = 1112;
 

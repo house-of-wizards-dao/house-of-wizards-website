@@ -29,10 +29,9 @@ function BurnsList({ order, souls }: BurnsListProps) {
               >
                 <Image
                   src={`https://nftz.forgottenrunes.com/wizards/${token}.png`}
-                  className="w-52 max-w-60"
                   alt={getWizardName(token)}
-                  width={208}
-                  height={208}
+                  width={150}
+                  height={150}
                 />
               </Link>
               <h3 className="text-sm max-w-52">{getWizardName(token)}</h3>
@@ -46,10 +45,9 @@ function BurnsList({ order, souls }: BurnsListProps) {
               >
                 <Image
                   src={`https://portal.forgottenrunes.com/api/souls/img/${token}`}
-                  className="w-52 max-w-60"
                   alt={souls[token]?.name || ""}
-                  width={208}
-                  height={208}
+                  width={150}
+                  height={150}
                 />
               </Link>
               <h3 className="text-sm max-w-52">{souls[token]?.name || ""}</h3>
