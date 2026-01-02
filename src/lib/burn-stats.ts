@@ -1,7 +1,6 @@
 import { getWizards } from "./wizards";
 import {
   fetchNFTsForCollection,
-  fetchNFTMetadataBatch,
   extractTokenId,
   extractAttributes,
 } from "./alchemy";
@@ -137,52 +136,36 @@ export async function getStats(
     const tokenIds = Object.keys(newOrder);
     const burned = tokenIds.length;
 
-    // Fetch only the specific burned wizard tokens we need
-    console.log(
-      `Fetching ${tokenIds.length} burned wizard tokens from contract: ${WIZARDS_CONTRACT}`
-    );
+    // Use local wizard data instead of fetching from Alchemy
+    // We already have the burned token IDs from souls data
+    const wizzies = getWizards();
 
-    // Alchemy's batch endpoint typically supports up to 50 tokens per request
-    const batchSize = 50;
-    for (let i = 0; i < tokenIds.length; i += batchSize) {
-      const batchTokenIds = tokenIds.slice(i, i + batchSize);
-      const wizardsBatch = await fetchNFTMetadataBatch(
-        WIZARDS_CONTRACT,
-        batchTokenIds
-      );
-      console.log(
-        `Fetched batch ${Math.floor(i / batchSize) + 1} with ${wizardsBatch.length} wizards`
-      );
+    // Build burnedWizards array and traitDict from local data
+    for (const tokenId of tokenIds) {
+      const wizard = wizzies[tokenId];
+      if (!wizard) {
+        console.warn(`Warning: Wizard ${tokenId} not found in local data`);
+        continue;
+      }
 
-      for (const wizard of wizardsBatch) {
-        const tokenIdDecimal = extractTokenId(wizard);
-        if (!tokenIdDecimal) continue;
+      burnedWizards.push(tokenId);
 
-        burnedWizards.push(tokenIdDecimal);
-
-        const attributes = extractAttributes(wizard);
-
-        for (const attr of attributes) {
-          const key = attr.trait_type || attr.key || attr.traitType || "";
-          const value = attr.value;
-
-          if (!key) continue;
-
-          if (TRAITS.includes(key.toLowerCase())) {
-            const dictKey = `${key}_${String(value)}`;
-            if (!traitDict[dictKey]) {
-              traitDict[dictKey] = [];
-            }
-            traitDict[dictKey].push(tokenIdDecimal);
+      // Extract traits from local wizard data
+      for (const trait of TRAITS) {
+        const value = wizard[trait as keyof typeof wizard];
+        if (value && value.trim()) {
+          const dictKey = `${trait}_${String(value)}`;
+          if (!traitDict[dictKey]) {
+            traitDict[dictKey] = [];
           }
+          traitDict[dictKey].push(tokenId);
         }
       }
     }
 
-    console.log(`Found ${burnedWizards.length} burned wizards`);
+    console.log(`Found ${burnedWizards.length} burned wizards from local data`);
 
     // Get original trait counts from wizard data
-    const wizzies = getWizards();
 
     for (const [tokenId, wizard] of Object.entries(wizzies)) {
       for (const trait of TRAITS) {
