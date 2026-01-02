@@ -14,10 +14,10 @@ interface BurnsListProps {
 
 function BurnsList({ order, souls }: BurnsListProps) {
   return (
-    <div className="flex flex-col items-center justify-center w-full">
+    <div className="flex flex-col items-center justify-center w-full gap-2">
       {order.map((token, index) => {
         return (
-          <div className="flex flex-row items-center justify-center" key={index}>
+          <div className={`flex flex-row items-center justify-center p-6 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} key={index}>
             <h2 className="font-atirose text-brand-500 text-2xl">
               {order.length - index}.
             </h2>

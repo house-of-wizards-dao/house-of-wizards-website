@@ -6,6 +6,7 @@ import { useBurnStats } from "@/hooks/useBurnStats";
 import { ViewSelector, type BurnView } from "@/components/burns/ViewSelector";
 import { WizardsView } from "@/components/burns/WizardsView";
 import { TraitsView } from "@/components/burns/TraitsView";
+import Image from "next/image";
 
 export default function BurnsPage() {
   const { data, loading, error } = useBurnStats();
@@ -13,8 +14,11 @@ export default function BurnsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
+      <div className="flex flex-col items-center gap-4 max-w-8xl">
+        <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
+            The Great Burning
+        </h1>
+        <Image src="/img/tulip.gif" alt="Loading" width={200} height={200} />
       </div>
     );
   }
@@ -26,9 +30,6 @@ export default function BurnsPage() {
           Error loading burn statistics
         </h1>
         <p className="text-gray-400">{error?.message || "Unknown error"}</p>
-        <Link href="/" className="text-brand-500 hover:text-brand-400 underline">
-          Go back home
-        </Link>
       </div>
     );
   }
