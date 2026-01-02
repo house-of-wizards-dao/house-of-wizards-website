@@ -28,7 +28,7 @@ export function TraitTableHeader({
         {columns.map((column) => (
           <th
             key={column.field}
-            className={`p-4 text-left ${
+            className={`p-4 text-left text-sm ${
               column.sortable
                 ? "cursor-pointer select-none hover:text-brand-500 transition-colors"
                 : ""
@@ -45,7 +45,7 @@ export function TraitTableHeader({
             )}
           </th>
         ))}
-        <th className="p-4 text-left">Type</th>
+        <th className="p-4 text-left text-sm">Type</th>
       </tr>
     </thead>
   );

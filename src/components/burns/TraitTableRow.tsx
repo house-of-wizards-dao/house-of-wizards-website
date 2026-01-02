@@ -17,16 +17,16 @@ export function TraitTableRow({ trait, index }: TraitTableRowProps) {
         index % 2 === 0 ? "bg-transparent" : "bg-white/5"
       }`}
     >
-      <td className="p-4">
+      <td className="p-4 text-sm">
         <strong>{trait.name}</strong>
       </td>
-      <td className="p-4">{trait.old}</td>
-      <td className="p-4">{trait.new}</td>
-      <td className={`p-4 ${trait.diff > 0 ? "text-red-400" : "text-white"}`}>
+      <td className="p-4 text-sm">{trait.old}</td>
+      <td className="p-4 text-sm">{trait.new}</td>
+      <td className={`p-4 text-sm ${trait.diff > 0 ? "text-red-400" : "text-white"}`}>
         {trait.diff}
       </td>
-      <td className="p-4">{trait.burnPercentage.toFixed(1)}%</td>
-      <td className="p-4 capitalize">{trait.type}</td>
+      <td className="p-4 text-sm">{trait.burnPercentage.toFixed(1)}%</td>
+      <td className="p-4 text-sm capitalize">{trait.type}</td>
     </tr>
   );
 }
