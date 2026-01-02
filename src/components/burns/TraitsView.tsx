@@ -29,7 +29,7 @@ export function TraitsView({ data }: TraitsViewProps) {
   const traitTypes = ["all", "head", "body", "prop", "familiar", "rune", "background"];
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-4 w-full">
       <TraitFilters
         selectedType={selectedType}
         searchQuery={searchQuery}

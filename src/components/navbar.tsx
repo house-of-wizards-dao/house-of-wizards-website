@@ -193,7 +193,18 @@ export const Navbar = () => {
 
       {/* Mobile Menu */}
       <NavbarMenu className="bg-black/95 backdrop-blur-sm !opacity-100 !visible z-[9999] fixed top-0 left-0 right-0 bottom-0">
-        <div className="mx-4 mt-14 flex flex-col gap-2">
+        <div className="mx-4 mt-4 flex flex-col gap-2">
+          {/* Close Button */}
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="text-white hover:text-brand-500 transition-colors p-2"
+              aria-label="Close menu"
+              type="button"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
           {navigationLinks.map((link) => (
             <NavbarMenuItem key={link.href}>
               <NextLink

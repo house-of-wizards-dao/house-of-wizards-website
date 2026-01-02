@@ -35,7 +35,7 @@ export default function BurnsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 max-w-8xl">
+    <div className="flex flex-col items-center gap-4">
       <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
         The Great Burning
       </h1>

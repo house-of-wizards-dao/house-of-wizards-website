@@ -19,7 +19,8 @@ export function TraitTable({
   onSort,
 }: TraitTableProps) {
   return (
-    <table className="w-full">
+    <div className="w-full overflow-x-auto flex flex-col items-center">
+      <table>
       <TraitTableHeader
         sortField={sortField}
         sortDirection={sortDirection}
@@ -38,7 +39,8 @@ export function TraitTable({
           ))
         )}
       </tbody>
-    </table>
+      </table>
+    </div>
   );
 }
 

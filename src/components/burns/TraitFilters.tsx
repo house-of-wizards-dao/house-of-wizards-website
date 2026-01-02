@@ -16,7 +16,7 @@ export function TraitFilters({
   onSearchChange,
 }: TraitFiltersProps) {
   return (
-    <div className="md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4 w-screen">
+    <div className="md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4 w-full">
       <div className="flex justify-center gap-4 flex-wrap">
         <select
         value={selectedType}
