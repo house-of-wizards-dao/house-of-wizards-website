@@ -21,11 +21,11 @@ export function TraitFilters({
         <select
         value={selectedType}
         onChange={(e) => onTypeChange(e.target.value)}
-        className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+        className="bg-neutral-800 text-white border border-neutral-700 rounded-lg px-4 py-2 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent capitalize"
       >
         {traitTypes.map((type) => (
           <option key={type} value={type}>
-            {type === "all" ? "All Types" : type.charAt(0).toUpperCase() + type.slice(1)}
+            {type === "all" ? "All Traits" : type}
           </option>
         ))}
       </select>
