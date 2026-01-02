@@ -9,10 +9,10 @@ interface ViewSelectorProps {
 
 export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
   return (
-    <div className="flex gap-2 mb-8">
+    <div className="flex gap-2 mb-8 font-atirose font-lg">
       <button
         onClick={() => onViewChange("wizards")}
-        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+        className={`px-6 py-2 rounded-lg transition-colors ${
           currentView === "wizards"
             ? "bg-brand-500 text-white"
             : "bg-neutral-800 text-gray-300 hover:bg-neutral-700"
@@ -22,7 +22,7 @@ export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
       </button>
       <button
         onClick={() => onViewChange("traits")}
-        className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+        className={`px-6 py-2 rounded-lg transition-colors ${
           currentView === "traits"
             ? "bg-brand-500 text-white"
             : "bg-neutral-800 text-gray-300 hover:bg-neutral-700"
