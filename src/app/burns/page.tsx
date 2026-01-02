@@ -6,6 +6,7 @@ import { useBurnStats } from "@/hooks/useBurnStats";
 import { ViewSelector, type BurnView } from "@/components/burns/ViewSelector";
 import { WizardsView } from "@/components/burns/WizardsView";
 import { TraitsView } from "@/components/burns/TraitsView";
+import { PageTitle } from "@/components/PageTitle";
 import Image from "next/image";
 
 export default function BurnsPage() {
@@ -15,9 +16,7 @@ export default function BurnsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center gap-4 max-w-8xl">
-        <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
-            The Great Burning
-        </h1>
+        <PageTitle title="The Great Burning" />
         <Image src="/img/tulip.gif" alt="Loading" width={200} height={200} />
       </div>
     );
@@ -26,9 +25,7 @@ export default function BurnsPage() {
   if (error || !data) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8">
-        <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
-          Error loading burn statistics
-        </h1>
+        <PageTitle title="Error loading burn statistics" />
         <p className="text-gray-400">{error?.message || "Unknown error"}</p>
       </div>
     );
@@ -36,9 +33,7 @@ export default function BurnsPage() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h1 className="sm:text-7xl text-6xl font-atirose text-brand-500">
-        The Great Burning
-      </h1>
+      <PageTitle title="The Great Burning" />
 
       <ViewSelector currentView={currentView} onViewChange={setCurrentView} />
 
