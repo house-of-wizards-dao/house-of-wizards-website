@@ -38,7 +38,7 @@ export function BurnsListView({ burns, primaryType }: BurnsListViewProps) {
             key={burn.tokenId}
           >
             <h2 className="font-atirose text-brand-500 text-2xl">
-              {burn.burnIndex}.
+              {burn.burnIndex + 1}.
             </h2>
             <div className="self-start">
               <Link
