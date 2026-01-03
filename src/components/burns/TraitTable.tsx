@@ -35,7 +35,7 @@ export function TraitTable({
           </tr>
         ) : (
           traits.map((trait, index) => (
-            <TraitTableRow key={`${trait.type}-${trait.name}-${index}`} trait={trait} index={index} />
+            <TraitTableRow key={`${trait.traitType}-${trait.value}-${index}`} trait={trait} index={index} />
           ))
         )}
       </tbody>

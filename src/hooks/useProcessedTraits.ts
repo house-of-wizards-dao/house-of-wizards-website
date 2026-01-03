@@ -1,13 +1,13 @@
 import { useMemo } from "react";
-import type { TraitStat } from "@/lib/burn-stats";
+import type { TraitBurnStat } from "@/lib/burn-stats";
 import type { SortField, SortDirection } from "./useTraitSorting";
 
-export interface ProcessedTrait extends TraitStat {
+export interface ProcessedTrait extends TraitBurnStat {
   burnPercentage: number;
 }
 
 interface UseProcessedTraitsParams {
-  traits: TraitStat[] | undefined;
+  traits: TraitBurnStat[] | undefined;
   selectedType: string;
   searchQuery: string;
   sortField: SortField;
@@ -27,15 +27,15 @@ export function useProcessedTraits({
     return traits
       .map((trait) => ({
         ...trait,
-        burnPercentage: trait.old > 0 ? (trait.diff / trait.old) * 100 : 0,
+        burnPercentage: trait.original > 0 ? (trait.burned / trait.original) * 100 : 0,
       }))
       .filter((trait) => {
         // Filter by type
-        if (selectedType !== "all" && trait.type !== selectedType) {
+        if (selectedType !== "all" && trait.traitType !== selectedType) {
           return false;
         }
         // Filter by search query
-        if (searchQuery && !trait.name.toLowerCase().includes(searchQuery.toLowerCase())) {
+        if (searchQuery && !trait.value.toLowerCase().includes(searchQuery.toLowerCase())) {
           return false;
         }
         return true;
@@ -45,21 +45,21 @@ export function useProcessedTraits({
         let bValue: number | string;
 
         switch (sortField) {
-          case "name":
-            aValue = a.name;
-            bValue = b.name;
+          case "value":
+            aValue = a.value;
+            bValue = b.value;
             break;
-          case "old":
-            aValue = a.old;
-            bValue = b.old;
+          case "original":
+            aValue = a.original;
+            bValue = b.original;
             break;
-          case "new":
-            aValue = a.new;
-            bValue = b.new;
+          case "remaining":
+            aValue = a.remaining;
+            bValue = b.remaining;
             break;
-          case "diff":
-            aValue = a.diff;
-            bValue = b.diff;
+          case "burned":
+            aValue = a.burned;
+            bValue = b.burned;
             break;
           case "percentage":
             aValue = a.burnPercentage;

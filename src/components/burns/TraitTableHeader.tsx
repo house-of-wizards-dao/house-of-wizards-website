@@ -10,10 +10,10 @@ interface TraitTableHeaderProps {
 }
 
 const columns: Array<{ field: SortField; label: string; sortable: boolean }> = [
-  { field: "name", label: "Trait Name", sortable: true },
-  { field: "old", label: "Original", sortable: true },
-  { field: "new", label: "Remaining", sortable: true },
-  { field: "diff", label: "Burned", sortable: true },
+  { field: "value", label: "Trait Name", sortable: true },
+  { field: "original", label: "Original", sortable: true },
+  { field: "remaining", label: "Remaining", sortable: true },
+  { field: "burned", label: "Burned", sortable: true },
   { field: "percentage", label: "Burn %", sortable: true },
 ];
 

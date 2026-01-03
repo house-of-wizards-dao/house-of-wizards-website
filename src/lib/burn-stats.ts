@@ -8,13 +8,13 @@ let cachedStats: StatsData | null = null;
 let lastUpdateTime: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-export interface TraitStat {
-  type: string;
-  name: string;
-  old: number;
-  new: number;
-  diff: number;
-  wizards: string[];
+export interface TraitBurnStat {
+  traitType: string;
+  value: string;
+  original: number;
+  remaining: number;
+  burned: number;
+  tokenIds: string[];
 }
 
 export interface Burn {
@@ -30,13 +30,16 @@ export interface TraitOption {
 }
 
 export interface StatsData {
-  traits: TraitStat[];
+  traits: TraitBurnStat[];
   burns: Burn[]; // Sorted by burnIndex descending (highest first)
   filterOptions: {
     wizard: TraitOption[];
     soul: TraitOption[];
   };
 }
+
+// Legacy export for backwards compatibility during migration
+export type TraitStat = TraitBurnStat;
 
 
 export function isCacheValid(): boolean {
@@ -143,7 +146,7 @@ export async function getStats(
           burnedTraitCounts[trait][valueStr] =
             (burnedTraitCounts[trait][valueStr] || 0) + 1;
           
-          // Build traitDict for TraitStat.wizards array
+          // Build traitDict for TraitBurnStat.tokenIds array
           if (!traitDict[dictKey]) {
             traitDict[dictKey] = [];
           }
@@ -199,26 +202,27 @@ export async function getStats(
       }
     }
 
-    // Build trait stats output
-    const output: TraitStat[] = [];
+    // Build trait burn stats output
+    const output: TraitBurnStat[] = [];
     for (const trait of TRAITS) {
       for (const value in originalTraitCounts[trait]) {
-        const oldCount = originalTraitCounts[trait][value];
-        const newCount = newTraitCounts[trait][value] || 0;
+        const originalCount = originalTraitCounts[trait][value];
+        const remainingCount = newTraitCounts[trait][value] || 0;
+        const burnedCount = originalCount - remainingCount;
         const dictKey = `${trait}_${value}`;
 
         output.push({
-          type: trait,
-          name: value,
-          old: oldCount,
-          new: newCount,
-          diff: oldCount - newCount,
-          wizards: traitDict[dictKey] || [],
+          traitType: trait,
+          value: value,
+          original: originalCount,
+          remaining: remainingCount,
+          burned: burnedCount,
+          tokenIds: traitDict[dictKey] || [],
         });
       }
     }
 
-    const resultJson = output.sort((a, b) => a.name.localeCompare(b.name));
+    const resultJson = output.sort((a, b) => a.value.localeCompare(b.value));
 
     // Build filter options from collected unique traits
     const wizardTraitOptions = Array.from(wizardTraitOptionsMap.values()).sort((a, b) => {

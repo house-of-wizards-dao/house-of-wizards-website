@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import { TraitStat } from "@/lib/burn-stats";
+import { TraitBurnStat } from "@/lib/burn-stats";
 import { TRAITS, type TraitType } from "@/lib/traits";
 
 export interface TraitOption {
@@ -51,7 +51,7 @@ function TraitSelector({ trait, options, selectedOption, onSelectOption }: Trait
 }
 
 interface TraitFilterProps {
-  traits: TraitStat[] | Array<{ type: string; name: string }>;
+  traits: TraitBurnStat[] | Array<{ type: string; name: string }>;
   burns: Array<{ tokenId: string; wizard: { name: string; head?: string; body?: string; prop?: string; familiar?: string; rune?: string; background?: string }; soul: { name: string; head?: string; body?: string; prop?: string; familiar?: string; rune?: string; background?: string } }>;
   filterBy: "wizard" | "soul"; // Filter by wizard traits or soul traits
   onFilterChange: (filteredBurns: Array<{ tokenId: string }>) => void;
@@ -92,12 +92,16 @@ export function TraitFilter({
         });
 
         traits.forEach((trait) => {
-          const type = trait.type.toLowerCase() as TraitType;
-          if (TRAITS.includes(type) && trait.name && !seen.get(type)!.has(trait.name)) {
-            seen.get(type)!.add(trait.name);
-            grouped[type].push({
-              type: trait.type,
-              name: trait.name,
+          // Handle both TraitBurnStat and TraitOption formats
+          const traitType = ('traitType' in trait ? trait.traitType : trait.type).toLowerCase() as TraitType;
+          const traitValue = 'value' in trait ? trait.value : trait.name;
+          const traitTypeOriginal = 'traitType' in trait ? trait.traitType : trait.type;
+          
+          if (TRAITS.includes(traitType) && traitValue && !seen.get(traitType)!.has(traitValue)) {
+            seen.get(traitType)!.add(traitValue);
+            grouped[traitType].push({
+              type: traitTypeOriginal,
+              name: traitValue,
             });
           }
         });

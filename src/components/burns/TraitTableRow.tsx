@@ -1,12 +1,7 @@
+import type { ProcessedTrait } from "@/hooks/useProcessedTraits";
+
 interface TraitTableRowProps {
-  trait: {
-    name: string;
-    old: number;
-    new: number;
-    diff: number;
-    burnPercentage: number;
-    type: string;
-  };
+  trait: ProcessedTrait;
   index: number;
 }
 
@@ -18,15 +13,15 @@ export function TraitTableRow({ trait, index }: TraitTableRowProps) {
       }`}
     >
       <td className="p-4 text-sm">
-        <strong>{trait.name}</strong>
+        <strong>{trait.value}</strong>
       </td>
-      <td className="p-4 text-sm">{trait.old}</td>
-      <td className="p-4 text-sm">{trait.new}</td>
-      <td className={`p-4 text-sm ${trait.diff > 0 ? "text-red-400" : "text-white"}`}>
-        {trait.diff}
+      <td className="p-4 text-sm">{trait.original}</td>
+      <td className="p-4 text-sm">{trait.remaining}</td>
+      <td className={`p-4 text-sm ${trait.burned > 0 ? "text-red-400" : "text-white"}`}>
+        {trait.burned}
       </td>
       <td className="p-4 text-sm">{trait.burnPercentage.toFixed(1)}%</td>
-      <td className="p-4 text-sm capitalize">{trait.type}</td>
+      <td className="p-4 text-sm capitalize">{trait.traitType}</td>
     </tr>
   );
 }
