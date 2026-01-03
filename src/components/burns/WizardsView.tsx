@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { TraitFilter } from "@/components/burns/TraitFilter";
 import Image from "next/image";
 import type { StatsData, Burn } from "@/lib/burn-stats";
-import { TRAITS } from "@/lib/traits";
 
 interface BurnsListProps {
   burns: Burn[];
@@ -18,7 +17,7 @@ function BurnsList({ burns }: BurnsListProps) {
         return (
           <div className={`flex flex-row items-center justify-center p-6 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} key={burn.tokenId}>
             <h2 className="font-atirose text-brand-500 text-2xl">
-              {burns.length - index}.
+              {burn.burnIndex}.
             </h2>
             <div className="self-start">
               <Link
@@ -72,26 +71,6 @@ export function WizardsView({ data }: WizardsViewProps) {
     }
   }, [data]);
 
-  // Build trait stats from wizards for the filter
-  const wizardTraitStats = useMemo(() => {
-    const traitMap = new Map<string, { type: string; name: string }>();
-    
-    data.burns.forEach((burn) => {
-      const wizard = burn.wizard;
-      TRAITS.forEach((traitType) => {
-        const value = wizard[traitType];
-        if (value) {
-          const mapKey = `${traitType}_${value}`;
-          if (!traitMap.has(mapKey)) {
-            traitMap.set(mapKey, { type: traitType, name: value });
-          }
-        }
-      });
-    });
-    
-    return Array.from(traitMap.values());
-  }, [data.burns]);
-
   const handleFilterChange = useCallback((filtered: Array<{ tokenId: string }>) => {
     const tokenIdSet = new Set(filtered.map(f => f.tokenId));
     setFilteredBurns(data.burns.filter(burn => tokenIdSet.has(burn.tokenId)));
@@ -100,7 +79,7 @@ export function WizardsView({ data }: WizardsViewProps) {
   return (
     <div className="flex flex-col items-center gap-4 w-full">
       <TraitFilter
-        traits={wizardTraitStats}
+        traits={data.filterOptions.wizard}
         burns={data.burns}
         filterBy="wizard"
         onFilterChange={handleFilterChange}

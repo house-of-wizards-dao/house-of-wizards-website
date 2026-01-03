@@ -19,16 +19,23 @@ export interface TraitStat {
 
 export interface Burn {
   tokenId: string;
-  burnOrder: number;
+  burnIndex: number; // The burnIndex from GraphQL
   wizard: WizardData;
   soul: WizardData;
 }
 
+export interface TraitOption {
+  type: string;
+  name: string;
+}
+
 export interface StatsData {
   traits: TraitStat[];
-  burned: number;
-  flames: number;
-  burns: Burn[]; // Sorted by burnOrder descending (highest first)
+  burns: Burn[]; // Sorted by burnIndex descending (highest first)
+  filterOptions: {
+    wizard: TraitOption[];
+    soul: TraitOption[];
+  };
 }
 
 
@@ -47,61 +54,53 @@ export async function getStats(
   }
 
   try {
-    const burnedWizards: string[] = [];
-    const traitDict: { [key: string]: string[] } = {};
+    // Initialize trait counts
     const originalTraitCounts: {
       [trait: string]: { [value: string]: number };
     } = {};
-    const newTraitCounts: { [trait: string]: { [value: string]: number } } = {};
-    const newOrder: { [tokenId: string]: number } = {};
-    const normalizedSouls: Record<string, WizardData> = {};
-    const normalizedWizards: Record<string, WizardData> = {};
+    const burnedTraitCounts: {
+      [trait: string]: { [value: string]: number };
+    } = {};
+    const traitDict: { [key: string]: string[] } = {};
 
-    // Initialize trait counts
     TRAITS.forEach((trait) => {
       originalTraitCounts[trait] = {};
-      newTraitCounts[trait] = {};
+      burnedTraitCounts[trait] = {};
     });
 
     // Fetch both wizards and souls from GraphQL endpoint in a single query
-    // The query uses GraphQL relationships to include wizard data with each soul
     console.log(`Fetching wizards and souls from GraphQL endpoint`);
     const { Soul: allSouls } = await fetchAllWizardsAndSouls();
     console.log(`Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`);
 
-    // Process souls data from GraphQL
-    // Each soul has its wizard data nested in transmutedFromToken.wizard
+    // Build burns array directly from GraphQL response in a single pass
+    // Also collect unique trait options for filters
+    const burns: Burn[] = [];
+    const burnedWizardTokenIds = new Set<string>();
+    const wizardTraitOptionsMap = new Map<string, TraitOption>();
+    const soulTraitOptionsMap = new Map<string, TraitOption>();
+
     for (const soul of allSouls) {
       const wizard = soul.transmutedFromToken?.wizard;
       if (!wizard) {
-        console.warn(
-          `Warning: Soul ${soul.name} has no associated wizard data`
-        );
+        console.warn(`Warning: Soul ${soul.name} has no associated wizard data`);
         continue;
       }
 
-      // Use wizard's tokenId from nested token object
-      // Convert to string to ensure consistent format for comparison
+      // Extract tokenId from wizard
       const tokenId = String(wizard.token?.tokenId || "");
       if (!tokenId || tokenId === "undefined" || tokenId === "null") {
-        console.warn(
-          `Warning: Wizard for soul ${soul.name} has no tokenId in token object`
-        );
+        console.warn(`Warning: Wizard for soul ${soul.name} has no tokenId in token object`);
         continue;
       }
 
-      // Build soul data directly from GraphQL response
-      const soulData: WizardData = {
-        name: soul.name,
-        head: soul.head,
-        body: soul.body,
-        prop: soul.prop,
-        familiar: soul.familiar,
-        rune: soul.rune,
-        background: soul.background,
-      };
+      // Validate burnIndex
+      if (soul.burnIndex === undefined || soul.burnIndex === null) {
+        console.warn(`Warning: Soul ${soul.name} has no burnIndex`);
+        continue;
+      }
 
-      // Build wizard data from nested GraphQL response
+      // Build wizard and soul data directly from GraphQL response
       const wizardData: WizardData = {
         name: wizard.name,
         head: wizard.head,
@@ -112,42 +111,70 @@ export async function getStats(
         background: wizard.background,
       };
 
-      // Extract burnIndex (burn order) directly from GraphQL
-      if (soul.burnIndex !== undefined && soul.burnIndex !== null) {
-        newOrder[tokenId] = soul.burnIndex;
-      }
+      const soulData: WizardData = {
+        name: soul.name,
+        head: soul.head,
+        body: soul.body,
+        prop: soul.prop,
+        familiar: soul.familiar,
+        rune: soul.rune,
+        background: soul.background,
+      };
 
-      normalizedSouls[tokenId] = soulData;
-      normalizedWizards[tokenId] = wizardData;
-      burnedWizards.push(tokenId);
+      // Create burn object directly
+      burns.push({
+        tokenId,
+        burnIndex: soul.burnIndex,
+        wizard: wizardData,
+        soul: soulData,
+      });
 
-      // Extract traits from GraphQL wizard data
+      burnedWizardTokenIds.add(tokenId);
+
+      // Count traits from burned wizard for trait stats
+      // Also collect unique trait options for filters
       for (const trait of TRAITS) {
         const value = wizardData[trait as keyof typeof wizardData];
-        if (value && value.trim()) {
-          const dictKey = `${trait}_${String(value)}`;
+        if (value && String(value).trim()) {
+          const valueStr = String(value).trim();
+          const dictKey = `${trait}_${valueStr}`;
+          
+          // Count for burned traits
+          burnedTraitCounts[trait][valueStr] =
+            (burnedTraitCounts[trait][valueStr] || 0) + 1;
+          
+          // Build traitDict for TraitStat.wizards array
           if (!traitDict[dictKey]) {
             traitDict[dictKey] = [];
           }
           traitDict[dictKey].push(tokenId);
-          // Note: newTraitCounts will be calculated below for all wizards
+          
+          // Collect wizard trait options for filter
+          if (!wizardTraitOptionsMap.has(dictKey)) {
+            wizardTraitOptionsMap.set(dictKey, { type: trait, name: valueStr });
+          }
+        }
+        
+        // Collect soul trait options for filter
+        const soulValue = soulData[trait as keyof typeof soulData];
+        if (soulValue && String(soulValue).trim()) {
+          const soulValueStr = String(soulValue).trim();
+          const soulDictKey = `${trait}_${soulValueStr}`;
+          if (!soulTraitOptionsMap.has(soulDictKey)) {
+            soulTraitOptionsMap.set(soulDictKey, { type: trait, name: soulValueStr });
+          }
         }
       }
     }
 
-    console.log(
-      `Processed ${Object.keys(newOrder).length} souls with burn orders`
-    );
+    // Sort burns by burnIndex descending (highest first)
+    burns.sort((a, b) => b.burnIndex - a.burnIndex);
 
-    const tokenIds = Object.keys(newOrder);
-    const burned = tokenIds.length;
-
-    console.log(`Found ${burnedWizards.length} burned wizards from GraphQL`);
+    const burned = burns.length;
+    console.log(`Processed ${burned} burns from GraphQL`);
 
     // Get original trait counts from all wizards (local data)
     const localWizzies = getWizards();
-
-    // First, count all traits from all wizards (original counts)
     for (const [tokenId, wizard] of Object.entries(localWizzies)) {
       for (const trait of TRAITS) {
         const value = wizard[trait as keyof typeof wizard];
@@ -158,33 +185,12 @@ export async function getStats(
       }
     }
 
-    // Count traits from burned wizards (from GraphQL data)
-    // We need to count every time a trait appears in burned wizards
-    const burnedTraitCounts: { [trait: string]: { [value: string]: number } } = {};
+    // Calculate new counts: original - burned
+    const newTraitCounts: { [trait: string]: { [value: string]: number } } = {};
     TRAITS.forEach((trait) => {
-      burnedTraitCounts[trait] = {};
+      newTraitCounts[trait] = {};
     });
 
-    for (const tokenId of burnedWizards) {
-      const wizardData = normalizedWizards[tokenId];
-      if (!wizardData) {
-        console.warn(`Warning: No wizard data found for burned tokenId: ${tokenId}`);
-        continue;
-      }
-      
-      for (const trait of TRAITS) {
-        const value = wizardData[trait as keyof typeof wizardData];
-        if (value && String(value).trim()) {
-          const valueStr = String(value).trim();
-          burnedTraitCounts[trait][valueStr] =
-            (burnedTraitCounts[trait][valueStr] || 0) + 1;
-        }
-      }
-    }
-
-    console.log(`Counted traits from ${burnedWizards.length} burned wizards`);
-
-    // Calculate new counts: original - burned
     for (const trait of TRAITS) {
       for (const value in originalTraitCounts[trait]) {
         const originalCount = originalTraitCounts[trait][value];
@@ -193,9 +199,8 @@ export async function getStats(
       }
     }
 
-    // Build output
+    // Build trait stats output
     const output: TraitStat[] = [];
-
     for (const trait of TRAITS) {
       for (const value in originalTraitCounts[trait]) {
         const oldCount = originalTraitCounts[trait][value];
@@ -215,32 +220,28 @@ export async function getStats(
 
     const resultJson = output.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Build burns array - each burn contains wizard and soul data
-    const burns: Burn[] = Object.entries(newOrder)
-      .map(([tokenId, burnOrder]) => {
-        const wizard = normalizedWizards[tokenId];
-        const soul = normalizedSouls[tokenId];
-        
-        if (!wizard || !soul) {
-          console.warn(`Warning: Missing wizard or soul data for token ${tokenId}`);
-          return null;
-        }
-        
-        return {
-          tokenId,
-          burnOrder,
-          wizard,
-          soul,
-        };
-      })
-      .filter((burn): burn is Burn => burn !== null)
-      .sort((a, b) => b.burnOrder - a.burnOrder); // Highest burn order first
+    // Build filter options from collected unique traits
+    const wizardTraitOptions = Array.from(wizardTraitOptionsMap.values()).sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type.localeCompare(b.type);
+      }
+      return a.name.localeCompare(b.name);
+    });
+    
+    const soulTraitOptions = Array.from(soulTraitOptionsMap.values()).sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type.localeCompare(b.type);
+      }
+      return a.name.localeCompare(b.name);
+    });
 
     const stats: StatsData = {
       traits: resultJson,
-      burned,
-      flames: FLAMES - burned,
       burns,
+      filterOptions: {
+        wizard: wizardTraitOptions,
+        soul: soulTraitOptions,
+      },
     };
 
     // Cache the results
