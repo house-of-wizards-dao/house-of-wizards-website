@@ -117,10 +117,10 @@ export default function IndexPage() {
                 <div className="mb-6 overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300">
                   <LazyImage
                     alt={member.name}
-                    className="w-full h-full object-cover"
-                    height={96}
                     src={member.image}
                     width={96}
+                    height={96}
+                    className="object-cover"
                     fallback={
                       <div className="w-full h-full bg-gradient-to-br from-violet/20 to-purple-500/20 animate-pulse flex items-center justify-center">
                         <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin" />

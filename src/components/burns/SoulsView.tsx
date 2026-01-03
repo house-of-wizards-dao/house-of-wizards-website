@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { TraitFilter } from "@/components/burns/TraitFilter";
-import Image from "next/image";
 import type { StatsData, Burn } from "@/lib/burn-stats";
+import { LazyImage } from "../ui/LazyImage";
 
 interface SoulsListProps {
   burns: Burn[];
@@ -25,11 +25,12 @@ function SoulsList({ burns }: SoulsListProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image
-                  src={`https://portal.forgottenrunes.com/api/souls/img/${burn.tokenId}`}
+                <LazyImage
                   alt={burn.soul.name}
+                  src={`https://portal.forgottenrunes.com/api/souls/img/${burn.tokenId}`}
                   width={150}
                   height={150}
+                  className="object-cover"
                 />
               </Link>
               <h3 className="text-sm max-w-52">{burn.soul.name}</h3>
@@ -41,11 +42,12 @@ function SoulsList({ burns }: SoulsListProps) {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Image
-                  src={`https://nftz.forgottenrunes.com/wizards/${burn.tokenId}.png`}
+                <LazyImage
                   alt={burn.wizard.name}
+                  src={`https://nftz.forgottenrunes.com/wizards/${burn.tokenId}.png`}
                   width={150}
                   height={150}
+                  className="object-cover"
                 />
               </Link>
               <h3 className="text-sm max-w-52">{burn.wizard.name}</h3>
