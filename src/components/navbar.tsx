@@ -47,6 +47,10 @@ const navigationLinks: NavLink[] = [
     href: "/burns",
   },
   {
+    label: "PFP",
+    href: "/pfp-mint",
+  },
+  {
     label: "Vote",
     href: "https://snapshot.org/#/forgottengov.eth",
     external: true,

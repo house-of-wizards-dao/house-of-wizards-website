@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { getWizardName } from "@/lib/wizards";
-import { TraitFilter } from "@/components/burns/TraitFilter";
+import { getWizardName, getWizards } from "@/lib/wizards";
+import { TraitFilter, type TraitType } from "@/components/burns/TraitFilter";
 import Image from "next/image";
-import type { BurnData } from "@/lib/burn-stats";
+import type { StatsData } from "@/lib/burn-stats";
 
 interface BurnsListProps {
   order: string[];
-  souls: { [tokenId: string]: { name: string } };
+  souls: StatsData["souls"];
 }
 
 function BurnsList({ order, souls }: BurnsListProps) {
@@ -60,7 +60,7 @@ function BurnsList({ order, souls }: BurnsListProps) {
 }
 
 interface WizardsViewProps {
-  data: BurnData;
+  data: StatsData;
 }
 
 export function WizardsView({ data }: WizardsViewProps) {
@@ -73,16 +73,36 @@ export function WizardsView({ data }: WizardsViewProps) {
     }
   }, [data]);
 
-  const handleFilterChange = useCallback((filteredIds: string[]) => {
-    setFilteredOrder(filteredIds);
-  }, []);
+  // Build traits map for all wizards
+  const wizardTraitsMap = useMemo(() => {
+    const wizards = getWizards();
+    const map: Record<string, Record<TraitType, string | undefined>> = {};
+    
+    data.order.forEach((id) => {
+      const wizard = wizards[id];
+      if (wizard) {
+        map[id] = {
+          head: wizard.head,
+          body: wizard.body,
+          prop: wizard.prop,
+          familiar: wizard.familiar,
+          rune: wizard.rune,
+          background: wizard.background,
+        };
+      }
+    });
+    
+    return map;
+  }, [data.order]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
       <TraitFilter
         traits={data.traits}
-        wizardIds={data.order}
-        onFilterChange={handleFilterChange}
+        itemIds={data.order}
+        traitsMap={wizardTraitsMap}
+        onFilterChange={setFilteredOrder}
+        itemLabel="wizards"
       />
       <BurnsList order={filteredOrder} souls={data.souls} />
     </div>

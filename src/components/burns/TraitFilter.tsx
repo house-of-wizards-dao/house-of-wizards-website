@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { getWizardTrait } from "@/lib/wizards";
+import { useState, useMemo, useEffect } from "react";
 import { TraitStat } from "@/lib/burn-stats";
 
 const traitList = ["head", "body", "prop", "familiar", "rune", "background"] as const;
@@ -54,12 +53,20 @@ function TraitSelector({ trait, options, selectedOption, onSelectOption }: Trait
 }
 
 interface TraitFilterProps {
-  traits: TraitStat[];
-  wizardIds: string[];
+  traits: TraitStat[] | Array<{ type: string; name: string }>;
+  itemIds: string[];
+  traitsMap: Record<string, Record<TraitType, string | undefined>>;
   onFilterChange: (filteredIds: string[]) => void;
+  itemLabel?: string; // "wizards" or "souls"
 }
 
-export function TraitFilter({ traits, wizardIds, onFilterChange }: TraitFilterProps) {
+export function TraitFilter({ 
+  traits, 
+  itemIds, 
+  traitsMap,
+  onFilterChange,
+  itemLabel = "items"
+}: TraitFilterProps) {
   const [selection, setSelection] = useState<TraitSelection>({
     head: null,
     body: null,
@@ -80,83 +87,90 @@ export function TraitFilter({ traits, wizardIds, onFilterChange }: TraitFilterPr
       background: [],
     };
 
+    // Use Set to track seen trait names per type
+    const seen = new Map<TraitType, Set<string>>();
+    traitList.forEach((type) => {
+      seen.set(type, new Set());
+    });
+
     traits.forEach((trait) => {
-      if (trait.type in grouped && trait.name) {
-        grouped[trait.type as TraitType].push({
+      const type = trait.type.toLowerCase() as TraitType;
+      if (traitList.includes(type) && trait.name && !seen.get(type)!.has(trait.name)) {
+        seen.get(type)!.add(trait.name);
+        grouped[type].push({
           type: trait.type,
           name: trait.name,
         });
       }
     });
 
-    // Remove duplicates and sort
-    Object.keys(grouped).forEach((type) => {
-      const typed = type as TraitType;
-      grouped[typed] = Array.from(
-        new Map(grouped[typed].map((item) => [item.name, item])).values()
-      ).sort((a, b) => a.name.localeCompare(b.name));
+    // Sort each group
+    traitList.forEach((type) => {
+      grouped[type].sort((a, b) => a.name.localeCompare(b.name));
     });
 
     return grouped;
   }, [traits]);
 
-  const handleSelectOption = useCallback(
-    (traitType: TraitType, option: TraitOption | null) => {
-      setSelection((prev) => ({
-        ...prev,
-        [traitType]: option,
-      }));
-    },
-    []
-  );
+  // Get active selections (only traits that have a filter applied)
+  const activeSelections = useMemo(() => {
+    const active: Array<[TraitType, string]> = [];
+    traitList.forEach((traitType) => {
+      const selected = selection[traitType];
+      if (selected) {
+        active.push([traitType, selected.name]);
+      }
+    });
+    return active;
+  }, [selection]);
 
-  // Filter wizard IDs based on current selection
+  // Filter item IDs based on current selection
   const filteredIds = useMemo(() => {
-    const newOrder: string[] = [];
+    // Early exit: if no filters are active, return all items
+    if (activeSelections.length === 0) {
+      return itemIds;
+    }
 
-    for (const wizId of wizardIds) {
-      const match = {
-        head: false,
-        body: false,
-        prop: false,
-        familiar: false,
-        rune: false,
-        background: false,
-      };
+    const filtered: string[] = [];
 
-      for (const traitType of traitList) {
-        const traitSelection = selection[traitType];
-        if (!traitSelection) {
-          match[traitType] = true;
-        } else {
-          const wizardTrait = getWizardTrait(wizId, traitType);
-          if (wizardTrait === traitSelection.name) {
-            match[traitType] = true;
-          }
+    for (const itemId of itemIds) {
+      // Check only active selections - early exit on first mismatch
+      let matches = true;
+      const itemTraits = traitsMap[itemId];
+      
+      if (!itemTraits) {
+        continue; // Skip items without trait data
+      }
+
+      for (const [traitType, expectedValue] of activeSelections) {
+        const itemTrait = itemTraits[traitType];
+        if (itemTrait !== expectedValue) {
+          matches = false;
+          break; // Early exit on first mismatch
         }
       }
 
-      if (
-        match.head &&
-        match.body &&
-        match.prop &&
-        match.familiar &&
-        match.rune &&
-        match.background
-      ) {
-        newOrder.push(wizId);
+      if (matches) {
+        filtered.push(itemId);
       }
     }
 
-    return newOrder;
-  }, [wizardIds, selection]);
+    return filtered;
+  }, [itemIds, activeSelections, traitsMap]);
 
   // Notify parent of filter changes
   useEffect(() => {
     onFilterChange(filteredIds);
   }, [filteredIds, onFilterChange]);
 
-  const clearFilters = useCallback(() => {
+  const handleSelectOption = (traitType: TraitType, option: TraitOption | null) => {
+    setSelection((prev) => ({
+      ...prev,
+      [traitType]: option,
+    }));
+  };
+
+  const clearFilters = () => {
     setSelection({
       head: null,
       body: null,
@@ -165,11 +179,9 @@ export function TraitFilter({ traits, wizardIds, onFilterChange }: TraitFilterPr
       rune: null,
       background: null,
     });
-  }, []);
+  };
 
-  const hasActiveFilters = useMemo(() => {
-    return Object.values(selection).some((value) => value !== null);
-  }, [selection]);
+  const hasActiveFilters = activeSelections.length > 0;
 
   return (
     <div className="flex flex-col gap-4 md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4">
@@ -196,7 +208,7 @@ export function TraitFilter({ traits, wizardIds, onFilterChange }: TraitFilterPr
       )}
       {hasActiveFilters && (
         <div className="text-center text-sm text-gray-400">
-          Showing {filteredIds.length} of {wizardIds.length} wizards
+          Showing {filteredIds.length} of {itemIds.length} {itemLabel}
         </div>
       )}
     </div>

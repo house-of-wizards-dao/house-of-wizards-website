@@ -40,14 +40,6 @@ export interface StatsData {
   souls: SoulTraits;
 }
 
-export interface BurnData extends Omit<StatsData, "souls"> {
-  order: string[];
-  souls: {
-    [tokenId: string]: {
-      name: string;
-    };
-  };
-}
 
 export function isCacheValid(): boolean {
   if (!cachedStats) return false;

@@ -6,10 +6,10 @@ import { useProcessedTraits } from "@/hooks/useProcessedTraits";
 import { TraitFilters } from "@/components/burns/TraitFilters";
 import { TraitTable } from "@/components/burns/TraitTable";
 import { TraitStatsSummary } from "@/components/burns/TraitStatsSummary";
-import type { BurnData } from "@/lib/burn-stats";
+import type { StatsData } from "@/lib/burn-stats";
 
 interface TraitsViewProps {
-  data: BurnData;
+  data: StatsData;
 }
 
 export function TraitsView({ data }: TraitsViewProps) {

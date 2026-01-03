@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useBurnStats } from "@/hooks/useBurnStats";
 import { ViewSelector, type BurnView } from "@/components/burns/ViewSelector";
 import { WizardsView } from "@/components/burns/WizardsView";
+import { SoulsView } from "@/components/burns/SoulsView";
 import { TraitsView } from "@/components/burns/TraitsView";
 import { PageTitle } from "@/components/PageTitle";
 import Image from "next/image";
@@ -39,6 +40,8 @@ export default function BurnsPage() {
 
       {currentView === "wizards" ? (
         <WizardsView data={data} />
+      ) : currentView === "souls" ? (
+        <SoulsView data={data} />
       ) : (
         <TraitsView data={data} />
       )}

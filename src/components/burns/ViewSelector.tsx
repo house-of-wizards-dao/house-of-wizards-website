@@ -1,6 +1,6 @@
 "use client";
 
-export type BurnView = "wizards" | "traits";
+export type BurnView = "wizards" | "souls" | "traits";
 
 interface ViewSelectorProps {
   currentView: BurnView;
@@ -19,6 +19,16 @@ export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
         }`}
       >
         Wizards
+      </button>
+      <button
+        onClick={() => onViewChange("souls")}
+        className={`px-6 py-2 rounded-lg transition-colors ${
+          currentView === "souls"
+            ? "bg-brand-500 text-white"
+            : "bg-neutral-800 text-gray-300 hover:bg-neutral-700"
+        }`}
+      >
+        Souls
       </button>
       <button
         onClick={() => onViewChange("traits")}

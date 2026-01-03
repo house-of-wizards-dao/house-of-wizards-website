@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { BurnData } from "@/lib/burn-stats";
+import { StatsData } from "@/lib/burn-stats";
 
 export function useBurnStats() {
-  const [data, setData] = useState<BurnData | null>(null);
+  const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
