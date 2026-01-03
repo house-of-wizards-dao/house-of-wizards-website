@@ -56,6 +56,7 @@ interface TraitFilterProps {
   filterBy: "wizard" | "soul"; // Filter by wizard traits or soul traits
   onFilterChange: (filteredBurns: Array<{ tokenId: string }>) => void;
   itemLabel?: string; // "wizards" or "souls"
+  excludedTraits?: TraitType[]; // Trait types to exclude from the filter UI
 }
 
 export function TraitFilter({ 
@@ -63,7 +64,8 @@ export function TraitFilter({
   burns,
   filterBy,
   onFilterChange,
-  itemLabel = "items"
+  itemLabel = "items",
+  excludedTraits = []
 }: TraitFilterProps) {
   const [selection, setSelection] = useState<TraitSelection>({
     head: null,
@@ -185,10 +187,12 @@ export function TraitFilter({
 
   const hasActiveFilters = activeSelections.length > 0;
 
+      const traitsToShow = TRAITS.filter(trait => !excludedTraits.includes(trait));
+
       return (
         <div className="flex flex-col gap-4 md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4">
           <div className="flex justify-center items-center gap-4 flex-wrap">
-            {TRAITS.map((trait) => (
+            {traitsToShow.map((trait) => (
           <TraitSelector
             key={trait}
             trait={trait}

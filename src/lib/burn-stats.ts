@@ -1,7 +1,6 @@
 import { getWizards, type WizardData } from "./wizards";
 import { fetchAllWizardsAndSouls, type SoulGraphQLResponse, type WizardGraphQLResponse } from "./souls-graphql";
 import { TRAITS } from "./traits";
-const FLAMES = 1112;
 
 // In-memory cache for stats
 let cachedStats: StatsData | null = null;
@@ -25,7 +24,7 @@ export interface Burn {
 }
 
 export interface TraitOption {
-  type: string;
+  type: typeof TRAITS[number];
   name: string;
 }
 
