@@ -1,11 +1,6 @@
 import { getWizards, type WizardData } from "./wizards";
-import {
-  fetchNFTsForCollection,
-  extractTokenId,
-  extractAttributes,
-} from "./alchemy";
+import { fetchAllWizardsAndSouls, type SoulGraphQLResponse, type WizardGraphQLResponse } from "./souls-graphql";
 import { TRAITS } from "./traits";
-const SOULS_CONTRACT = "0x251b5f14a825c537ff788604ea1b58e49b70726f";
 const FLAMES = 1112;
 
 // In-memory cache for stats
@@ -68,59 +63,76 @@ export async function getStats(
       newTraitCounts[trait] = {};
     });
 
-    // Fetch all souls from the collection
-    console.log(`Fetching souls from contract: ${SOULS_CONTRACT}`);
-    const allSouls = await fetchNFTsForCollection(SOULS_CONTRACT);
-    console.log(`Total fetched ${allSouls.length} souls from collection`);
+    // Fetch both wizards and souls from GraphQL endpoint in a single query
+    // The query uses GraphQL relationships to include wizard data with each soul
+    console.log(`Fetching wizards and souls from GraphQL endpoint`);
+    const { Soul: allSouls } = await fetchAllWizardsAndSouls();
+    console.log(`Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`);
 
-    // Process souls data
+    // Process souls data from GraphQL
+    // Each soul has its wizard data nested in transmutedFromToken.wizard
     for (const soul of allSouls) {
-      const tokenId = extractTokenId(soul);
-      if (!tokenId) {
+      const wizard = soul.transmutedFromToken?.wizard;
+      if (!wizard) {
         console.warn(
-          `Warning: No tokenId found in soul. Keys: ${Object.keys(soul)}`
+          `Warning: Soul ${soul.name} has no associated wizard data`
         );
         continue;
       }
 
-      const soulName = (soul as any).title || (soul as any).name || "";
+      // Use wizard's tokenId from nested token object
+      // Convert to string to ensure consistent format for comparison
+      const tokenId = String(wizard.token?.tokenId || "");
+      if (!tokenId || tokenId === "undefined" || tokenId === "null") {
+        console.warn(
+          `Warning: Wizard for soul ${soul.name} has no tokenId in token object`
+        );
+        continue;
+      }
+
+      // Build soul data directly from GraphQL response
       const soulData: WizardData = {
-        name: soulName,
+        name: soul.name,
+        head: soul.head,
+        body: soul.body,
+        prop: soul.prop,
+        familiar: soul.familiar,
+        rune: soul.rune,
+        background: soul.background,
       };
 
-      const attributes = extractAttributes(soul);
+      // Build wizard data from nested GraphQL response
+      const wizardData: WizardData = {
+        name: wizard.name,
+        head: wizard.head,
+        body: wizard.body,
+        prop: wizard.prop,
+        familiar: wizard.familiar,
+        rune: wizard.rune,
+        background: wizard.background,
+      };
 
-      for (const attr of attributes) {
-        const key = attr.trait_type || attr.key || attr.traitType || "";
-        const value = attr.value;
-
-        if (!key) continue;
-
-        // Check for "Burn order" with various case/spacing variations
-        const keyLower = key.toLowerCase().trim();
-        if (
-          keyLower === "burn order" ||
-          keyLower === "burnorder" ||
-          key === "Burn order"
-        ) {
-          try {
-            newOrder[tokenId] =
-              typeof value === "number" ? value : parseInt(String(value), 10);
-          } catch (error) {
-            console.warn(
-              `Warning: Could not convert burn order value '${value}' to int for token ${tokenId}`
-            );
-          }
-        } else {
-          // Normalize trait key to lowercase and map to WizardData structure
-          if (TRAITS.includes(keyLower as any)) {
-            const traitKey = keyLower as typeof TRAITS[number];
-            soulData[traitKey] = String(value);
-          }
-        }
+      // Extract burnIndex (burn order) directly from GraphQL
+      if (soul.burnIndex !== undefined && soul.burnIndex !== null) {
+        newOrder[tokenId] = soul.burnIndex;
       }
 
       normalizedSouls[tokenId] = soulData;
+      normalizedWizards[tokenId] = wizardData;
+      burnedWizards.push(tokenId);
+
+      // Extract traits from GraphQL wizard data
+      for (const trait of TRAITS) {
+        const value = wizardData[trait as keyof typeof wizardData];
+        if (value && value.trim()) {
+          const dictKey = `${trait}_${String(value)}`;
+          if (!traitDict[dictKey]) {
+            traitDict[dictKey] = [];
+          }
+          traitDict[dictKey].push(tokenId);
+          // Note: newTraitCounts will be calculated below for all wizards
+        }
+      }
     }
 
     console.log(
@@ -130,50 +142,54 @@ export async function getStats(
     const tokenIds = Object.keys(newOrder);
     const burned = tokenIds.length;
 
-    // Use local wizard data instead of fetching from Alchemy
-    // We already have the burned token IDs from souls data
-    const wizzies = getWizards();
+    console.log(`Found ${burnedWizards.length} burned wizards from GraphQL`);
 
-    // Build burnedWizards array, traitDict, and normalized wizards from local data
-    for (const tokenId of tokenIds) {
-      const wizard = wizzies[tokenId];
-      if (!wizard) {
-        console.warn(`Warning: Wizard ${tokenId} not found in local data`);
-        continue;
-      }
+    // Get original trait counts from all wizards (local data)
+    const localWizzies = getWizards();
 
-      burnedWizards.push(tokenId);
-      normalizedWizards[tokenId] = wizard;
-
-      // Extract traits from local wizard data
-      for (const trait of TRAITS) {
-        const value = wizard[trait as keyof typeof wizard];
-        if (value && value.trim()) {
-          const dictKey = `${trait}_${String(value)}`;
-          if (!traitDict[dictKey]) {
-            traitDict[dictKey] = [];
-          }
-          traitDict[dictKey].push(tokenId);
-        }
-      }
-    }
-
-    console.log(`Found ${burnedWizards.length} burned wizards from local data`);
-
-    // Get original trait counts from wizard data
-
-    for (const [tokenId, wizard] of Object.entries(wizzies)) {
+    // First, count all traits from all wizards (original counts)
+    for (const [tokenId, wizard] of Object.entries(localWizzies)) {
       for (const trait of TRAITS) {
         const value = wizard[trait as keyof typeof wizard];
         if (value && value.trim()) {
           originalTraitCounts[trait][value] =
             (originalTraitCounts[trait][value] || 0) + 1;
-
-          if (!burnedWizards.includes(tokenId)) {
-            newTraitCounts[trait][value] =
-              (newTraitCounts[trait][value] || 0) + 1;
-          }
         }
+      }
+    }
+
+    // Count traits from burned wizards (from GraphQL data)
+    // We need to count every time a trait appears in burned wizards
+    const burnedTraitCounts: { [trait: string]: { [value: string]: number } } = {};
+    TRAITS.forEach((trait) => {
+      burnedTraitCounts[trait] = {};
+    });
+
+    for (const tokenId of burnedWizards) {
+      const wizardData = normalizedWizards[tokenId];
+      if (!wizardData) {
+        console.warn(`Warning: No wizard data found for burned tokenId: ${tokenId}`);
+        continue;
+      }
+      
+      for (const trait of TRAITS) {
+        const value = wizardData[trait as keyof typeof wizardData];
+        if (value && String(value).trim()) {
+          const valueStr = String(value).trim();
+          burnedTraitCounts[trait][valueStr] =
+            (burnedTraitCounts[trait][valueStr] || 0) + 1;
+        }
+      }
+    }
+
+    console.log(`Counted traits from ${burnedWizards.length} burned wizards`);
+
+    // Calculate new counts: original - burned
+    for (const trait of TRAITS) {
+      for (const value in originalTraitCounts[trait]) {
+        const originalCount = originalTraitCounts[trait][value];
+        const burnedCount = burnedTraitCounts[trait][value] || 0;
+        newTraitCounts[trait][value] = originalCount - burnedCount;
       }
     }
 
