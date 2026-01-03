@@ -1,5 +1,6 @@
 // @ts-ignore - JSON import
 import wizziesData from '../data/wizzies.json';
+import type { TraitType } from './traits';
 
 export interface WizardData {
   name: string;
@@ -41,7 +42,7 @@ export function getWizardName(tokenId: string): string {
 /**
  * Get a specific trait value for a wizard
  */
-export function getWizardTrait(tokenId: string, trait: 'head' | 'body' | 'prop' | 'familiar' | 'rune' | 'background'): string | undefined {
+export function getWizardTrait(tokenId: string, trait: TraitType): string | undefined {
   const wizard = getWizard(tokenId);
   return wizard?.[trait];
 }
@@ -49,7 +50,7 @@ export function getWizardTrait(tokenId: string, trait: 'head' | 'body' | 'prop' 
 /**
  * Get all wizards that have a specific trait value
  */
-export function getWizardsByTrait(trait: 'head' | 'body' | 'prop' | 'familiar' | 'rune' | 'background', value: string): string[] {
+export function getWizardsByTrait(trait: TraitType, value: string): string[] {
   const wizzies = getWizards();
   return Object.keys(wizzies).filter(tokenId => {
     const wizard = wizzies[tokenId];
@@ -60,7 +61,7 @@ export function getWizardsByTrait(trait: 'head' | 'body' | 'prop' | 'familiar' |
 /**
  * Get all unique trait values for a given trait type
  */
-export function getTraitValues(trait: 'head' | 'body' | 'prop' | 'familiar' | 'rune' | 'background'): string[] {
+export function getTraitValues(trait: TraitType): string[] {
   const wizzies = getWizards();
   const values = new Set<string>();
   

@@ -7,6 +7,7 @@ import { TraitFilters } from "@/components/burns/TraitFilters";
 import { TraitTable } from "@/components/burns/TraitTable";
 import { TraitStatsSummary } from "@/components/burns/TraitStatsSummary";
 import type { StatsData } from "@/lib/burn-stats";
+import { TRAITS } from "@/lib/traits";
 
 interface TraitsViewProps {
   data: StatsData;
@@ -26,7 +27,7 @@ export function TraitsView({ data }: TraitsViewProps) {
     sortDirection,
   });
 
-  const traitTypes = ["all", "head", "body", "prop", "familiar", "rune", "background"];
+  const traitTypes = ["all", ...TRAITS];
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">

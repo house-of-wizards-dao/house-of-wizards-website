@@ -1,11 +1,10 @@
-import { getWizards } from "./wizards";
+import { getWizards, type WizardData } from "./wizards";
 import {
   fetchNFTsForCollection,
   extractTokenId,
   extractAttributes,
 } from "./alchemy";
-
-const TRAITS = ["head", "body", "prop", "familiar", "rune", "background"];
+import { TRAITS } from "./traits";
 const SOULS_CONTRACT = "0x251b5f14a825c537ff788604ea1b58e49b70726f";
 const FLAMES = 1112;
 
@@ -23,21 +22,18 @@ export interface TraitStat {
   wizards: string[];
 }
 
-export interface SoulTraits {
-  [tokenId: string]: {
-    name: string;
-    traits: {
-      [key: string]: string;
-    };
-  };
+export interface Burn {
+  tokenId: string;
+  burnOrder: number;
+  wizard: WizardData;
+  soul: WizardData;
 }
 
 export interface StatsData {
   traits: TraitStat[];
   burned: number;
   flames: number;
-  order: string[];
-  souls: SoulTraits;
+  burns: Burn[]; // Sorted by burnOrder descending (highest first)
 }
 
 
@@ -63,7 +59,8 @@ export async function getStats(
     } = {};
     const newTraitCounts: { [trait: string]: { [value: string]: number } } = {};
     const newOrder: { [tokenId: string]: number } = {};
-    const soulTraits: SoulTraits = {};
+    const normalizedSouls: Record<string, WizardData> = {};
+    const normalizedWizards: Record<string, WizardData> = {};
 
     // Initialize trait counts
     TRAITS.forEach((trait) => {
@@ -86,9 +83,9 @@ export async function getStats(
         continue;
       }
 
-      soulTraits[tokenId] = {
-        name: (soul as any).title || (soul as any).name || "",
-        traits: {},
+      const soulName = (soul as any).title || (soul as any).name || "";
+      const soulData: WizardData = {
+        name: soulName,
       };
 
       const attributes = extractAttributes(soul);
@@ -114,10 +111,16 @@ export async function getStats(
               `Warning: Could not convert burn order value '${value}' to int for token ${tokenId}`
             );
           }
-        } else if (TRAITS.includes(key.toLowerCase())) {
-          soulTraits[tokenId].traits[key] = String(value);
+        } else {
+          // Normalize trait key to lowercase and map to WizardData structure
+          if (TRAITS.includes(keyLower as any)) {
+            const traitKey = keyLower as typeof TRAITS[number];
+            soulData[traitKey] = String(value);
+          }
         }
       }
+
+      normalizedSouls[tokenId] = soulData;
     }
 
     console.log(
@@ -131,7 +134,7 @@ export async function getStats(
     // We already have the burned token IDs from souls data
     const wizzies = getWizards();
 
-    // Build burnedWizards array and traitDict from local data
+    // Build burnedWizards array, traitDict, and normalized wizards from local data
     for (const tokenId of tokenIds) {
       const wizard = wizzies[tokenId];
       if (!wizard) {
@@ -140,6 +143,7 @@ export async function getStats(
       }
 
       burnedWizards.push(tokenId);
+      normalizedWizards[tokenId] = wizard;
 
       // Extract traits from local wizard data
       for (const trait of TRAITS) {
@@ -195,17 +199,32 @@ export async function getStats(
 
     const resultJson = output.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Sort burn order
-    const order = Object.entries(newOrder)
-      .sort(([, a], [, b]) => b - a)
-      .map(([tokenId]) => tokenId);
+    // Build burns array - each burn contains wizard and soul data
+    const burns: Burn[] = Object.entries(newOrder)
+      .map(([tokenId, burnOrder]) => {
+        const wizard = normalizedWizards[tokenId];
+        const soul = normalizedSouls[tokenId];
+        
+        if (!wizard || !soul) {
+          console.warn(`Warning: Missing wizard or soul data for token ${tokenId}`);
+          return null;
+        }
+        
+        return {
+          tokenId,
+          burnOrder,
+          wizard,
+          soul,
+        };
+      })
+      .filter((burn): burn is Burn => burn !== null)
+      .sort((a, b) => b.burnOrder - a.burnOrder); // Highest burn order first
 
     const stats: StatsData = {
       traits: resultJson,
       burned,
       flames: FLAMES - burned,
-      order,
-      souls: soulTraits,
+      burns,
     };
 
     // Cache the results

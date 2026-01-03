@@ -1,56 +1,55 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { getWizardName } from "@/lib/wizards";
-import { TraitFilter, type TraitType } from "@/components/burns/TraitFilter";
+import { TraitFilter } from "@/components/burns/TraitFilter";
 import Image from "next/image";
-import type { StatsData } from "@/lib/burn-stats";
+import type { StatsData, Burn } from "@/lib/burn-stats";
+import { TRAITS } from "@/lib/traits";
 
 interface SoulsListProps {
-  order: string[];
-  data: StatsData;
+  burns: Burn[];
 }
 
-function SoulsList({ order, data }: SoulsListProps) {
+function SoulsList({ burns }: SoulsListProps) {
   return (
     <div className="flex flex-col items-center justify-center w-full gap-2">
-      {order.map((token, index) => {
+      {burns.map((burn, index) => {
         return (
-          <div className={`flex flex-row items-center justify-center p-6 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} key={index}>
+          <div className={`flex flex-row items-center justify-center p-6 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} key={burn.tokenId}>
             <h2 className="font-atirose text-brand-500 text-2xl">
-              {order.length - index}.
+              {burns.length - index}.
             </h2>
             <div className="self-start">
               <Link
-                href={`https://opensea.io/item/ethereum/0x251b5f14a825c537ff788604ea1b58e49b70726f/${token}`}
+                href={`https://opensea.io/item/ethereum/0x251b5f14a825c537ff788604ea1b58e49b70726f/${burn.tokenId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Image
-                  src={`https://portal.forgottenrunes.com/api/souls/img/${token}`}
-                  alt={data.souls[token]?.name || ""}
+                  src={`https://portal.forgottenrunes.com/api/souls/img/${burn.tokenId}`}
+                  alt={burn.soul.name}
                   width={150}
                   height={150}
                 />
               </Link>
-              <h3 className="text-sm max-w-52">{data.souls[token]?.name || ""}</h3>
+              <h3 className="text-sm max-w-52">{burn.soul.name}</h3>
             </div>
             <span className="w-12 h-4 m-2 max-w-24 font-atirose text-brand-500 text-3xl">←</span>
             <div>
               <Link
-                href={`https://opensea.io/item/ethereum/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42/${token}`}
+                href={`https://opensea.io/item/ethereum/0x521f9c7505005cfa19a8e5786a9c3c9c9f5e6f42/${burn.tokenId}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 <Image
-                  src={`https://nftz.forgottenrunes.com/wizards/${token}.png`}
-                  alt={getWizardName(token)}
+                  src={`https://nftz.forgottenrunes.com/wizards/${burn.tokenId}.png`}
+                  alt={burn.wizard.name}
                   width={150}
                   height={150}
                 />
               </Link>
-              <h3 className="text-sm max-w-52">{getWizardName(token)}</h3>
+              <h3 className="text-sm max-w-52">{burn.wizard.name}</h3>
             </div>
           </div>
         );
@@ -64,12 +63,12 @@ interface SoulsViewProps {
 }
 
 export function SoulsView({ data }: SoulsViewProps) {
-  const [filteredOrder, setFilteredOrder] = useState<string[]>([]);
+  const [filteredBurns, setFilteredBurns] = useState<Burn[]>([]);
 
-  // Initialize filteredOrder when data loads
+  // Initialize filteredBurns when data loads
   useEffect(() => {
     if (data) {
-      setFilteredOrder(data.order);
+      setFilteredBurns(data.burns);
     }
   }, [data]);
 
@@ -77,65 +76,37 @@ export function SoulsView({ data }: SoulsViewProps) {
   const soulTraitStats = useMemo(() => {
     const traitMap = new Map<string, { type: string; name: string }>();
     
-    data.order.forEach((soulId) => {
-      const soul = data.souls[soulId];
-      if (soul?.traits) {
-        Object.entries(soul.traits).forEach(([key, value]) => {
-          const traitType = key.toLowerCase();
-          if (["head", "body", "prop", "familiar", "rune", "background"].includes(traitType) && value) {
-            const mapKey = `${traitType}_${value}`;
-            if (!traitMap.has(mapKey)) {
-              traitMap.set(mapKey, { type: traitType, name: String(value) });
-            }
+    data.burns.forEach((burn) => {
+      const soul = burn.soul;
+      TRAITS.forEach((traitType) => {
+        const value = soul[traitType];
+        if (value) {
+          const mapKey = `${traitType}_${value}`;
+          if (!traitMap.has(mapKey)) {
+            traitMap.set(mapKey, { type: traitType, name: value });
           }
-        });
-      }
+        }
+      });
     });
     
     return Array.from(traitMap.values());
-  }, [data]);
+  }, [data.burns]);
 
-  // Build traits map for all souls
-  const soulTraitsMap = useMemo(() => {
-    const map: Record<string, Record<TraitType, string | undefined>> = {};
-    
-    data.order.forEach((id) => {
-      const soul = data.souls[id];
-      if (soul?.traits) {
-        const traits: Record<TraitType, string | undefined> = {
-          head: undefined,
-          body: undefined,
-          prop: undefined,
-          familiar: undefined,
-          rune: undefined,
-          background: undefined,
-        };
-        
-        // Map soul traits (case-insensitive)
-        Object.entries(soul.traits).forEach(([key, value]) => {
-          const lowerKey = key.toLowerCase() as TraitType;
-          if (["head", "body", "prop", "familiar", "rune", "background"].includes(lowerKey)) {
-            traits[lowerKey] = String(value);
-          }
-        });
-        
-        map[id] = traits;
-      }
-    });
-    
-    return map;
-  }, [data]);
+  const handleFilterChange = useCallback((filtered: Array<{ tokenId: string }>) => {
+    const tokenIdSet = new Set(filtered.map(f => f.tokenId));
+    setFilteredBurns(data.burns.filter(burn => tokenIdSet.has(burn.tokenId)));
+  }, [data.burns]);
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
       <TraitFilter
         traits={soulTraitStats}
-        itemIds={data.order}
-        traitsMap={soulTraitsMap}
-        onFilterChange={setFilteredOrder}
+        burns={data.burns}
+        filterBy="soul"
+        onFilterChange={handleFilterChange}
         itemLabel="souls"
       />
-      <SoulsList order={filteredOrder} data={data} />
+      <SoulsList burns={filteredBurns} />
     </div>
   );
 }
