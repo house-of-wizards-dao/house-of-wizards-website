@@ -1,3 +1,5 @@
+"use client";
+
 // Web3 Provider Component
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
