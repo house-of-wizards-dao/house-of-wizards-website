@@ -10,7 +10,12 @@ import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 
 export default function WarriorsPage() {
   const { data: warriors, loading, error } = useForgedWarriors();
-  const [filteredWarriors, setFilteredWarriors] = useState<WarriorGraphQLResponse[]>([]);
+  const [filteredWarriors, setFilteredWarriors] = useState<
+    WarriorGraphQLResponse[]
+  >([]);
+
+  const pageTitle = "Forged Warriors";
+  const pageDescription = `${warriors.length} warrior${warriors.length !== 1 ? "s" : ""} with forged weapons`;
 
   // Initialize filteredWarriors when warriors data loads
   useEffect(() => {
@@ -22,7 +27,7 @@ export default function WarriorsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center gap-4 max-w-8xl">
-        <PageTitle title="Warriors with Forged Weapons" />
+        <PageTitle title={pageTitle} />
         <Image src="/img/tulip.gif" alt="Loading" width={200} height={200} />
       </div>
     );
@@ -31,7 +36,7 @@ export default function WarriorsPage() {
   if (error || !warriors) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8">
-        <PageTitle title="Error loading warriors" />
+        <PageTitle title={pageTitle} />
         <p className="text-gray-400">{error?.message || "Unknown error"}</p>
       </div>
     );
@@ -39,16 +44,17 @@ export default function WarriorsPage() {
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">
-      <PageTitle title="Forged Warriors" />
+      <PageTitle title={pageTitle} />
       <p className="text-gray-400 text-center max-w-2xl px-4">
-        {warriors.length} warrior{warriors.length !== 1 ? "s" : ""} with forged weapons
+        {pageDescription}
       </p>
-      <ForgedWeaponFilter 
-        warriors={warriors} 
+      <ForgedWeaponFilter
+        warriors={warriors}
         onFilterChange={setFilteredWarriors}
       />
-      <ForgedWarriorsListView warriors={filteredWarriors.length > 0 ? filteredWarriors : warriors} />
+      <ForgedWarriorsListView
+        warriors={filteredWarriors.length > 0 ? filteredWarriors : warriors}
+      />
     </div>
   );
 }
-
