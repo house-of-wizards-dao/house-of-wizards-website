@@ -34,44 +34,46 @@ export function BurnsListView({ burns, primaryType }: BurnsListViewProps) {
 
         return (
           <div 
-            className={`flex flex-row items-center justify-center px-6 py-2 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} 
+            className={`flex flex-row items-start justify-center w-full max-w-2xl mx-2 sm:mx-4 px-3 sm:px-6 py-2 gap-2 sm:gap-4 ${index % 2 === 0 ? "border border-gray-800 rounded-lg" : ""}`} 
             key={burn.tokenId}
           >
-            <h2 className="font-atirose text-brand-500 text-2xl">
+            <h2 className="font-atirose text-brand-500 text-sm sm:text-lg md:text-xl lg:text-2xl flex-shrink-0 self-center">
               {burn.burnIndex + 1}.
             </h2>
-            <div className="self-start">
+            <div className="flex flex-col items-center flex-1 min-w-0">
               <Link
                 href={`https://opensea.io/item/ethereum/${primaryContract}/${burn.tokenId}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full max-w-[150px] aspect-square flex-shrink-0"
               >
                 <LazyImage
                   alt={primary.name}
                   src={primaryImageUrl}
                   width={150}
                   height={150}
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                 />
               </Link>
-              <h3 className="text-sm max-w-52">{primary.name}</h3>
+              <h3 className="text-[10px] sm:text-xs md:text-sm mt-1 text-center w-full max-w-[150px]">{primary.name}</h3>
             </div>
-            <span className="w-12 h-4 m-2 max-w-24 font-atirose text-brand-500 text-3xl">{arrow}</span>
-            <div>
+            <span className="font-atirose text-brand-500 text-base sm:text-xl md:text-2xl lg:text-3xl flex-shrink-0 px-1 sm:px-2 self-center">{arrow}</span>
+            <div className="flex flex-col items-center flex-1 min-w-0">
               <Link
                 href={`https://opensea.io/item/ethereum/${secondaryContract}/${burn.tokenId}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="w-full max-w-[150px] aspect-square flex-shrink-0"
               >
                 <LazyImage
                   alt={secondary.name}
                   src={secondaryImageUrl}
                   width={150}
                   height={150}
-                  className="object-cover"
+                  className="object-cover w-full h-full"
                 />
               </Link>
-              <h3 className="text-sm max-w-52">{secondary.name}</h3>
+              <h3 className="text-[10px] sm:text-xs md:text-sm mt-1 text-center w-full max-w-[150px]">{secondary.name}</h3>
             </div>
           </div>
         );
