@@ -10,6 +10,7 @@ import {
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 import { useState } from "react";
@@ -49,6 +50,10 @@ const navigationLinks: NavLink[] = [
   {
     label: "PFP",
     href: "/pfp-mint",
+  },
+  {
+    label: "Backpack",
+    href: "/backpack",
   },
   {
     label: "Vote",
@@ -106,6 +111,12 @@ const ExternalLinkIcon = () => (
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActiveLink = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname.startsWith(href);
+  };
 
   const handleLinkClick = () => {
     setIsMenuOpen(false);
@@ -142,7 +153,7 @@ export const Navbar = () => {
         {navigationLinks.map((link) => (
           <NavbarItem key={link.href} className="text-sm hover:text-brand-500 transition-colors">
             <NextLink
-              className="flex items-center gap-2"
+              className={`flex items-center gap-2 ${isActiveLink(link.href) ? "underline underline-offset-4" : ""}`}
               href={link.href}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
@@ -212,7 +223,7 @@ export const Navbar = () => {
           {navigationLinks.map((link) => (
             <NavbarMenuItem key={link.href}>
               <NextLink
-                className="text-white text-lg uppercase w-full flex items-center gap-2 py-2 hover:text-brand-500 transition-colors"
+                className={`text-white text-lg uppercase w-full flex items-center gap-2 py-2 hover:text-brand-500 transition-colors ${isActiveLink(link.href) ? "underline underline-offset-4" : ""}`}
                 href={link.href}
                 target={link.external ? "_blank" : undefined}
                 rel={link.external ? "noopener noreferrer" : undefined}
