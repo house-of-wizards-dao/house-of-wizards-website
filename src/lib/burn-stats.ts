@@ -1,5 +1,5 @@
 import { getWizards, type WizardData } from "./wizards";
-import { fetchAllWizardsAndSouls } from "./frwc-graphql";
+import { fetchAllSoulsWithTransmutedWizard } from "./frwc-graphql";
 import { TRAITS } from "./traits";
 
 // In-memory cache for stats
@@ -72,7 +72,7 @@ export async function getStats(
 
     // Fetch both wizards and souls from GraphQL endpoint in a single query
     console.log(`Fetching wizards and souls from GraphQL endpoint`);
-    const { Soul: allSouls } = await fetchAllWizardsAndSouls();
+    const { Soul: allSouls } = await fetchAllSoulsWithTransmutedWizard();
     console.log(`Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`);
 
     // Build burns array directly from GraphQL response in a single pass
