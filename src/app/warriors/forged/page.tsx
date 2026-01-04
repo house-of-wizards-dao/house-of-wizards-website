@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useForgedWarriors } from "@/hooks/useForgedWarriors";
 import { ForgedWarriorsListView } from "@/components/warriors/ForgedWarriorsListView";
-import { ForgedWeaponFilter } from "@/components/warriors/ForgedWeaponFilter";
+import { ForgedWithFilter } from "@/components/warriors/ForgedWithFilter";
 import { PageTitle } from "@/components/PageTitle";
 import Image from "next/image";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
@@ -48,7 +48,7 @@ export default function WarriorsPage() {
       <p className="text-gray-400 text-center max-w-2xl px-4">
         {pageDescription}
       </p>
-      <ForgedWeaponFilter
+      <ForgedWithFilter
         warriors={warriors}
         onFilterChange={setFilteredWarriors}
       />

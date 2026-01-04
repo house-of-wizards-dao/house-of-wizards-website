@@ -3,12 +3,12 @@
 import { useMemo, useState, useEffect } from "react";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 
-interface ForgedWeaponFilterProps {
+interface ForgedWithFilterProps {
   warriors: WarriorGraphQLResponse[];
   onFilterChange: (filtered: WarriorGraphQLResponse[]) => void;
 }
 
-export function ForgedWeaponFilter({ warriors, onFilterChange }: ForgedWeaponFilterProps) {
+export function ForgedWithFilter({ warriors, onFilterChange }: ForgedWithFilterProps) {
   const [selectedForgedWith, setSelectedForgedWith] = useState<string>("all");
 
   // Get unique items that weapons were forged with
