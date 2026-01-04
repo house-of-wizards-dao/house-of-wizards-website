@@ -1,5 +1,5 @@
 import { getWizards, type WizardData } from "./wizards";
-import { fetchAllWizardsAndSouls, type SoulGraphQLResponse, type WizardGraphQLResponse } from "./souls-graphql";
+import { fetchAllWizardsAndSouls } from "./frwc-graphql";
 import { TRAITS } from "./traits";
 
 // In-memory cache for stats
