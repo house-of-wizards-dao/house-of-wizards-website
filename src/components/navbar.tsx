@@ -48,6 +48,10 @@ const navigationLinks: NavLink[] = [
     href: "/burns",
   },
   {
+    label: "Forge",
+    href: "/warriors/forged",
+  },
+  {
     label: "PFP",
     href: "/pfp-mint",
   },
