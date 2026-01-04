@@ -21,8 +21,8 @@ export function ForgedWarriorsListView({
     `https://portal.forgottenrunes.com/api/warriors/img/${tokenId}`;
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+    <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 md:px-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 md:gap-4">
         {warriors.map((warrior, index) => {
           const tokenId = warrior.token?.tokenId ?? "";
 
