@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useForgedWarriors } from "@/hooks/useForgedWarriors";
-import { WarriorsListView } from "@/components/warriors/WarriorsListView";
+import { ForgedWarriorsListView } from "@/components/warriors/ForgedWarriorsListView";
 import { ForgedWeaponFilter } from "@/components/warriors/ForgedWeaponFilter";
 import { PageTitle } from "@/components/PageTitle";
 import Image from "next/image";
@@ -47,7 +47,7 @@ export default function WarriorsPage() {
         warriors={warriors} 
         onFilterChange={setFilteredWarriors}
       />
-      <WarriorsListView warriors={filteredWarriors.length > 0 ? filteredWarriors : warriors} />
+      <ForgedWarriorsListView warriors={filteredWarriors.length > 0 ? filteredWarriors : warriors} />
     </div>
   );
 }
