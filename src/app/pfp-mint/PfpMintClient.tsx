@@ -10,7 +10,6 @@ import {
 } from "wagmi";
 import { base } from "wagmi/chains";
 import { parseEther, formatEther, type Address } from "viem";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Snowfall from "react-snowfall";
 import WizardBrowser from "@/components/WizardBrowser";
@@ -174,7 +173,6 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
             <h1 className="text-2xl md:text-3xl font-bold text-white">
               Wizzy PFP by Shadows
             </h1>
-            <ConnectButton />
           </div>
           <div className="flex flex-col md:flex-row gap-6 items-start">
             <div className="flex flex-col flex-1 max-w-3xl items-center">

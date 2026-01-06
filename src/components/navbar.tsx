@@ -10,6 +10,7 @@ import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { useState } from "react";
 import { InstagramIcon, Menu, X } from "lucide-react";
@@ -167,12 +168,12 @@ export const Navbar = () => {
         ))}
       </NavbarContent>
 
-      {/* Desktop Social Links */}
+      {/* Desktop Social Links & Connect Button */}
       <NavbarContent
         className="hidden sm:flex basis-1/5 sm:basis-full"
         justify="end"
       >
-        <NavbarItem className="hidden sm:flex gap-4">
+        <NavbarItem className="hidden sm:flex gap-4 items-center">
           {socialLinks.map((social) => {
             const IconComponent = social.icon;
             return (
@@ -186,6 +187,11 @@ export const Navbar = () => {
               </Link>
             );
           })}
+          <ConnectButton
+            chainStatus="icon"
+            showBalance={false}
+            accountStatus="avatar"
+          />
         </NavbarItem>
       </NavbarContent>
 
@@ -238,21 +244,30 @@ export const Navbar = () => {
               </div>
             ))}
             <div className="mt-6 pt-6 border-t border-neutral-700">
-              <div className="flex gap-4 justify-start">
-                {socialLinks.map((social) => {
-                  const IconComponent = social.icon;
-                  return (
-                    <Link
-                      key={social.href}
-                      isExternal
-                      href={social.href}
-                      title={social.title}
-                      onClick={handleLinkClick}
-                    >
-                      <IconComponent className="text-white hover:text-brand-500 transition-colors w-6 h-6" />
-                    </Link>
-                  );
-                })}
+              <div className="flex flex-col gap-4">
+                <div className="flex gap-4 justify-start">
+                  {socialLinks.map((social) => {
+                    const IconComponent = social.icon;
+                    return (
+                      <Link
+                        key={social.href}
+                        isExternal
+                        href={social.href}
+                        title={social.title}
+                        onClick={handleLinkClick}
+                      >
+                        <IconComponent className="text-white hover:text-brand-500 transition-colors w-6 h-6" />
+                      </Link>
+                    );
+                  })}
+                </div>
+                <div className="mt-2">
+                  <ConnectButton
+                    chainStatus="icon"
+                    showBalance={false}
+                    accountStatus="full"
+                  />
+                </div>
               </div>
             </div>
           </div>
