@@ -3,10 +3,8 @@
 import {
   Navbar as NextUINavbar,
   NavbarContent,
-  NavbarMenu,
   NavbarBrand,
   NavbarItem,
-  NavbarMenuItem,
 } from "@nextui-org/navbar";
 import { Link } from "@nextui-org/link";
 import NextLink from "next/link";
@@ -210,54 +208,56 @@ export const Navbar = () => {
         </NavbarItem>
       </NavbarContent>
 
-      {/* Mobile Menu */}
-      <NavbarMenu className="bg-black/95 backdrop-blur-sm !opacity-100 !visible z-[9999] fixed top-0 left-0 right-0 bottom-0">
-        <div className="mx-4 mt-4 flex flex-col gap-2">
-          {/* Close Button */}
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="text-white hover:text-brand-500 transition-colors p-2"
-              aria-label="Close menu"
-              type="button"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-          {navigationLinks.map((link) => (
-            <NavbarMenuItem key={link.href}>
-              <NextLink
-                className={`text-white text-lg uppercase w-full flex items-center gap-2 py-2 hover:text-brand-500 transition-colors ${isActiveLink(link.href) ? "underline underline-offset-4" : ""}`}
-                href={link.href}
-                target={link.external ? "_blank" : undefined}
-                rel={link.external ? "noopener noreferrer" : undefined}
-                onClick={handleLinkClick}
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="bg-black/95 backdrop-blur-sm z-[9999] fixed inset-0 lg:hidden">
+          <div className="mx-4 mt-4 flex flex-col gap-2">
+            {/* Close Button */}
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="text-white hover:text-brand-500 transition-colors p-2"
+                aria-label="Close menu"
+                type="button"
               >
-                {link.label}
-                {link.external && <ExternalLinkIcon />}
-              </NextLink>
-            </NavbarMenuItem>
-          ))}
-          <div className="mt-6 pt-6 border-t border-neutral-700">
-            <div className="flex gap-4 justify-start">
-              {socialLinks.map((social) => {
-                const IconComponent = social.icon;
-                return (
-                  <Link
-                    key={social.href}
-                    isExternal
-                    href={social.href}
-                    title={social.title}
-                    onClick={handleLinkClick}
-                  >
-                    <IconComponent className="text-white hover:text-brand-500 transition-colors w-6 h-6" />
-                  </Link>
-                );
-              })}
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            {navigationLinks.map((link) => (
+              <div key={link.href}>
+                <NextLink
+                  className={`text-white text-lg uppercase w-full flex items-center gap-2 py-2 hover:text-brand-500 transition-colors ${isActiveLink(link.href) ? "underline underline-offset-4" : ""}`}
+                  href={link.href}
+                  target={link.external ? "_blank" : undefined}
+                  rel={link.external ? "noopener noreferrer" : undefined}
+                  onClick={handleLinkClick}
+                >
+                  {link.label}
+                  {link.external && <ExternalLinkIcon />}
+                </NextLink>
+              </div>
+            ))}
+            <div className="mt-6 pt-6 border-t border-neutral-700">
+              <div className="flex gap-4 justify-start">
+                {socialLinks.map((social) => {
+                  const IconComponent = social.icon;
+                  return (
+                    <Link
+                      key={social.href}
+                      isExternal
+                      href={social.href}
+                      title={social.title}
+                      onClick={handleLinkClick}
+                    >
+                      <IconComponent className="text-white hover:text-brand-500 transition-colors w-6 h-6" />
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
-      </NavbarMenu>
+      )}
     </NextUINavbar>
   );
 };
