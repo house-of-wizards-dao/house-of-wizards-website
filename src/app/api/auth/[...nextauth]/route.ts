@@ -20,10 +20,14 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         try {
-          const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
+          // The message comes as a plain SIWE text string, not JSON
+          const siwe = new SiweMessage(credentials?.message || "");
           const nextAuthUrl = new URL(
             process.env.NEXTAUTH_URL || "http://localhost:3000"
           );
+
+          console.log("SIWE verify - message domain:", siwe.domain);
+          console.log("SIWE verify - expected domain:", nextAuthUrl.host);
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
@@ -31,13 +35,15 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (result.success) {
+            console.log("SIWE verification successful for:", siwe.address);
             return {
               id: siwe.address,
             };
           }
+          console.error("SIWE verification failed - result:", result);
           return null;
         } catch (e) {
-          console.error("SIWE verification failed:", e);
+          console.error("SIWE verification exception:", e);
           return null;
         }
       },
@@ -60,4 +66,3 @@ export const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
-
