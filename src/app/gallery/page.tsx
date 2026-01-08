@@ -8,7 +8,7 @@ import { NFTGrid } from "@/components/gallery/NFTGrid";
 import { useWalletNFTs } from "@/hooks/useWalletNFTs";
 import { GalleryProvider, useGallery } from "@/contexts/GalleryContext";
 import Image from "next/image";
-import { addresses } from "@/config/addresses";
+import { frwcAddresses } from "@/config/addresses";
 
 function GalleryContent() {
   const router = useRouter();
@@ -129,7 +129,7 @@ export default function GalleryPage() {
 
   // Initialize enabled collections (all enabled by default)
   const initialEnabledCollections = useMemo(() => {
-    return new Set(Object.values(addresses).map((addr) => addr.toLowerCase()));
+    return new Set(Object.values(frwcAddresses).map((addr) => addr.toLowerCase()));
   }, []);
 
   return (

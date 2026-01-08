@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { frwcAddresses, frwcCollections } from "@/config/addresses";
+import { frwcAddresses } from "@/config/addresses";
 import { isAddress, isENSName } from "@/lib/ens";
 import { useGallery } from "@/contexts/GalleryContext";
 
@@ -263,21 +263,21 @@ export function GallerySettings({}: GallerySettingsProps) {
                 Collections
               </h3>
               <div className="flex flex-col gap-2">
-                {frwcCollections.map((collection) => (
+                {Object.entries(frwcAddresses).map(([name, address]) => (
                   <label
-                    key={collection.name}
+                    key={address}
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     <input
                       type="checkbox"
-                      checked={enabledCollections.has(collection.address)}
+                      checked={enabledCollections.has(address.toLowerCase())}
                       onChange={() =>
-                        handleToggleCollection(collection.address)
+                        handleToggleCollection(address.toLowerCase())
                       }
                       className="w-4 h-4 rounded border-gray-700 bg-neutral-800 text-brand-500 focus:ring-2 focus:ring-brand-500"
                     />
-                    <span className="text-xs text-gray-300">
-                      {collection.name}
+                    <span className="text-xs text-gray-300 capitalize">
+                      {name}
                     </span>
                   </label>
                 ))}

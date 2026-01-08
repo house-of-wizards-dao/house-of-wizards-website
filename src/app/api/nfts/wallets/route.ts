@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchNFTsForWallets, type OpenSeaNFT } from "@/lib/opensea-nfts";
 import { resolveAddressesOrENS } from "@/lib/ens";
-import { getContractType } from "@/lib/nft-metadata";
+import { frwcAddresses } from "@/config/addresses";
 
 export const dynamic = "force-dynamic";
 
@@ -63,38 +63,32 @@ export async function GET(request: NextRequest) {
     // Fetch NFTs for all wallets (with pagination to get all NFTs)
     const walletNFTMap = await fetchNFTsForWallets(walletAddresses, limit);
 
-    // Organize NFTs by collection type
-    const nftsByCollection: {
-      wizards: OpenSeaNFT[];
-      souls: OpenSeaNFT[];
-      warriors: OpenSeaNFT[];
-      ponies: OpenSeaNFT[];
-      unknown: OpenSeaNFT[];
-    } = {
-      wizards: [],
-      souls: [],
-      warriors: [],
-      ponies: [],
-      unknown: [],
-    };
+    // Get the set of contract addresses we care about (from frwcAddresses)
+    const allowedContracts = new Set(
+      Object.values(frwcAddresses).map((addr) => addr.toLowerCase())
+    );
 
-    // Flatten and categorize all NFTs by collection type
+    // Group NFTs by collection name from OpenSea data
+    const nftsByCollection: Record<string, OpenSeaNFT[]> = {};
+
+    // Flatten and categorize all NFTs by collection name from OpenSea
     walletNFTMap.forEach((contractMap) => {
       contractMap.forEach((nfts, contractAddress) => {
-        const collectionType = getContractType(contractAddress);
-        nfts.forEach((nft) => {
-          if (collectionType === "wizard") {
-            nftsByCollection.wizards.push(nft);
-          } else if (collectionType === "soul") {
-            nftsByCollection.souls.push(nft);
-          } else if (collectionType === "warrior") {
-            nftsByCollection.warriors.push(nft);
-          } else if (collectionType === "pony") {
-            nftsByCollection.ponies.push(nft);
-          } else {
-            nftsByCollection.unknown.push(nft);
-          }
-        });
+        const normalizedAddress = contractAddress.toLowerCase();
+        
+        // Only process NFTs from contracts we care about
+        if (allowedContracts.has(normalizedAddress)) {
+          nfts.forEach((nft) => {
+            const collectionName = nft.collection;
+            
+            // Initialize collection array if it doesn't exist
+            if (!nftsByCollection[collectionName]) {
+              nftsByCollection[collectionName] = [];
+            }
+            
+            nftsByCollection[collectionName].push(nft);
+          });
+        }
       });
     });
 
@@ -109,10 +103,10 @@ export async function GET(request: NextRequest) {
       return tokenIdA - tokenIdB;
     };
 
-    nftsByCollection.wizards.sort(sortByTokenId);
-    nftsByCollection.souls.sort(sortByTokenId);
-    nftsByCollection.warriors.sort(sortByTokenId);
-    nftsByCollection.ponies.sort(sortByTokenId);
+    // Sort all collections dynamically
+    Object.values(nftsByCollection).forEach((nfts) => {
+      nfts.sort(sortByTokenId);
+    });
 
     return NextResponse.json(nftsByCollection, {
       headers: {

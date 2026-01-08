@@ -4,7 +4,7 @@ import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 import type { WalletNFTsByCollection } from "@/hooks/useWalletNFTs";
 import { NFTCard } from "./NFTCard";
 import { useGallery } from "@/contexts/GalleryContext";
-import { frwcAddresses, frwcCollections } from "@/config/addresses";
+import { frwcAddresses } from "@/config/addresses";
 
 interface NFTGridProps {
   nfts: WalletNFTsByCollection | null;
@@ -56,17 +56,35 @@ export function NFTGrid({ nfts }: NFTGridProps) {
     );
   }
 
-  // Get collections with their contract addresses
-  const collections = frwcCollections
-    .map((collection) => ({
-      name: collection.name,
-      nfts: nfts[collection.name],
-      contract: collection.address,
-    }))
-    .filter(
-      (col) =>
-        col.nfts && col.nfts.length > 0 && enabledCollections.has(col.contract)
-    );
+  // Create a map of contract address to its order in frwcAddresses
+  const contractOrder = new Map<string, number>();
+  Object.values(frwcAddresses).forEach((address, index) => {
+    contractOrder.set(address.toLowerCase(), index);
+  });
+
+  // Get collections from the API response (grouped by OpenSea collection name)
+  // Each collection name maps to an array of NFTs
+  const collections = Object.entries(nfts)
+    .map(([collectionName, nftsArray]) => {
+      if (!nftsArray || nftsArray.length === 0) return null;
+      
+      // Get contract address from first NFT (all NFTs in a collection have same contract)
+      const contract = nftsArray[0]?.contract?.toLowerCase();
+      if (!contract || !enabledCollections.has(contract)) return null;
+      
+      return {
+        name: collectionName,
+        nfts: nftsArray,
+        contract,
+      };
+    })
+    .filter((col): col is NonNullable<typeof col> => col !== null)
+    // Sort collections by the order they appear in frwcAddresses
+    .sort((a, b) => {
+      const orderA = contractOrder.get(a.contract) ?? Infinity;
+      const orderB = contractOrder.get(b.contract) ?? Infinity;
+      return orderA - orderB;
+    });
 
   if (collections.length === 0) {
     return (

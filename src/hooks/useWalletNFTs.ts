@@ -4,10 +4,7 @@ import { useEffect, useState, useMemo } from "react";
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 
 export interface WalletNFTsByCollection {
-  wizards?: OpenSeaNFT[];
-  souls?: OpenSeaNFT[];
-  warriors?: OpenSeaNFT[];
-  ponies?: OpenSeaNFT[];
+  [key: string]: OpenSeaNFT[];
 }
 
 export function useWalletNFTs(walletInputs: string[]) {

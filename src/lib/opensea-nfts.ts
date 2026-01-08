@@ -5,7 +5,7 @@
 import { OpenSeaSDK, Chain } from "opensea-js";
 // @ts-ignore - ethers is a dependency of opensea-js
 import { JsonRpcProvider } from "ethers";
-import { addresses } from "@/config/addresses";
+import { frwcAddresses } from "@/config/addresses";
 
 export interface OpenSeaNFT {
   identifier: string; // tokenId
@@ -37,7 +37,7 @@ function getOpenSeaSDK() {
     provider,
     {
       apiKey: apiKey || undefined,
-      chain: Chain.Ethereum,
+      chain: Chain.Mainnet,
     },
     (arg: string) => {
       if (process.env.NODE_ENV === "development") {
@@ -90,7 +90,7 @@ export async function fetchNFTsForAllContracts(
   limit?: number,
 ): Promise<Map<string, OpenSeaNFT[]>> {
   const contractMap = new Map<string, OpenSeaNFT[]>();
-  const contractAddresses = Object.values(addresses).map(addr => addr.toLowerCase());
+  const contractAddresses = Object.values(frwcAddresses).map(addr => addr.toLowerCase());
   
   // First, fetch ALL NFTs from the wallet (with pagination)
   // Then filter by our contracts of interest
