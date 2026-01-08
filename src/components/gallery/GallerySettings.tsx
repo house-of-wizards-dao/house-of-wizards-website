@@ -212,8 +212,8 @@ export function GallerySettings({}: GallerySettingsProps) {
                     <input
                       id="image-size"
                       type="range"
-                      min="50"
-                      max="300"
+                      min="40"
+                      max="250"
                       step="5"
                       value={imageSize}
                       onChange={(e) =>

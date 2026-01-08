@@ -15,3 +15,26 @@ export const addresses = {
   ...frwcAddresses,
   pfpMint: "0xe0a76c1fb3DC9EaE2ceCB7c4c3993610e08c8a56",
 } as const;
+
+/**
+ * Collection name lookup: maps contract address (lowercase) to friendly collection name
+ */
+export const collectionNames: Record<string, string> = {
+  [frwcAddresses.beasts.toLowerCase()]: "Beasts",
+  [frwcAddresses.wizards.toLowerCase()]: "Wizards",
+  [frwcAddresses.warriors.toLowerCase()]: "Warriors",
+  [frwcAddresses.souls.toLowerCase()]: "Souls",
+  [frwcAddresses.ponies.toLowerCase()]: "Ponies",
+  [frwcAddresses.spawn.toLowerCase()]: "Spawn",
+  [frwcAddresses.veil.toLowerCase()]: "Infinity Veil",
+  [frwcAddresses.locks.toLowerCase()]: "Locks",
+  [frwcAddresses.athenaeum.toLowerCase()]: "Athenaeum",
+  [frwcAddresses.impBox.toLowerCase()]: "Imp's Treat Boxes",
+};
+
+/**
+ * Get friendly collection name from contract address
+ */
+export function getCollectionName(contractAddress: string): string {
+  return collectionNames[contractAddress.toLowerCase()] || contractAddress;
+}

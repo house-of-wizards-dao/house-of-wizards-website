@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchNFTsForWallets, type OpenSeaNFT } from "@/lib/opensea-nfts";
 import { resolveAddressesOrENS } from "@/lib/ens";
-import { frwcAddresses } from "@/config/addresses";
+import { frwcAddresses, getCollectionName } from "@/config/addresses";
 
 export const dynamic = "force-dynamic";
 
@@ -68,26 +68,24 @@ export async function GET(request: NextRequest) {
       Object.values(frwcAddresses).map((addr) => addr.toLowerCase())
     );
 
-    // Group NFTs by collection name from OpenSea data
+    // Group NFTs by collection name using our lookup table
     const nftsByCollection: Record<string, OpenSeaNFT[]> = {};
 
-    // Flatten and categorize all NFTs by collection name from OpenSea
+    // Flatten and categorize all NFTs by contract address, then map to friendly names
     walletNFTMap.forEach((contractMap) => {
       contractMap.forEach((nfts, contractAddress) => {
         const normalizedAddress = contractAddress.toLowerCase();
         
         // Only process NFTs from contracts we care about
         if (allowedContracts.has(normalizedAddress)) {
-          nfts.forEach((nft) => {
-            const collectionName = nft.collection;
-            
-            // Initialize collection array if it doesn't exist
-            if (!nftsByCollection[collectionName]) {
-              nftsByCollection[collectionName] = [];
-            }
-            
-            nftsByCollection[collectionName].push(nft);
-          });
+          const collectionName = getCollectionName(normalizedAddress);
+          
+          // Initialize collection array if it doesn't exist
+          if (!nftsByCollection[collectionName]) {
+            nftsByCollection[collectionName] = [];
+          }
+          
+          nftsByCollection[collectionName].push(...nfts);
         }
       });
     });
