@@ -59,6 +59,10 @@ const navigationLinks: NavLink[] = [
     href: "/backpack",
   },
   {
+    label: "Gallery",
+    href: "/gallery",
+  },
+  {
     label: "Vote",
     href: "https://snapshot.org/#/forgottengov.eth",
     external: true,
@@ -154,7 +158,10 @@ export const Navbar = () => {
       {/* Desktop Navigation Links */}
       <NavbarContent className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
         {navigationLinks.map((link) => (
-          <NavbarItem key={link.href} className="text-sm hover:text-brand-500 transition-colors">
+          <NavbarItem
+            key={link.href}
+            className="text-sm hover:text-brand-500 transition-colors"
+          >
             <NextLink
               className={`flex items-center gap-2 ${isActiveLink(link.href) ? "underline underline-offset-4" : ""}`}
               href={link.href}
