@@ -47,7 +47,7 @@ function GalleryContent() {
   if (loading) {
     return (
       <GalleryContent.Container>
-        <PageTitle title="NFT Gallery" />
+        <GalleryContent.Title />
         <Image src="/img/tulip.gif" alt="Loading" width={200} height={200} />
       </GalleryContent.Container>
     );
@@ -56,8 +56,10 @@ function GalleryContent() {
   if (error) {
     return (
       <GalleryContent.Container>
-        <PageTitle title="Error loading NFTs" />
-        <GalleryContent.Info>{error.message}</GalleryContent.Info>
+        <GalleryContent.Title />
+        <GalleryContent.Info>
+          An error occurred: {error.message}
+        </GalleryContent.Info>
       </GalleryContent.Container>
     );
   }
@@ -65,7 +67,7 @@ function GalleryContent() {
   if (walletInputs.length === 0) {
     return (
       <GalleryContent.Container>
-        <PageTitle title="NFT Gallery" />
+        <GalleryContent.Title />
         <GallerySettings />
         <GalleryContent.Info>
           Click the Settings button to add wallet addresses or ENS names, or use
@@ -80,7 +82,7 @@ function GalleryContent() {
 
   return (
     <GalleryContent.Container>
-      <PageTitle title="NFT Gallery" />
+      <GalleryContent.Title />
       <GalleryContent.Header>
         <GalleryContent.Info>
           Showing {totalNFTCount} NFT{totalNFTCount !== 1 ? "s" : ""} from{" "}
@@ -98,6 +100,10 @@ GalleryContent.Container = function Container({ children }: PropsWithChildren) {
   return (
     <div className="flex flex-col items-center gap-4 w-full">{children}</div>
   );
+};
+
+GalleryContent.Title = function Title() {
+  return <PageTitle title={"Gallery"} />;
 };
 
 GalleryContent.Info = function Info({ children }: PropsWithChildren) {
