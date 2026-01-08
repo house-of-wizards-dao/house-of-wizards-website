@@ -1,39 +1,18 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { PropsWithChildren, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { PageTitle } from "@/components/PageTitle";
 import { GallerySettings } from "@/components/gallery/GallerySettings";
 import { NFTGrid } from "@/components/gallery/NFTGrid";
 import { useWalletNFTs } from "@/hooks/useWalletNFTs";
+import { GalleryProvider, useGallery } from "@/contexts/GalleryContext";
 import Image from "next/image";
 import { addresses } from "@/config/addresses";
 
-export default function GalleryPage() {
-  const searchParams = useSearchParams();
+function GalleryContent() {
   const router = useRouter();
-
-  // Get wallets from query params (can be addresses or ENS names)
-  // Using getAll to support multiple wallet query parameters
-  const [walletInputs, setWalletInputs] = useState<string[]>(() => {
-    const wallets = searchParams.getAll("wallets");
-    return wallets
-      .map((addr) => addr.trim())
-      .filter((addr) => addr.length > 0);
-  });
-
-  // Initialize enabled collections (all enabled by default)
-  const [enabledCollections, setEnabledCollections] = useState<Set<string>>(
-    () => {
-      const allCollections = new Set(
-        Object.values(addresses).map((addr) => addr.toLowerCase())
-      );
-      return allCollections;
-    }
-  );
-
-  // Images only toggle
-  const [imagesOnly, setImagesOnly] = useState(false);
+  const { walletInputs, enabledCollections } = useGallery();
 
   // Use the hook to fetch NFTs
   const { data: nfts, loading, error } = useWalletNFTs(walletInputs);
@@ -67,68 +46,92 @@ export default function GalleryPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center gap-4 max-w-8xl">
+      <GalleryContent.Container>
         <PageTitle title="NFT Gallery" />
         <Image src="/img/tulip.gif" alt="Loading" width={200} height={200} />
-      </div>
+      </GalleryContent.Container>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen gap-4 p-8">
+      <GalleryContent.Container>
         <PageTitle title="Error loading NFTs" />
-        <p className="text-gray-400">{error.message}</p>
-      </div>
+        <GalleryContent.Info>{error.message}</GalleryContent.Info>
+      </GalleryContent.Container>
     );
   }
 
   if (walletInputs.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-4">
+      <GalleryContent.Container>
         <PageTitle title="NFT Gallery" />
-        <GallerySettings
-          walletInputs={walletInputs}
-          enabledCollections={enabledCollections}
-          imagesOnly={imagesOnly}
-          onWalletsChange={setWalletInputs}
-          onCollectionsChange={setEnabledCollections}
-          onImagesOnlyChange={setImagesOnly}
-        />
-        <p className="text-gray-400 text-center max-w-2xl">
+        <GallerySettings />
+        <GalleryContent.Info>
           Click the Settings button to add wallet addresses or ENS names, or use
-          query parameters:{" "}
+          query parameters: <br />
           <code className="bg-gray-800 px-2 py-1 rounded">
             ?wallets=0x...&wallets=name.eth
           </code>
-        </p>
-      </div>
+        </GalleryContent.Info>
+      </GalleryContent.Container>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
+    <GalleryContent.Container>
       <PageTitle title="NFT Gallery" />
-      <div className="flex items-center justify-center gap-4 w-full max-w-2xl px-4">
-        <p className="text-gray-400 text-center">
+      <GalleryContent.Header>
+        <GalleryContent.Info>
           Showing {totalNFTCount} NFT{totalNFTCount !== 1 ? "s" : ""} from{" "}
           {walletInputs.length} wallet{walletInputs.length !== 1 ? "s" : ""}
-        </p>
-        <GallerySettings
-          walletInputs={walletInputs}
-          enabledCollections={enabledCollections}
-          imagesOnly={imagesOnly}
-          onWalletsChange={setWalletInputs}
-          onCollectionsChange={setEnabledCollections}
-          onImagesOnlyChange={setImagesOnly}
-        />
-      </div>
+        </GalleryContent.Info>
+        <GallerySettings />
+      </GalleryContent.Header>
 
-      <NFTGrid
-        nfts={nfts}
-        enabledCollections={enabledCollections}
-        imagesOnly={imagesOnly}
-      />
+      <NFTGrid nfts={nfts} />
+    </GalleryContent.Container>
+  );
+}
+
+GalleryContent.Container = function Container({ children }: PropsWithChildren) {
+  return (
+    <div className="flex flex-col items-center gap-4 w-full">{children}</div>
+  );
+};
+
+GalleryContent.Info = function Info({ children }: PropsWithChildren) {
+  return <p className="text-gray-400 text-center max-w-2xl">{children}</p>;
+};
+
+GalleryContent.Header = function Header({ children }: PropsWithChildren) {
+  return (
+    <div className="flex items-center justify-center gap-4 w-full max-w-2xl px-4">
+      {children}
     </div>
+  );
+};
+
+export default function GalleryPage() {
+  const searchParams = useSearchParams();
+
+  // Get wallets from query params (can be addresses or ENS names)
+  const initialWalletInputs = useMemo(() => {
+    const wallets = searchParams.getAll("wallets");
+    return wallets.map((addr) => addr.trim()).filter((addr) => addr.length > 0);
+  }, [searchParams]);
+
+  // Initialize enabled collections (all enabled by default)
+  const initialEnabledCollections = useMemo(() => {
+    return new Set(Object.values(addresses).map((addr) => addr.toLowerCase()));
+  }, []);
+
+  return (
+    <GalleryProvider
+      initialWalletInputs={initialWalletInputs}
+      initialEnabledCollections={initialEnabledCollections}
+    >
+      <GalleryContent />
+    </GalleryProvider>
   );
 }

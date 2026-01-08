@@ -1,33 +1,29 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { frwcAddresses } from "@/config/addresses";
+import { frwcAddresses, frwcCollections } from "@/config/addresses";
 import { isAddress, isENSName } from "@/lib/ens";
+import { useGallery } from "@/contexts/GalleryContext";
 
 interface GallerySettingsProps {
-  walletInputs: string[]; // Can be addresses or ENS names
-  enabledCollections: Set<string>;
-  imagesOnly: boolean;
-  onWalletsChange: (wallets: string[]) => void;
-  onCollectionsChange: (collections: Set<string>) => void;
-  onImagesOnlyChange: (imagesOnly: boolean) => void;
+  // No props needed - uses context
 }
 
-const COLLECTION_NAMES: Record<string, string> = {
-  [frwcAddresses.wizards.toLowerCase()]: "Wizards",
-  [frwcAddresses.souls.toLowerCase()]: "Souls",
-  [frwcAddresses.warriors.toLowerCase()]: "Warriors",
-  [frwcAddresses.ponies.toLowerCase()]: "Ponies",
-};
-
-export function GallerySettings({
-  walletInputs,
-  enabledCollections,
-  imagesOnly,
-  onWalletsChange,
-  onCollectionsChange,
-  onImagesOnlyChange,
-}: GallerySettingsProps) {
+export function GallerySettings({}: GallerySettingsProps) {
+  const {
+    walletInputs,
+    setWalletInputs,
+    enabledCollections,
+    setEnabledCollections,
+    imagesOnly,
+    setImagesOnly,
+    imageSize,
+    setImageSize,
+    viewMode,
+    setViewMode,
+    showCollectionTitles,
+    setShowCollectionTitles,
+  } = useGallery();
   const [isOpen, setIsOpen] = useState(false);
   const [newWallet, setNewWallet] = useState("");
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -36,7 +32,10 @@ export function GallerySettings({
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -70,9 +69,8 @@ export function GallerySettings({
       return;
     }
 
-    // Normalize: addresses to lowercase, ENS names keep original case but validate
-    const normalized = isValidAddress ? trimmed.toLowerCase() : trimmed.toLowerCase();
-    
+    const normalized = trimmed.toLowerCase();
+
     // Check for duplicates (case-insensitive)
     const isDuplicate = walletInputs.some(
       (w) => w.toLowerCase() === normalized
@@ -83,13 +81,13 @@ export function GallerySettings({
       return;
     }
 
-    onWalletsChange([...walletInputs, normalized]);
+    setWalletInputs([...walletInputs, normalized]);
     setNewWallet("");
     setValidationError(null);
   };
 
   const handleRemoveWallet = (wallet: string) => {
-    onWalletsChange(walletInputs.filter((w) => w !== wallet));
+    setWalletInputs(walletInputs.filter((w) => w !== wallet));
   };
 
   const handleToggleCollection = (contractAddress: string) => {
@@ -100,14 +98,8 @@ export function GallerySettings({
     } else {
       newSet.add(normalized);
     }
-    onCollectionsChange(newSet);
+    setEnabledCollections(newSet);
   };
-
-  const allCollections = Object.keys(frwcAddresses).map((key) => ({
-    key,
-    address: frwcAddresses[key as keyof typeof frwcAddresses].toLowerCase(),
-    name: COLLECTION_NAMES[frwcAddresses[key as keyof typeof frwcAddresses].toLowerCase()] || key,
-  }));
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -196,36 +188,97 @@ export function GallerySettings({
 
             {/* Display Options Section */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Display Options</h3>
+              <h3 className="text-sm font-semibold text-white mb-2">
+                Display Options
+              </h3>
               <div className="flex flex-col gap-2">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={imagesOnly}
-                    onChange={(e) => onImagesOnlyChange(e.target.checked)}
+                    onChange={(e) => setImagesOnly(e.target.checked)}
                     className="w-4 h-4 rounded border-gray-700 bg-neutral-800 text-brand-500 focus:ring-2 focus:ring-brand-500"
                   />
                   <span className="text-xs text-gray-300">Images Only</span>
                 </label>
+                {imagesOnly && (
+                  <div className="flex flex-col gap-1">
+                    <label
+                      htmlFor="image-size"
+                      className="text-xs text-gray-300"
+                    >
+                      Image Size: {imageSize}px
+                    </label>
+                    <input
+                      id="image-size"
+                      type="range"
+                      min="50"
+                      max="300"
+                      step="5"
+                      value={imageSize}
+                      onChange={(e) =>
+                        setImageSize(parseInt(e.target.value, 10))
+                      }
+                      className="w-full h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-brand-500"
+                    />
+                  </div>
+                )}
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="view-mode" className="text-xs text-gray-300">
+                    View Mode
+                  </label>
+                  <select
+                    id="view-mode"
+                    value={viewMode}
+                    onChange={(e) =>
+                      setViewMode(e.target.value as "flat" | "grouped")
+                    }
+                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded text-xs text-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="flat">Flat</option>
+                    <option value="grouped">Grouped by Collection</option>
+                  </select>
+                </div>
+                {viewMode === "grouped" && (
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={showCollectionTitles}
+                      onChange={(e) =>
+                        setShowCollectionTitles(e.target.checked)
+                      }
+                      className="w-4 h-4 rounded border-gray-700 bg-neutral-800 text-brand-500 focus:ring-2 focus:ring-brand-500"
+                    />
+                    <span className="text-xs text-gray-300">
+                      Show Collection Titles
+                    </span>
+                  </label>
+                )}
               </div>
             </div>
 
             {/* Collections Section */}
             <div>
-              <h3 className="text-sm font-semibold text-white mb-2">Collections</h3>
+              <h3 className="text-sm font-semibold text-white mb-2">
+                Collections
+              </h3>
               <div className="flex flex-col gap-2">
-                {allCollections.map((collection) => (
+                {frwcCollections.map((collection) => (
                   <label
-                    key={collection.key}
+                    key={collection.name}
                     className="flex items-center gap-2 cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       checked={enabledCollections.has(collection.address)}
-                      onChange={() => handleToggleCollection(collection.address)}
+                      onChange={() =>
+                        handleToggleCollection(collection.address)
+                      }
                       className="w-4 h-4 rounded border-gray-700 bg-neutral-800 text-brand-500 focus:ring-2 focus:ring-brand-500"
                     />
-                    <span className="text-xs text-gray-300">{collection.name}</span>
+                    <span className="text-xs text-gray-300">
+                      {collection.name}
+                    </span>
                   </label>
                 ))}
               </div>
@@ -236,4 +289,3 @@ export function GallerySettings({
     </div>
   );
 }
-

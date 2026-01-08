@@ -9,3 +9,29 @@ export const addresses = {
   ...frwcAddresses,
   pfpMint: "0xe0a76c1fb3DC9EaE2ceCB7c4c3993610e08c8a56",
 } as const;
+
+export type CollectionName = "wizards" | "souls" | "warriors" | "ponies";
+
+export type Collection = {
+  name: CollectionName;
+  address: string;
+};
+
+export const frwcCollections: Collection[] = [
+  {
+    name: "wizards",
+    address: frwcAddresses.wizards.toLowerCase(),
+  },
+  {
+    name: "souls",
+    address: frwcAddresses.souls.toLowerCase(),
+  },
+  {
+    name: "warriors",
+    address: frwcAddresses.warriors.toLowerCase(),
+  },
+  {
+    name: "ponies",
+    address: frwcAddresses.ponies.toLowerCase(),
+  },
+];
