@@ -12,7 +12,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { InstagramIcon, Menu, X, ChevronDown } from "lucide-react";
 import { TwitterIcon, DiscordIcon } from "@/components/icons";
 
@@ -38,6 +38,53 @@ export type SocialLink = {
 
 const isDropdown = (item: NavItem): item is NavDropdown => {
   return "items" in item;
+};
+
+const gamesDropdown: NavDropdown = {
+  label: "GAMES",
+  items: [
+    {
+      label: "The Runiverse Game",
+      href: "https://game.runiverse.world/",
+      external: true,
+    },
+    {
+      label: "Runes TCG",
+      href: "https://www.runes-tcg.com/",
+      external: true,
+    },
+  ],
+};
+
+const magicDropdown: NavDropdown = {
+  label: "MAGIC",
+  items: [
+    {
+      label: "The Pyre",
+      href: "https://forgottenrunes.com/burning",
+      external: true,
+    },
+    {
+      label: "Warrior's Forge",
+      href: "https://forgottenrunes.com/warriors/forge",
+      external: true,
+    },
+    {
+      label: "Nightmare Imp's Door",
+      href: "https://forgottenrunes.com/nightmareimp",
+      external: true,
+    },
+    {
+      label: "Lorb",
+      href: "https://cabinetofcuriosities.xyz/lorb",
+      external: true,
+    },
+    {
+      label: "Enchanted Mirror",
+      href: "https://cabinetofcuriosities.xyz/mirror",
+      external: true,
+    },
+  ],
 };
 
 const daoDropdown: NavDropdown = {
@@ -74,6 +121,16 @@ const toolsDropdown: NavDropdown = {
       label: "Gallery",
       href: "/gallery",
     },
+    {
+      label: "Lore Leaderboard",
+      href: "https://cabinetofcuriosities.xyz/leaderboard",
+      external: true,
+    },
+    {
+      label: "Wizzypedia",
+      href: "https://wizzypedia.forgottenrunes.com",
+      external: true,
+    },
   ],
 };
 
@@ -90,7 +147,9 @@ const navigationItems: NavItem[] = [
     label: "Characters",
     href: "/backpack",
   },
+  magicDropdown,
   toolsDropdown,
+  gamesDropdown,
   daoDropdown,
 ];
 
@@ -133,7 +192,6 @@ export const Navbar = () => {
   const [mobileExpandedDropdown, setMobileExpandedDropdown] = useState<
     string | null
   >(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
   const isActiveLink = (href: string) => {
@@ -151,21 +209,6 @@ export const Navbar = () => {
     setIsMenuOpen(false);
     setMobileExpandedDropdown(null);
   };
-
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setOpenDropdown(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
 
   return (
     <NextUINavbar
@@ -199,7 +242,12 @@ export const Navbar = () => {
           if (isDropdown(item)) {
             return (
               <NavbarItem key={item.label}>
-                <div ref={dropdownRef} className="relative">
+                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
+                <div
+                  className="relative"
+                  onMouseEnter={() => setOpenDropdown(item.label)}
+                  onMouseLeave={() => setOpenDropdown(null)}
+                >
                   <button
                     type="button"
                     aria-haspopup="menu"
@@ -209,7 +257,6 @@ export const Navbar = () => {
                         openDropdown === item.label ? null : item.label,
                       )
                     }
-                    onMouseEnter={() => setOpenDropdown(item.label)}
                     className={`flex items-center gap-1.5 text-sm hover:text-brand-500 transition-colors ${isDropdownActive(item) ? "underline underline-offset-4" : ""}`}
                   >
                     {item.label}
@@ -220,28 +267,35 @@ export const Navbar = () => {
                   {openDropdown === item.label && (
                     <ul
                       role="menu"
-                      className="absolute top-full left-0 mt-2 min-w-[160px] bg-black/95 backdrop-blur-sm border border-neutral-700 rounded-md py-2 z-50"
-                      onMouseLeave={() => setOpenDropdown(null)}
+                      className="absolute top-full left-0 pt-2 min-w-[200px] z-50"
                     >
-                      {item.items.map((subItem) => (
-                        <li key={subItem.href} role="none">
-                          <NextLink
-                            role="menuitem"
-                            className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-800 hover:text-brand-500 transition-colors ${isActiveLink(subItem.href) ? "text-brand-500" : "text-white"}`}
-                            href={subItem.href}
-                            target={subItem.external ? "_blank" : undefined}
-                            rel={
-                              subItem.external
-                                ? "noopener noreferrer"
-                                : undefined
-                            }
-                            onClick={() => setOpenDropdown(null)}
-                          >
-                            {subItem.label}
-                            {subItem.external && <ExternalLinkIcon />}
-                          </NextLink>
-                        </li>
-                      ))}
+                      <div className="bg-black/95 backdrop-blur-sm border border-neutral-700 rounded-md py-2">
+                        {item.items.map((subItem) => (
+                          <li key={subItem.href} role="none">
+                            {subItem.external ? (
+                              <a
+                                role="menuitem"
+                                className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-800 hover:text-brand-500 transition-colors text-white`}
+                                href={subItem.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {subItem.label}
+                                <ExternalLinkIcon />
+                              </a>
+                            ) : (
+                              <NextLink
+                                role="menuitem"
+                                className={`flex items-center gap-2 px-4 py-2 text-sm hover:bg-neutral-800 hover:text-brand-500 transition-colors ${isActiveLink(subItem.href) ? "text-brand-500" : "text-white"}`}
+                                href={subItem.href}
+                                onClick={() => setOpenDropdown(null)}
+                              >
+                                {subItem.label}
+                              </NextLink>
+                            )}
+                          </li>
+                        ))}
+                      </div>
                     </ul>
                   )}
                 </div>
