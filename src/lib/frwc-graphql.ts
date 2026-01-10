@@ -59,6 +59,25 @@ export interface WarriorsWithForgedWeaponResponse {
   Warrior: WarriorGraphQLResponse[];
 }
 
+export interface PonyGraphQLResponse {
+  name: string;
+  generation?: string;
+  genes?: string;
+  background?: string;
+  clothes?: string;
+  head?: string;
+  mouth?: string;
+  pony?: string;
+  rune?: string;
+  token?: {
+    tokenId?: string;
+  };
+}
+
+export interface PoniesResponse {
+  Pony: PonyGraphQLResponse[];
+}
+
 // Create Apollo Client instance for server-side use
 const apolloClient = new ApolloClient({
   link: new HttpLink({
@@ -128,6 +147,25 @@ const WARRIORS_WITH_FORGED_WEAPON_QUERY = gql`
   }
 `;
 
+const PONIES_QUERY = gql`
+  query PoniesQuery {
+    Pony {
+      generation
+      genes
+      background
+      clothes
+      head
+      mouth
+      name
+      pony
+      rune
+      token {
+        tokenId
+      }
+    }
+  }
+`;
+
 /**
  * Fetch all wizards and souls from the GraphQL endpoint using Apollo Client in a single query
  * The query uses GraphQL relationships to include wizard data with each soul
@@ -170,6 +208,26 @@ export async function fetchWarriorsWithForgedWeapon(): Promise<WarriorsWithForge
       "Error fetching warriors with forged weapons from GraphQL:",
       error
     );
+    throw error;
+  }
+}
+
+/**
+ * Fetch all ponies from the GraphQL endpoint
+ */
+export async function fetchPonies(): Promise<PoniesResponse> {
+  try {
+    const { data } = await apolloClient.query<PoniesResponse>({
+      query: PONIES_QUERY,
+    });
+
+    if (data?.Pony) {
+      return data;
+    }
+
+    throw new Error("Invalid GraphQL response structure");
+  } catch (error) {
+    console.error("Error fetching ponies from GraphQL:", error);
     throw error;
   }
 }
