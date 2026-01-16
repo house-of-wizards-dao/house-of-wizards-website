@@ -10,7 +10,7 @@ export type Trait = {
   part?: "prop" | "rune" | "familiar" | "head" | "body";
 };
 
-export const traits: Trait[] = [
+export const wizardTraits: Trait[] = [
   { idx: 0, displayName: "Black", affinity: [] },
   { idx: 1, displayName: "Blue", affinity: [] },
   { idx: 2, displayName: "Green", affinity: [] },
