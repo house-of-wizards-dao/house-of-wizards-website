@@ -27,7 +27,8 @@ export function useProcessedTraits({
     return traits
       .map((trait) => ({
         ...trait,
-        burnPercentage: trait.original > 0 ? (trait.burned / trait.original) * 100 : 0,
+        burnPercentage:
+          trait.original > 0 ? (trait.burned / trait.original) * 100 : 0,
       }))
       .filter((trait) => {
         // Filter by type
@@ -35,7 +36,10 @@ export function useProcessedTraits({
           return false;
         }
         // Filter by search query
-        if (searchQuery && !trait.value.toLowerCase().includes(searchQuery.toLowerCase())) {
+        if (
+          searchQuery &&
+          !trait.value.toLowerCase().includes(searchQuery.toLowerCase())
+        ) {
           return false;
         }
         return true;
@@ -81,4 +85,3 @@ export function useProcessedTraits({
       });
   }, [traits, selectedType, searchQuery, sortField, sortDirection]);
 }
-

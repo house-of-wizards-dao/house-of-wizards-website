@@ -18,8 +18,11 @@ export async function GET(request: NextRequest) {
     // Validate wallets parameter
     if (walletInputs.length === 0) {
       return NextResponse.json(
-        { error: "At least one wallets parameter is required (addresses or ENS names)" },
-        { status: 400 }
+        {
+          error:
+            "At least one wallets parameter is required (addresses or ENS names)",
+        },
+        { status: 400 },
       );
     }
 
@@ -42,7 +45,7 @@ export async function GET(request: NextRequest) {
           error: "No valid wallet addresses could be resolved",
           unresolved: unresolved.length > 0 ? unresolved : undefined,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -65,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     // Get the set of contract addresses we care about (from frwcAddresses)
     const allowedContracts = new Set(
-      Object.values(frwcAddresses).map((addr) => addr.toLowerCase())
+      Object.values(frwcAddresses).map((addr) => addr.toLowerCase()),
     );
 
     // Group NFTs by collection name using our lookup table
@@ -75,16 +78,16 @@ export async function GET(request: NextRequest) {
     walletNFTMap.forEach((contractMap) => {
       contractMap.forEach((nfts, contractAddress) => {
         const normalizedAddress = contractAddress.toLowerCase();
-        
+
         // Only process NFTs from contracts we care about
         if (allowedContracts.has(normalizedAddress)) {
           const collectionName = getCollectionName(normalizedAddress);
-          
+
           // Initialize collection array if it doesn't exist
           if (!nftsByCollection[collectionName]) {
             nftsByCollection[collectionName] = [];
           }
-          
+
           nftsByCollection[collectionName].push(...nfts);
         }
       });
@@ -118,8 +121,7 @@ export async function GET(request: NextRequest) {
         error: "Failed to fetch NFTs",
         details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

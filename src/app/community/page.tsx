@@ -9,12 +9,9 @@ export default function CommunityPage() {
       <div className="max-w-7xl flex flex-col gap-6 sm:p-0 p-4">
         <p className="text-md text-center">
           The House of Wizards includes nearly all{" "}
-          <i className="font-atirose text-xl text-brand-500">
-            Forgotten Runes
-          </i>{" "}
+          <i className="font-atirose text-xl text-brand-500">Forgotten Runes</i>{" "}
           token holders. The{" "}
-          <i className="font-atirose text-xl text-brand-500">Beast Spawn</i>{" "}
-          and{" "}
+          <i className="font-atirose text-xl text-brand-500">Beast Spawn</i> and{" "}
           <i className="font-atirose text-xl text-brand-500">
             Gate to the 7th Realm
           </i>{" "}
@@ -60,4 +57,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-

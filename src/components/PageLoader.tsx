@@ -17,10 +17,10 @@ export const PageLoader = () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-      
+
       setLoading(true);
       prevPathnameRef.current = pathname;
-      
+
       // Hide loading after a short delay
       timerRef.current = setTimeout(() => {
         setLoading(false);
@@ -139,7 +139,7 @@ export const MinimalPageLoader = () => {
     if (pathname !== prevPathnameRef.current) {
       setLoading(true);
       prevPathnameRef.current = pathname;
-      
+
       const timer = setTimeout(() => {
         setLoading(false);
       }, 300);

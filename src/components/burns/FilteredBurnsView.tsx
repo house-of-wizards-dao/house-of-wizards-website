@@ -20,7 +20,6 @@ export function FilteredBurnsView({
 }: FilteredBurnsViewProps) {
   const [filteredBurns, setFilteredBurns] = useState<Burn[]>([]);
 
-
   // Initialize filteredBurns when data loads
   useEffect(() => {
     if (data) {
@@ -32,10 +31,10 @@ export function FilteredBurnsView({
     (filtered: Array<{ tokenId: string }>) => {
       const tokenIdSet = new Set(filtered.map((f) => f.tokenId));
       setFilteredBurns(
-        data.burns.filter((burn) => tokenIdSet.has(burn.tokenId))
+        data.burns.filter((burn) => tokenIdSet.has(burn.tokenId)),
       );
     },
-    [data.burns]
+    [data.burns],
   );
 
   return (

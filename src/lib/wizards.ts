@@ -1,6 +1,6 @@
 // @ts-ignore - JSON import
-import wizziesData from '../data/wizzies.json';
-import type { TraitType } from './traits';
+import wizziesData from "../data/wizzies.json";
+import type { TraitType } from "./traits";
 
 export interface WizardData {
   name: string;
@@ -36,13 +36,16 @@ export function getWizard(tokenId: string): WizardData | undefined {
  */
 export function getWizardName(tokenId: string): string {
   const wizard = getWizard(tokenId);
-  return wizard?.name || '';
+  return wizard?.name || "";
 }
 
 /**
  * Get a specific trait value for a wizard
  */
-export function getWizardTrait(tokenId: string, trait: TraitType): string | undefined {
+export function getWizardTrait(
+  tokenId: string,
+  trait: TraitType,
+): string | undefined {
   const wizard = getWizard(tokenId);
   return wizard?.[trait];
 }
@@ -52,7 +55,7 @@ export function getWizardTrait(tokenId: string, trait: TraitType): string | unde
  */
 export function getWizardsByTrait(trait: TraitType, value: string): string[] {
   const wizzies = getWizards();
-  return Object.keys(wizzies).filter(tokenId => {
+  return Object.keys(wizzies).filter((tokenId) => {
     const wizard = wizzies[tokenId];
     return wizard[trait] === value;
   });
@@ -64,14 +67,14 @@ export function getWizardsByTrait(trait: TraitType, value: string): string[] {
 export function getTraitValues(trait: TraitType): string[] {
   const wizzies = getWizards();
   const values = new Set<string>();
-  
-  Object.values(wizzies).forEach(wizard => {
+
+  Object.values(wizzies).forEach((wizard) => {
     const value = wizard[trait];
     if (value && value.trim()) {
       values.add(value);
     }
   });
-  
+
   return Array.from(values).sort();
 }
 
@@ -81,4 +84,3 @@ export function getTraitValues(trait: TraitType): string[] {
 export function getWizardCount(): number {
   return Object.keys(getWizards()).length;
 }
-

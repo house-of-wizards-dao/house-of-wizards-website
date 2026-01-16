@@ -64,7 +64,7 @@ export function GallerySettings({}: GallerySettingsProps) {
 
     if (!isValidAddress && !isValidENS) {
       setValidationError(
-        "Invalid format. Please enter a valid Ethereum address (0x...) or ENS name (name.eth)"
+        "Invalid format. Please enter a valid Ethereum address (0x...) or ENS name (name.eth)",
       );
       return;
     }
@@ -73,7 +73,7 @@ export function GallerySettings({}: GallerySettingsProps) {
 
     // Check for duplicates (case-insensitive)
     const isDuplicate = walletInputs.some(
-      (w) => w.toLowerCase() === normalized
+      (w) => w.toLowerCase() === normalized,
     );
 
     if (isDuplicate) {

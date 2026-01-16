@@ -43,4 +43,3 @@ export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
     </div>
   );
 }
-

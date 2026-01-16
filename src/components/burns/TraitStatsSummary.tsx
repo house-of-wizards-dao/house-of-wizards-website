@@ -10,4 +10,3 @@ export function TraitStatsSummary({ showing, total }: TraitStatsSummaryProps) {
     </div>
   );
 }
-

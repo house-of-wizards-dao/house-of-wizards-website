@@ -76,7 +76,10 @@ export async function fetchNFTsByContract(
       next: data.next || null,
     };
   } catch (error) {
-    console.error(`Error fetching NFTs for contract ${contractAddress}:`, error);
+    console.error(
+      `Error fetching NFTs for contract ${contractAddress}:`,
+      error,
+    );
     throw error;
   }
 }
@@ -90,8 +93,10 @@ export async function fetchNFTsForAllContracts(
   limit?: number,
 ): Promise<Map<string, OpenSeaNFT[]>> {
   const contractMap = new Map<string, OpenSeaNFT[]>();
-  const contractAddresses = Object.values(frwcAddresses).map(addr => addr.toLowerCase());
-  
+  const contractAddresses = Object.values(frwcAddresses).map((addr) =>
+    addr.toLowerCase(),
+  );
+
   // First, fetch ALL NFTs from the wallet (with pagination)
   // Then filter by our contracts of interest
   const allNFTs: OpenSeaNFT[] = [];
@@ -170,4 +175,3 @@ export async function fetchNFTsForWallets(
 
   return walletMap;
 }
-

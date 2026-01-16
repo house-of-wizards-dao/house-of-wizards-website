@@ -1,6 +1,11 @@
 import { useState, useCallback } from "react";
 
-export type SortField = "value" | "original" | "remaining" | "burned" | "percentage";
+export type SortField =
+  | "value"
+  | "original"
+  | "remaining"
+  | "burned"
+  | "percentage";
 export type SortDirection = "asc" | "desc";
 
 interface UseTraitSortingReturn {
@@ -11,10 +16,11 @@ interface UseTraitSortingReturn {
 
 export function useTraitSorting(
   defaultField: SortField = "burned",
-  defaultDirection: SortDirection = "desc"
+  defaultDirection: SortDirection = "desc",
 ): UseTraitSortingReturn {
   const [sortField, setSortField] = useState<SortField>(defaultField);
-  const [sortDirection, setSortDirection] = useState<SortDirection>(defaultDirection);
+  const [sortDirection, setSortDirection] =
+    useState<SortDirection>(defaultDirection);
 
   const handleSort = useCallback(
     (field: SortField) => {
@@ -25,7 +31,7 @@ export function useTraitSorting(
         setSortDirection("desc");
       }
     },
-    [sortField]
+    [sortField],
   );
 
   return {
@@ -34,4 +40,3 @@ export function useTraitSorting(
     handleSort,
   };
 }
-

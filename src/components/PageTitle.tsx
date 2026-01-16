@@ -5,20 +5,24 @@ interface PageTitleProps {
   subtitleClassName?: string;
 }
 
-export function PageTitle({ 
-  title, 
-  subtitle, 
+export function PageTitle({
+  title,
+  subtitle,
   className = "",
-  subtitleClassName = "" 
+  subtitleClassName = "",
 }: PageTitleProps) {
   return (
     <>
-      <h1 className={`sm:text-7xl text-6xl font-atirose text-brand-500 w-full text-center ${className}`}>
+      <h1
+        className={`sm:text-7xl text-6xl font-atirose text-brand-500 w-full text-center ${className}`}
+      >
         {title}
       </h1>
-      
+
       {subtitle && (
-        <p className={`font-quad text-sm text-gray-400 text-center uppercase max-w-5xl ${subtitleClassName}`}>
+        <p
+          className={`font-quad text-sm text-gray-400 text-center uppercase max-w-5xl ${subtitleClassName}`}
+        >
           {subtitle}
         </p>
       )}
@@ -55,4 +59,3 @@ export function PageTitle({
     </>
   );
 }
-

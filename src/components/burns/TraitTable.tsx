@@ -21,26 +21,29 @@ export function TraitTable({
   return (
     <div className="w-full overflow-x-auto flex flex-col items-center">
       <table>
-      <TraitTableHeader
-        sortField={sortField}
-        sortDirection={sortDirection}
-        onSort={onSort}
-      />
-      <tbody>
-        {traits.length === 0 ? (
-          <tr>
-            <td colSpan={6} className="p-8 text-center text-gray-400">
-              No traits found matching your filters.
-            </td>
-          </tr>
-        ) : (
-          traits.map((trait, index) => (
-            <TraitTableRow key={`${trait.traitType}-${trait.value}-${index}`} trait={trait} index={index} />
-          ))
-        )}
-      </tbody>
+        <TraitTableHeader
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={onSort}
+        />
+        <tbody>
+          {traits.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="p-8 text-center text-gray-400">
+                No traits found matching your filters.
+              </td>
+            </tr>
+          ) : (
+            traits.map((trait, index) => (
+              <TraitTableRow
+                key={`${trait.traitType}-${trait.value}-${index}`}
+                trait={trait}
+                index={index}
+              />
+            ))
+          )}
+        </tbody>
       </table>
     </div>
   );
 }
-

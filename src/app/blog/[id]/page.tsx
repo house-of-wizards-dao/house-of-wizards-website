@@ -123,9 +123,7 @@ export default async function BlogPostPage({
                   className="text-brand-500 hover:underline"
                   target={href?.startsWith("http") ? "_blank" : undefined}
                   rel={
-                    href?.startsWith("http")
-                      ? "noopener noreferrer"
-                      : undefined
+                    href?.startsWith("http") ? "noopener noreferrer" : undefined
                   }
                 >
                   {children}
@@ -178,4 +176,3 @@ export default async function BlogPostPage({
     </div>
   );
 }
-

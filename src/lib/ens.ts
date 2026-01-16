@@ -47,7 +47,7 @@ export async function resolveENS(name: string): Promise<string | null> {
  * Returns the resolved address, or null if invalid/unresolvable
  */
 export async function resolveAddressOrENS(
-  input: string
+  input: string,
 ): Promise<string | null> {
   const trimmed = input.trim();
 
@@ -70,7 +70,7 @@ export async function resolveAddressOrENS(
  * Returns a map of input -> resolved address (or null if failed)
  */
 export async function resolveAddressesOrENS(
-  inputs: string[]
+  inputs: string[],
 ): Promise<Map<string, string | null>> {
   const results = new Map<string, string | null>();
   const promises = inputs.map(async (input) => {
@@ -80,4 +80,3 @@ export async function resolveAddressesOrENS(
   await Promise.all(promises);
   return results;
 }
-

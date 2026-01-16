@@ -70,10 +70,10 @@ export default function IndexPage() {
                 development, and other creative endeavors.
               </p>
               <p className="text-gray-300 text-base leading-relaxed">
-                Looking for funding as a community member? Start by submitting
-                a proposal to bring your ideas to life. Interested in joining
-                the community? Visit forgotten.market to explore Forgotten
-                Runes collections.
+                Looking for funding as a community member? Start by submitting a
+                proposal to bring your ideas to life. Interested in joining the
+                community? Visit forgotten.market to explore Forgotten Runes
+                collections.
               </p>
             </div>
             <div className="pt-6">
@@ -100,8 +100,8 @@ export default function IndexPage() {
               Forgotten Council
             </h2>
             <p className="text-gray-300 text-lg leading-relaxed">
-              The Forgotten Council is the group of wizards and warriors
-              holding the keys to the DAO multisig wallet, is responsible for
+              The Forgotten Council is the group of wizards and warriors holding
+              the keys to the DAO multisig wallet, is responsible for
               facilitating governance - everything from running votes for new
               proposals to managing the ministries and carrying out multisig
               transactions.

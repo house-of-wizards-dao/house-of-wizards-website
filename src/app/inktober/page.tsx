@@ -198,8 +198,8 @@ export default function InktoberPage() {
         <p className="text-lg text-center max-w-3xl mx-auto">
           Welcome to Wizard Inktober! Each day of October, create an ink
           illustration, and win the daily prize or $50 or a warrior nft with
-          similar value. Click on the day to see more details on the topic.
-          Some will present further options to choose from.
+          similar value. Click on the day to see more details on the topic. Some
+          will present further options to choose from.
           <a
             href="#rules"
             className="text-brand-500 underline underline-offset-4"
@@ -278,9 +278,7 @@ export default function InktoberPage() {
               this post
             </a>
           </li>
-          <li>
-            based on the daily prompt create an art piece with ink or pen
-          </li>
+          <li>based on the daily prompt create an art piece with ink or pen</li>
           <li>
             post your illustration on IG (or X if not possible on IG) and tag
             @house_of_wizards_dao, and use the #inktober #wizardinktober
@@ -295,4 +293,3 @@ export default function InktoberPage() {
     </div>
   );
 }
-

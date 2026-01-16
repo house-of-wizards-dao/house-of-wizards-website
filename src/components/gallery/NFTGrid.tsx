@@ -67,11 +67,11 @@ export function NFTGrid({ nfts }: NFTGridProps) {
   const collections = Object.entries(nfts)
     .map(([collectionName, nftsArray]) => {
       if (!nftsArray || nftsArray.length === 0) return null;
-      
+
       // Get contract address from first NFT (all NFTs in a collection have same contract)
       const contract = nftsArray[0]?.contract?.toLowerCase();
       if (!contract || !enabledCollections.has(contract)) return null;
-      
+
       return {
         name: collectionName,
         nfts: nftsArray,

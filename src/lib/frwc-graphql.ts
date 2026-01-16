@@ -195,7 +195,7 @@ export async function fetchWarriorsWithForgedWeapon(): Promise<WarriorsWithForge
     const { data } = await apolloClient.query<WarriorsWithForgedWeaponResponse>(
       {
         query: WARRIORS_WITH_FORGED_WEAPON_QUERY,
-      }
+      },
     );
 
     if (data?.Warrior) {
@@ -206,7 +206,7 @@ export async function fetchWarriorsWithForgedWeapon(): Promise<WarriorsWithForge
   } catch (error) {
     console.error(
       "Error fetching warriors with forged weapons from GraphQL:",
-      error
+      error,
     );
     throw error;
   }

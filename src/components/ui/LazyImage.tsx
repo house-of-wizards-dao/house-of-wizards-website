@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect, forwardRef, useCallback, type ReactNode, type ForwardedRef } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  forwardRef,
+  useCallback,
+  type ReactNode,
+  type ForwardedRef,
+} from "react";
 import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -17,8 +25,14 @@ interface LazyImageProps extends Omit<ImageProps, "loading"> {
  * Provides better performance for image-heavy pages
  */
 // Default fallback component (transparent with animation)
-const DefaultFallback = ({ width, height }: { width?: number | string; height?: number | string }) => (
-  <div 
+const DefaultFallback = ({
+  width,
+  height,
+}: {
+  width?: number | string;
+  height?: number | string;
+}) => (
+  <div
     className="absolute inset-0 flex items-center justify-center bg-transparent"
     style={{ width, height }}
   >
@@ -34,16 +48,16 @@ const DefaultFallback = ({ width, height }: { width?: number | string; height?: 
  * - Easy to use: just pass src, alt, width, height
  */
 // Default error fallback component
-const DefaultErrorFallback = ({ 
-  alt, 
-  width, 
-  height 
-}: { 
-  alt?: string; 
-  width?: number | string; 
+const DefaultErrorFallback = ({
+  alt,
+  width,
+  height,
+}: {
+  alt?: string;
+  width?: number | string;
   height?: number | string;
 }) => (
-  <div 
+  <div
     className="absolute inset-0 flex items-center justify-center bg-gray-200 dark:bg-gray-800"
     style={{ width, height }}
   >
@@ -129,17 +143,22 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
         return <>{errorFallback}</>;
       }
       // Use default error fallback
-      const errorContainerStyle = props.width && props.height 
-        ? { width: props.width, height: props.height }
-        : undefined;
-      
+      const errorContainerStyle =
+        props.width && props.height
+          ? { width: props.width, height: props.height }
+          : undefined;
+
       return (
-        <div 
-          ref={containerRef} 
+        <div
+          ref={containerRef}
           className={cn("relative", containerClassName)}
           style={errorContainerStyle}
         >
-          <DefaultErrorFallback alt={alt} width={props.width} height={props.height} />
+          <DefaultErrorFallback
+            alt={alt}
+            width={props.width}
+            height={props.height}
+          />
         </div>
       );
     }
@@ -147,18 +166,22 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
     // Determine which fallback to show
     const showFallback = !isIntersecting || !isLoaded;
     const shouldShowFallback = showFallback && fallback !== null;
-    const fallbackContent = fallback !== undefined && fallback !== null 
-      ? fallback 
-      : <DefaultFallback width={props.width} height={props.height} />;
+    const fallbackContent =
+      fallback !== undefined && fallback !== null ? (
+        fallback
+      ) : (
+        <DefaultFallback width={props.width} height={props.height} />
+      );
 
     // Ensure container has same dimensions as image to prevent layout shift
-    const containerStyle = props.width && props.height 
-      ? { width: props.width, height: props.height }
-      : undefined;
+    const containerStyle =
+      props.width && props.height
+        ? { width: props.width, height: props.height }
+        : undefined;
 
     return (
-      <div 
-        ref={containerRef} 
+      <div
+        ref={containerRef}
         className={cn("relative", containerClassName)}
         style={containerStyle}
       >

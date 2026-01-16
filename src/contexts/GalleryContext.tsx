@@ -33,7 +33,7 @@ interface GalleryContextValue {
 }
 
 const GalleryContext = createContext<GalleryContextValue | undefined>(
-  undefined
+  undefined,
 );
 
 export function GalleryProvider({ children }: PropsWithChildren) {
@@ -48,14 +48,14 @@ export function GalleryProvider({ children }: PropsWithChildren) {
   // Initialize enabled collections (all enabled by default)
   const initialEnabledCollections = useMemo(() => {
     return new Set(
-      Object.values(frwcAddresses).map((addr) => addr.toLowerCase())
+      Object.values(frwcAddresses).map((addr) => addr.toLowerCase()),
     );
   }, []);
 
   const [walletInputs, setWalletInputs] =
     useState<string[]>(initialWalletInputs);
   const [enabledCollections, setEnabledCollections] = useState<Set<string>>(
-    initialEnabledCollections || new Set()
+    initialEnabledCollections || new Set(),
   );
   const [imagesOnly, setImagesOnly] = useState(false);
   const [imageSize, setImageSize] = useState(200); // Default 200px

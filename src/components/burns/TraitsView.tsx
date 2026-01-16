@@ -17,7 +17,10 @@ export function TraitsView({ data }: TraitsViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const { sortField, sortDirection, handleSort } = useTraitSorting("burned", "desc");
+  const { sortField, sortDirection, handleSort } = useTraitSorting(
+    "burned",
+    "desc",
+  );
 
   const processedTraits = useProcessedTraits({
     traits: data.traits,
@@ -46,8 +49,10 @@ export function TraitsView({ data }: TraitsViewProps) {
         onSort={handleSort}
       />
 
-      <TraitStatsSummary showing={processedTraits.length} total={data.traits.length} />
+      <TraitStatsSummary
+        showing={processedTraits.length}
+        total={data.traits.length}
+      />
     </div>
   );
 }
-

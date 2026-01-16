@@ -34,7 +34,9 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
   const [isVerifying, setIsVerifying] = useState(false);
   const [isReVerifying, setIsReVerifying] = useState(false);
   const [imageRefreshKey, setImageRefreshKey] = useState(0);
-  const [mintedTokenIds, setMintedTokenIds] = useState<number[]>(initialMintedTokenIds);
+  const [mintedTokenIds, setMintedTokenIds] = useState<number[]>(
+    initialMintedTokenIds,
+  );
   const verifiedHashes = useRef<Set<string>>(new Set());
 
   const { address, isConnected } = useAccount();
@@ -185,13 +187,12 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
                 These tokens are{" "}
                 <span className="font-semibold text-violet">soulbound</span> —
                 forever connected to their wizards—and will find their home in
-                the backpack wallet of each respective wizard. Best of all?
-                It's{" "}
+                the backpack wallet of each respective wizard. Best of all? It's{" "}
                 <span className="font-semibold text-violet">
                   {formatEther(MINT_PRICE_WEI)} ETH
                 </span>
-                , making this celebration accessible to all who wish to join
-                the magic.
+                , making this celebration accessible to all who wish to join the
+                magic.
               </p>
               <div className="my-8 w-full max-w-md p-6 rounded-lg border border-gray-300/60 shadow-2xl">
                 <div className="text-center space-y-4">
@@ -246,8 +247,7 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
                 </div>
               </div>
               <p className="text-gray-300 text-lg leading-relaxed">
-                Below, you can select the wizards you want to mint the PFP
-                for.
+                Below, you can select the wizards you want to mint the PFP for.
               </p>
             </div>
             <div className="flex-shrink-0 p-4 bg-gradient-to-br from-gray-100/40 to-gray-200/40 rounded-lg border-4 border-gray-300/60 shadow-2xl">
@@ -263,13 +263,13 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
             </div>
           </div>
         </div>
-          <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-            <WizardBrowser
-              disabledTokenIds={mintedTokenIds}
-              selectedTokens={selectedTokens}
-              setSelectedTokens={setSelectedTokens}
-            />
-          </div>
+        <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
+          <WizardBrowser
+            disabledTokenIds={mintedTokenIds}
+            selectedTokens={selectedTokens}
+            setSelectedTokens={setSelectedTokens}
+          />
+        </div>
       </div>
 
       {showMintOverlay && (
@@ -335,7 +335,10 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
               <div className="flex flex-col items-center gap-6">
                 <div className="w-full max-w-md rounded-lg border-2 border-violet/30 bg-gray-800/50 overflow-hidden">
                   <div className="w-full aspect-square bg-black/40 relative">
-                    <MintedImage key={imageRefreshKey} tokenId={selectedTokens[currentWizardIndex]} />
+                    <MintedImage
+                      key={imageRefreshKey}
+                      tokenId={selectedTokens[currentWizardIndex]}
+                    />
                   </div>
                   <div className="p-4 text-center">
                     <div className="text-white font-semibold text-xl">
@@ -516,4 +519,3 @@ const MintedImage = ({ tokenId }: { tokenId: number }) => {
     />
   );
 };
-

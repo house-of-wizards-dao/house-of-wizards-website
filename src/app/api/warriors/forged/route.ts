@@ -8,9 +8,11 @@ export async function GET() {
   } catch (error) {
     console.error("Error fetching warriors:", error);
     return NextResponse.json(
-      { error: "Failed to fetch warriors", details: error instanceof Error ? error.message : "Unknown error" },
-      { status: 500 }
+      {
+        error: "Failed to fetch warriors",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 },
     );
   }
 }
-

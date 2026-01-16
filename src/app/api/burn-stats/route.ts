@@ -24,7 +24,7 @@ export async function GET(_request: Request) {
     console.error("Error in API route:", error);
     return NextResponse.json(
       { error: "Failed to fetch stats" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

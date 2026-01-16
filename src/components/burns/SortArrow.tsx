@@ -10,4 +10,3 @@ export function SortArrow({ field, currentField, direction }: SortArrowProps) {
   if (field !== currentField) return null;
   return <span>{direction === "asc" ? " ↑" : " ↓"}</span>;
 }
-

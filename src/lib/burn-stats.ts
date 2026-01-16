@@ -24,7 +24,7 @@ export interface Burn {
 }
 
 export interface TraitOption {
-  type: typeof TRAITS[number];
+  type: (typeof TRAITS)[number];
   name: string;
 }
 
@@ -40,7 +40,6 @@ export interface StatsData {
 // Legacy export for backwards compatibility during migration
 export type TraitStat = TraitBurnStat;
 
-
 export function isCacheValid(): boolean {
   if (!cachedStats) return false;
   const now = Date.now();
@@ -48,7 +47,7 @@ export function isCacheValid(): boolean {
 }
 
 export async function getStats(
-  forceRefresh: boolean = false
+  forceRefresh: boolean = false,
 ): Promise<StatsData> {
   // Return cached data if still valid and not forcing refresh
   if (!forceRefresh && isCacheValid()) {
@@ -73,7 +72,9 @@ export async function getStats(
     // Fetch both wizards and souls from GraphQL endpoint in a single query
     console.log(`Fetching wizards and souls from GraphQL endpoint`);
     const { Soul: allSouls } = await fetchAllSoulsWithTransmutedWizard();
-    console.log(`Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`);
+    console.log(
+      `Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`,
+    );
 
     // Build burns array directly from GraphQL response in a single pass
     // Also collect unique trait options for filters
@@ -85,14 +86,18 @@ export async function getStats(
     for (const soul of allSouls) {
       const wizard = soul.transmutedFromToken?.wizard;
       if (!wizard) {
-        console.warn(`Warning: Soul ${soul.name} has no associated wizard data`);
+        console.warn(
+          `Warning: Soul ${soul.name} has no associated wizard data`,
+        );
         continue;
       }
 
       // Extract tokenId from wizard
       const tokenId = String(wizard.token?.tokenId || "");
       if (!tokenId || tokenId === "undefined" || tokenId === "null") {
-        console.warn(`Warning: Wizard for soul ${soul.name} has no tokenId in token object`);
+        console.warn(
+          `Warning: Wizard for soul ${soul.name} has no tokenId in token object`,
+        );
         continue;
       }
 
@@ -140,30 +145,33 @@ export async function getStats(
         if (value && String(value).trim()) {
           const valueStr = String(value).trim();
           const dictKey = `${trait}_${valueStr}`;
-          
+
           // Count for burned traits
           burnedTraitCounts[trait][valueStr] =
             (burnedTraitCounts[trait][valueStr] || 0) + 1;
-          
+
           // Build traitDict for TraitBurnStat.tokenIds array
           if (!traitDict[dictKey]) {
             traitDict[dictKey] = [];
           }
           traitDict[dictKey].push(tokenId);
-          
+
           // Collect wizard trait options for filter
           if (!wizardTraitOptionsMap.has(dictKey)) {
             wizardTraitOptionsMap.set(dictKey, { type: trait, name: valueStr });
           }
         }
-        
+
         // Collect soul trait options for filter
         const soulValue = soulData[trait as keyof typeof soulData];
         if (soulValue && String(soulValue).trim()) {
           const soulValueStr = String(soulValue).trim();
           const soulDictKey = `${trait}_${soulValueStr}`;
           if (!soulTraitOptionsMap.has(soulDictKey)) {
-            soulTraitOptionsMap.set(soulDictKey, { type: trait, name: soulValueStr });
+            soulTraitOptionsMap.set(soulDictKey, {
+              type: trait,
+              name: soulValueStr,
+            });
           }
         }
       }
@@ -224,19 +232,23 @@ export async function getStats(
     const resultJson = output.sort((a, b) => a.value.localeCompare(b.value));
 
     // Build filter options from collected unique traits
-    const wizardTraitOptions = Array.from(wizardTraitOptionsMap.values()).sort((a, b) => {
-      if (a.type !== b.type) {
-        return a.type.localeCompare(b.type);
-      }
-      return a.name.localeCompare(b.name);
-    });
-    
-    const soulTraitOptions = Array.from(soulTraitOptionsMap.values()).sort((a, b) => {
-      if (a.type !== b.type) {
-        return a.type.localeCompare(b.type);
-      }
-      return a.name.localeCompare(b.name);
-    });
+    const wizardTraitOptions = Array.from(wizardTraitOptionsMap.values()).sort(
+      (a, b) => {
+        if (a.type !== b.type) {
+          return a.type.localeCompare(b.type);
+        }
+        return a.name.localeCompare(b.name);
+      },
+    );
+
+    const soulTraitOptions = Array.from(soulTraitOptionsMap.values()).sort(
+      (a, b) => {
+        if (a.type !== b.type) {
+          return a.type.localeCompare(b.type);
+        }
+        return a.name.localeCompare(b.name);
+      },
+    );
 
     const stats: StatsData = {
       traits: resultJson,

@@ -8,7 +8,10 @@ interface ForgedWithFilterProps {
   onFilterChange: (filtered: WarriorGraphQLResponse[]) => void;
 }
 
-export function ForgedWithFilter({ warriors, onFilterChange }: ForgedWithFilterProps) {
+export function ForgedWithFilter({
+  warriors,
+  onFilterChange,
+}: ForgedWithFilterProps) {
   const [selectedForgedWith, setSelectedForgedWith] = useState<string>("all");
 
   // Get unique items that weapons were forged with
@@ -27,7 +30,9 @@ export function ForgedWithFilter({ warriors, onFilterChange }: ForgedWithFilterP
     if (selectedForgedWith === "all") {
       return warriors;
     }
-    return warriors.filter((warrior) => warrior.forgedWith === selectedForgedWith);
+    return warriors.filter(
+      (warrior) => warrior.forgedWith === selectedForgedWith,
+    );
   }, [warriors, selectedForgedWith]);
 
   // Notify parent of filter changes
@@ -42,7 +47,10 @@ export function ForgedWithFilter({ warriors, onFilterChange }: ForgedWithFilterP
   return (
     <div className="flex flex-col gap-4 md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4 w-full">
       <div className="flex flex-col sm:flex-row justify-center items-center gap-2 sm:gap-4 px-2">
-        <label htmlFor="forged-with-filter" className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap">
+        <label
+          htmlFor="forged-with-filter"
+          className="text-xs sm:text-sm font-medium text-gray-300 whitespace-nowrap"
+        >
           Filter by Forged With:
         </label>
         <select
@@ -70,4 +78,3 @@ export function ForgedWithFilter({ warriors, onFilterChange }: ForgedWithFilterP
     </div>
   );
 }
-

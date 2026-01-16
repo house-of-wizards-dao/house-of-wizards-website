@@ -17,7 +17,9 @@ export function TraitTableRow({ trait, index }: TraitTableRowProps) {
       </td>
       <td className="p-4 text-sm">{trait.original}</td>
       <td className="p-4 text-sm">{trait.remaining}</td>
-      <td className={`p-4 text-sm ${trait.burned > 0 ? "text-red-400" : "text-white"}`}>
+      <td
+        className={`p-4 text-sm ${trait.burned > 0 ? "text-red-400" : "text-white"}`}
+      >
         {trait.burned}
       </td>
       <td className="p-4 text-sm">{trait.burnPercentage.toFixed(1)}%</td>
@@ -25,4 +27,3 @@ export function TraitTableRow({ trait, index }: TraitTableRowProps) {
     </tr>
   );
 }
-

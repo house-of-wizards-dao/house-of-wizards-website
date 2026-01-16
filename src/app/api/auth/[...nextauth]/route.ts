@@ -23,7 +23,7 @@ const authOptions: NextAuthOptions = {
           // The message comes as a plain SIWE text string, not JSON
           const siwe = new SiweMessage(credentials?.message || "");
           const nextAuthUrl = new URL(
-            process.env.NEXTAUTH_URL || "http://localhost:3000"
+            process.env.NEXTAUTH_URL || "http://localhost:3000",
           );
 
           console.log("SIWE verify - message domain:", siwe.domain);

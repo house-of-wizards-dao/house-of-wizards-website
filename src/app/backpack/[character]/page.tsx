@@ -117,9 +117,7 @@ export default function CharacterBackpackPage() {
         <>
           {nfts.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-400">
-                No NFTs found in this backpack.
-              </p>
+              <p className="text-gray-400">No NFTs found in this backpack.</p>
             </div>
           ) : (
             <>

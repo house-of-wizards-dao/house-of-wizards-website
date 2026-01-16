@@ -16,7 +16,7 @@ export function useWalletNFTs(walletInputs: string[]) {
   // This prevents unnecessary re-fetches when the array reference changes but contents are the same
   const walletInputsKey = useMemo(
     () => [...walletInputs].sort().join(","),
-    [walletInputs]
+    [walletInputs],
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function useWalletNFTs(walletInputs: string[]) {
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}));
           throw new Error(
-            errorData.error || `Failed to fetch NFTs: ${response.statusText}`
+            errorData.error || `Failed to fetch NFTs: ${response.statusText}`,
           );
         }
 
@@ -63,4 +63,3 @@ export function useWalletNFTs(walletInputs: string[]) {
 
   return { data, loading, error };
 }
-
