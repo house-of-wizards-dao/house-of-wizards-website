@@ -9,6 +9,7 @@ import {
   fetchCultContentChronicle,
   CultContentDbItem,
 } from "@/lib/server/cult-content";
+import { getSortedPostsData, Post } from "@/lib/posts";
 
 /**
  * Determines the card variant based on position
@@ -25,6 +26,26 @@ function getCardVariant(
   return "small";
 }
 
+/**
+ * Converts a blog post to CultContentDbItem format for display in NewsCard
+ */
+function convertPostToNewsItem(post: Post, index: number): CultContentDbItem {
+  // Generate a unique negative ID to avoid collision with DB items
+  const id = -(index + 1000);
+
+  // Format the date to ISO format (posts use YYYY-MM-DD format)
+  const date = post.date || new Date().toISOString().split("T")[0];
+
+  return {
+    id,
+    text: `Read the full article: [${post.title}](/blog/${post.id})`,
+    date,
+    author: "@FRWCCouncil",
+    highlight: false,
+    title: post.title,
+  };
+}
+
 function NewsGrid({ items }: { items: CultContentDbItem[] }) {
   if (items.length === 0) {
     return (
@@ -38,8 +59,9 @@ function NewsGrid({ items }: { items: CultContentDbItem[] }) {
     );
   }
 
-  // First item is the highlight, rest go in masonry
-  const [highlightItem, ...regularItems] = items;
+  // Find the item marked as highlight, or fall back to first item
+  const highlightItem = items.find((item) => item.highlight) || items[0];
+  const regularItems = items.filter((item) => item.id !== highlightItem.id);
 
   return (
     <div className="space-y-4">
@@ -66,8 +88,21 @@ function NewsGrid({ items }: { items: CultContentDbItem[] }) {
 }
 
 async function NewsSection() {
-  const items = await fetchCultContentChronicle(20);
-  return <NewsGrid items={items} />;
+  // Fetch news from the database
+  const newsItems = await fetchCultContentChronicle(20);
+
+  // Get blog posts and convert to news items
+  const posts = getSortedPostsData();
+  const blogItems = posts.map((post, index) =>
+    convertPostToNewsItem(post, index),
+  );
+
+  // Merge and sort by date (newest first)
+  const allItems = [...newsItems, ...blogItems].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  return <NewsGrid items={allItems} />;
 }
 
 function NewsLoadingFallback() {
