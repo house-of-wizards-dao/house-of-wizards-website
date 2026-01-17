@@ -11,7 +11,7 @@ export const LoreWidget = () => {
   const { data: loreEntries, isLoading, error } = useLore();
 
   return (
-    <div className="flex flex-col gap-4 w-full max-w-sm border border-brand-500/30 rounded-lg p-4 bg-neutral-950/50">
+    <div className="flex flex-col gap-4 w-full h-full border border-brand-500/30 rounded-xl p-6 bg-neutral-950/80 backdrop-blur-sm">
       {/* Title */}
       <h3 className="text-brand-500 font-atirose text-base text-center">
         Latest from the Book of Lore

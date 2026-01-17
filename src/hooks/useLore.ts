@@ -45,7 +45,7 @@ const fetchLore = async (): Promise<LoreEntry[]> => {
   }
 
   return response.json();
-}
+};
 
 export const useLore = () => {
   return useQuery({
@@ -53,5 +53,4 @@ export const useLore = () => {
     queryFn: fetchLore,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
-}
-
+};

@@ -4,13 +4,13 @@ export type LoreEntry = {
   previewText: string;
   tokenId: number;
   index: number;
-}
+};
 
 export type LoreResponse = {
   data: {
     PaginatedLore: LoreEntry[];
   };
-}
+};
 
 export async function GET() {
   try {
@@ -67,8 +67,7 @@ export async function GET() {
     console.error("Error fetching lore:", error);
     return NextResponse.json(
       { error: "Failed to fetch lore entries" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
