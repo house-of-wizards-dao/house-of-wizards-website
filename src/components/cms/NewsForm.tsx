@@ -1,10 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Spinner } from "@nextui-org/spinner";
-import { Save, Eye, ArrowLeft } from "lucide-react";
+import {
+  Save,
+  Eye,
+  ArrowLeft,
+  Upload,
+  Image,
+  Music,
+  Video,
+} from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 import { NewsItem, CreateNewsInput, UpdateNewsInput } from "@/types/cms";
 import { useCMSUser } from "@/hooks/useCMSUser";
@@ -14,9 +23,21 @@ type NewsFormProps = {
   isEdit?: boolean;
 };
 
+type UploadResponse = {
+  success: boolean;
+  url: string;
+  path: string;
+  mediaType: "image" | "audio" | "video";
+  markdown: string;
+  fileName: string;
+  fileSize: number;
+};
+
 export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
   const router = useRouter();
   const { user } = useCMSUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [text, setText] = useState(initialData?.text ?? "");
@@ -32,7 +53,9 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
   );
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -82,6 +105,67 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadError(null);
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/cms/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error ?? "Failed to upload");
+      }
+
+      const data: UploadResponse = await response.json();
+
+      // Insert markdown at cursor position or at end
+      const textarea = textareaRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const newText =
+          text.substring(0, start) +
+          "\n" +
+          data.markdown +
+          "\n" +
+          text.substring(end);
+        setText(newText);
+
+        // Move cursor after the inserted markdown
+        setTimeout(() => {
+          textarea.selectionStart = textarea.selectionEnd =
+            start + data.markdown.length + 2;
+          textarea.focus();
+        }, 0);
+      } else {
+        // Fallback: append to end
+        setText(text + "\n" + data.markdown + "\n");
+      }
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Failed to upload");
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click();
   };
 
   return (
@@ -141,16 +225,64 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
 
           {/* Content */}
           <div>
-            <label
-              htmlFor="text"
-              className="block text-sm font-medium text-neutral-300 mb-2"
-            >
-              Content <span className="text-red-400">*</span>
-              <span className="text-neutral-500 font-normal ml-2">
-                (Markdown supported)
+            <div className="flex items-center justify-between mb-2">
+              <label
+                htmlFor="text"
+                className="block text-sm font-medium text-neutral-300"
+              >
+                Content <span className="text-red-400">*</span>
+                <span className="text-neutral-500 font-normal ml-2">
+                  (Markdown supported)
+                </span>
+              </label>
+
+              {/* Media Upload Button */}
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,audio/*,video/*"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={triggerFileUpload}
+                  disabled={isUploading}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-md transition-colors disabled:opacity-50"
+                  title="Upload image, audio, or video"
+                >
+                  {isUploading ? (
+                    <Spinner size="sm" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
+                  Upload Media
+                </button>
+              </div>
+            </div>
+
+            {uploadError && (
+              <div className="mb-2 p-2 bg-red-500/10 border border-red-500/30 rounded text-red-400 text-xs">
+                {uploadError}
+              </div>
+            )}
+
+            {/* Media type hints */}
+            <div className="flex items-center gap-4 mb-2 text-xs text-neutral-500">
+              <span className="flex items-center gap-1">
+                <Image className="w-3 h-3" /> Images (10MB)
               </span>
-            </label>
+              <span className="flex items-center gap-1">
+                <Music className="w-3 h-3" /> Audio (50MB)
+              </span>
+              <span className="flex items-center gap-1">
+                <Video className="w-3 h-3" /> Video (50MB)
+              </span>
+            </div>
+
             <textarea
+              ref={textareaRef}
               id="text"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -292,8 +424,10 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
                   </>
                 )}
               </div>
-              <div className="text-neutral-300">
-                <ReactMarkdown>{text || "*No content yet...*"}</ReactMarkdown>
+              <div className="text-neutral-300 [&_img]:rounded-lg [&_img]:max-w-full [&_audio]:w-full [&_video]:w-full [&_video]:rounded-lg">
+                <ReactMarkdown rehypePlugins={[rehypeRaw]}>
+                  {text || "*No content yet...*"}
+                </ReactMarkdown>
               </div>
             </article>
           </div>

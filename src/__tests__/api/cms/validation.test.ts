@@ -420,3 +420,221 @@ describe("Self-Deletion Prevention", () => {
     expect(canDeleteUser(currentUser, targetUser)).toBe(true);
   });
 });
+
+describe("Media Upload Validation", () => {
+  const ALLOWED_IMAGE_TYPES = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+  ];
+  const ALLOWED_AUDIO_TYPES = [
+    "audio/mpeg",
+    "audio/wav",
+    "audio/ogg",
+    "audio/mp4",
+  ];
+  const ALLOWED_VIDEO_TYPES = ["video/mp4", "video/webm", "video/ogg"];
+
+  const ALL_ALLOWED_TYPES = [
+    ...ALLOWED_IMAGE_TYPES,
+    ...ALLOWED_AUDIO_TYPES,
+    ...ALLOWED_VIDEO_TYPES,
+  ];
+
+  const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+  const MAX_AUDIO_SIZE = 50 * 1024 * 1024; // 50MB
+  const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+
+  function getMediaType(
+    mimeType: string,
+  ): "image" | "audio" | "video" | "unknown" {
+    if (ALLOWED_IMAGE_TYPES.includes(mimeType)) return "image";
+    if (ALLOWED_AUDIO_TYPES.includes(mimeType)) return "audio";
+    if (ALLOWED_VIDEO_TYPES.includes(mimeType)) return "video";
+    return "unknown";
+  }
+
+  function getMaxSize(
+    mediaType: "image" | "audio" | "video" | "unknown",
+  ): number {
+    switch (mediaType) {
+      case "image":
+        return MAX_IMAGE_SIZE;
+      case "audio":
+        return MAX_AUDIO_SIZE;
+      case "video":
+        return MAX_VIDEO_SIZE;
+      default:
+        return 0;
+    }
+  }
+
+  function isAllowedMimeType(mimeType: string): boolean {
+    return ALL_ALLOWED_TYPES.includes(mimeType);
+  }
+
+  function generateMarkdown(
+    mediaType: "image" | "audio" | "video",
+    url: string,
+    fileName: string,
+  ): string {
+    switch (mediaType) {
+      case "image":
+        return `![${fileName}](${url})`;
+      case "audio":
+        return `<audio controls src="${url}"></audio>`;
+      case "video":
+        return `<video controls src="${url}"></video>`;
+      default:
+        return `[${fileName}](${url})`;
+    }
+  }
+
+  describe("MIME type detection", () => {
+    it("should identify image types", () => {
+      expect(getMediaType("image/jpeg")).toBe("image");
+      expect(getMediaType("image/png")).toBe("image");
+      expect(getMediaType("image/gif")).toBe("image");
+      expect(getMediaType("image/webp")).toBe("image");
+      expect(getMediaType("image/svg+xml")).toBe("image");
+    });
+
+    it("should identify audio types", () => {
+      expect(getMediaType("audio/mpeg")).toBe("audio");
+      expect(getMediaType("audio/wav")).toBe("audio");
+      expect(getMediaType("audio/ogg")).toBe("audio");
+      expect(getMediaType("audio/mp4")).toBe("audio");
+    });
+
+    it("should identify video types", () => {
+      expect(getMediaType("video/mp4")).toBe("video");
+      expect(getMediaType("video/webm")).toBe("video");
+      expect(getMediaType("video/ogg")).toBe("video");
+    });
+
+    it("should return unknown for unsupported types", () => {
+      expect(getMediaType("application/pdf")).toBe("unknown");
+      expect(getMediaType("text/plain")).toBe("unknown");
+      expect(getMediaType("application/zip")).toBe("unknown");
+    });
+  });
+
+  describe("MIME type validation", () => {
+    it("should allow supported image types", () => {
+      expect(isAllowedMimeType("image/jpeg")).toBe(true);
+      expect(isAllowedMimeType("image/png")).toBe(true);
+      expect(isAllowedMimeType("image/gif")).toBe(true);
+    });
+
+    it("should allow supported audio types", () => {
+      expect(isAllowedMimeType("audio/mpeg")).toBe(true);
+      expect(isAllowedMimeType("audio/wav")).toBe(true);
+    });
+
+    it("should allow supported video types", () => {
+      expect(isAllowedMimeType("video/mp4")).toBe(true);
+      expect(isAllowedMimeType("video/webm")).toBe(true);
+    });
+
+    it("should reject unsupported types", () => {
+      expect(isAllowedMimeType("application/pdf")).toBe(false);
+      expect(isAllowedMimeType("text/plain")).toBe(false);
+      expect(isAllowedMimeType("application/javascript")).toBe(false);
+      expect(isAllowedMimeType("image/bmp")).toBe(false);
+    });
+  });
+
+  describe("File size limits", () => {
+    it("should return correct max size for images (10MB)", () => {
+      expect(getMaxSize("image")).toBe(10 * 1024 * 1024);
+    });
+
+    it("should return correct max size for audio (50MB)", () => {
+      expect(getMaxSize("audio")).toBe(50 * 1024 * 1024);
+    });
+
+    it("should return correct max size for video (100MB)", () => {
+      expect(getMaxSize("video")).toBe(100 * 1024 * 1024);
+    });
+
+    it("should return 0 for unknown type", () => {
+      expect(getMaxSize("unknown")).toBe(0);
+    });
+  });
+
+  describe("Markdown generation", () => {
+    it("should generate image markdown", () => {
+      const markdown = generateMarkdown(
+        "image",
+        "https://example.com/image.jpg",
+        "photo.jpg",
+      );
+      expect(markdown).toBe("![photo.jpg](https://example.com/image.jpg)");
+    });
+
+    it("should generate audio HTML", () => {
+      const markdown = generateMarkdown(
+        "audio",
+        "https://example.com/audio.mp3",
+        "song.mp3",
+      );
+      expect(markdown).toBe(
+        '<audio controls src="https://example.com/audio.mp3"></audio>',
+      );
+    });
+
+    it("should generate video HTML", () => {
+      const markdown = generateMarkdown(
+        "video",
+        "https://example.com/video.mp4",
+        "clip.mp4",
+      );
+      expect(markdown).toBe(
+        '<video controls src="https://example.com/video.mp4"></video>',
+      );
+    });
+  });
+
+  describe("File size validation logic", () => {
+    function validateFileSize(
+      fileSize: number,
+      mediaType: "image" | "audio" | "video" | "unknown",
+    ): boolean {
+      const maxSize = getMaxSize(mediaType);
+      return fileSize <= maxSize;
+    }
+
+    it("should accept images under 10MB", () => {
+      expect(validateFileSize(5 * 1024 * 1024, "image")).toBe(true);
+      expect(validateFileSize(10 * 1024 * 1024, "image")).toBe(true);
+    });
+
+    it("should reject images over 10MB", () => {
+      expect(validateFileSize(11 * 1024 * 1024, "image")).toBe(false);
+    });
+
+    it("should accept audio under 50MB", () => {
+      expect(validateFileSize(25 * 1024 * 1024, "audio")).toBe(true);
+      expect(validateFileSize(50 * 1024 * 1024, "audio")).toBe(true);
+    });
+
+    it("should reject audio over 50MB", () => {
+      expect(validateFileSize(51 * 1024 * 1024, "audio")).toBe(false);
+    });
+
+    it("should accept video under 100MB", () => {
+      expect(validateFileSize(50 * 1024 * 1024, "video")).toBe(true);
+      expect(validateFileSize(100 * 1024 * 1024, "video")).toBe(true);
+    });
+
+    it("should reject video over 100MB", () => {
+      expect(validateFileSize(101 * 1024 * 1024, "video")).toBe(false);
+    });
+
+    it("should reject unknown file types", () => {
+      expect(validateFileSize(1, "unknown")).toBe(false);
+    });
+  });
+});

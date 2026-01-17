@@ -1,4 +1,5 @@
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import { Calendar, AtSign, ExternalLink } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
@@ -169,9 +170,10 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
         {/* Content */}
         {displayText && (
           <div
-            className={`${styles.textSize} text-neutral-400 leading-relaxed`}
+            className={`${styles.textSize} text-neutral-400 leading-relaxed [&_img]:rounded-lg [&_img]:max-w-full [&_img]:my-2 [&_audio]:w-full [&_audio]:my-2 [&_video]:w-full [&_video]:rounded-lg [&_video]:my-2`}
           >
             <ReactMarkdown
+              rehypePlugins={[rehypeRaw]}
               components={{
                 p: ({ children }) => (
                   <p className="mb-2 last:mb-0">{children}</p>
@@ -189,6 +191,15 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
                   >
                     {children}
                   </a>
+                ),
+                img: ({ src, alt }) => (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={src}
+                    alt={alt || ""}
+                    className="rounded-lg max-w-full my-2"
+                    loading="lazy"
+                  />
                 ),
                 strong: ({ children }) => (
                   <strong className="font-semibold text-neutral-200">
