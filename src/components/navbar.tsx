@@ -13,8 +13,9 @@ import Image from "next/image";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 import { useState } from "react";
-import { InstagramIcon, Menu, X, ChevronDown } from "lucide-react";
+import { InstagramIcon, Menu, X, ChevronDown, Settings } from "lucide-react";
 import { TwitterIcon, DiscordIcon } from "@/components/icons";
+import { useCMSUser } from "@/hooks/useCMSUser";
 
 export type NavLink = {
   label: string;
@@ -189,6 +190,7 @@ export const Navbar = () => {
     string | null
   >(null);
   const pathname = usePathname();
+  const { hasCMSAccess } = useCMSUser();
 
   const isActiveLink = (href: string) => {
     if (href === "/") return pathname === "/";
@@ -337,6 +339,15 @@ export const Navbar = () => {
               </Link>
             );
           })}
+          {hasCMSAccess && (
+            <NextLink
+              href="/cms"
+              className="p-2 text-neutral-400 hover:text-brand-500 transition-colors"
+              title="CMS"
+            >
+              <Settings className="w-5 h-5" />
+            </NextLink>
+          )}
           <ConnectButton
             chainStatus="icon"
             showBalance={false}
@@ -439,6 +450,18 @@ export const Navbar = () => {
                 </div>
               );
             })}
+            {hasCMSAccess && (
+              <div className="mt-4 pt-4 border-t border-neutral-700">
+                <NextLink
+                  href="/cms"
+                  onClick={handleLinkClick}
+                  className="text-brand-400 text-lg uppercase w-full flex items-center gap-2 py-2 hover:text-brand-300 transition-colors"
+                >
+                  <Settings className="w-5 h-5" />
+                  CMS
+                </NextLink>
+              </div>
+            )}
             <div className="mt-6 pt-6 border-t border-neutral-700">
               <div className="flex flex-col gap-4">
                 <div className="flex gap-4 justify-start">

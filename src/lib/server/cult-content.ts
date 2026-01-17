@@ -10,14 +10,18 @@ export type CultContentDbItem = {
   text: string;
   date: string; // ISO 8601 format
   author: string; // Twitter handle
+  author_id?: string | null; // FK to users table
   highlight: boolean;
   title?: string | null;
+  status?: "draft" | "published";
   created_at?: string;
+  updated_at?: string;
 };
 
 /**
- * Fetches the last N items from the cult content chronicle
+ * Fetches the last N published items from the cult content chronicle
  * Sorted by date (newest first)
+ * Only returns items with status = 'published'
  */
 export async function fetchCultContentChronicle(
   limit: number = 20,
@@ -27,6 +31,7 @@ export async function fetchCultContentChronicle(
   const { data, error } = await supabase
     .from(tableNames.CULT_CONTENT_CHRONICLE)
     .select("*")
+    .eq("status", "published")
     .order("date", { ascending: false })
     .order("id", { ascending: false })
     .limit(limit);
