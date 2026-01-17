@@ -91,12 +91,8 @@ const daoDropdown: NavDropdown = {
   label: "DAO",
   items: [
     {
-      label: "Community",
-      href: "/community",
-    },
-    {
-      label: "Ministries",
-      href: "/ministries",
+      label: "About",
+      href: "/about",
     },
     {
       label: "Vote",
