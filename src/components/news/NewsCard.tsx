@@ -173,7 +173,9 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
           >
             <ReactMarkdown
               components={{
-                p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                p: ({ children }) => (
+                  <p className="mb-2 last:mb-0">{children}</p>
+                ),
                 a: ({ href, children }) => (
                   <a
                     href={href}
@@ -229,4 +231,3 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
     </article>
   );
 }
-

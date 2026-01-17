@@ -97,7 +97,7 @@
   --tweet-color-text-primary: #e5e5e5;
   --tweet-color-text-secondary: #a3a3a3;
   --tweet-color-text-secondary-hover: #d4d4d4;
-  --tweet-color-blue-primary: #A986D9;
+  --tweet-color-blue-primary: #a986d9;
   --tweet-color-blue-primary-hover: #c287ff;
   --tweet-color-blue-secondary: rgba(169, 134, 217, 0.1);
   --tweet-quoted-bg-color-hover: rgba(38, 38, 38, 0.8);
@@ -107,7 +107,7 @@
 
 /* Prose styles for markdown content */
 .prose-invert a {
-  color: #A986D9;
+  color: #a986d9;
 }
 
 .prose-invert a:hover {
