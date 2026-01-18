@@ -85,3 +85,31 @@
     transform: rotate(360deg);
   }
 }
+
+/* react-tweet dark theme customization */
+[data-theme="dark"] .react-tweet-theme,
+.react-tweet-theme {
+  --tweet-container-margin: 0;
+  --tweet-bg-color: rgba(23, 23, 23, 0.8);
+  --tweet-bg-color-hover: rgba(38, 38, 38, 0.8);
+  --tweet-border: 1px solid rgba(169, 134, 217, 0.2);
+  --tweet-border-radius: 12px;
+  --tweet-color-text-primary: #e5e5e5;
+  --tweet-color-text-secondary: #a3a3a3;
+  --tweet-color-text-secondary-hover: #d4d4d4;
+  --tweet-color-blue-primary: #a986d9;
+  --tweet-color-blue-primary-hover: #c287ff;
+  --tweet-color-blue-secondary: rgba(169, 134, 217, 0.1);
+  --tweet-quoted-bg-color-hover: rgba(38, 38, 38, 0.8);
+  --tweet-quoted-border: 1px solid rgba(169, 134, 217, 0.15);
+  --tweet-skeleton-gradient: linear-gradient(270deg, #262626, #404040, #262626);
+}
+
+/* Prose styles for markdown content */
+.prose-invert a {
+  color: #a986d9;
+}
+
+.prose-invert a:hover {
+  color: #c287ff;
+}

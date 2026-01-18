@@ -1,5 +1,9 @@
 import NextImage from "next/image";
+import { Card } from "@nextui-org/card";
+import { Image } from "@nextui-org/image";
+import { Link } from "@nextui-org/link";
 import { LazyImage } from "@/components/ui/LazyImage";
+import { PageTitle } from "@/components/PageTitle";
 import { ScrollToTeamButton } from "@/components/ScrollToTeamButton";
 
 const teamMembers = [
@@ -92,7 +96,81 @@ export default function IndexPage() {
           </div>
         </div>
       </section>
+      <section className="py-32 px-8 bg-neutral-darkGray">
+        <PageTitle title="Community" />
+        <div className="max-w-7xl flex flex-col gap-6 sm:p-0 p-4">
+          <p className="text-md text-center">
+            The House of Wizards includes nearly all{" "}
+            <i className="font-atirose text-xl text-brand-500">
+              Forgotten Runes
+            </i>{" "}
+            token holders. The{" "}
+            <i className="font-atirose text-xl text-brand-500">Beast Spawn</i>{" "}
+            and{" "}
+            <i className="font-atirose text-xl text-brand-500">
+              Gate to the 7th Realm
+            </i>{" "}
+            collections do not currently have voting power in the DAO. Voting
+            weight is distributed per token as follows:
+          </p>
+          <div className="flex flex-row justify-center max-w-3xl mx-auto flex-wrap sm:gap-6 gap-3">
+            <Card className="w-[180px] flex flex-col items-center justify-center p-6">
+              <h1 className="text-lg">Warriors</h1>
+              <p className="text-7xl font-black text-brand-500">1</p>
+              <p className="text-md">Vote</p>
+            </Card>
+            <Card className="w-[180px]  flex flex-col items-center justify-center p-6">
+              <h1 className="text-lg">Wizards</h1>
+              <p className="text-7xl font-black text-brand-500">2</p>
+              <p className="text-md">Vote</p>
+            </Card>
+            <Card className="w-[180px]  flex flex-col items-center justify-center p-6">
+              <h1 className="text-lg">Ponies</h1>
+              <p className="text-7xl font-black text-brand-500">4</p>
+              <p className="text-md">Vote</p>
+            </Card>
+            <Card className="w-[180px]  flex flex-col items-center justify-center p-6">
+              <h1 className="text-lg">Souls</h1>
+              <p className="text-7xl font-black text-brand-500">8</p>
+              <p className="text-md">Vote</p>
+            </Card>
+            <Card className="w-[180px] flex flex-col items-center justify-center p-6">
+              <h1 className="text-lg">Beast</h1>
+              <p className="text-7xl font-black text-brand-500">50</p>
+              <p className="text-md">Vote</p>
+            </Card>
+          </div>
+          <p className="text-md text-center">
+            Anyone holding a token from these collection is alson eligible to{" "}
+            <i className="font-atirose text-xl text-brand-500">
+              to submit proposals
+            </i>
+            . Looking to get a project team together? Check out the{" "}
+            <i className="font-atirose text-xl text-brand-500">talent</i>!
+          </p>
+        </div>
+      </section>
+      <section className="py-32 px-8">
+        <PageTitle
+          title="Ministries"
+          subtitle="Ministries are House of Wizards sub-DAOs focused on a specific niche. While the Forgotten Council oversees DAO operations as a whole, the ministries are comprised of smaller, specialized teams, in order to more quickly organize and allocate funding."
+        />
 
+        <div className="flex flex-row justify-center flex-wrap gap-6">
+          <Link className="[&_a]:hover:text-green" href="/ministries/art">
+            <Card className="w-[250px] px-4 py-10 h-auto flex flex-col items-center bg-transparent border border-brand-900 hover:scale-105 hover:border-brand-500 cursor-pointer">
+              <Image
+                alt="Ministry of Art illustration"
+                loading="lazy"
+                src="/img/ministry_art.png"
+              />
+              <span className="font-atirose text-brand-500 text-2xl">
+                Ministry of Art
+              </span>
+            </Card>
+          </Link>
+        </div>
+      </section>
       <section className="bg-neutral-darkGray py-32 px-8" id="team-section">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-20">
