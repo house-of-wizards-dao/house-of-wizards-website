@@ -15,7 +15,7 @@ export type LoreResponse = {
 export async function GET() {
   try {
     const query = `{
-      PaginatedLore(order_by: {createdAtBlock: desc}, limit: 3, where: {
+      PaginatedLore(order_by: {createdAtBlock: desc}, limit: 5, where: {
         _and:{
           isArchivedByHolder:{ _neq: true }
           previewText: { _is_null: false }

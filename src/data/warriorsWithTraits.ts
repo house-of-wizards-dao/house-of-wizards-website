@@ -1,4 +1,16 @@
-export const wizardsWithTraits = [
+export type Warrior = {
+  idx: number;
+  name: string;
+  background: number;
+  companion: number;
+  body: number;
+  head: number;
+  shield: number;
+  weapon: number;
+  rune: number;
+};
+
+export const warriorsWithTraits = [
   {
     idx: 0,
     name: "The Emissary",

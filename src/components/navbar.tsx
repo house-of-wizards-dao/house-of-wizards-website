@@ -142,7 +142,7 @@ const navigationItems: NavItem[] = [
   },
   {
     label: "Characters",
-    href: "/backpack",
+    href: "/characters",
   },
   magicDropdown,
   toolsDropdown,

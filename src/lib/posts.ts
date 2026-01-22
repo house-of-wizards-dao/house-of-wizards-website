@@ -8,7 +8,7 @@ const postsDirectory = path.join(process.cwd(), "posts");
  * Format a date string consistently for display, avoiding timezone issues.
  * Uses UTC to ensure the same date is displayed on server and client.
  */
-export function formatPostDate(dateString: string): string {
+export const formatPostDate = (dateString: string): string => {
   // Parse the date string and treat it as UTC to avoid timezone shifts
   // Dates like "2025-11-12" are parsed as UTC midnight
   const date = new Date(dateString + "T00:00:00Z");
@@ -19,26 +19,26 @@ export function formatPostDate(dateString: string): string {
     day: "numeric",
     timeZone: "UTC",
   });
-}
+};
 
-export interface PostData {
+export type PostData = {
   id: string;
   title?: string;
   date?: string;
   formattedDate?: string;
   content?: string;
   [key: string]: unknown;
-}
+};
 
-export interface Post {
+export type Post = {
   id: string;
   title?: string;
   date?: string;
   formattedDate?: string;
   [key: string]: unknown;
-}
+};
 
-export function getSortedPostsData(): Post[] {
+export const getSortedPostsData = (): Post[] => {
   // Get file names under /posts
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
@@ -75,9 +75,9 @@ export function getSortedPostsData(): Post[] {
     }
     return 0;
   });
-}
+};
 
-export function getAllPostIds(): Array<{ params: { id: string } }> {
+export const getAllPostIds = (): Array<{ params: { id: string } }> => {
   const fileNames = fs.readdirSync(postsDirectory);
   return fileNames.map((fileName) => {
     return {
@@ -86,9 +86,9 @@ export function getAllPostIds(): Array<{ params: { id: string } }> {
       },
     };
   });
-}
+};
 
-export function getPostData(id: string): PostData {
+export const getPostData = (id: string): PostData => {
   const fullPath = path.join(postsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, "utf8");
 
@@ -107,4 +107,4 @@ export function getPostData(id: string): PostData {
     ...matterResult.data,
     formattedDate,
   } as PostData;
-}
+};
