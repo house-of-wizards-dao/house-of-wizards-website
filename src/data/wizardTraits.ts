@@ -3,6 +3,16 @@ export type Affinity = {
   name: string;
 };
 
+export const wizardTraitParts = [
+  "prop",
+  "rune",
+  "familiar",
+  "head",
+  "body",
+] as const;
+
+export type WizardTraitPart = (typeof wizardTraitParts)[number];
+
 export type Trait = {
   idx: number;
   displayName: string;
@@ -10,7 +20,7 @@ export type Trait = {
   part?: "prop" | "rune" | "familiar" | "head" | "body";
 };
 
-export const traits: Trait[] = [
+export const wizardTraits: Trait[] = [
   { idx: 0, displayName: "Black", affinity: [] },
   { idx: 1, displayName: "Blue", affinity: [] },
   { idx: 2, displayName: "Green", affinity: [] },

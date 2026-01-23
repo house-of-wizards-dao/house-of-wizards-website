@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { wizardsWithTraitsMap } from "@/data/wizardsWithTraitsMap";
-import { traits } from "@/data/traits";
+import { wizardTraits } from "@/data/wizardTraits";
 import { logger } from "@/lib/logger";
 
 // In-memory cache for successful responses (indefinite caching)
@@ -93,7 +93,7 @@ export async function GET(
     Object.entries(wizard).forEach(([key, value]) => {
       if (key === "idx") return;
       attributes[key] =
-        traits.find((trait) => trait.idx === value)?.displayName || "";
+        wizardTraits.find((trait) => trait.idx === value)?.displayName || "";
     });
 
     // Build response data

@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { Calendar, AtSign, ExternalLink } from "lucide-react";
@@ -100,7 +103,12 @@ const variantStyles = {
 };
 
 export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
-  const styles = variantStyles[variant];
+  const router = useRouter();
+
+  // Posts with titles should be large (only upgrade from medium, not small/highlight)
+  const effectiveVariant =
+    item.title && variant === "medium" ? "large" : variant;
+  const styles = variantStyles[effectiveVariant];
   const { display: authorDisplay, href: authorHref } = formatAuthorHandle(
     item.author,
   );
@@ -115,17 +123,37 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
   // For smaller cards, truncate the content
   const displayText = styles.showFullContent
     ? cleanedText
-    : truncateText(cleanedText, variant === "small" ? 120 : 200);
+    : truncateText(cleanedText, effectiveVariant === "small" ? 120 : 200);
+
+  // Only database items (positive IDs) are linkable
+  const isLinkable = item.id > 0;
+  const newsUrl = `/news/${item.id}`;
+
+  const handleCardClick = () => {
+    if (isLinkable) {
+      router.push(newsUrl);
+    }
+  };
 
   return (
     <article
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (isLinkable && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          router.push(newsUrl);
+        }
+      }}
+      role={isLinkable ? "link" : undefined}
+      tabIndex={isLinkable ? 0 : undefined}
       className={`
         group relative overflow-hidden
         bg-neutral-900/60 hover:bg-neutral-900/80
         border border-neutral-800/50 hover:border-brand-500/30
         rounded-xl transition-all duration-300
         flex flex-col
-        ${variant === "highlight" ? "h-full" : ""}
+        ${effectiveVariant === "highlight" ? "h-full" : ""}
+        ${isLinkable ? "cursor-pointer" : ""}
       `}
     >
       <div className={`${styles.padding} flex flex-col`}>
@@ -138,6 +166,7 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1 text-brand-400 hover:text-brand-300 transition-colors font-medium"
+              onClick={(e) => e.stopPropagation()}
             >
               <AtSign className="w-3 h-3" />
               {authorDisplay}
@@ -188,6 +217,7 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
                         ? "noopener noreferrer"
                         : undefined
                     }
+                    onClick={(e) => e.stopPropagation()}
                   >
                     {children}
                   </a>
@@ -229,7 +259,8 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
 
         {/* Embedded tweets */}
         {tweetIds.length > 0 && (
-          <div className="mt-4 space-y-3">
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
+          <div className="mt-4 space-y-3" onClick={(e) => e.stopPropagation()}>
             {tweetIds.map((tweetId) => (
               <EmbeddedTweet key={tweetId} id={tweetId} />
             ))}

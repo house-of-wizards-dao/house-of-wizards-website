@@ -12,9 +12,9 @@ import { base } from "wagmi/chains";
 import { parseEther, formatEther, type Address } from "viem";
 import Image from "next/image";
 import Snowfall from "react-snowfall";
-import WizardBrowser from "@/components/WizardBrowser";
 import { addresses } from "@/config/addresses";
 import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
+import { WizardBrowser } from "@/components/browser/WizardBrowser";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;

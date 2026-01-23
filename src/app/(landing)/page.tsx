@@ -15,21 +15,24 @@ import { getSortedPostsData, Post } from "@/lib/posts";
  * Determines the card variant based on position
  * Creates a newspaper-like layout with varying card sizes
  */
-function getCardVariant(
+const getCardVariant = (
   index: number,
-): "highlight" | "large" | "medium" | "small" {
+): "highlight" | "large" | "medium" | "small" => {
   if (index === 0) return "highlight";
   if (index === 1 || index === 2) return "large";
   if (index >= 3 && index <= 5) return "medium";
   if ((index - 6) % 7 === 0) return "large";
   if (index % 3 === 0) return "medium";
-  return "small";
-}
+  return "medium";
+};
 
 /**
  * Converts a blog post to CultContentDbItem format for display in NewsCard
  */
-function convertPostToNewsItem(post: Post, index: number): CultContentDbItem {
+const convertPostToNewsItem = (
+  post: Post,
+  index: number,
+): CultContentDbItem => {
   // Generate a unique negative ID to avoid collision with DB items
   const id = -(index + 1000);
 
@@ -44,9 +47,9 @@ function convertPostToNewsItem(post: Post, index: number): CultContentDbItem {
     highlight: false,
     title: post.title,
   };
-}
+};
 
-function NewsGrid({ items }: { items: CultContentDbItem[] }) {
+const NewsGrid = ({ items }: { items: CultContentDbItem[] }) => {
   if (items.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-neutral-500">
@@ -85,9 +88,9 @@ function NewsGrid({ items }: { items: CultContentDbItem[] }) {
       </div>
     </div>
   );
-}
+};
 
-async function NewsSection() {
+const NewsSection = async () => {
   // Fetch news from the database
   const newsItems = await fetchCultContentChronicle(20);
 
@@ -103,9 +106,9 @@ async function NewsSection() {
   });
 
   return <NewsGrid items={allItems} />;
-}
+};
 
-function NewsLoadingFallback() {
+const NewsLoadingFallback = () => {
   return (
     <div className="flex flex-col items-center justify-center py-24 gap-4">
       <Spinner size="lg" color="secondary" />
@@ -114,7 +117,7 @@ function NewsLoadingFallback() {
       </p>
     </div>
   );
-}
+};
 
 export default function LandingPage() {
   return (

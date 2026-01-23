@@ -11,9 +11,8 @@ import { mainnet } from "wagmi/chains";
 import { cn } from "@/lib/utils";
 import { addresses } from "@/config/addresses";
 
-import { traits } from "@/data/traits";
-import { wizardsWithTraits } from "@/data/wizardsWithTraits";
-import { wizardNames } from "@/data/names";
+import { wizardTraits } from "@/data/wizardTraits";
+import { wizardsWithTraits, type Wizard } from "@/data/wizardsWithTraits";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
@@ -39,35 +38,6 @@ const ERC721_ENUMERABLE_ABI = [
     type: "function",
   },
 ] as const;
-
-type Wizard = (typeof wizardsWithTraits)[number] & {
-  title?: string;
-  firstName?: string;
-  origin?: string;
-};
-
-// Merge wizardNames with wizardsWithTraits
-const namesMap = new Map<
-  number,
-  { title: string; firstName: string; location: string }
->();
-for (const nameEntry of wizardNames) {
-  namesMap.set(nameEntry.idx, {
-    title: nameEntry.title,
-    firstName: nameEntry.firstName,
-    location: nameEntry.location,
-  });
-}
-
-const mergedWizards: Wizard[] = wizardsWithTraits.map((wizard) => {
-  const nameData = namesMap.get(wizard.idx);
-  return {
-    ...wizard,
-    title: nameData?.title || "",
-    firstName: nameData?.firstName || "",
-    origin: nameData?.location || "",
-  };
-});
 
 type TraitPart = "background" | "body" | "familiar" | "head" | "prop" | "rune";
 
@@ -174,7 +144,7 @@ export default function WizardBrowser({
 
   const traitIndexToDisplayName = useMemo(() => {
     const map = new Map<number, string>();
-    for (const t of traits) {
+    for (const t of wizardTraits) {
       map.set(t.idx, t.displayName);
     }
     return map;
@@ -195,7 +165,7 @@ export default function WizardBrowser({
       byPart.set(key, arr);
     };
 
-    for (const t of traits) {
+    for (const t of wizardTraits) {
       if (t.part) {
         push(t.part as TraitPart, t.idx, t.displayName);
       } else {
@@ -205,8 +175,8 @@ export default function WizardBrowser({
 
     // Backgrounds: infer from wizards' background values that exist in traits
     const backgroundSet = new Set<number>();
-    for (let i = 0; i < mergedWizards.length; i++) {
-      backgroundSet.add(mergedWizards[i].background);
+    for (let i = 0; i < wizardsWithTraits.length; i++) {
+      backgroundSet.add(wizardsWithTraits[i].background);
     }
     const backgroundOptions: Array<{ value: number; label: string }> = [];
     for (const idx of backgroundSet) {
@@ -230,7 +200,7 @@ export default function WizardBrowser({
   // Generate dropdown options for title, firstName, and origin
   const titleOptions = useMemo(() => {
     const titles = new Set<string>();
-    for (const wizard of mergedWizards) {
+    for (const wizard of wizardsWithTraits) {
       if (wizard.title && wizard.title.trim()) {
         titles.add(wizard.title);
       }
@@ -240,7 +210,7 @@ export default function WizardBrowser({
 
   const firstNameOptions = useMemo(() => {
     const firstNames = new Set<string>();
-    for (const wizard of mergedWizards) {
+    for (const wizard of wizardsWithTraits) {
       if (wizard.firstName && wizard.firstName.trim()) {
         firstNames.add(wizard.firstName);
       }
@@ -250,7 +220,7 @@ export default function WizardBrowser({
 
   const originOptions = useMemo(() => {
     const origins = new Set<string>();
-    for (const wizard of mergedWizards) {
+    for (const wizard of wizardsWithTraits) {
       if (wizard.origin && wizard.origin.trim()) {
         origins.add(wizard.origin);
       }
@@ -259,7 +229,7 @@ export default function WizardBrowser({
   }, []);
 
   const filteredWizards: Wizard[] = useMemo(() => {
-    let result = mergedWizards;
+    let result = wizardsWithTraits;
 
     if (nameQuery.trim()) {
       const q = nameQuery.trim().toLowerCase();

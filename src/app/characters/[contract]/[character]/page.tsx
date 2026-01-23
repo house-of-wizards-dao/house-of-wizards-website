@@ -6,9 +6,9 @@ import { useParams } from "next/navigation";
 import { useWalletClient } from "wagmi";
 import { mainnet } from "viem/chains";
 import { TokenboundClient } from "@tokenbound/sdk";
-import { addresses } from "@/config/addresses";
+import { getCollectionName } from "@/config/addresses";
 
-interface NFT {
+type NFT = {
   identifier: string;
   collection: string;
   contract: string;
@@ -21,16 +21,19 @@ interface NFT {
   updated_at: string;
   is_disabled: boolean;
   is_nsfw: boolean;
-}
+};
 
-interface NFTsResponse {
+type NFTsResponse = {
   nfts: NFT[];
   next: string | null;
-}
+};
 
 export default function CharacterBackpackPage() {
   const params = useParams();
+  const contract = params.contract as string;
   const character = params.character as string;
+
+  const collectionName = getCollectionName(contract);
 
   const { data: walletClient } = useWalletClient();
   const tokenboundClient = useMemo(
@@ -49,10 +52,10 @@ export default function CharacterBackpackPage() {
 
   const tbaAccount = useMemo(
     () => ({
-      tokenContract: addresses.wizards,
+      tokenContract: contract as `0x${string}`,
       tokenId: character ?? "",
     }),
-    [character],
+    [contract, character],
   );
 
   useEffect(() => {
@@ -95,7 +98,7 @@ export default function CharacterBackpackPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">
-        Character #{character} Backpack
+        {collectionName} #{character} Backpack
       </h1>
       {retrievedAccount && (
         <p className="text-gray-400 mb-6">Account: {retrievedAccount}</p>
