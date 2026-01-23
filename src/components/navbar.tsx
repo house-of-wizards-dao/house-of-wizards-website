@@ -107,6 +107,10 @@ const toolsDropdown: NavDropdown = {
   label: "TOOLS",
   items: [
     {
+      label: "Marketplace",
+      href: "/marketplace",
+    },
+    {
       label: "Burns",
       href: "/burns",
     },

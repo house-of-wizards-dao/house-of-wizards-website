@@ -13,5 +13,8 @@
 export { default as ErrorMessage } from "./ErrorMessage";
 export { default as SuccessMessage } from "./SuccessMessage";
 
+// NFT display components
+export { NFTCard, NFTCardSkeleton } from "./NFTCard";
+
 // Note: LazyImage is imported directly from its file, not through this index
 // import { LazyImage } from '@/components/ui/LazyImage'

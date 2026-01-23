@@ -171,6 +171,9 @@ export interface IconSvgProps extends React.SVGProps<SVGSVGElement> {
 
 // Re-export auction types
 export * from "./auction";
+
+// Re-export marketplace types
+export * from "./marketplace";
 // Import specific types for use in ContractAuction
 import type { Artwork, AuctionStatus, Auction } from "./auction";
 
