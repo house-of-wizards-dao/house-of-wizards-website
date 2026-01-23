@@ -6,12 +6,11 @@ import {
   Dispatch,
 } from "react";
 import { useAccount } from "wagmi";
-import { cn } from "@/lib/utils";
 import { useWalletNFTs } from "@/hooks/useWalletNFTs";
-
-import { TraitFilters } from "./TraitFilters";
+import { NFTCard } from "@/components/ui/NFTCard";
 import { Warrior } from "@/data/warriorsWithTraits";
 import { Wizard } from "@/data/wizardsWithTraits";
+import { TraitFilters } from "./TraitFilters";
 // Base item type that both Wizard and Warrior extend
 export type BrowserItem = Warrior | Wizard;
 
@@ -454,12 +453,12 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {paginated.map((item) => (
-          <Thumbnail
+          <NFTCard
             key={item.idx}
-            idx={item.idx}
+            tokenId={item.idx}
             name={item.name}
             imageUrl={getImageUrl(item.idx)}
-            onClick={onClickHandler}
+            onClick={() => onClickHandler(item.idx)}
             selected={selectedTokens?.includes(item.idx) ?? false}
             disabled={disabledTokenIds.includes(item.idx)}
           />
@@ -486,53 +485,5 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
         </button>
       </div>
     </>
-  );
-};
-
-type ThumbnailProps = {
-  idx: number;
-  name: string;
-  imageUrl: string;
-  onClick: (v: number) => void;
-  selected: boolean;
-  disabled: boolean;
-};
-
-const Thumbnail = ({
-  idx,
-  name,
-  imageUrl,
-  onClick,
-  selected,
-  disabled,
-}: ThumbnailProps) => {
-  return (
-    <button
-      className={cn(
-        "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden",
-        selected && "border-brand-500",
-        disabled && "opacity-50 cursor-not-allowed",
-      )}
-      onClick={() => !disabled && onClick(idx)}
-      disabled={disabled}
-    >
-      <div className="w-full aspect-square bg-black/40">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={imageUrl}
-          alt={`#${idx}`}
-          className={cn("w-full h-full object-cover", disabled && "opacity-50")}
-          loading="lazy"
-        />
-      </div>
-      <div className="p-3">
-        <div className="flex items-center justify-between">
-          <div className="text-white font-semibold">#{idx}</div>
-        </div>
-        <div className="text-gray-300 text-sm truncate" title={name}>
-          {name}
-        </div>
-      </div>
-    </button>
   );
 };
