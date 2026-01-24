@@ -213,10 +213,23 @@ function encodeSeaportCall(
   functionName: string,
   inputData: Record<string, unknown>,
 ): `0x${string}` {
+  // Extract the base function name (remove parameter signature if present)
+  // e.g., "fulfillAdvancedOrder((address,...))" -> "fulfillAdvancedOrder"
+  const baseFunctionName = functionName.split("(")[0];
+
   // Map OpenSea's function names to our ABI
-  const normalizedFn = functionName.includes("efficient")
-    ? "fulfillBasicOrder_efficient_6GL6yc"
-    : functionName;
+  let normalizedFn: string;
+  if (baseFunctionName.includes("efficient")) {
+    normalizedFn = "fulfillBasicOrder_efficient_6GL6yc";
+  } else if (baseFunctionName === "fulfillAdvancedOrder") {
+    normalizedFn = "fulfillAdvancedOrder";
+  } else if (baseFunctionName === "fulfillBasicOrder") {
+    normalizedFn = "fulfillBasicOrder";
+  } else if (baseFunctionName === "fulfillOrder") {
+    normalizedFn = "fulfillOrder";
+  } else {
+    normalizedFn = baseFunctionName;
+  }
 
   // Find the matching ABI entry
   const abiEntry = SEAPORT_ABI.find((entry) => entry.name === normalizedFn);

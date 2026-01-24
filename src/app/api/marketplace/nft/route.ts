@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchNFTDetails, collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
 
-export const dynamic = "force-dynamic";
+// Revalidate every 30 seconds - balances freshness with caching
+// NFT metadata is cached separately (1 hour), only listings/offers need frequent updates
+export const revalidate = 30;
 
 /**
  * GET /api/marketplace/nft

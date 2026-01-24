@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchCollectionListings, collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
 
-export const dynamic = "force-dynamic";
+// Revalidate listings every 60 seconds (dynamic data)
+export const revalidate = 60;
 
 /**
  * GET /api/marketplace/listings

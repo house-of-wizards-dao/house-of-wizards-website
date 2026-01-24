@@ -9,7 +9,11 @@ import {
   useNFTDetails,
   useMarketplaceActions,
 } from "@/hooks/useMarketplace";
-import type { CollectionKey, MarketplaceItem } from "@/types/marketplace";
+import type {
+  CollectionKey,
+  MarketplaceItem,
+  CollectionInfo,
+} from "@/types/marketplace";
 import {
   MarketplaceItemCard,
   MarketplaceItemSkeleton,
@@ -18,6 +22,10 @@ import { ItemDetailOverlay } from "./ItemDetailOverlay";
 
 interface MarketplaceBrowserProps {
   initialCollection?: CollectionKey;
+  /** Pre-fetched listings from server-side rendering */
+  initialListings?: MarketplaceItem[];
+  /** Pre-fetched collection info from server-side rendering */
+  initialCollectionInfo?: CollectionInfo;
 }
 
 /**
@@ -38,6 +46,8 @@ const collectionOptions: { key: CollectionKey; label: string }[] = [
 
 export function MarketplaceBrowser({
   initialCollection = "wizards",
+  initialListings,
+  initialCollectionInfo,
 }: MarketplaceBrowserProps) {
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionKey>(initialCollection);
@@ -68,6 +78,7 @@ export function MarketplaceBrowser({
   }, [isWalletConnected, isOnMainnet, switchChain]);
 
   // Fetch listings for selected collection
+  // Pass initial data from SSR to avoid loading spinner on first render
   const {
     items,
     isLoading,
@@ -76,7 +87,16 @@ export function MarketplaceBrowser({
     collectionInfo,
     loadMore,
     refresh,
-  } = useMarketplaceListings(selectedCollection, { limit: 50 });
+  } = useMarketplaceListings(selectedCollection, {
+    limit: 50,
+    // Only use initial data for the initial collection
+    initialItems:
+      selectedCollection === initialCollection ? initialListings : undefined,
+    initialCollectionInfo:
+      selectedCollection === initialCollection
+        ? initialCollectionInfo
+        : undefined,
+  });
 
   // Marketplace actions (buy, etc.)
   const { buyNFT, isConnected } = useMarketplaceActions();

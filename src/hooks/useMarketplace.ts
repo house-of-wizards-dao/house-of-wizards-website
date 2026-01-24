@@ -18,17 +18,29 @@ export function useMarketplaceListings(
   options?: {
     limit?: number;
     autoFetch?: boolean;
+    /** Initial items from SSR to avoid loading spinner */
+    initialItems?: MarketplaceItem[];
+    /** Initial collection info from SSR */
+    initialCollectionInfo?: CollectionInfo;
   },
 ) {
-  const [items, setItems] = useState<MarketplaceItem[]>([]);
+  const {
+    limit = 50,
+    autoFetch = true,
+    initialItems,
+    initialCollectionInfo,
+  } = options || {};
+
+  // Initialize state with SSR data if available
+  const [items, setItems] = useState<MarketplaceItem[]>(initialItems || []);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [collectionInfo, setCollectionInfo] = useState<CollectionInfo | null>(
-    null,
+    initialCollectionInfo || null,
   );
-
-  const { limit = 50, autoFetch = true } = options || {};
+  // Track if we've already loaded initial data from SSR
+  const [hasInitialData, setHasInitialData] = useState(!!initialItems?.length);
 
   const fetchListings = useCallback(
     async (cursor?: string) => {
@@ -96,13 +108,19 @@ export function useMarketplaceListings(
   }, [fetchListings]);
 
   // Auto-fetch on mount and collection change
+  // Skip initial fetch if we have SSR data for this collection
   useEffect(() => {
     if (autoFetch && collection) {
+      // If we have initial data from SSR, skip the first fetch
+      if (hasInitialData) {
+        setHasInitialData(false);
+        return;
+      }
       setItems([]);
       setNextCursor(null);
       fetchListings();
     }
-  }, [collection, autoFetch, fetchListings]);
+  }, [collection, autoFetch, fetchListings, hasInitialData]);
 
   return {
     items,

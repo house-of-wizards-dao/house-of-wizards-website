@@ -41,7 +41,7 @@ export function NFTCard({
   };
 
   return (
-    <button
+    <div
       className={cn(
         "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden transition-all hover:border-gray-600 hover:shadow-lg text-left",
         selected && "border-brand-500 ring-2 ring-brand-500/50",
@@ -49,7 +49,14 @@ export function NFTCard({
         onClick && !disabled && "cursor-pointer",
       )}
       onClick={() => !disabled && onClick?.()}
-      disabled={disabled}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick && !disabled ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && !disabled && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
       {/* Image */}
       <div className="w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">
@@ -109,7 +116,7 @@ export function NFTCard({
           </div>
         )}
       </div>
-    </button>
+    </div>
   );
 }
 

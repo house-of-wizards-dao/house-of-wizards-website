@@ -6,6 +6,7 @@
 import { OpenSeaSDK, Chain } from "opensea-js";
 // @ts-ignore - ethers is a dependency of opensea-js
 import { JsonRpcProvider } from "ethers";
+import { unstable_cache } from "next/cache";
 import { frwcAddresses } from "@/config/addresses";
 import type {
   CollectionKey,
@@ -137,6 +138,28 @@ export function getOpenSeaSDK() {
 }
 
 /**
+ * Cached NFT metadata fetcher
+ * NFT metadata (name, image, traits) rarely changes, so we cache for 1 hour
+ * This dramatically reduces API calls when fetching collection listings
+ */
+export const getCachedNFT = unstable_cache(
+  async (contractAddress: string, tokenId: string) => {
+    const sdk = getOpenSeaSDK();
+    const response = await sdk.api.getNFT(
+      contractAddress,
+      tokenId,
+      Chain.Mainnet,
+    );
+    return response.nft;
+  },
+  ["nft-metadata"],
+  {
+    revalidate: 3600, // 1 hour - metadata rarely changes
+    tags: ["nft-metadata"],
+  },
+);
+
+/**
  * Convert OpenSea order to our Listing type
  */
 function orderToListing(order: any): Listing {
@@ -161,22 +184,49 @@ function orderToListing(order: any): Listing {
 
 /**
  * Convert OpenSea order to our Offer type
+ * Handles both token-specific offers and collection offers which have different structures
  */
 function orderToOffer(order: any): Offer {
-  const priceData = order.price?.current || order.current_price;
+  // Collection offers use price.value, token offers use price.current.value
+  const priceData = order.price?.current || order.price || order.current_price;
+
+  // For collection offers, the price is in the protocol data offer array
+  // The offer contains WETH that the buyer is offering
+  let amount = priceData?.value || priceData || "0";
+  let currency = priceData?.currency || "WETH";
+  let decimals = priceData?.decimals || 18;
+
+  // If amount is still 0 or missing, try to get it from protocol_data (collection offers)
+  if (amount === "0" || !amount) {
+    const protocolData = order.protocol_data;
+    const offerItem = protocolData?.parameters?.offer?.[0];
+    if (offerItem) {
+      amount = offerItem.startAmount || offerItem.endAmount || "0";
+      // WETH token address
+      if (
+        offerItem.token?.toLowerCase() ===
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      ) {
+        currency = "WETH";
+      }
+    }
+  }
 
   return {
     orderHash: order.order_hash,
     chain: order.chain || "ethereum",
     protocol: "seaport",
     price: {
-      amount: priceData?.value || priceData || "0",
-      currency: priceData?.currency || "WETH",
-      decimals: priceData?.decimals || 18,
+      amount,
+      currency,
+      decimals,
     },
     startTime: order.listing_time || order.created_date,
     expirationTime: order.expiration_time || order.closing_date,
-    maker: order.maker?.address || order.maker,
+    maker:
+      order.maker?.address ||
+      order.maker ||
+      order.protocol_data?.parameters?.offerer,
     protocolData: order.protocol_data || order,
   };
 }
@@ -257,13 +307,8 @@ export async function fetchCollectionListings(
 
       const nftPromises = batch.map(async ({ listing, tokenId }) => {
         try {
-          // Fetch NFT details to get image and metadata
-          const nftResponse = await sdk.api.getNFT(
-            collection.address,
-            tokenId,
-            Chain.Mainnet,
-          );
-          const nftData = nftResponse.nft;
+          // Fetch NFT details using cached fetcher (metadata rarely changes)
+          const nftData = await getCachedNFT(collection.address, tokenId);
 
           const convertedListing = orderToListing(listing);
 
@@ -379,6 +424,7 @@ export async function fetchCollectionNFTs(
 
 /**
  * Fetch single NFT details with listings and offers
+ * Includes both token-specific offers and collection-wide offers
  */
 export async function fetchNFTDetails(
   collectionKey: CollectionKey,
@@ -388,13 +434,8 @@ export async function fetchNFTDetails(
   const collection = getCollection(collectionKey);
 
   try {
-    // Fetch NFT details
-    const nftResponse = await sdk.api.getNFT(
-      collection.address,
-      tokenId,
-      Chain.Mainnet,
-    );
-    const nftData = nftResponse.nft;
+    // Fetch NFT metadata using cached fetcher (metadata rarely changes)
+    const nftData = await getCachedNFT(collection.address, tokenId);
 
     if (!nftData) return null;
 
@@ -428,16 +469,47 @@ export async function fetchNFTDetails(
 
     const listings = (listingsResponse.listings || []).map(orderToListing);
 
-    // Fetch offers for this NFT using getNFTOffers
-    const offersResponse = await sdk.api.getNFTOffers(
-      collection.address,
-      tokenId,
-      50, // limit
-      undefined, // next
-      Chain.Mainnet,
+    // Fetch token-specific offers and collection-wide offers in parallel
+    const [tokenOffersResponse, collectionOffersResponse] = await Promise.all([
+      // Token-specific offers (offers for this exact NFT)
+      sdk.api.getNFTOffers(
+        collection.address,
+        tokenId,
+        50, // limit
+        undefined, // next
+        Chain.Mainnet,
+      ),
+      // Collection-wide offers (floor bids that apply to any NFT in the collection)
+      sdk.api.getCollectionOffers(
+        collection.slug,
+        50, // limit
+        undefined, // next
+      ),
+    ]);
+
+    // Convert token-specific offers
+    const tokenOffers = (tokenOffersResponse.offers || []).map(orderToOffer);
+
+    // Convert collection offers and mark them as collection offers
+    const collectionOffers = (collectionOffersResponse.offers || []).map(
+      (order) => ({
+        ...orderToOffer(order),
+        isCollectionOffer: true,
+      }),
     );
 
-    const offers = (offersResponse.offers || []).map(orderToOffer);
+    // Merge offers, deduplicating by orderHash
+    const offersByHash = new Map<string, Offer>();
+    for (const offer of tokenOffers) {
+      offersByHash.set(offer.orderHash, offer);
+    }
+    for (const offer of collectionOffers) {
+      // Only add collection offers if not already present as token offer
+      if (!offersByHash.has(offer.orderHash)) {
+        offersByHash.set(offer.orderHash, offer);
+      }
+    }
+    const offers = Array.from(offersByHash.values());
 
     // Find best listing and offer
     const sortedListings = [...listings].sort(

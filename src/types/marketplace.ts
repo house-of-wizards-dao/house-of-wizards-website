@@ -85,6 +85,7 @@ export interface Offer {
   expirationTime: string;
   maker: string; // Bidder address
   protocolData?: unknown;
+  isCollectionOffer?: boolean; // True if this is a collection-wide offer (floor bid)
 }
 
 /**

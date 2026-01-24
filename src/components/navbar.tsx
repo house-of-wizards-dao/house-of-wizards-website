@@ -135,19 +135,26 @@ const toolsDropdown: NavDropdown = {
   ],
 };
 
+const shopDropdown: NavDropdown = {
+  label: "SHOP",
+  items: [
+    {
+      label: "Marketplace",
+      href: "/marketplace",
+    },
+    {
+      label: "PFP Mint",
+      href: "/pfp-mint",
+    },
+  ],
+};
+
 const navigationItems: NavItem[] = [
-  {
-    label: "Blog",
-    href: "/blog",
-  },
-  {
-    label: "PFP",
-    href: "/pfp-mint",
-  },
   {
     label: "Characters",
     href: "/characters",
   },
+  shopDropdown,
   magicDropdown,
   toolsDropdown,
   gamesDropdown,

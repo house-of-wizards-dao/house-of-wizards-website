@@ -377,12 +377,20 @@ function OfferRow({
       className={cn(
         "flex items-center justify-between bg-gray-800/50 rounded-lg px-4 py-3",
         isExpired && "opacity-50",
+        offer.isCollectionOffer && "border border-violet-500/30",
       )}
     >
       <div>
-        <p className="text-white font-medium">
-          {price} {offer.price.currency}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-white font-medium">
+            {price} {offer.price.currency}
+          </p>
+          {offer.isCollectionOffer && (
+            <span className="text-xs bg-violet-600/30 text-violet-300 px-2 py-0.5 rounded">
+              Collection Offer
+            </span>
+          )}
+        </div>
         <p className="text-gray-400 text-xs">
           From: {offer.maker.slice(0, 6)}...{offer.maker.slice(-4)}
         </p>
