@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { cn } from "@/lib/utils";
-import type { MarketplaceItem, Listing, Offer } from "@/types/marketplace";
+import { cn, formatTimeRemaining } from "@/lib/utils";
+import { marketplaceConfig } from "@/lib/marketplace";
+import type { MarketplaceItem, Offer } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 import { useMarketplaceActions, useNFTOwnership } from "@/hooks/useMarketplace";
 
@@ -176,17 +177,19 @@ export function ItemDetailOverlay({
                 >
                   Details
                 </button>
-                <button
-                  className={cn(
-                    "px-4 py-2 font-medium",
-                    activeTab === "offers"
-                      ? "text-white border-b-2 border-violet-500"
-                      : "text-gray-400 hover:text-white",
-                  )}
-                  onClick={() => setActiveTab("offers")}
-                >
-                  Offers ({offers.length})
-                </button>
+                {marketplaceConfig.offersEnabled && (
+                  <button
+                    className={cn(
+                      "px-4 py-2 font-medium",
+                      activeTab === "offers"
+                        ? "text-white border-b-2 border-violet-500"
+                        : "text-gray-400 hover:text-white",
+                    )}
+                    onClick={() => setActiveTab("offers")}
+                  >
+                    Offers ({offers.length})
+                  </button>
+                )}
               </div>
 
               {activeTab === "details" && (
@@ -248,7 +251,7 @@ export function ItemDetailOverlay({
                   )}
 
                   {/* Best Offer */}
-                  {bestOffer && (
+                  {marketplaceConfig.offersEnabled && bestOffer && (
                     <div className="bg-violet-900/30 rounded-lg p-4">
                       <span className="text-gray-400 text-sm">Best Offer</span>
                       <p className="text-xl font-semibold text-violet-300">
@@ -332,7 +335,7 @@ export function ItemDetailOverlay({
               )}
 
               {/* Accept Best Offer Button - for owners with offers */}
-              {isOwner && bestOffer && (
+              {marketplaceConfig.offersEnabled && isOwner && bestOffer && (
                 <button
                   onClick={() => handleAcceptOffer(bestOffer)}
                   disabled={isProcessing}
@@ -369,14 +372,16 @@ function OfferRow({
   isProcessing: boolean;
 }) {
   const price = formatEthFromWei(offer.price.amount);
-  const expiry = new Date(offer.expirationTime);
-  const isExpired = expiry < new Date();
+  const timeRemaining = formatTimeRemaining(offer.expirationTime);
+  const isExpired = timeRemaining === "Ended";
+
+  // Don't render expired offers at all (they should be filtered server-side, but just in case)
+  if (isExpired) return null;
 
   return (
     <div
       className={cn(
         "flex items-center justify-between bg-gray-800/50 rounded-lg px-4 py-3",
-        isExpired && "opacity-50",
         offer.isCollectionOffer && "border border-violet-500/30",
       )}
     >
@@ -392,14 +397,15 @@ function OfferRow({
           )}
         </div>
         <p className="text-gray-400 text-xs">
-          From: {offer.maker.slice(0, 6)}...{offer.maker.slice(-4)}
+          From:{" "}
+          {offer.maker
+            ? `${offer.maker.slice(0, 6)}...${offer.maker.slice(-4)}`
+            : "Unknown"}
         </p>
-        <p className="text-gray-500 text-xs">
-          {isExpired ? "Expired" : `Expires: ${expiry.toLocaleDateString()}`}
-        </p>
+        <p className="text-gray-500 text-xs">Expires in {timeRemaining}</p>
       </div>
 
-      {isOwner && !isExpired && (
+      {isOwner && (
         <button
           onClick={onAccept}
           disabled={isProcessing}

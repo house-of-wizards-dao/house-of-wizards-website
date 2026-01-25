@@ -36,7 +36,13 @@ export interface CollectionInfo {
 export interface NFTTrait {
   trait_type: string;
   value: string | number;
-  display_type?: "number" | "boost_percentage" | "boost_number" | "date" | null;
+  display_type?:
+    | "number"
+    | "boost_percentage"
+    | "boost_number"
+    | "author"
+    | "date"
+    | null;
 }
 
 /**
@@ -198,7 +204,9 @@ export function formatPrice(price: Price): string {
 /**
  * Format ETH from wei
  */
-export function formatEthFromWei(wei: string): string {
+export function formatEthFromWei(wei: string | undefined | null): string {
+  if (!wei) return "0";
   const value = parseFloat(wei) / 1e18;
+  if (isNaN(value)) return "0";
   return value.toFixed(value < 1 ? 4 : 3);
 }

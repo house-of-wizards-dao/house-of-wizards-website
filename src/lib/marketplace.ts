@@ -3,7 +3,21 @@
  * Handles listings, offers, and order fulfillment
  */
 
+/**
+ * Marketplace feature configuration
+ */
+export const marketplaceConfig = {
+  /** Enable/disable offers functionality (fetching and UI) */
+  offersEnabled: false,
+} as const;
+
 import { OpenSeaSDK, Chain } from "opensea-js";
+import type {
+  Listing as OpenSeaListing,
+  Offer as OpenSeaOffer,
+  CollectionOffer as OpenSeaCollectionOffer,
+  Trait as OpenSeaTrait,
+} from "opensea-js/lib/api/types";
 // @ts-ignore - ethers is a dependency of opensea-js
 import { JsonRpcProvider } from "ethers";
 import { unstable_cache } from "next/cache";
@@ -160,25 +174,71 @@ export const getCachedNFT = unstable_cache(
 );
 
 /**
+ * Convert Unix timestamp (seconds) or ISO string to ISO string
+ */
+function toISOTimestamp(
+  value: string | number | bigint | undefined,
+  fallbackToFuture: boolean = false,
+): string {
+  // Fallback: use far future date if fallbackToFuture is true, otherwise current time
+  const fallback = fallbackToFuture
+    ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
+    : new Date().toISOString();
+
+  if (value === undefined || value === null || value === "") return fallback;
+
+  // If it's a number or bigint, treat as Unix timestamp (seconds)
+  if (typeof value === "number" || typeof value === "bigint") {
+    const numValue = Number(value);
+    // Unix timestamps are in seconds, but JS Date uses milliseconds
+    // Check if it's already in milliseconds (> year 2100 in seconds would be ~4.1 billion)
+    const ms = numValue > 4102444800 ? numValue : numValue * 1000;
+    return new Date(ms).toISOString();
+  }
+
+  // If it's a string, check if it's a pure numeric string (Unix timestamp)
+  // or if it looks like an ISO date string
+  const strValue = String(value);
+
+  // Check if it's purely numeric (Unix timestamp as string)
+  if (/^\d+$/.test(strValue)) {
+    const numValue = parseInt(strValue, 10);
+    const ms = numValue > 4102444800 ? numValue : numValue * 1000;
+    return new Date(ms).toISOString();
+  }
+
+  // Otherwise assume it's already an ISO string or other parseable date format
+  // Validate it parses correctly
+  const parsed = new Date(strValue);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString();
+  }
+
+  // Fallback if unparseable
+  return fallback;
+}
+
+/**
  * Convert OpenSea order to our Listing type
  */
-function orderToListing(order: any): Listing {
-  const priceData = order.price?.current || order.current_price;
+function orderToListing(order: OpenSeaListing): Listing {
+  const priceData = order.price.current;
+  const params = order.protocol_data?.parameters;
 
   return {
     orderHash: order.order_hash,
     chain: order.chain || "ethereum",
-    protocol: order.protocol_address ? "seaport" : "seaport",
+    protocol: "seaport",
     price: {
-      amount: priceData?.value || priceData || "0",
-      currency: priceData?.currency || "ETH",
-      decimals: priceData?.decimals || 18,
+      amount: priceData.value || "0",
+      currency: priceData.currency || "ETH",
+      decimals: priceData.decimals || 18,
     },
-    startTime: order.listing_time || order.created_date,
-    expirationTime: order.expiration_time || order.closing_date,
-    maker: order.maker?.address || order.maker,
-    taker: order.taker?.address || order.taker,
-    protocolData: order.protocol_data || order,
+    startTime: toISOTimestamp(params?.startTime),
+    expirationTime: toISOTimestamp(params?.endTime, true),
+    maker: params?.offerer || "",
+    taker: params?.consideration?.[0]?.recipient,
+    protocolData: order.protocol_data,
   };
 }
 
@@ -186,29 +246,26 @@ function orderToListing(order: any): Listing {
  * Convert OpenSea order to our Offer type
  * Handles both token-specific offers and collection offers which have different structures
  */
-function orderToOffer(order: any): Offer {
-  // Collection offers use price.value, token offers use price.current.value
-  const priceData = order.price?.current || order.price || order.current_price;
+function orderToOffer(order: OpenSeaOffer | OpenSeaCollectionOffer): Offer {
+  const priceData = order.price;
+  const params = order.protocol_data?.parameters;
 
-  // For collection offers, the price is in the protocol data offer array
-  // The offer contains WETH that the buyer is offering
-  let amount = priceData?.value || priceData || "0";
+  // For offers, price.value contains the WETH amount
+  // If not available, try to get it from protocol_data offer array
+  let amount = priceData?.value || "0";
   let currency = priceData?.currency || "WETH";
   let decimals = priceData?.decimals || 18;
 
-  // If amount is still 0 or missing, try to get it from protocol_data (collection offers)
-  if (amount === "0" || !amount) {
-    const protocolData = order.protocol_data;
-    const offerItem = protocolData?.parameters?.offer?.[0];
-    if (offerItem) {
-      amount = offerItem.startAmount || offerItem.endAmount || "0";
-      // WETH token address
-      if (
-        offerItem.token?.toLowerCase() ===
-        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-      ) {
-        currency = "WETH";
-      }
+  // Fallback: try to get amount from protocol_data (collection offers)
+  if (amount === "0" && params?.offer?.[0]) {
+    const offerItem = params.offer[0];
+    amount = offerItem.startAmount || "0";
+    // WETH token address
+    if (
+      offerItem.token?.toLowerCase() ===
+      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+    ) {
+      currency = "WETH";
     }
   }
 
@@ -221,25 +278,26 @@ function orderToOffer(order: any): Offer {
       currency,
       decimals,
     },
-    startTime: order.listing_time || order.created_date,
-    expirationTime: order.expiration_time || order.closing_date,
-    maker:
-      order.maker?.address ||
-      order.maker ||
-      order.protocol_data?.parameters?.offerer,
-    protocolData: order.protocol_data || order,
+    startTime: toISOTimestamp(params?.startTime),
+    expirationTime: toISOTimestamp(params?.endTime, true),
+    maker: params?.offerer || "",
+    protocolData: order.protocol_data,
   };
 }
 
 /**
  * Convert OpenSea NFT traits to our format
  */
-function parseTraits(traits: any[]): NFTTrait[] {
+function parseTraits(traits: OpenSeaTrait[] | null | undefined): NFTTrait[] {
   if (!Array.isArray(traits)) return [];
   return traits.map((t) => ({
-    trait_type: t.trait_type || t.type,
-    value: t.value,
-    display_type: t.display_type,
+    trait_type: t.trait_type,
+    value: t.value instanceof Date ? t.value.toISOString() : t.value,
+    // Cast display_type: OpenSea enum values match our string literals
+    display_type:
+      t.display_type === "None"
+        ? null
+        : (t.display_type as NFTTrait["display_type"]),
   }));
 }
 
@@ -266,7 +324,10 @@ export async function fetchCollectionListings(
     const listings = response.listings || [];
 
     // Use a Map to deduplicate by token ID, keeping the best listing
-    const itemsByTokenId = new Map<string, { listing: any; tokenId: string }>();
+    const itemsByTokenId = new Map<
+      string,
+      { listing: OpenSeaListing; tokenId: string }
+    >();
 
     // First pass: collect unique tokens and their best listings
     for (const listing of listings) {
@@ -389,12 +450,13 @@ export async function fetchCollectionNFTs(
   const collection = getCollection(collectionKey);
 
   try {
-    const response = await sdk.api.getNFTsByCollection(collection.slug, {
+    const response = await sdk.api.getNFTsByCollection(
+      collection.slug,
       limit,
-      next: next || undefined,
-    } as any);
+      next || undefined,
+    );
 
-    const nfts: MarketplaceNFT[] = (response.nfts || []).map((nft: any) => ({
+    const nfts: MarketplaceNFT[] = (response.nfts || []).map((nft) => ({
       identifier: nft.identifier,
       collection: collection.slug,
       contract: nft.contract || collection.address,
@@ -454,8 +516,8 @@ export async function fetchNFTDetails(
       updated_at: nftData.updated_at || new Date().toISOString(),
       is_disabled: nftData.is_disabled || false,
       is_nsfw: nftData.is_nsfw || false,
-      traits: parseTraits(nftData.traits || []),
-      owner: (nftData as any).owners?.[0]?.address,
+      traits: parseTraits(nftData.traits),
+      owner: nftData.owners?.[0]?.address,
     };
 
     // Fetch listings for this NFT using getNFTListings
@@ -469,63 +531,80 @@ export async function fetchNFTDetails(
 
     const listings = (listingsResponse.listings || []).map(orderToListing);
 
-    // Fetch token-specific offers and collection-wide offers in parallel
-    const [tokenOffersResponse, collectionOffersResponse] = await Promise.all([
-      // Token-specific offers (offers for this exact NFT)
-      sdk.api.getNFTOffers(
-        collection.address,
-        tokenId,
-        50, // limit
-        undefined, // next
-        Chain.Mainnet,
-      ),
-      // Collection-wide offers (floor bids that apply to any NFT in the collection)
-      sdk.api.getCollectionOffers(
-        collection.slug,
-        50, // limit
-        undefined, // next
-      ),
-    ]);
+    // Fetch offers only if enabled in config
+    let offers: Offer[] = [];
+    let bestOffer: Offer | undefined;
 
-    // Convert token-specific offers
-    const tokenOffers = (tokenOffersResponse.offers || []).map(orderToOffer);
+    if (marketplaceConfig.offersEnabled) {
+      // Fetch token-specific offers and collection-wide offers in parallel
+      const [tokenOffersResponse, collectionOffersResponse] = await Promise.all(
+        [
+          // Token-specific offers (offers for this exact NFT)
+          sdk.api.getNFTOffers(
+            collection.address,
+            tokenId,
+            50, // limit
+            undefined, // next
+            Chain.Mainnet,
+          ),
+          // Collection-wide offers (floor bids that apply to any NFT in the collection)
+          sdk.api.getCollectionOffers(
+            collection.slug,
+            50, // limit
+            undefined, // next
+          ),
+        ],
+      );
 
-    // Convert collection offers and mark them as collection offers
-    const collectionOffers = (collectionOffersResponse.offers || []).map(
-      (order) => ({
-        ...orderToOffer(order),
-        isCollectionOffer: true,
-      }),
-    );
+      // Convert token-specific offers
+      const tokenOffers = (tokenOffersResponse.offers || []).map(orderToOffer);
 
-    // Merge offers, deduplicating by orderHash
-    const offersByHash = new Map<string, Offer>();
-    for (const offer of tokenOffers) {
-      offersByHash.set(offer.orderHash, offer);
-    }
-    for (const offer of collectionOffers) {
-      // Only add collection offers if not already present as token offer
-      if (!offersByHash.has(offer.orderHash)) {
+      // Convert collection offers and mark them as collection offers
+      const collectionOffers = (collectionOffersResponse.offers || []).map(
+        (order) => ({
+          ...orderToOffer(order),
+          isCollectionOffer: true,
+        }),
+      );
+
+      // Merge offers, deduplicating by orderHash and filtering out expired offers
+      const now = new Date();
+      const offersByHash = new Map<string, Offer>();
+
+      for (const offer of tokenOffers) {
+        // Skip expired offers
+        if (new Date(offer.expirationTime) <= now) continue;
         offersByHash.set(offer.orderHash, offer);
       }
-    }
-    const offers = Array.from(offersByHash.values());
+      for (const offer of collectionOffers) {
+        // Skip expired offers
+        if (new Date(offer.expirationTime) <= now) continue;
+        // Only add collection offers if not already present as token offer
+        if (!offersByHash.has(offer.orderHash)) {
+          offersByHash.set(offer.orderHash, offer);
+        }
+      }
+      offers = Array.from(offersByHash.values());
 
-    // Find best listing and offer
+      // Sort offers by price descending
+      const sortedOffers = [...offers].sort(
+        (a, b) => parseFloat(b.price.amount) - parseFloat(a.price.amount),
+      );
+      bestOffer = sortedOffers[0];
+    }
+
+    // Sort listings by price ascending
     const sortedListings = [...listings].sort(
       (a, b) => parseFloat(a.price.amount) - parseFloat(b.price.amount),
-    );
-    const sortedOffers = [...offers].sort(
-      (a, b) => parseFloat(b.price.amount) - parseFloat(a.price.amount),
     );
 
     return {
       nft,
       collection,
-      listings,
+      listings: sortedListings,
       offers,
       bestListing: sortedListings[0],
-      bestOffer: sortedOffers[0],
+      bestOffer,
     };
   } catch (error) {
     console.error(
