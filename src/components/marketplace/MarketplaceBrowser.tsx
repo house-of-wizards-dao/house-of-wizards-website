@@ -57,7 +57,6 @@ export function MarketplaceBrowser({
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(
     null,
   );
-  const [showOnlyListed, setShowOnlyListed] = useState(true);
   const [priceFilter, setPriceFilter] = useState<
     "all" | "low" | "mid" | "high"
   >("all");
@@ -175,11 +174,6 @@ export function MarketplaceBrowser({
       );
     }
 
-    // Filter by listing status (NFTX items are always "listed" in the pool)
-    if (showOnlyListed && marketplaceSource === "opensea") {
-      result = result.filter((item) => item.listings.length > 0);
-    }
-
     // Filter by price range
     if (priceFilter !== "all") {
       result = result.filter((item) => {
@@ -225,7 +219,6 @@ export function MarketplaceBrowser({
     items,
     nameQuery,
     idQuery,
-    showOnlyListed,
     priceFilter,
     sortBy,
     marketplaceSource,
@@ -438,18 +431,8 @@ export function MarketplaceBrowser({
         </select>
       </div>
 
-      {/* Toggle for listed only */}
-      <div className="flex items-center gap-4">
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showOnlyListed}
-            onChange={(e) => setShowOnlyListed(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-700 bg-[#111015] text-violet-500 focus:ring-2 focus:ring-violet-500"
-          />
-          <span className="text-gray-300">Show only listed items</span>
-        </label>
-
+      {/* Refresh button */}
+      <div className="flex items-center">
         <button
           onClick={refresh}
           className="text-sm text-violet-400 hover:text-violet-300"
