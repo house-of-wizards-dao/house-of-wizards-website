@@ -1,11 +1,12 @@
 /**
  * NFTX v2 integration for marketplace
- * Fetches vault holdings directly from blockchain and prices from DEX
+ * Fetches vault holdings via OpenSea API and prices from DEX
  */
 
 import { unstable_cache } from "next/cache";
 import { encodeFunctionData } from "viem";
-import { wizardsWithTraits, type Wizard } from "@/data/wizardsWithTraits";
+import { wizardsWithTraits } from "@/data/wizardsWithTraits";
+import { warriorsWithTraits } from "@/data/warriorsWithTraits";
 import type {
   NFTXVaultConfig,
   NFTXVaultData,
@@ -37,18 +38,39 @@ const MARKETPLACE_ZAP_ABI = [
 ] as const;
 
 /**
- * Get wizard image URL by token ID
+ * Get NFT image URL by collection and token ID
  */
-const getWizardImageUrl = (tokenId: string): string => {
-  return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${tokenId}.png`;
+const getNFTImageUrl = (
+  collectionKey: CollectionKey,
+  tokenId: string,
+): string => {
+  switch (collectionKey) {
+    case "wizards":
+      // Wizards use IPFS (same as WizardBrowser)
+      return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${tokenId}.png`;
+    case "warriors":
+      // Warriors use portal API (same as WarriorBrowser)
+      return `https://portal.forgottenrunes.com/api/warriors/img/${tokenId}.png`;
+    default:
+      return "";
+  }
 };
 
 /**
- * Get wizard data by token ID from local data
+ * Get NFT name from local data by collection and token ID
  */
-const getWizardData = (tokenId: string): Wizard | undefined => {
+const getNFTName = (
+  collectionKey: CollectionKey,
+  tokenId: string,
+): string | undefined => {
   const idx = parseInt(tokenId, 10);
-  return wizardsWithTraits[idx];
+  if (collectionKey === "wizards") {
+    return wizardsWithTraits[idx]?.name;
+  }
+  if (collectionKey === "warriors") {
+    return warriorsWithTraits[idx]?.name;
+  }
+  return undefined;
 };
 
 /**
@@ -81,6 +103,14 @@ export const nftxVaults: Record<string, NFTXVaultConfig> = {
     collectionKey: "wizards",
     name: "Forgotten Runes Wizards Cult",
     symbol: "WIZARD",
+  },
+  warriors: {
+    vaultId: 479, // WARRIOR vault ID (verified from tx 0x7fc82484 calldata)
+    vaultAddress: "0xe218a21d03dea706d114d9c4490950375f3b7c05",
+    vTokenAddress: "0xe218a21d03dea706d114d9c4490950375f3b7c05", // vToken is same as vault in v2
+    collectionKey: "warriors",
+    name: "Forgotten Runes Warriors Guild",
+    symbol: "WARRIOR",
   },
 };
 
@@ -129,80 +159,74 @@ const padAddress = (address: string): string => {
 };
 
 /**
- * Pad a number to 32 bytes for ABI encoding
- */
-const padNumber = (num: number): string => {
-  return num.toString(16).padStart(64, "0");
-};
-
-/**
- * Parse a uint256 result from hex
- */
-const parseUint256 = (hex: string | null): number => {
-  if (!hex || hex === "0x") return 0;
-  return parseInt(hex, 16);
-};
-
-/**
- * Query ERC721 balanceOf for an address
- * balanceOf(address) selector: 0x70a08231
- */
-const getERC721Balance = async (
-  nftContract: string,
-  owner: string,
-): Promise<number> => {
-  const data = `0x70a08231${padAddress(owner)}`;
-  const result = await ethCall(nftContract, data);
-  return parseUint256(result);
-};
-
-/**
- * Query ERC721 tokenOfOwnerByIndex
- * tokenOfOwnerByIndex(address,uint256) selector: 0x2f745c59
- */
-const getTokenOfOwnerByIndex = async (
-  nftContract: string,
-  owner: string,
-  index: number,
-): Promise<number | null> => {
-  const data = `0x2f745c59${padAddress(owner)}${padNumber(index)}`;
-  const result = await ethCall(nftContract, data);
-  if (!result || result === "0x") return null;
-  return parseUint256(result);
-};
-
-/**
- * Fetch all token IDs owned by an address (vault)
- * Uses ERC721Enumerable interface
+ * Fetch token IDs owned by a vault for a specific collection using OpenSea API
+ * Uses collection-specific query for efficiency
  */
 const fetchVaultTokenIds = async (
+  collectionSlug: string,
   nftContract: string,
   vaultAddress: string,
   maxTokens: number = 500,
 ): Promise<string[]> => {
-  // First get the balance
-  const balance = await getERC721Balance(nftContract, vaultAddress);
-  if (balance === 0) return [];
-
-  const tokenCount = Math.min(balance, maxTokens);
   const tokenIds: string[] = [];
+  let next: string | undefined;
+  const pageSize = 200;
+  const maxPages = Math.ceil(maxTokens / pageSize);
 
-  // Batch fetch token IDs (in groups of 10 concurrent requests)
-  const batchSize = 10;
-  for (let i = 0; i < tokenCount; i += batchSize) {
-    const promises: Promise<number | null>[] = [];
-    for (let j = i; j < Math.min(i + batchSize, tokenCount); j++) {
-      promises.push(getTokenOfOwnerByIndex(nftContract, vaultAddress, j));
-    }
-    const results = await Promise.all(promises);
-    for (const tokenId of results) {
-      if (tokenId !== null) {
-        tokenIds.push(tokenId.toString());
-      }
-    }
+  // Use OpenSea REST API directly with collection filter for efficiency
+  const apiKey = process.env.OPENSEA_API_KEY;
+  const headers: Record<string, string> = {
+    Accept: "application/json",
+  };
+  if (apiKey) {
+    headers["X-API-KEY"] = apiKey;
   }
 
-  return tokenIds;
+  try {
+    for (let page = 0; page < maxPages; page++) {
+      const params = new URLSearchParams({
+        collection: collectionSlug,
+        limit: pageSize.toString(),
+      });
+      if (next) {
+        params.set("next", next);
+      }
+
+      const response = await fetch(
+        `https://api.opensea.io/api/v2/chain/ethereum/account/${vaultAddress}/nfts?${params}`,
+        { headers },
+      );
+
+      if (!response.ok) {
+        console.error(
+          `OpenSea API error: ${response.status} ${response.statusText}`,
+        );
+        break;
+      }
+
+      const data = await response.json();
+
+      // Filter by contract to be extra safe
+      for (const nft of data.nfts || []) {
+        if (nft.contract?.toLowerCase() === nftContract.toLowerCase()) {
+          tokenIds.push(nft.identifier);
+        }
+      }
+
+      // Stop if we have enough or no more pages
+      if (!data.next || tokenIds.length >= maxTokens) {
+        break;
+      }
+      next = data.next;
+    }
+  } catch (error) {
+    console.error(
+      `Error fetching vault token IDs via OpenSea for ${vaultAddress}:`,
+      error,
+    );
+  }
+
+  return tokenIds.slice(0, maxTokens);
 };
 
 /**
@@ -215,7 +239,7 @@ const DEFAULT_NFTX_FEES = {
 };
 
 /**
- * Fetch vault holdings directly from blockchain (cached)
+ * Fetch vault holdings via OpenSea API (cached)
  */
 export const fetchVaultHoldings = unstable_cache(
   async (vaultConfig: NFTXVaultConfig): Promise<NFTXVaultData | null> => {
@@ -226,8 +250,9 @@ export const fetchVaultHoldings = unstable_cache(
         return null;
       }
 
-      // Fetch token IDs from the NFT contract (vault holds the NFTs)
+      // Fetch token IDs via OpenSea API (filtered by collection)
       const tokenIds = await fetchVaultTokenIds(
+        collection.slug,
         collection.address,
         vaultConfig.vaultAddress,
       );
@@ -240,7 +265,7 @@ export const fetchVaultHoldings = unstable_cache(
       const holdings: NFTXHolding[] = tokenIds.map((tokenId) => ({
         tokenId,
         amount: 1,
-        dateAdded: 0, // Not available from contract
+        dateAdded: 0, // Not available from OpenSea
       }));
 
       return {
@@ -260,7 +285,7 @@ export const fetchVaultHoldings = unstable_cache(
   },
   ["nftx-vault-holdings"],
   {
-    revalidate: 300, // 5 minutes - blockchain data
+    revalidate: 300, // 5 minutes
     tags: ["nftx-holdings"],
   },
 );
@@ -419,20 +444,18 @@ export const fetchNFTXListings = async (
       dateAdded: holding.dateAdded,
     };
 
-    // Get wizard data from local cache (for wizards collection)
-    const wizardData =
-      collectionKey === "wizards" ? getWizardData(holding.tokenId) : undefined;
+    // Get NFT name from local data if available
+    const nftName = getNFTName(collectionKey, holding.tokenId);
 
-    // Create NFT data with local wizard data if available
+    // Create NFT data with local data if available
     const nft: MarketplaceNFT = {
       identifier: holding.tokenId,
       collection: collection.slug,
       contract: collection.address,
       token_standard: "erc721",
-      name: wizardData?.name || `${collection.name} #${holding.tokenId}`,
+      name: nftName || `${collection.name} #${holding.tokenId}`,
       description: "",
-      image_url:
-        collectionKey === "wizards" ? getWizardImageUrl(holding.tokenId) : "",
+      image_url: getNFTImageUrl(collectionKey, holding.tokenId),
       metadata_url: "",
       opensea_url: `https://opensea.io/assets/ethereum/${collection.address}/${holding.tokenId}`,
       updated_at: new Date(holding.dateAdded * 1000).toISOString(),
