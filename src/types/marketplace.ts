@@ -1,5 +1,5 @@
 /**
- * Marketplace types for OpenSea integration
+ * Marketplace types for OpenSea and NFTX integration
  */
 
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
@@ -18,6 +18,64 @@ export type CollectionKey =
   | "locks"
   | "athenaeum"
   | "impBox";
+
+/**
+ * Marketplace source for listings
+ */
+export type MarketplaceSource = "opensea" | "nftx";
+
+/**
+ * NFTX vault configuration
+ */
+export interface NFTXVaultConfig {
+  vaultId: number;
+  vaultAddress: string;
+  vTokenAddress: string;
+  collectionKey: CollectionKey;
+  name: string;
+  symbol: string;
+}
+
+/**
+ * NFTX vault holdings (NFTs in the pool)
+ */
+export interface NFTXHolding {
+  tokenId: string;
+  amount: number;
+  dateAdded: number;
+}
+
+/**
+ * NFTX vault data from subgraph
+ */
+export interface NFTXVaultData {
+  vault: NFTXVaultConfig;
+  holdings: NFTXHolding[];
+  totalHoldings: number;
+  fees: {
+    mintFee: string; // Percentage in wei (e.g., "50000000000000000" = 5%)
+    redeemFee: string;
+    swapFee: string;
+  };
+  usesFactoryFees: boolean;
+}
+
+/**
+ * NFTX listing (an NFT available in a pool)
+ */
+export interface NFTXListing {
+  source: "nftx";
+  vaultAddress: string;
+  tokenId: string;
+  /** Price in ETH (includes fees) */
+  priceEth: string;
+  /** Raw vToken price without fees */
+  vTokenPriceEth: string;
+  /** Fee in ETH */
+  feeEth: string;
+  /** When the NFT was added to the pool */
+  dateAdded: number;
+}
 
 /**
  * Collection metadata for UI display
@@ -104,6 +162,10 @@ export interface MarketplaceItem {
   offers: Offer[];
   bestListing?: Listing; // Lowest price listing
   bestOffer?: Offer; // Highest offer
+  /** NFTX listing if available from pool */
+  nftxListing?: NFTXListing;
+  /** Primary marketplace source for this item */
+  source?: MarketplaceSource;
 }
 
 /**

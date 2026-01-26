@@ -288,7 +288,9 @@ function orderToOffer(order: OpenSeaOffer | OpenSeaCollectionOffer): Offer {
 /**
  * Convert OpenSea NFT traits to our format
  */
-function parseTraits(traits: OpenSeaTrait[] | null | undefined): NFTTrait[] {
+export function parseTraits(
+  traits: OpenSeaTrait[] | null | undefined,
+): NFTTrait[] {
   if (!Array.isArray(traits)) return [];
   return traits.map((t) => ({
     trait_type: t.trait_type,

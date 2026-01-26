@@ -19,12 +19,19 @@ export function MarketplaceItemCard({
   selected = false,
   isBuyLoading = false,
 }: MarketplaceItemCardProps) {
-  const { nft, bestListing } = item;
+  const { nft, bestListing, nftxListing } = item;
 
-  // Format the listing price
-  const listingPrice = bestListing
-    ? formatEthFromWei(bestListing.price.amount)
-    : undefined;
+  // Format the listing price - prioritize OpenSea listing, fall back to NFTX
+  let listingPrice: string | undefined;
+  let priceSource: "opensea" | "nftx" | undefined;
+
+  if (bestListing) {
+    listingPrice = formatEthFromWei(bestListing.price.amount);
+    priceSource = "opensea";
+  } else if (nftxListing) {
+    listingPrice = nftxListing.priceEth;
+    priceSource = "nftx";
+  }
 
   return (
     <NFTCard
@@ -35,6 +42,7 @@ export function MarketplaceItemCard({
       selected={selected}
       price={listingPrice}
       priceCurrency="ETH"
+      priceLabel={priceSource === "nftx" ? "NFTX" : undefined}
       onBuy={onBuy ? () => onBuy(item) : undefined}
       isBuyLoading={isBuyLoading}
     />

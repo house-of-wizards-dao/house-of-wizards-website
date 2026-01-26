@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
+import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useAccount, useWalletClient } from "wagmi";
 import type {
   CollectionKey,
@@ -8,10 +9,100 @@ import type {
   CollectionInfo,
   Listing,
   Offer,
+  NFTXListing,
 } from "@/types/marketplace";
+
+// ============================================================================
+// API Fetcher Functions
+// ============================================================================
+
+/**
+ * Fetch OpenSea marketplace listings for a collection
+ */
+async function fetchMarketplaceListings(
+  collection: CollectionKey,
+  limit: number,
+  cursor?: string,
+): Promise<{
+  listings: MarketplaceItem[];
+  collection: CollectionInfo;
+  next: string | null;
+}> {
+  const params = new URLSearchParams({
+    collection,
+    limit: String(limit),
+  });
+  if (cursor) {
+    params.set("next", cursor);
+  }
+
+  const response = await fetch(`/api/marketplace/listings?${params}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to fetch listings");
+  }
+
+  return data;
+}
+
+/**
+ * Fetch NFT details with offers
+ */
+async function fetchNFTDetails(
+  collection: CollectionKey,
+  tokenId: string,
+): Promise<MarketplaceItem> {
+  const params = new URLSearchParams({ collection, tokenId });
+  const response = await fetch(`/api/marketplace/nft?${params}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to fetch NFT details");
+  }
+
+  return data.item;
+}
+
+/**
+ * Fetch NFTX pool listings for a collection
+ */
+async function fetchNFTXListings(collection: CollectionKey): Promise<{
+  listings: MarketplaceItem[];
+  vault: NFTXVaultInfo | null;
+  hasVault: boolean;
+}> {
+  const params = new URLSearchParams({ collection });
+  const response = await fetch(`/api/marketplace/nftx?${params}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || "Failed to fetch NFTX listings");
+  }
+
+  return {
+    listings: data.listings || [],
+    vault: data.vault || null,
+    hasVault: data.hasVault || false,
+  };
+}
+
+/**
+ * NFTX vault info returned from API
+ */
+interface NFTXVaultInfo {
+  address: string;
+  symbol: string;
+  name: string;
+}
+
+// ============================================================================
+// React Query Hooks
+// ============================================================================
 
 /**
  * Hook to fetch marketplace listings for a collection
+ * Uses React Query for caching and automatic refetching
  */
 export function useMarketplaceListings(
   collection: CollectionKey | null,
@@ -31,102 +122,77 @@ export function useMarketplaceListings(
     initialCollectionInfo,
   } = options || {};
 
-  // Initialize state with SSR data if available
-  const [items, setItems] = useState<MarketplaceItem[]>(initialItems || []);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [collectionInfo, setCollectionInfo] = useState<CollectionInfo | null>(
-    initialCollectionInfo || null,
-  );
-  // Track if we've already loaded initial data from SSR
-  const [hasInitialData, setHasInitialData] = useState(!!initialItems?.length);
+  const queryClient = useQueryClient();
 
-  const fetchListings = useCallback(
-    async (cursor?: string) => {
-      if (!collection) return;
+  const {
+    data,
+    isLoading,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ["marketplace", "listings", collection, limit],
+    queryFn: ({ pageParam }) =>
+      fetchMarketplaceListings(collection!, limit, pageParam),
+    initialPageParam: undefined as string | undefined,
+    getNextPageParam: (lastPage) => lastPage.next || undefined,
+    enabled: autoFetch && !!collection,
+    staleTime: 30_000, // Consider data fresh for 30 seconds
+    initialData:
+      initialItems && initialCollectionInfo
+        ? {
+            pages: [
+              {
+                listings: initialItems,
+                collection: initialCollectionInfo,
+                next: null,
+              },
+            ],
+            pageParams: [undefined],
+          }
+        : undefined,
+  });
 
-      setIsLoading(true);
-      setError(null);
+  // Flatten all pages into a single array of items
+  const items = useMemo(() => {
+    if (!data?.pages) return [];
+    const allItems: MarketplaceItem[] = [];
+    const seenIds = new Set<string>();
 
-      try {
-        const params = new URLSearchParams({
-          collection,
-          limit: String(limit),
-        });
-        if (cursor) {
-          params.set("next", cursor);
+    for (const page of data.pages) {
+      for (const item of page.listings) {
+        if (!seenIds.has(item.nft.identifier)) {
+          seenIds.add(item.nft.identifier);
+          allItems.push(item);
         }
-
-        const response = await fetch(`/api/marketplace/listings?${params}`);
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch listings");
-        }
-
-        setCollectionInfo(data.collection);
-
-        if (cursor) {
-          // Append to existing items, deduplicating by token ID
-          setItems((prev) => {
-            const existingIds = new Set(
-              prev.map((item) => item.nft.identifier),
-            );
-            const newItems = (data.listings as MarketplaceItem[]).filter(
-              (item) => !existingIds.has(item.nft.identifier),
-            );
-            return [...prev, ...newItems];
-          });
-        } else {
-          // Replace items
-          setItems(data.listings);
-        }
-
-        setNextCursor(data.next || null);
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Unknown error";
-        setError(message);
-        console.error("Error fetching listings:", err);
-      } finally {
-        setIsLoading(false);
       }
-    },
-    [collection, limit],
-  );
+    }
+    return allItems;
+  }, [data?.pages]);
+
+  // Get collection info from the first page
+  const collectionInfo = data?.pages[0]?.collection || null;
 
   const loadMore = useCallback(() => {
-    if (nextCursor && !isLoading) {
-      fetchListings(nextCursor);
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
-  }, [nextCursor, isLoading, fetchListings]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   const refresh = useCallback(() => {
-    setItems([]);
-    setNextCursor(null);
-    fetchListings();
-  }, [fetchListings]);
-
-  // Auto-fetch on mount and collection change
-  // Skip initial fetch if we have SSR data for this collection
-  useEffect(() => {
-    if (autoFetch && collection) {
-      // If we have initial data from SSR, skip the first fetch
-      if (hasInitialData) {
-        setHasInitialData(false);
-        return;
-      }
-      setItems([]);
-      setNextCursor(null);
-      fetchListings();
-    }
-  }, [collection, autoFetch, fetchListings, hasInitialData]);
+    queryClient.invalidateQueries({
+      queryKey: ["marketplace", "listings", collection],
+    });
+    refetch();
+  }, [queryClient, collection, refetch]);
 
   return {
     items,
-    isLoading,
-    error,
-    hasMore: !!nextCursor,
+    isLoading: isLoading || isFetchingNextPage,
+    error: error?.message || null,
+    hasMore: !!hasNextPage,
     collectionInfo,
     loadMore,
     refresh,
@@ -135,59 +201,33 @@ export function useMarketplaceListings(
 
 /**
  * Hook to fetch NFT details with offers
+ * Uses React Query for caching
  */
 export function useNFTDetails(
   collection: CollectionKey | null,
   tokenId: string | null,
 ) {
-  const [item, setItem] = useState<MarketplaceItem | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchDetails = useCallback(async () => {
-    if (!collection || !tokenId) {
-      setItem(null);
-      return;
-    }
+  const { data: item, isLoading, error, refetch } = useQuery({
+    queryKey: ["marketplace", "nft", collection, tokenId],
+    queryFn: () => fetchNFTDetails(collection!, tokenId!),
+    enabled: !!collection && !!tokenId,
+    staleTime: 30_000, // Consider data fresh for 30 seconds
+  });
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      const params = new URLSearchParams({
-        collection,
-        tokenId,
-      });
-
-      const response = await fetch(`/api/marketplace/nft?${params}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch NFT details");
-      }
-
-      setItem(data.item);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Unknown error";
-      setError(message);
-      console.error("Error fetching NFT details:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [collection, tokenId]);
-
-  // Fetch on mount and when collection/tokenId change
-  useEffect(() => {
-    if (collection && tokenId) {
-      fetchDetails();
-    }
-  }, [collection, tokenId, fetchDetails]);
+  const refresh = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["marketplace", "nft", collection, tokenId],
+    });
+    refetch();
+  }, [queryClient, collection, tokenId, refetch]);
 
   return {
-    item,
+    item: item || null,
     isLoading,
-    error,
-    refresh: fetchDetails,
+    error: error?.message || null,
+    refresh,
   };
 }
 
@@ -407,4 +447,162 @@ export function useNFTOwnership(
   }, [isConnected, address, item]);
 
   return { isOwner, ownerAddress: item?.nft.owner };
+}
+
+/**
+ * Hook to fetch NFTX pool listings for a collection
+ * Uses React Query for caching and automatic refetching
+ */
+export function useNFTXListings(
+  collection: CollectionKey | null,
+  options?: {
+    autoFetch?: boolean;
+  },
+) {
+  const { autoFetch = true } = options || {};
+  const queryClient = useQueryClient();
+
+  const { data, isLoading, error, refetch, isFetched } = useQuery({
+    queryKey: ["marketplace", "nftx", collection],
+    queryFn: () => fetchNFTXListings(collection!),
+    enabled: autoFetch && !!collection,
+    staleTime: 30_000, // Consider data fresh for 30 seconds
+  });
+
+  const refresh = useCallback(() => {
+    queryClient.invalidateQueries({
+      queryKey: ["marketplace", "nftx", collection],
+    });
+    refetch();
+  }, [queryClient, collection, refetch]);
+
+  return {
+    items: data?.listings || [],
+    isLoading,
+    error: error?.message || null,
+    vaultInfo: data?.vault || null,
+    hasVault: data?.hasVault || false,
+    hasFetched: isFetched,
+    refresh,
+  };
+}
+
+/**
+ * Hook for buying from NFTX pool
+ */
+export function useNFTXBuy() {
+  const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+
+  /**
+   * Get a quote for buying NFTs from NFTX pool
+   */
+  const getQuote = useCallback(
+    async (
+      collection: CollectionKey,
+      tokenIds: string[],
+    ): Promise<{
+      totalPriceEth: string;
+      pricePerNft: string;
+      feePerNft: string;
+      vaultAddress: string;
+    } | null> => {
+      try {
+        const response = await fetch("/api/marketplace/nftx", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ collection, tokenIds, action: "quote" }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to get quote");
+        }
+
+        return data.quote;
+      } catch (err) {
+        console.error("Error getting NFTX quote:", err);
+        return null;
+      }
+    },
+    [],
+  );
+
+  /**
+   * Buy NFTs from NFTX pool using the MarketplaceZap contract
+   */
+  const buyFromPool = useCallback(
+    async (
+      collection: CollectionKey,
+      tokenIds: string[],
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      _nftxListing: NFTXListing,
+    ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+      if (!isConnected || !address || !walletClient) {
+        return { success: false, error: "Wallet not connected" };
+      }
+
+      setIsProcessing(true);
+      setError(null);
+
+      try {
+        // Get transaction data from API
+        const response = await fetch("/api/marketplace/nftx", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            collection,
+            tokenIds,
+            action: "buy",
+            buyerAddress: address,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to get transaction data");
+        }
+
+        const { transaction } = data;
+
+        if (!transaction?.to || !transaction?.data) {
+          throw new Error("Invalid transaction data received");
+        }
+
+        // Send the transaction
+        const txHash = await walletClient.sendTransaction({
+          to: transaction.to as `0x${string}`,
+          data: transaction.data as `0x${string}`,
+          value: BigInt(transaction.value || "0"),
+        });
+
+        setLastTxHash(txHash);
+        return { success: true, txHash };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Transaction failed";
+        setError(message);
+        console.error("Error buying from NFTX:", err);
+        return { success: false, error: message };
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [isConnected, address, walletClient],
+  );
+
+  return {
+    isConnected,
+    address,
+    isProcessing,
+    error,
+    lastTxHash,
+    getQuote,
+    buyFromPool,
+  };
 }

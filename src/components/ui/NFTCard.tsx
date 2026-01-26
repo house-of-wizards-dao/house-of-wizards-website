@@ -13,6 +13,8 @@ export interface NFTCardProps {
   // Marketplace-specific props
   price?: string;
   priceCurrency?: string;
+  /** Label to show source (e.g., "NFTX") */
+  priceLabel?: string;
   onBuy?: (e: React.MouseEvent) => void;
   isBuyLoading?: boolean;
 }
@@ -29,6 +31,7 @@ export function NFTCard({
   disabled = false,
   price,
   priceCurrency = "ETH",
+  priceLabel,
   onBuy,
   isBuyLoading = false,
 }: NFTCardProps) {
@@ -59,7 +62,7 @@ export function NFTCard({
       }}
     >
       {/* Image */}
-      <div className="w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">
+      <div className="relative w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">
         {hasImage ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
@@ -75,6 +78,12 @@ export function NFTCard({
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-4xl font-bold text-gray-600">#{tokenId}</span>
+          </div>
+        )}
+        {/* Source badge */}
+        {priceLabel && (
+          <div className="absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-600 text-white">
+            {priceLabel}
           </div>
         )}
       </div>
