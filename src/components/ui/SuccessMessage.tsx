@@ -1,12 +1,12 @@
 import React from "react";
 import { Check, X } from "lucide-react";
 
-interface SuccessMessageProps {
+type SuccessMessageProps = {
   title?: string;
   message: string;
   onDismiss?: () => void;
   className?: string;
-}
+};
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({
   title,

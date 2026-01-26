@@ -8,11 +8,11 @@ export type SortField =
   | "percentage";
 export type SortDirection = "asc" | "desc";
 
-interface UseTraitSortingReturn {
+type UseTraitSortingReturn = {
   sortField: SortField;
   sortDirection: SortDirection;
   handleSort: (field: SortField) => void;
-}
+};
 
 export const useTraitSorting = (
   defaultField: SortField = "burned",

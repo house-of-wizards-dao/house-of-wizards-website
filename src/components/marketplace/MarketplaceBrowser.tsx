@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, ChangeEvent } from "react";
 import { useAccount, useSwitchChain } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { cn } from "@/lib/utils";
@@ -17,6 +17,19 @@ import type {
   CollectionInfo,
   MarketplaceSource,
 } from "@/types/marketplace";
+import {
+  wizardTraits,
+  wizardTraitParts,
+  type WizardTraitPart,
+} from "@/data/wizardTraits";
+import { wizardsWithTraits } from "@/data/wizardsWithTraits";
+import {
+  warriorTraits,
+  warriorTraitParts,
+  type WarriorTraitPart,
+} from "@/data/warriorTraits";
+import { warriorsWithTraits } from "@/data/warriorsWithTraits";
+import { TraitFilters } from "@/components/browser/TraitFilters";
 import {
   MarketplaceItemCard,
   MarketplaceItemSkeleton,
@@ -47,11 +60,71 @@ const collectionOptions: { key: CollectionKey; label: string }[] = [
   { key: "impBox", label: "Treat Boxes" },
 ];
 
-export function MarketplaceBrowser({
+// Pre-compute trait lookups for wizards and warriors
+const wizardsByIdx = new Map(wizardsWithTraits.map((w) => [w.idx, w]));
+const warriorsByIdx = new Map(warriorsWithTraits.map((w) => [w.idx, w]));
+
+// Build wizard trait options by part
+const wizardTraitOptions = (() => {
+  const byPart: Record<
+    WizardTraitPart,
+    Array<{ value: number; label: string }>
+  > = {
+    prop: [],
+    rune: [],
+    familiar: [],
+    head: [],
+    body: [],
+  };
+
+  for (const t of wizardTraits) {
+    if (t.part && t.part in byPart) {
+      byPart[t.part].push({ value: t.idx, label: t.displayName });
+    }
+  }
+
+  // Sort each part's options alphabetically
+  for (const part of wizardTraitParts) {
+    byPart[part].sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  return byPart;
+})();
+
+// Build warrior trait options by part
+const warriorTraitOptions = (() => {
+  const byPart: Record<
+    WarriorTraitPart,
+    Array<{ value: number; label: string }>
+  > = {
+    background: [],
+    weapon: [],
+    rune: [],
+    companion: [],
+    head: [],
+    body: [],
+    shield: [],
+  };
+
+  for (const t of warriorTraits) {
+    if (t.part in byPart) {
+      byPart[t.part].push({ value: t.idx, label: t.displayName });
+    }
+  }
+
+  // Sort each part's options alphabetically
+  for (const part of warriorTraitParts) {
+    byPart[part].sort((a, b) => a.label.localeCompare(b.label));
+  }
+
+  return byPart;
+})();
+
+export const MarketplaceBrowser = ({
   initialCollection = "wizards",
   initialListings,
   initialCollectionInfo,
-}: MarketplaceBrowserProps) {
+}: MarketplaceBrowserProps) => {
   const [selectedCollection, setSelectedCollection] =
     useState<CollectionKey>(initialCollection);
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(
@@ -67,7 +140,15 @@ export function MarketplaceBrowser({
   const [idQuery, setIdQuery] = useState("");
   const [buyingTokenId, setBuyingTokenId] = useState<string | null>(null);
   const [marketplaceSource, setMarketplaceSource] =
-    useState<MarketplaceSource>("opensea");
+    useState<MarketplaceSource>("all");
+
+  // Trait filters for wizards and warriors
+  const [selectedWizardTraits, setSelectedWizardTraits] = useState<
+    Partial<Record<WizardTraitPart, number>>
+  >({});
+  const [selectedWarriorTraits, setSelectedWarriorTraits] = useState<
+    Partial<Record<WarriorTraitPart, number>>
+  >({});
 
   // Chain management - marketplace only works on Ethereum mainnet
   const { chainId, isConnected: isWalletConnected } = useAccount();
@@ -93,7 +174,7 @@ export function MarketplaceBrowser({
     refresh: refreshOpensea,
   } = useMarketplaceListings(selectedCollection, {
     limit: 50,
-    autoFetch: marketplaceSource === "opensea",
+    autoFetch: marketplaceSource === "opensea" || marketplaceSource === "all",
     // Only use initial data for the initial collection
     initialItems:
       selectedCollection === initialCollection ? initialListings : undefined,
@@ -120,13 +201,63 @@ export function MarketplaceBrowser({
   const { buyFromPool } = useNFTXBuy();
 
   // Combined items based on selected source
-  const items = marketplaceSource === "nftx" ? nftxItems : openseaItems;
-  const isLoading = marketplaceSource === "nftx" ? nftxLoading : openseaLoading;
-  const error = marketplaceSource === "nftx" ? nftxError : openseaError;
+  const items = useMemo(() => {
+    if (marketplaceSource === "opensea") return openseaItems;
+    if (marketplaceSource === "nftx") return nftxItems;
+
+    // "all" - merge both sources, avoiding duplicates
+    // For duplicates (same token ID), prefer OpenSea item but add NFTX listing info
+    const nftxByTokenId = new Map(
+      nftxItems.map((item) => [item.nft.identifier, item]),
+    );
+    const merged: MarketplaceItem[] = [];
+    const seenTokenIds = new Set<string>();
+
+    // Add OpenSea items, enriching with NFTX data if available
+    for (const osItem of openseaItems) {
+      const tokenId = osItem.nft.identifier;
+      seenTokenIds.add(tokenId);
+      const nftxItem = nftxByTokenId.get(tokenId);
+      if (nftxItem) {
+        // Item exists in both - merge NFTX listing into OpenSea item
+        merged.push({
+          ...osItem,
+          nftxListing: nftxItem.nftxListing,
+        });
+      } else {
+        merged.push(osItem);
+      }
+    }
+
+    // Add NFTX-only items
+    for (const nftxItem of nftxItems) {
+      if (!seenTokenIds.has(nftxItem.nft.identifier)) {
+        merged.push(nftxItem);
+      }
+    }
+
+    return merged;
+  }, [marketplaceSource, openseaItems, nftxItems]);
+
+  const isLoading =
+    marketplaceSource === "all"
+      ? openseaLoading || nftxLoading
+      : marketplaceSource === "nftx"
+        ? nftxLoading
+        : openseaLoading;
+  const error =
+    marketplaceSource === "all"
+      ? openseaError || nftxError
+      : marketplaceSource === "nftx"
+        ? nftxError
+        : openseaError;
 
   // Refresh function for current source
   const refresh = useCallback(() => {
-    if (marketplaceSource === "nftx") {
+    if (marketplaceSource === "all") {
+      refreshOpensea();
+      refreshNftx();
+    } else if (marketplaceSource === "nftx") {
       refreshNftx();
     } else {
       refreshOpensea();
@@ -192,6 +323,46 @@ export function MarketplaceBrowser({
       });
     }
 
+    // Filter by traits for wizards
+    if (selectedCollection === "wizards") {
+      const hasTraitFilter = Object.keys(selectedWizardTraits).length > 0;
+      if (hasTraitFilter) {
+        result = result.filter((item) => {
+          const tokenId = parseInt(item.nft.identifier, 10);
+          const wizard = wizardsByIdx.get(tokenId);
+          if (!wizard) return false;
+
+          for (const part of wizardTraitParts) {
+            const selectedValue = selectedWizardTraits[part];
+            if (typeof selectedValue === "number") {
+              if (wizard[part] !== selectedValue) return false;
+            }
+          }
+          return true;
+        });
+      }
+    }
+
+    // Filter by traits for warriors
+    if (selectedCollection === "warriors") {
+      const hasTraitFilter = Object.keys(selectedWarriorTraits).length > 0;
+      if (hasTraitFilter) {
+        result = result.filter((item) => {
+          const tokenId = parseInt(item.nft.identifier, 10);
+          const warrior = warriorsByIdx.get(tokenId);
+          if (!warrior) return false;
+
+          for (const part of warriorTraitParts) {
+            const selectedValue = selectedWarriorTraits[part];
+            if (typeof selectedValue === "number") {
+              if (warrior[part] !== selectedValue) return false;
+            }
+          }
+          return true;
+        });
+      }
+    }
+
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
@@ -221,23 +392,64 @@ export function MarketplaceBrowser({
     idQuery,
     priceFilter,
     sortBy,
-    marketplaceSource,
     getItemPriceEth,
+    selectedCollection,
+    selectedWizardTraits,
+    selectedWarriorTraits,
   ]);
 
   // Handle collection change
-  const handleCollectionChange = useCallback((key: CollectionKey) => {
-    setSelectedCollection(key);
-    setNameQuery("");
-    setIdQuery("");
-    // Reset to OpenSea when switching collections
-    setMarketplaceSource("opensea");
-  }, []);
+  const handleCollectionChange = useCallback(
+    (key: CollectionKey) => {
+      setSelectedCollection(key);
+      setNameQuery("");
+      setIdQuery("");
+      // Reset trait filters when switching collections
+      setSelectedWizardTraits({});
+      setSelectedWarriorTraits({});
+      // Keep "all" or "opensea" when switching, but if "nftx" only, fall back to "all"
+      // since not all collections have NFTX vaults
+      if (marketplaceSource === "nftx") {
+        setMarketplaceSource("all");
+      }
+    },
+    [marketplaceSource],
+  );
 
   // Handle marketplace source change
   const handleSourceChange = useCallback((source: MarketplaceSource) => {
     setMarketplaceSource(source);
   }, []);
+
+  // Handle wizard trait selection
+  const onSelectWizardTrait =
+    (part: WizardTraitPart) => (e: ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setSelectedWizardTraits((prev) => {
+        const next = { ...prev };
+        if (!value) {
+          delete next[part];
+        } else {
+          next[part] = Number(value);
+        }
+        return next;
+      });
+    };
+
+  // Handle warrior trait selection
+  const onSelectWarriorTrait =
+    (part: WarriorTraitPart) => (e: ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setSelectedWarriorTraits((prev) => {
+        const next = { ...prev };
+        if (!value) {
+          delete next[part];
+        } else {
+          next[part] = Number(value);
+        }
+        return next;
+      });
+    };
 
   // Handle item click
   const handleItemClick = useCallback((item: MarketplaceItem) => {
@@ -273,12 +485,34 @@ export function MarketplaceBrowser({
 
       setBuyingTokenId(item.nft.identifier);
       try {
-        // Handle NFTX purchase
-        if (item.nftxListing && marketplaceSource === "nftx") {
+        // Determine which source to buy from
+        const hasNftx = !!item.nftxListing;
+        const hasOpensea = !!item.bestListing;
+
+        // Calculate prices for comparison
+        const nftxPriceEth = hasNftx
+          ? parseFloat(item.nftxListing!.priceEth)
+          : Infinity;
+        const openseaPriceEth = hasOpensea
+          ? parseFloat(item.bestListing!.price.amount) / 1e18
+          : Infinity;
+
+        // Decide which source to use:
+        // - If source is explicitly "nftx", use NFTX
+        // - If source is explicitly "opensea", use OpenSea
+        // - If source is "all", pick the cheaper option
+        const shouldUseNftx =
+          marketplaceSource === "nftx" ||
+          (marketplaceSource === "all" &&
+            hasNftx &&
+            (!hasOpensea || nftxPriceEth <= openseaPriceEth));
+
+        if (shouldUseNftx && hasNftx) {
+          // Handle NFTX purchase
           const result = await buyFromPool(
             item.collection.key,
             [item.nft.identifier],
-            item.nftxListing,
+            item.nftxListing!,
           );
           if (result.success) {
             refresh();
@@ -336,6 +570,17 @@ export function MarketplaceBrowser({
       <div className="flex items-center gap-4">
         <span className="text-gray-400 text-sm">Source:</span>
         <div className="flex gap-2">
+          <button
+            onClick={() => handleSourceChange("all")}
+            className={cn(
+              "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
+              marketplaceSource === "all"
+                ? "bg-violet-600 text-white"
+                : "bg-gray-800 text-gray-300 hover:bg-gray-700",
+            )}
+          >
+            All
+          </button>
           <button
             onClick={() => handleSourceChange("opensea")}
             className={cn(
@@ -431,6 +676,32 @@ export function MarketplaceBrowser({
         </select>
       </div>
 
+      {/* Trait Filters for Wizards */}
+      {selectedCollection === "wizards" && (
+        <div className="border-t border-gray-800 pt-4">
+          <div className="text-sm text-gray-400 mb-3">Filter by Traits</div>
+          <TraitFilters
+            traits={wizardTraitParts}
+            selectedTraits={selectedWizardTraits}
+            partToTraitOptions={wizardTraitOptions}
+            onSelectTrait={onSelectWizardTrait}
+          />
+        </div>
+      )}
+
+      {/* Trait Filters for Warriors */}
+      {selectedCollection === "warriors" && (
+        <div className="border-t border-gray-800 pt-4">
+          <div className="text-sm text-gray-400 mb-3">Filter by Traits</div>
+          <TraitFilters
+            traits={warriorTraitParts}
+            selectedTraits={selectedWarriorTraits}
+            partToTraitOptions={warriorTraitOptions}
+            onSelectTrait={onSelectWarriorTrait}
+          />
+        </div>
+      )}
+
       {/* Refresh button */}
       <div className="flex items-center">
         <button
@@ -494,16 +765,18 @@ export function MarketplaceBrowser({
       </div>
 
       {/* Load More (OpenSea only - NFTX loads all at once) */}
-      {hasMore && !isLoading && marketplaceSource === "opensea" && (
-        <div className="flex justify-center pt-6">
-          <button
-            onClick={loadMore}
-            className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
-          >
-            Load More
-          </button>
-        </div>
-      )}
+      {hasMore &&
+        !isLoading &&
+        (marketplaceSource === "opensea" || marketplaceSource === "all") && (
+          <div className="flex justify-center pt-6">
+            <button
+              onClick={loadMore}
+              className="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition-colors"
+            >
+              Load More
+            </button>
+          </div>
+        )}
 
       {/* Loading more indicator */}
       {isLoading && items.length > 0 && (
@@ -533,4 +806,4 @@ export function MarketplaceBrowser({
       )}
     </div>
   );
-}
+};

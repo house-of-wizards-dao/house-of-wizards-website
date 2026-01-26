@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-export interface NFTCardProps {
+export type NFTCardProps = {
   tokenId: string | number;
   name: string;
   imageUrl?: string;
@@ -17,12 +17,12 @@ export interface NFTCardProps {
   priceLabel?: string;
   onBuy?: (e: React.MouseEvent) => void;
   isBuyLoading?: boolean;
-}
+};
 
 /**
  * Shared NFT card component used by both Browser and MarketplaceBrowser
  */
-export function NFTCard({
+export const NFTCard = ({
   tokenId,
   name,
   imageUrl,
@@ -34,7 +34,7 @@ export function NFTCard({
   priceLabel,
   onBuy,
   isBuyLoading = false,
-}: NFTCardProps) {
+}: NFTCardProps) => {
   const [imageError, setImageError] = useState(false);
   const hasImage = imageUrl && !imageError;
 
@@ -127,12 +127,12 @@ export function NFTCard({
       </div>
     </div>
   );
-}
+};
 
 /**
  * Loading skeleton for NFT cards
  */
-export function NFTCardSkeleton() {
+export const NFTCardSkeleton = () => {
   return (
     <div className="rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden animate-pulse">
       <div className="w-full aspect-square bg-gray-800" />
@@ -142,4 +142,4 @@ export function NFTCardSkeleton() {
       </div>
     </div>
   );
-}
+};

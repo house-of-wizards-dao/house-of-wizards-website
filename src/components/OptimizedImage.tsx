@@ -1,7 +1,7 @@
 import React, { useState, memo } from "react";
 import Image from "next/image";
 
-interface OptimizedImageProps {
+type OptimizedImageProps = {
   src: string;
   alt: string;
   width: number;
@@ -13,7 +13,7 @@ interface OptimizedImageProps {
   placeholder?: "blur" | "empty";
   blurDataURL?: string;
   loading?: "lazy" | "eager";
-}
+};
 
 const OptimizedImage = memo<OptimizedImageProps>(
   ({

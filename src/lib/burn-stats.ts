@@ -7,35 +7,35 @@ let cachedStats: StatsData | null = null;
 let lastUpdateTime: number = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
-export interface TraitBurnStat {
+export type TraitBurnStat = {
   traitType: string;
   value: string;
   original: number;
   remaining: number;
   burned: number;
   tokenIds: string[];
-}
+};
 
-export interface Burn {
+export type Burn = {
   tokenId: string;
   burnIndex: number; // The burnIndex from GraphQL
   wizard: WizardData;
   soul: WizardData;
-}
+};
 
-export interface TraitOption {
+export type TraitOption = {
   type: (typeof TRAITS)[number];
   name: string;
-}
+};
 
-export interface StatsData {
+export type StatsData = {
   traits: TraitBurnStat[];
   burns: Burn[]; // Sorted by burnIndex descending (highest first)
   filterOptions: {
     wizard: TraitOption[];
     soul: TraitOption[];
   };
-}
+};
 
 // Legacy export for backwards compatibility during migration
 export type TraitStat = TraitBurnStat;

@@ -10,9 +10,9 @@ type ForgedWarriorsListViewProps = {
   warriors: WarriorGraphQLResponse[];
 };
 
-export function ForgedWarriorsListView({
+export const ForgedWarriorsListView = ({
   warriors,
-}: ForgedWarriorsListViewProps) {
+}: ForgedWarriorsListViewProps) => {
   // Warrior contract address
   const WARRIOR_CONTRACT = addresses.warriors;
 
@@ -62,4 +62,4 @@ export function ForgedWarriorsListView({
       </div>
     </div>
   );
-}
+};

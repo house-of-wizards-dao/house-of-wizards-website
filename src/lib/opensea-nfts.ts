@@ -7,7 +7,7 @@ import { OpenSeaSDK, Chain } from "opensea-js";
 import { JsonRpcProvider } from "ethers";
 import { frwcAddresses } from "@/config/addresses";
 
-export interface OpenSeaNFT {
+export type OpenSeaNFT = {
   identifier: string; // tokenId
   collection: string;
   contract: string;
@@ -20,12 +20,12 @@ export interface OpenSeaNFT {
   updated_at: string;
   is_disabled: boolean;
   is_nsfw: boolean;
-}
+};
 
-export interface OpenSeaNFTsResponse {
+export type OpenSeaNFTsResponse = {
   nfts: OpenSeaNFT[];
   next: string | null;
-}
+};
 
 /**
  * Initialize OpenSea SDK

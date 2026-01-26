@@ -17,10 +17,10 @@ type EmbeddedTweetProps = {
   id: string;
 };
 
-export function EmbeddedTweet({ id }: EmbeddedTweetProps) {
+export const EmbeddedTweet = ({ id }: EmbeddedTweetProps) => {
   return (
     <div className="rounded-xl overflow-hidden [&>div]:!max-w-full [&_.react-tweet-theme]:!max-w-full">
       <Tweet id={id} />
     </div>
   );
-}
+};

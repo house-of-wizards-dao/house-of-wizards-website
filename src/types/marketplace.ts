@@ -22,7 +22,7 @@ export type CollectionKey =
 /**
  * Marketplace source for listings
  */
-export type MarketplaceSource = "opensea" | "nftx";
+export type MarketplaceSource = "opensea" | "nftx" | "all";
 
 /**
  * NFTX vault configuration

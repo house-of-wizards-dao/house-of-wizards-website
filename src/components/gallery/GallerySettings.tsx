@@ -9,7 +9,7 @@ type GallerySettingsProps = {
   // No props needed - uses context
 };
 
-export function GallerySettings({}: GallerySettingsProps) {
+export const GallerySettings = ({}: GallerySettingsProps) => {
   const {
     walletInputs,
     setWalletInputs,
@@ -288,4 +288,4 @@ export function GallerySettings({}: GallerySettingsProps) {
       )}
     </div>
   );
-}
+};

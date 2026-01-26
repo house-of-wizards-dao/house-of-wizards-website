@@ -13,7 +13,7 @@ type TraitsViewProps = {
   data: StatsData;
 };
 
-export function TraitsView({ data }: TraitsViewProps) {
+export const TraitsView = ({ data }: TraitsViewProps) => {
   const [selectedType, setSelectedType] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -55,4 +55,4 @@ export function TraitsView({ data }: TraitsViewProps) {
       />
     </div>
   );
-}
+};

@@ -21,35 +21,35 @@ type NewsCardProps = {
 /**
  * Formats the author handle for display
  */
-function formatAuthorHandle(author: string): {
+const formatAuthorHandle = (author: string): {
   display: string;
   href: string;
-} {
+} => {
   const handle = author.startsWith("@") ? author : `@${author}`;
   const username = handle.slice(1);
   return {
     display: handle,
     href: `https://x.com/${username}`,
   };
-}
+};
 
 /**
  * Formats ISO 8601 date for display
  */
-function formatDate(isoDate: string): string {
+const formatDate = (isoDate: string): string => {
   try {
     const date = parseISO(isoDate);
     return format(date, "MMM d, yyyy");
   } catch {
     return isoDate;
   }
-}
+};
 
 /**
  * Removes Twitter URLs from text to avoid duplication with embeds
  * Removes the URL plus any query params and broken line continuations
  */
-function removeTwitterUrls(text: string): string {
+const removeTwitterUrls = (text: string): string => {
   return (
     text
       // Remove Twitter/X URLs + query params + any broken continuation on next line
@@ -61,15 +61,15 @@ function removeTwitterUrls(text: string): string {
       .replace(/\s+/g, " ")
       .trim()
   );
-}
+};
 
 /**
  * Truncates text to a certain length
  */
-function truncateText(text: string, maxLength: number): string {
+const truncateText = (text: string, maxLength: number): string => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength).trim() + "...";
-}
+};
 
 const variantStyles = {
   highlight: {
@@ -102,7 +102,7 @@ const variantStyles = {
   },
 };
 
-export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
+export const NewsCard = ({ item, variant = "medium" }: NewsCardProps) => {
   const router = useRouter();
 
   // Posts with titles should be large (only upgrade from medium, not small/highlight)
@@ -272,4 +272,4 @@ export function NewsCard({ item, variant = "medium" }: NewsCardProps) {
       <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-brand-500/0 via-brand-500/50 to-brand-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
     </article>
   );
-}
+};

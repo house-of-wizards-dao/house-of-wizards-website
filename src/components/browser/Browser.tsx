@@ -15,9 +15,9 @@ import { TraitFilters } from "./TraitFilters";
 export type BrowserItem = Warrior | Wizard;
 
 // Type guard to check if an item is a Wizard
-function isWizard(item: BrowserItem): item is Wizard {
+const isWizard = (item: BrowserItem): item is Wizard => {
   return "title" in item;
-}
+};
 
 // Trait type that works for both collections
 export type BrowserTrait<TPart extends string> = {

@@ -5,7 +5,7 @@
  * into LogContext-compatible objects for consistent error logging.
  */
 
-export interface LogContext {
+export type LogContext = {
   userId?: string;
   requestId?: string;
   method?: string;
@@ -16,29 +16,29 @@ export interface LogContext {
   statusCode?: number;
   error?: Error;
   [key: string]: any;
-}
+};
 
-export interface SupabaseError {
+export type SupabaseError = {
   message: string;
   code?: string;
   details?: any;
   hint?: string;
   status?: number;
-}
+};
 
-export interface Web3Error {
+export type Web3Error = {
   message: string;
   code?: number | string;
   data?: any;
   reason?: string;
   transaction?: any;
-}
+};
 
-export interface ContractError extends Web3Error {
+export type ContractError = Web3Error & {
   method?: string;
   args?: any[];
   contract?: string;
-}
+};
 
 /**
  * Safely converts any error type to LogContext

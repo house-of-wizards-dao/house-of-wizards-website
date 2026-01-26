@@ -9,7 +9,7 @@ import { PageLoader } from "@/components/PageLoader";
 import { Web3Provider } from "@/components/Web3Provider";
 import { Navbar } from "@/components/navbar";
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
     <ErrorBoundary
       fallback={
@@ -83,4 +83,4 @@ export function Providers({ children }: { children: React.ReactNode }) {
       </NextThemesProvider>
     </ErrorBoundary>
   );
-}
+};

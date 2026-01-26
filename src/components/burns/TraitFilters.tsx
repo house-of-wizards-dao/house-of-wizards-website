@@ -8,13 +8,13 @@ type TraitFiltersProps = {
   onSearchChange: (query: string) => void;
 };
 
-export function TraitFilters({
+export const TraitFilters = ({
   selectedType,
   searchQuery,
   traitTypes,
   onTypeChange,
   onSearchChange,
-}: TraitFiltersProps) {
+}: TraitFiltersProps) => {
   return (
     <div className="md:sticky top-0 z-10 bg-background/95 backdrop-blur-sm py-4 border-b border-neutral-800 mb-4 w-full">
       <div className="flex justify-center gap-4 flex-wrap">
@@ -40,4 +40,4 @@ export function TraitFilters({
       </div>
     </div>
   );
-}
+};

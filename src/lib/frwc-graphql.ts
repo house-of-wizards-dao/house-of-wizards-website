@@ -4,7 +4,7 @@
 
 import { ApolloClient, InMemoryCache, gql, HttpLink } from "@apollo/client";
 
-export interface WizardGraphQLResponse {
+export type WizardGraphQLResponse = {
   name: string;
   prop?: string;
   rune?: string;
@@ -15,9 +15,9 @@ export interface WizardGraphQLResponse {
   token?: {
     tokenId?: string;
   };
-}
+};
 
-export interface SoulGraphQLResponse {
+export type SoulGraphQLResponse = {
   name: string;
   prop?: string;
   rune?: string;
@@ -33,13 +33,13 @@ export interface SoulGraphQLResponse {
   transmutedFromToken?: {
     wizard?: WizardGraphQLResponse;
   };
-}
+};
 
-export interface WizardsAndSoulsResponse {
+export type WizardsAndSoulsResponse = {
   Soul: SoulGraphQLResponse[];
-}
+};
 
-export interface WarriorGraphQLResponse {
+export type WarriorGraphQLResponse = {
   name: string;
   forgedWith: string;
   head?: string;
@@ -53,13 +53,13 @@ export interface WarriorGraphQLResponse {
     tokenId?: string;
   };
   updatedAt?: string;
-}
+};
 
-export interface WarriorsWithForgedWeaponResponse {
+export type WarriorsWithForgedWeaponResponse = {
   Warrior: WarriorGraphQLResponse[];
-}
+};
 
-export interface PonyGraphQLResponse {
+export type PonyGraphQLResponse = {
   name: string;
   generation?: string;
   genes?: string;
@@ -72,11 +72,11 @@ export interface PonyGraphQLResponse {
   token?: {
     tokenId?: string;
   };
-}
+};
 
-export interface PoniesResponse {
+export type PoniesResponse = {
   Pony: PonyGraphQLResponse[];
-}
+};
 
 // Create Apollo Client instance for server-side use
 const apolloClient = new ApolloClient({

@@ -16,12 +16,12 @@ type ItemDetailOverlayProps = {
   onActionComplete?: () => void;
 };
 
-export function ItemDetailOverlay({
+export const ItemDetailOverlay = ({
   item,
   isOpen,
   onClose,
   onActionComplete,
-}: ItemDetailOverlayProps) {
+}: ItemDetailOverlayProps) => {
   const { isConnected, address } = useAccount();
   const { isOwner } = useNFTOwnership(item.collection.key, item.nft.identifier);
   const { buyNFT, acceptOffer, isProcessing, error } = useMarketplaceActions();
@@ -355,12 +355,12 @@ export function ItemDetailOverlay({
       </div>
     </div>
   );
-}
+};
 
 /**
  * Individual offer row component
  */
-function OfferRow({
+const OfferRow = ({
   offer,
   isOwner,
   onAccept,
@@ -370,7 +370,7 @@ function OfferRow({
   isOwner: boolean;
   onAccept: () => void;
   isProcessing: boolean;
-}) {
+}) => {
   const price = formatEthFromWei(offer.price.amount);
   const timeRemaining = formatTimeRemaining(offer.expirationTime);
   const isExpired = timeRemaining === "Ended";
@@ -419,4 +419,4 @@ function OfferRow({
       )}
     </div>
   );
-}
+};

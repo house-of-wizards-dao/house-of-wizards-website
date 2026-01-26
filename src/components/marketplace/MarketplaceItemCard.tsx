@@ -12,13 +12,13 @@ type MarketplaceItemCardProps = {
   isBuyLoading?: boolean;
 };
 
-export function MarketplaceItemCard({
+export const MarketplaceItemCard = ({
   item,
   onClick,
   onBuy,
   selected = false,
   isBuyLoading = false,
-}: MarketplaceItemCardProps) {
+}: MarketplaceItemCardProps) => {
   const { nft, bestListing, nftxListing } = item;
 
   // Format the listing price - prioritize OpenSea listing, fall back to NFTX
@@ -47,7 +47,7 @@ export function MarketplaceItemCard({
       isBuyLoading={isBuyLoading}
     />
   );
-}
+};
 
 /**
  * Re-export skeleton from shared component

@@ -2,17 +2,17 @@ import { useMemo } from "react";
 import type { TraitBurnStat } from "@/lib/burn-stats";
 import type { SortField, SortDirection } from "./useTraitSorting";
 
-export interface ProcessedTrait extends TraitBurnStat {
+export type ProcessedTrait = TraitBurnStat & {
   burnPercentage: number;
-}
+};
 
-interface UseProcessedTraitsParams {
+type UseProcessedTraitsParams = {
   traits: TraitBurnStat[] | undefined;
   selectedType: string;
   searchQuery: string;
   sortField: SortField;
   sortDirection: SortDirection;
-}
+};
 
 export const useProcessedTraits = ({
   traits,

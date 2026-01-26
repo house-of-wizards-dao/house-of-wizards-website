@@ -1,6 +1,6 @@
 "use client";
 
-export function ScrollToTeamButton() {
+export const ScrollToTeamButton = () => {
   return (
     <button
       aria-label="Scroll to team section"
@@ -14,4 +14,4 @@ export function ScrollToTeamButton() {
       Meet the Team
     </button>
   );
-}
+};

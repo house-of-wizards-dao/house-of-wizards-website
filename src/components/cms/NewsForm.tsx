@@ -33,7 +33,7 @@ type UploadResponse = {
   fileSize: number;
 };
 
-export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
+export const NewsForm = ({ initialData, isEdit = false }: NewsFormProps) => {
   const router = useRouter();
   const { user } = useCMSUser();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -435,4 +435,4 @@ export function NewsForm({ initialData, isEdit = false }: NewsFormProps) {
       </div>
     </div>
   );
-}
+};

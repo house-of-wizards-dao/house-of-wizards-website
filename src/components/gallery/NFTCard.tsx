@@ -11,13 +11,13 @@ type NFTCardProps = {
   imageSize?: number;
 };
 
-function NFTImageOnly({
+const NFTImageOnly = ({
   nft,
   imageSize,
 }: {
   nft: OpenSeaNFT;
   imageSize: number;
-}) {
+}) => {
   return (
     <LazyImage
       alt={nft.name || `NFT #${nft.identifier}`}
@@ -27,9 +27,9 @@ function NFTImageOnly({
       className="object-contain w-full h-full"
     />
   );
-}
+};
 
-function NFTWithContent({ nft }: { nft: OpenSeaNFT }) {
+const NFTWithContent = ({ nft }: { nft: OpenSeaNFT }) => {
   return (
     <div className="flex flex-col items-center justify-center gap-2 p-2 h-full w-full border border-gray-800 rounded-lg max-w-[200px] hover:border-brand-500 transition-colors">
       <LazyImage
@@ -44,13 +44,13 @@ function NFTWithContent({ nft }: { nft: OpenSeaNFT }) {
       </h3>
     </div>
   );
-}
+};
 
-export function NFTCard({
+export const NFTCard = ({
   nft,
   imagesOnly = false,
   imageSize = 200,
-}: NFTCardProps) {
+}: NFTCardProps) => {
   return (
     <Link href={nft.opensea_url} target="_blank" rel="noopener noreferrer">
       {imagesOnly ? (
@@ -60,4 +60,4 @@ export function NFTCard({
       )}
     </Link>
   );
-}
+};

@@ -5,7 +5,7 @@ type WizardsViewProps = {
   data: StatsData;
 };
 
-export function WizardsView({ data }: WizardsViewProps) {
+export const WizardsView = ({ data }: WizardsViewProps) => {
   return (
     <FilteredBurnsView
       data={data}
@@ -14,4 +14,4 @@ export function WizardsView({ data }: WizardsViewProps) {
       itemLabel="wizards"
     />
   );
-}
+};

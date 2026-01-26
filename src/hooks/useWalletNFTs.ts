@@ -3,9 +3,9 @@
 import { useEffect, useState, useMemo } from "react";
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 
-export interface WalletNFTsByCollection {
+export type WalletNFTsByCollection = {
   [key: string]: OpenSeaNFT[];
-}
+};
 
 export const useWalletNFTs = (walletInputs: string[]) => {
   const [data, setData] = useState<WalletNFTsByCollection | null>(null);

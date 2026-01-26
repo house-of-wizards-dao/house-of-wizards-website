@@ -25,12 +25,12 @@ type TraitSelectorProps = {
   onSelectOption: (option: TraitOption | null) => void;
 };
 
-function TraitSelector({
+const TraitSelector = ({
   trait,
   options,
   selectedOption,
   onSelectOption,
-}: TraitSelectorProps) {
+}: TraitSelectorProps) => {
   return (
     <div className="flex flex-col gap-2">
       <select
@@ -53,7 +53,7 @@ function TraitSelector({
       </select>
     </div>
   );
-}
+};
 
 type TraitFilterProps = {
   traits: TraitBurnStat[] | Array<{ type: string; name: string }>;
@@ -84,14 +84,14 @@ type TraitFilterProps = {
   excludedTraits?: TraitType[]; // Trait types to exclude from the filter UI
 };
 
-export function TraitFilter({
+export const TraitFilter = ({
   traits,
   burns,
   filterBy,
   onFilterChange,
   itemLabel = "items",
   excludedTraits = [],
-}: TraitFilterProps) {
+}: TraitFilterProps) => {
   const [selection, setSelection] = useState<TraitSelection>({
     head: null,
     body: null,
@@ -256,4 +256,4 @@ export function TraitFilter({
       )}
     </div>
   );
-}
+};

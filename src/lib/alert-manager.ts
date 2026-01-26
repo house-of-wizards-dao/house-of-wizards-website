@@ -1,7 +1,7 @@
 import { logger } from "./logger";
 import { env } from "./env";
 
-export interface Alert {
+export type Alert = {
   id: string;
   type: "security" | "performance" | "error" | "business";
   severity: "low" | "medium" | "high" | "critical";
@@ -10,16 +10,16 @@ export interface Alert {
   context: Record<string, any>;
   timestamp: Date;
   acknowledged: boolean;
-}
+};
 
-export interface AlertRule {
+export type AlertRule = {
   id: string;
   name: string;
   condition: (event: any) => boolean;
   severity: Alert["severity"];
   type: Alert["type"];
   cooldown: number; // milliseconds between alerts
-}
+};
 
 export class AlertManager {
   private alerts: Map<string, Alert> = new Map();

@@ -10,13 +10,13 @@ type NFTGridProps = {
   nfts: WalletNFTsByCollection | null;
 };
 
-function CollectionGrid({
+const CollectionGrid = ({
   nfts,
   title,
 }: {
   nfts: OpenSeaNFT[];
   title?: string;
-}) {
+}) => {
   const { imagesOnly, imageSize } = useGallery();
   // Gap is constant relative to image size (4% of image size)
   const gapRatio = 0.06;
@@ -45,9 +45,9 @@ function CollectionGrid({
       </div>
     </div>
   );
-}
+};
 
-export function NFTGrid({ nfts }: NFTGridProps) {
+export const NFTGrid = ({ nfts }: NFTGridProps) => {
   const { enabledCollections, viewMode, showCollectionTitles } = useGallery();
 
   if (!nfts) {
@@ -111,4 +111,4 @@ export function NFTGrid({ nfts }: NFTGridProps) {
       </div>
     </div>
   );
-}
+};

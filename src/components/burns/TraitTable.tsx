@@ -12,12 +12,12 @@ type TraitTableProps = {
   onSort: (field: SortField) => void;
 };
 
-export function TraitTable({
+export const TraitTable = ({
   traits,
   sortField,
   sortDirection,
   onSort,
-}: TraitTableProps) {
+}: TraitTableProps) => {
   return (
     <div className="w-full overflow-x-auto flex flex-col items-center">
       <table>
@@ -46,4 +46,4 @@ export function TraitTable({
       </table>
     </div>
   );
-}
+};

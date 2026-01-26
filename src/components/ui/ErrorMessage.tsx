@@ -20,13 +20,13 @@ const errorMessageVariants = cva(
   },
 );
 
-interface ErrorMessageProps extends VariantProps<typeof errorMessageVariants> {
+type ErrorMessageProps = VariantProps<typeof errorMessageVariants> & {
   title?: string;
   message: string;
   onDismiss?: () => void;
   onRetry?: () => void;
   className?: string;
-}
+};
 
 const ErrorMessage: React.FC<ErrorMessageProps> = ({
   title,

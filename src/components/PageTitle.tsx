@@ -5,12 +5,12 @@ type PageTitleProps = {
   subtitleClassName?: string;
 };
 
-export function PageTitle({
+export const PageTitle = ({
   title,
   subtitle,
   className = "",
   subtitleClassName = "",
-}: PageTitleProps) {
+}: PageTitleProps) => {
   return (
     <>
       <h1
@@ -58,4 +58,4 @@ export function PageTitle({
       </div>
     </>
   );
-}
+};

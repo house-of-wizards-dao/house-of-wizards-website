@@ -10,7 +10,7 @@ type BurnsListViewProps = {
   primaryType: "wizard" | "soul";
 };
 
-export function BurnsListView({ burns, primaryType }: BurnsListViewProps) {
+export const BurnsListView = ({ burns, primaryType }: BurnsListViewProps) => {
   const isWizardFirst = primaryType === "wizard";
 
   // OpenSea contract addresses
@@ -94,4 +94,4 @@ export function BurnsListView({ burns, primaryType }: BurnsListViewProps) {
       })}
     </div>
   );
-}
+};

@@ -17,11 +17,11 @@ const columns: Array<{ field: SortField; label: string; sortable: boolean }> = [
   { field: "percentage", label: "Burn %", sortable: true },
 ];
 
-export function TraitTableHeader({
+export const TraitTableHeader = ({
   sortField,
   sortDirection,
   onSort,
-}: TraitTableHeaderProps) {
+}: TraitTableHeaderProps) => {
   return (
     <thead>
       <tr className="border-b-2 border-neutral-700">
@@ -49,4 +49,4 @@ export function TraitTableHeader({
       </tr>
     </thead>
   );
-}
+};

@@ -5,7 +5,7 @@ type TraitTableRowProps = {
   index: number;
 };
 
-export function TraitTableRow({ trait, index }: TraitTableRowProps) {
+export const TraitTableRow = ({ trait, index }: TraitTableRowProps) => {
   return (
     <tr
       className={`border-b border-neutral-800 ${
@@ -26,4 +26,4 @@ export function TraitTableRow({ trait, index }: TraitTableRowProps) {
       <td className="p-4 text-sm capitalize">{trait.traitType}</td>
     </tr>
   );
-}
+};

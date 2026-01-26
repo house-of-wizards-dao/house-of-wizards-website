@@ -5,7 +5,7 @@ type SoulsViewProps = {
   data: StatsData;
 };
 
-export function SoulsView({ data }: SoulsViewProps) {
+export const SoulsView = ({ data }: SoulsViewProps) => {
   return (
     <FilteredBurnsView
       data={data}
@@ -14,4 +14,4 @@ export function SoulsView({ data }: SoulsViewProps) {
       itemLabel="souls"
     />
   );
-}
+};

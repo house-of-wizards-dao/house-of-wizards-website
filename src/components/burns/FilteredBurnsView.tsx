@@ -12,12 +12,12 @@ type FilteredBurnsViewProps = {
   itemLabel: string;
 };
 
-export function FilteredBurnsView({
+export const FilteredBurnsView = ({
   data,
   filterBy,
   primaryType,
   itemLabel,
-}: FilteredBurnsViewProps) {
+}: FilteredBurnsViewProps) => {
   const [filteredBurns, setFilteredBurns] = useState<Burn[]>([]);
 
   // Initialize filteredBurns when data loads
@@ -50,4 +50,4 @@ export function FilteredBurnsView({
       <BurnsListView burns={filteredBurns} primaryType={primaryType} />
     </div>
   );
-}
+};

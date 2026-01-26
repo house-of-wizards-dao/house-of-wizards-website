@@ -1,15 +1,15 @@
 // Client-only wrapper for Web3 components that use Wagmi hooks
 import { useEffect, useState, ReactNode } from "react";
 
-interface ClientOnlyWeb3Props {
+type ClientOnlyWeb3Props = {
   children: ReactNode;
   fallback?: ReactNode;
-}
+};
 
-export function ClientOnlyWeb3({
+export const ClientOnlyWeb3 = ({
   children,
   fallback = null,
-}: ClientOnlyWeb3Props) {
+}: ClientOnlyWeb3Props) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {

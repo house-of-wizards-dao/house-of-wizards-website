@@ -8,10 +8,10 @@ type ForgedWithFilterProps = {
   onFilterChange: (filtered: WarriorGraphQLResponse[]) => void;
 };
 
-export function ForgedWithFilter({
+export const ForgedWithFilter = ({
   warriors,
   onFilterChange,
-}: ForgedWithFilterProps) {
+}: ForgedWithFilterProps) => {
   const [selectedForgedWith, setSelectedForgedWith] = useState<string>("all");
 
   // Get unique items that weapons were forged with
@@ -77,4 +77,4 @@ export function ForgedWithFilter({
       )}
     </div>
   );
-}
+};

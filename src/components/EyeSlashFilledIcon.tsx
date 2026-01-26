@@ -1,8 +1,8 @@
 import React from "react";
 
-interface EyeSlashFilledIconProps extends React.SVGProps<SVGSVGElement> {
+type EyeSlashFilledIconProps = React.SVGProps<SVGSVGElement> & {
   className?: string;
-}
+};
 
 export const EyeSlashFilledIcon: React.FC<EyeSlashFilledIconProps> = (
   props,

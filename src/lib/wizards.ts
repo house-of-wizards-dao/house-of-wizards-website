@@ -2,7 +2,7 @@
 import wizziesData from "../data/wizzies.json";
 import type { TraitType } from "./traits";
 
-export interface WizardData {
+export type WizardData = {
   name: string;
   head?: string;
   body?: string;
@@ -10,11 +10,11 @@ export interface WizardData {
   familiar?: string;
   rune?: string;
   background?: string;
-}
+};
 
-export interface WizardsData {
+export type WizardsData = {
   [tokenId: string]: WizardData;
-}
+};
 
 /**
  * Get all wizard data as a typed object
