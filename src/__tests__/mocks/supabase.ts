@@ -127,10 +127,11 @@ function createMockQueryBuilder<T>(
           } as unknown as T;
 
           // Check for duplicate eth_address
+          const insertUserData = insertData as unknown as Partial<MockUser>;
           const exists = mockDatabase.users.some(
             (u) =>
               u.eth_address.toLowerCase() ===
-              ((insertData as MockUser).eth_address || "").toLowerCase(),
+              (insertUserData.eth_address || "").toLowerCase(),
           );
           if (exists) {
             resolve({
@@ -218,8 +219,12 @@ function createMockQueryBuilder<T>(
       // Apply ordering
       for (const order of orderBy.reverse()) {
         result.sort((a, b) => {
-          const aVal = (a as Record<string, unknown>)[order.column];
-          const bVal = (b as Record<string, unknown>)[order.column];
+          const aVal = (a as Record<string, unknown>)[order.column] as
+            | string
+            | number;
+          const bVal = (b as Record<string, unknown>)[order.column] as
+            | string
+            | number;
           if (aVal < bVal) return order.ascending ? -1 : 1;
           if (aVal > bVal) return order.ascending ? 1 : -1;
           return 0;
