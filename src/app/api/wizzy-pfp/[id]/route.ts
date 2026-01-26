@@ -8,10 +8,10 @@ import { logger } from "@/lib/logger";
 // In-memory cache for successful responses (indefinite caching)
 const responseCache = new Map<number, any>();
 
-export async function GET(
+export const GET = async (
   request: NextRequest,
   context: { params: Promise<{ id: string }> },
-) {
+) => {
   try {
     const params = await context.params;
     const { id } = params;
@@ -119,4 +119,4 @@ export async function GET(
       { status: 500 },
     );
   }
-}
+};

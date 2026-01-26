@@ -1,9 +1,9 @@
 import type { ProcessedTrait } from "@/hooks/useProcessedTraits";
 
-interface TraitTableRowProps {
+type TraitTableRowProps = {
   trait: ProcessedTrait;
   index: number;
-}
+};
 
 export function TraitTableRow({ trait, index }: TraitTableRowProps) {
   return (

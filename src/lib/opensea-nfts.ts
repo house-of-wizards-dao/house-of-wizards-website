@@ -30,7 +30,7 @@ export interface OpenSeaNFTsResponse {
 /**
  * Initialize OpenSea SDK
  */
-function getOpenSeaSDK() {
+const getOpenSeaSDK = () => {
   const apiKey = process.env.OPENSEA_API_KEY;
   const provider = new JsonRpcProvider("https://eth.llamarpc.com");
   return new OpenSeaSDK(
@@ -45,17 +45,17 @@ function getOpenSeaSDK() {
       }
     },
   );
-}
+};
 
 /**
  * Fetch NFTs owned by a wallet address for a specific contract
  */
-export async function fetchNFTsByContract(
+export const fetchNFTsByContract = async (
   walletAddress: string,
   contractAddress: string,
   limit?: number,
   next?: string,
-): Promise<OpenSeaNFTsResponse> {
+): Promise<OpenSeaNFTsResponse> => {
   const sdk = getOpenSeaSDK();
 
   try {
@@ -82,16 +82,16 @@ export async function fetchNFTsByContract(
     );
     throw error;
   }
-}
+};
 
 /**
  * Fetch NFTs owned by a wallet address across all contracts in addresses config
  * Handles pagination to fetch all NFTs
  */
-export async function fetchNFTsForAllContracts(
+export const fetchNFTsForAllContracts = async (
   walletAddress: string,
   limit?: number,
-): Promise<Map<string, OpenSeaNFT[]>> {
+): Promise<Map<string, OpenSeaNFT[]>> => {
   const contractMap = new Map<string, OpenSeaNFT[]>();
   const contractAddresses = Object.values(frwcAddresses).map((addr) =>
     addr.toLowerCase(),
@@ -141,15 +141,15 @@ export async function fetchNFTsForAllContracts(
   }
 
   return contractMap;
-}
+};
 
 /**
  * Fetch NFTs for multiple wallet addresses across all contracts
  */
-export async function fetchNFTsForWallets(
+export const fetchNFTsForWallets = async (
   walletAddresses: string[],
   limit?: number,
-): Promise<Map<string, Map<string, OpenSeaNFT[]>>> {
+): Promise<Map<string, Map<string, OpenSeaNFT[]>>> => {
   // Map: walletAddress -> contractAddress -> NFTs[]
   const walletMap = new Map<string, Map<string, OpenSeaNFT[]>>();
 
@@ -174,4 +174,4 @@ export async function fetchNFTsForWallets(
   });
 
   return walletMap;
-}
+};

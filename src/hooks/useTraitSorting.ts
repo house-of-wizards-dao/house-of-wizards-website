@@ -14,10 +14,10 @@ interface UseTraitSortingReturn {
   handleSort: (field: SortField) => void;
 }
 
-export function useTraitSorting(
+export const useTraitSorting = (
   defaultField: SortField = "burned",
   defaultDirection: SortDirection = "desc",
-): UseTraitSortingReturn {
+): UseTraitSortingReturn => {
   const [sortField, setSortField] = useState<SortField>(defaultField);
   const [sortDirection, setSortDirection] =
     useState<SortDirection>(defaultDirection);
@@ -39,4 +39,4 @@ export function useTraitSorting(
     sortDirection,
     handleSort,
   };
-}
+};

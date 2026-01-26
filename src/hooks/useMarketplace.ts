@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useInfiniteQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { useAccount, useWalletClient } from "wagmi";
 import type {
   CollectionKey,
@@ -19,7 +23,7 @@ import type {
 /**
  * Fetch OpenSea marketplace listings for a collection
  */
-async function fetchMarketplaceListings(
+const fetchMarketplaceListings = async (
   collection: CollectionKey,
   limit: number,
   cursor?: string,
@@ -27,7 +31,7 @@ async function fetchMarketplaceListings(
   listings: MarketplaceItem[];
   collection: CollectionInfo;
   next: string | null;
-}> {
+}> => {
   const params = new URLSearchParams({
     collection,
     limit: String(limit),
@@ -44,15 +48,15 @@ async function fetchMarketplaceListings(
   }
 
   return data;
-}
+};
 
 /**
  * Fetch NFT details with offers
  */
-async function fetchNFTDetails(
+const fetchNFTDetails = async (
   collection: CollectionKey,
   tokenId: string,
-): Promise<MarketplaceItem> {
+): Promise<MarketplaceItem> => {
   const params = new URLSearchParams({ collection, tokenId });
   const response = await fetch(`/api/marketplace/nft?${params}`);
   const data = await response.json();
@@ -62,16 +66,18 @@ async function fetchNFTDetails(
   }
 
   return data.item;
-}
+};
 
 /**
  * Fetch NFTX pool listings for a collection
  */
-async function fetchNFTXListings(collection: CollectionKey): Promise<{
+const fetchNFTXListings = async (
+  collection: CollectionKey,
+): Promise<{
   listings: MarketplaceItem[];
   vault: NFTXVaultInfo | null;
   hasVault: boolean;
-}> {
+}> => {
   const params = new URLSearchParams({ collection });
   const response = await fetch(`/api/marketplace/nftx?${params}`);
   const data = await response.json();
@@ -85,16 +91,16 @@ async function fetchNFTXListings(collection: CollectionKey): Promise<{
     vault: data.vault || null,
     hasVault: data.hasVault || false,
   };
-}
+};
 
 /**
  * NFTX vault info returned from API
  */
-interface NFTXVaultInfo {
+type NFTXVaultInfo = {
   address: string;
   symbol: string;
   name: string;
-}
+};
 
 // ============================================================================
 // React Query Hooks
@@ -104,7 +110,7 @@ interface NFTXVaultInfo {
  * Hook to fetch marketplace listings for a collection
  * Uses React Query for caching and automatic refetching
  */
-export function useMarketplaceListings(
+export const useMarketplaceListings = (
   collection: CollectionKey | null,
   options?: {
     limit?: number;
@@ -114,7 +120,7 @@ export function useMarketplaceListings(
     /** Initial collection info from SSR */
     initialCollectionInfo?: CollectionInfo;
   },
-) {
+) => {
   const {
     limit = 50,
     autoFetch = true,
@@ -197,19 +203,24 @@ export function useMarketplaceListings(
     loadMore,
     refresh,
   };
-}
+};
 
 /**
  * Hook to fetch NFT details with offers
  * Uses React Query for caching
  */
-export function useNFTDetails(
+export const useNFTDetails = (
   collection: CollectionKey | null,
   tokenId: string | null,
-) {
+) => {
   const queryClient = useQueryClient();
 
-  const { data: item, isLoading, error, refetch } = useQuery({
+  const {
+    data: item,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["marketplace", "nft", collection, tokenId],
     queryFn: () => fetchNFTDetails(collection!, tokenId!),
     enabled: !!collection && !!tokenId,
@@ -229,12 +240,12 @@ export function useNFTDetails(
     error: error?.message || null,
     refresh,
   };
-}
+};
 
 /**
  * Hook for marketplace actions (buy, list, accept offer)
  */
-export function useMarketplaceActions() {
+export const useMarketplaceActions = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -427,15 +438,15 @@ export function useMarketplaceActions() {
     acceptOffer,
     createListing,
   };
-}
+};
 
 /**
  * Hook to check if connected wallet owns a specific NFT
  */
-export function useNFTOwnership(
+export const useNFTOwnership = (
   collection: CollectionKey | null,
   tokenId: string | null,
-) {
+) => {
   const { address, isConnected } = useAccount();
   const { item } = useNFTDetails(collection, tokenId);
 
@@ -447,18 +458,18 @@ export function useNFTOwnership(
   }, [isConnected, address, item]);
 
   return { isOwner, ownerAddress: item?.nft.owner };
-}
+};
 
 /**
  * Hook to fetch NFTX pool listings for a collection
  * Uses React Query for caching and automatic refetching
  */
-export function useNFTXListings(
+export const useNFTXListings = (
   collection: CollectionKey | null,
   options?: {
     autoFetch?: boolean;
   },
-) {
+) => {
   const { autoFetch = true } = options || {};
   const queryClient = useQueryClient();
 
@@ -485,12 +496,12 @@ export function useNFTXListings(
     hasFetched: isFetched,
     refresh,
   };
-}
+};
 
 /**
  * Hook for buying from NFTX pool
  */
-export function useNFTXBuy() {
+export const useNFTXBuy = () => {
   const { address, isConnected } = useAccount();
   const { data: walletClient } = useWalletClient();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -605,4 +616,4 @@ export function useNFTXBuy() {
     getQuote,
     buyFromPool,
   };
-}
+};

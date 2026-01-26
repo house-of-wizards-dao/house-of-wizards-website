@@ -15,7 +15,7 @@ type RouteParams = {
   params: Promise<{ address: string }>;
 };
 
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export const GET = async (_request: NextRequest, { params }: RouteParams) => {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -37,9 +37,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ user: data as User });
-}
+};
 
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -95,9 +95,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ user: data as User });
-}
+};
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export const DELETE = async (
+  _request: NextRequest,
+  { params }: RouteParams,
+) => {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -131,4 +134,4 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ success: true });
-}
+};

@@ -12,7 +12,7 @@ import {
 
 export type ViewMode = "flat" | "grouped";
 
-interface GalleryContextValue {
+type GalleryContextValue = {
   // Wallet management
   walletInputs: string[];
   setWalletInputs: (wallets: string[]) => void;
@@ -30,7 +30,7 @@ interface GalleryContextValue {
   setViewMode: (mode: ViewMode) => void;
   showCollectionTitles: boolean;
   setShowCollectionTitles: (show: boolean) => void;
-}
+};
 
 const GalleryContext = createContext<GalleryContextValue | undefined>(
   undefined,

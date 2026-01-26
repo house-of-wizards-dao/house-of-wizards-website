@@ -4,26 +4,26 @@ import { useState, useMemo, useEffect } from "react";
 import { TraitBurnStat } from "@/lib/burn-stats";
 import { TRAITS, type TraitType } from "@/lib/traits";
 
-export interface TraitOption {
+export type TraitOption = {
   type: string;
   name: string;
-}
+};
 
-export interface TraitSelection {
+export type TraitSelection = {
   head: TraitOption | null;
   body: TraitOption | null;
   prop: TraitOption | null;
   familiar: TraitOption | null;
   rune: TraitOption | null;
   background: TraitOption | null;
-}
+};
 
-interface TraitSelectorProps {
+type TraitSelectorProps = {
   trait: TraitType;
   options: TraitOption[];
   selectedOption: TraitOption | null;
   onSelectOption: (option: TraitOption | null) => void;
-}
+};
 
 function TraitSelector({
   trait,
@@ -55,7 +55,7 @@ function TraitSelector({
   );
 }
 
-interface TraitFilterProps {
+type TraitFilterProps = {
   traits: TraitBurnStat[] | Array<{ type: string; name: string }>;
   burns: Array<{
     tokenId: string;
@@ -82,7 +82,7 @@ interface TraitFilterProps {
   onFilterChange: (filteredBurns: Array<{ tokenId: string }>) => void;
   itemLabel?: string; // "wizards" or "souls"
   excludedTraits?: TraitType[]; // Trait types to exclude from the filter UI
-}
+};
 
 export function TraitFilter({
   traits,

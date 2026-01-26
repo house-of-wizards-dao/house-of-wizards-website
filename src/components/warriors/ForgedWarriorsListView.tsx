@@ -6,9 +6,9 @@ import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 import { LazyImage } from "../ui/LazyImage";
 import { addresses } from "@/config/addresses";
 
-interface ForgedWarriorsListViewProps {
+type ForgedWarriorsListViewProps = {
   warriors: WarriorGraphQLResponse[];
-}
+};
 
 export function ForgedWarriorsListView({
   warriors,

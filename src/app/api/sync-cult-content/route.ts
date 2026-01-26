@@ -13,7 +13,7 @@ const WEDNESDAY = 3;
  * If today is Wednesday and it's past midnight, returns today's midnight.
  * Otherwise, returns the previous Wednesday's midnight.
  */
-function getMostRecentWednesdayMidnightUTC(): Date {
+const getMostRecentWednesdayMidnightUTC = (): Date => {
   const now = new Date();
   const currentDay = now.getUTCDay();
 
@@ -25,9 +25,9 @@ function getMostRecentWednesdayMidnightUTC(): Date {
   wednesday.setUTCHours(0, 0, 0, 0);
 
   return wednesday;
-}
+};
 
-export async function GET() {
+export const GET = async () => {
   const supabase = getSupabaseClient();
 
   try {
@@ -111,4 +111,4 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+};

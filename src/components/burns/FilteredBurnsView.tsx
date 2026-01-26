@@ -5,12 +5,12 @@ import { TraitFilter } from "@/components/burns/TraitFilter";
 import { BurnsListView } from "@/components/burns/BurnsListView";
 import type { StatsData, Burn } from "@/lib/burn-stats";
 
-interface FilteredBurnsViewProps {
+type FilteredBurnsViewProps = {
   data: StatsData;
   filterBy: "wizard" | "soul";
   primaryType: "wizard" | "soul";
   itemLabel: string;
-}
+};
 
 export function FilteredBurnsView({
   data,

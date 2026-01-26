@@ -112,16 +112,16 @@ export const collections: Record<CollectionKey, CollectionInfo> = {
 /**
  * Get collection info by key
  */
-export function getCollection(key: CollectionKey): CollectionInfo {
+export const getCollection = (key: CollectionKey): CollectionInfo => {
   return collections[key];
-}
+};
 
 /**
  * Get collection key from contract address
  */
-export function getCollectionKeyByAddress(
+export const getCollectionKeyByAddress = (
   address: string,
-): CollectionKey | null {
+): CollectionKey | null => {
   const normalizedAddress = address.toLowerCase();
   for (const [key, info] of Object.entries(collections)) {
     if (info.address.toLowerCase() === normalizedAddress) {
@@ -129,12 +129,12 @@ export function getCollectionKeyByAddress(
     }
   }
   return null;
-}
+};
 
 /**
  * Initialize OpenSea SDK for mainnet
  */
-export function getOpenSeaSDK() {
+export const getOpenSeaSDK = () => {
   const apiKey = process.env.OPENSEA_API_KEY;
   const provider = new JsonRpcProvider("https://eth.llamarpc.com");
   return new OpenSeaSDK(
@@ -149,7 +149,7 @@ export function getOpenSeaSDK() {
       }
     },
   );
-}
+};
 
 /**
  * Cached NFT metadata fetcher
@@ -176,10 +176,10 @@ export const getCachedNFT = unstable_cache(
 /**
  * Convert Unix timestamp (seconds) or ISO string to ISO string
  */
-function toISOTimestamp(
+const toISOTimestamp = (
   value: string | number | bigint | undefined,
   fallbackToFuture: boolean = false,
-): string {
+): string => {
   // Fallback: use far future date if fallbackToFuture is true, otherwise current time
   const fallback = fallbackToFuture
     ? new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
@@ -216,12 +216,12 @@ function toISOTimestamp(
 
   // Fallback if unparseable
   return fallback;
-}
+};
 
 /**
  * Convert OpenSea order to our Listing type
  */
-function orderToListing(order: OpenSeaListing): Listing {
+const orderToListing = (order: OpenSeaListing): Listing => {
   const priceData = order.price.current;
   const params = order.protocol_data?.parameters;
 
@@ -240,13 +240,13 @@ function orderToListing(order: OpenSeaListing): Listing {
     taker: params?.consideration?.[0]?.recipient,
     protocolData: order.protocol_data,
   };
-}
+};
 
 /**
  * Convert OpenSea order to our Offer type
  * Handles both token-specific offers and collection offers which have different structures
  */
-function orderToOffer(order: OpenSeaOffer | OpenSeaCollectionOffer): Offer {
+const orderToOffer = (order: OpenSeaOffer | OpenSeaCollectionOffer): Offer => {
   const priceData = order.price;
   const params = order.protocol_data?.parameters;
 
@@ -283,14 +283,14 @@ function orderToOffer(order: OpenSeaOffer | OpenSeaCollectionOffer): Offer {
     maker: params?.offerer || "",
     protocolData: order.protocol_data,
   };
-}
+};
 
 /**
  * Convert OpenSea NFT traits to our format
  */
-export function parseTraits(
+export const parseTraits = (
   traits: OpenSeaTrait[] | null | undefined,
-): NFTTrait[] {
+): NFTTrait[] => {
   if (!Array.isArray(traits)) return [];
   return traits.map((t) => ({
     trait_type: t.trait_type,
@@ -301,17 +301,17 @@ export function parseTraits(
         ? null
         : (t.display_type as NFTTrait["display_type"]),
   }));
-}
+};
 
 /**
  * Fetch listings for a collection using collection slug
  * Deduplicates by token ID, keeping only the best (lowest price) listing per NFT
  */
-export async function fetchCollectionListings(
+export const fetchCollectionListings = async (
   collectionKey: CollectionKey,
   limit: number = 50,
   next?: string,
-): Promise<{ listings: MarketplaceItem[]; next?: string }> {
+): Promise<{ listings: MarketplaceItem[]; next?: string }> => {
   const sdk = getOpenSeaSDK();
   const collection = getCollection(collectionKey);
 
@@ -438,16 +438,16 @@ export async function fetchCollectionListings(
     console.error(`Error fetching listings for ${collectionKey}:`, error);
     throw error;
   }
-}
+};
 
 /**
  * Fetch all NFTs in a collection (with optional listing filter)
  */
-export async function fetchCollectionNFTs(
+export const fetchCollectionNFTs = async (
   collectionKey: CollectionKey,
   limit: number = 50,
   next?: string,
-): Promise<{ nfts: MarketplaceNFT[]; next?: string }> {
+): Promise<{ nfts: MarketplaceNFT[]; next?: string }> => {
   const sdk = getOpenSeaSDK();
   const collection = getCollection(collectionKey);
 
@@ -484,16 +484,16 @@ export async function fetchCollectionNFTs(
     console.error(`Error fetching NFTs for ${collectionKey}:`, error);
     throw error;
   }
-}
+};
 
 /**
  * Fetch single NFT details with listings and offers
  * Includes both token-specific offers and collection-wide offers
  */
-export async function fetchNFTDetails(
+export const fetchNFTDetails = async (
   collectionKey: CollectionKey,
   tokenId: string,
-): Promise<MarketplaceItem | null> {
+): Promise<MarketplaceItem | null> => {
   const sdk = getOpenSeaSDK();
   const collection = getCollection(collectionKey);
 
@@ -615,15 +615,15 @@ export async function fetchNFTDetails(
     );
     throw error;
   }
-}
+};
 
 /**
  * Get best listings for a collection (lowest prices)
  */
-export async function getBestListings(
+export const getBestListings = async (
   collectionKey: CollectionKey,
   limit: number = 50,
-): Promise<MarketplaceItem[]> {
+): Promise<MarketplaceItem[]> => {
   const result = await fetchCollectionListings(collectionKey, limit);
 
   // Sort by price ascending
@@ -632,4 +632,4 @@ export async function getBestListings(
     const priceB = parseFloat(b.bestListing?.price.amount || "0");
     return priceA - priceB;
   });
-}
+};

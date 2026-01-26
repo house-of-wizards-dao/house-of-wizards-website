@@ -5,12 +5,12 @@ import { TraitTableRow } from "./TraitTableRow";
 import type { SortField, SortDirection } from "@/hooks/useTraitSorting";
 import type { ProcessedTrait } from "@/hooks/useProcessedTraits";
 
-interface TraitTableProps {
+type TraitTableProps = {
   traits: ProcessedTrait[];
   sortField: SortField;
   sortDirection: SortDirection;
   onSort: (field: SortField) => void;
-}
+};
 
 export function TraitTable({
   traits,

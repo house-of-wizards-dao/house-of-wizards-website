@@ -7,7 +7,7 @@ export interface WalletNFTsByCollection {
   [key: string]: OpenSeaNFT[];
 }
 
-export function useWalletNFTs(walletInputs: string[]) {
+export const useWalletNFTs = (walletInputs: string[]) => {
   const [data, setData] = useState<WalletNFTsByCollection | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -62,4 +62,4 @@ export function useWalletNFTs(walletInputs: string[]) {
   }, [walletInputsKey, walletInputs]); // Re-fetch when wallet inputs change
 
   return { data, loading, error };
-}
+};

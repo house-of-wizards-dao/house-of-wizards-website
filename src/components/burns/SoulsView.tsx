@@ -1,9 +1,9 @@
 import type { StatsData } from "@/lib/burn-stats";
 import { FilteredBurnsView } from "@/components/burns/FilteredBurnsView";
 
-interface SoulsViewProps {
+type SoulsViewProps = {
   data: StatsData;
-}
+};
 
 export function SoulsView({ data }: SoulsViewProps) {
   return (

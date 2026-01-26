@@ -1,12 +1,12 @@
 "use client";
 
-interface TraitFiltersProps {
+type TraitFiltersProps = {
   selectedType: string;
   searchQuery: string;
   traitTypes: string[];
   onTypeChange: (type: string) => void;
   onSearchChange: (query: string) => void;
-}
+};
 
 export function TraitFilters({
   selectedType,

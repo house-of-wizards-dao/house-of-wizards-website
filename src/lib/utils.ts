@@ -5,25 +5,25 @@ import { twMerge } from "tailwind-merge";
  * Utility function to merge Tailwind CSS classes with proper precedence
  * Essential for the design system to work correctly
  */
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
-}
+};
 
 /**
  * Format currency values consistently across the app
  */
-export function formatCurrency(
+export const formatCurrency = (
   amount: number,
   currency: string = "ETH",
   decimals: number = 4,
-): string {
+): string => {
   return `${amount.toFixed(decimals)} ${currency}`;
-}
+};
 
 /**
  * Format time remaining (generic utility)
  */
-export function formatTimeRemaining(endTime: string): string {
+export const formatTimeRemaining = (endTime: string): string => {
   const now = new Date();
   const end = new Date(endTime);
   const diff = end.getTime() - now.getTime();
@@ -37,55 +37,55 @@ export function formatTimeRemaining(endTime: string): string {
   if (days > 0) return `${days}d ${hours}h`;
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
-}
+};
 
 /**
  * Truncate text with ellipsis
  */
-export function truncateText(text: string, maxLength: number = 100): string {
+export const truncateText = (text: string, maxLength: number = 100): string => {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + "...";
-}
+};
 
 /**
  * Debounce function for search and other rapid inputs
  */
-export function debounce<T extends (...args: any[]) => any>(
+export const debounce = <T extends (...args: any[]) => any>(
   func: T,
   wait: number,
-): (...args: Parameters<T>) => void {
+): ((...args: Parameters<T>) => void) => {
   let timeout: ReturnType<typeof setTimeout> | undefined;
   return (...args: Parameters<T>) => {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
   };
-}
+};
 
 /**
  * Check if user is on mobile device
  */
-export function isMobile(): boolean {
+export const isMobile = (): boolean => {
   if (typeof window === "undefined") return false;
   return window.innerWidth < 768;
-}
+};
 
 /**
  * Smooth scroll to element
  */
-export function scrollToElement(
+export const scrollToElement = (
   elementId: string,
   behavior: ScrollBehavior = "smooth",
-): void {
+): void => {
   const element = document.getElementById(elementId);
   if (element) {
     element.scrollIntoView({ behavior });
   }
-}
+};
 
 /**
  * Copy text to clipboard
  */
-export async function copyToClipboard(text: string): Promise<boolean> {
+export const copyToClipboard = async (text: string): Promise<boolean> => {
   try {
     await navigator.clipboard.writeText(text);
     return true;
@@ -93,4 +93,4 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     console.error("Failed to copy to clipboard:", error);
     return false;
   }
-}
+};

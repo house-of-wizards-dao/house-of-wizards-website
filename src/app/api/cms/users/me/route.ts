@@ -7,7 +7,7 @@
 import { NextResponse } from "next/server";
 import { getSessionAddress, getCMSUserByAddress } from "@/lib/cms-auth";
 
-export async function GET() {
+export const GET = async () => {
   const address = await getSessionAddress();
 
   if (!address) {
@@ -17,4 +17,4 @@ export async function GET() {
   const user = await getCMSUserByAddress(address);
 
   return NextResponse.json({ user, address });
-}
+};

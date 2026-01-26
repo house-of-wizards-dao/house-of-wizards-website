@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-export function getSupabaseClient() {
+export const getSupabaseClient = () => {
   const supabaseUrl = process.env.SUPABASE_PROJECT_URL;
   const supabaseServiceKey = process.env.SUPABASE_API_KEY;
 
@@ -18,4 +18,4 @@ export function getSupabaseClient() {
       persistSession: false,
     },
   });
-}
+};

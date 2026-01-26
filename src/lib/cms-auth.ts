@@ -22,16 +22,16 @@ export type CMSAuthError = {
 /**
  * Gets the current session's Ethereum address
  */
-export async function getSessionAddress(): Promise<string | null> {
+export const getSessionAddress = async (): Promise<string | null> => {
   const session = await getServerSession(authOptions);
   return session?.address?.toLowerCase() ?? null;
-}
+};
 
 /**
  * Gets the CMS user for the current session.
  * Returns null if not authenticated or not a CMS user.
  */
-export async function getCMSUser(): Promise<User | null> {
+export const getCMSUser = async (): Promise<User | null> => {
   const address = await getSessionAddress();
   if (!address) return null;
 
@@ -45,15 +45,15 @@ export async function getCMSUser(): Promise<User | null> {
 
   if (error || !data) return null;
   return data as User;
-}
+};
 
 /**
  * Gets the CMS user by Ethereum address.
  * Uses case-insensitive matching since Ethereum addresses are case-insensitive.
  */
-export async function getCMSUserByAddress(
+export const getCMSUserByAddress = async (
   address: string,
-): Promise<User | null> {
+): Promise<User | null> => {
   const supabase = getSupabaseClient();
   // Use ilike for case-insensitive matching
   const { data, error } = await supabase
@@ -64,13 +64,15 @@ export async function getCMSUserByAddress(
 
   if (error || !data) return null;
   return data as User;
-}
+};
 
 /**
  * Requires the current user to be a CMS user (editor or admin).
  * Returns the user or an error response.
  */
-export async function requireCMSUser(): Promise<CMSAuthResult | CMSAuthError> {
+export const requireCMSUser = async (): Promise<
+  CMSAuthResult | CMSAuthError
+> => {
   const address = await getSessionAddress();
   if (!address) {
     return { error: "Not authenticated", status: 401 };
@@ -82,13 +84,13 @@ export async function requireCMSUser(): Promise<CMSAuthResult | CMSAuthError> {
   }
 
   return { user, address };
-}
+};
 
 /**
  * Requires the current user to be an admin.
  * Returns the user or an error response.
  */
-export async function requireAdmin(): Promise<CMSAuthResult | CMSAuthError> {
+export const requireAdmin = async (): Promise<CMSAuthResult | CMSAuthError> => {
   const result = await requireCMSUser();
   if ("error" in result) return result;
 
@@ -97,30 +99,30 @@ export async function requireAdmin(): Promise<CMSAuthResult | CMSAuthError> {
   }
 
   return result;
-}
+};
 
 /**
  * Checks if a user can edit a specific news item.
  * Admins can edit any item, editors can only edit their own.
  */
-export function canEditNews(user: User, newsItem: NewsItem): boolean {
+export const canEditNews = (user: User, newsItem: NewsItem): boolean => {
   if (user.role === "admin") return true;
   return newsItem.author_id === user.id;
-}
+};
 
 /**
  * Checks if a user can delete a specific news item.
  * Same rules as editing.
  */
-export function canDeleteNews(user: User, newsItem: NewsItem): boolean {
+export const canDeleteNews = (user: User, newsItem: NewsItem): boolean => {
   return canEditNews(user, newsItem);
-}
+};
 
 /**
  * Type guard to check if result is an error
  */
-export function isAuthError(
+export const isAuthError = (
   result: CMSAuthResult | CMSAuthError,
-): result is CMSAuthError {
+): result is CMSAuthError => {
   return "error" in result;
-}
+};

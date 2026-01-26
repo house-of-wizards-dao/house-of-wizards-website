@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSortedPostsData, getPostData } from "@/lib/posts";
 import { siteConfig } from "@/config/site";
 
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   // Get the site URL from the request
   const protocol =
     request.headers.get("x-forwarded-proto") ||
@@ -84,4 +84,4 @@ ${rssItems.join("\n")}
       "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
     },
   });
-}
+};

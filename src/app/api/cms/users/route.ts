@@ -10,7 +10,7 @@ import { tableNames } from "@/config/supabase";
 import { requireAdmin, isAuthError } from "@/lib/cms-auth";
 import { CreateUserInput, User } from "@/types/cms";
 
-export async function GET() {
+export const GET = async () => {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -34,9 +34,9 @@ export async function GET() {
   }
 
   return NextResponse.json({ users: data as User[] });
-}
+};
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   const authResult = await requireAdmin();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -85,4 +85,4 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ user: data as User }, { status: 201 });
-}
+};

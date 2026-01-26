@@ -10,7 +10,7 @@ import { tableNames } from "@/config/supabase";
 import { requireCMSUser, isAuthError } from "@/lib/cms-auth";
 import { CreateNewsInput, NewsItem } from "@/types/cms";
 
-export async function GET() {
+export const GET = async () => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -44,9 +44,9 @@ export async function GET() {
   }
 
   return NextResponse.json({ news: data as NewsItem[] });
-}
+};
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -107,4 +107,4 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ news: data as NewsItem }, { status: 201 });
-}
+};

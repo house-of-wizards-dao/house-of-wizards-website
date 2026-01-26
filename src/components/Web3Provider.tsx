@@ -14,15 +14,15 @@ import { ReactNode, useState } from "react";
 import { config } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
-interface Web3ProviderProps {
+type Web3ProviderProps = {
   children: ReactNode;
-}
+};
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Put thy rune on the door to Sign in",
 });
 
-export function Web3Provider({ children }: Web3ProviderProps) {
+export const Web3Provider = ({ children }: Web3ProviderProps) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -59,4 +59,4 @@ export function Web3Provider({ children }: Web3ProviderProps) {
       </WagmiProvider>
     </Web3ErrorBoundary>
   );
-}
+};

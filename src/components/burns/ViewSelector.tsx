@@ -2,10 +2,10 @@
 
 export type BurnView = "wizards" | "souls" | "traits";
 
-interface ViewSelectorProps {
+type ViewSelectorProps = {
   currentView: BurnView;
   onViewChange: (view: BurnView) => void;
-}
+};
 
 export function ViewSelector({ currentView, onViewChange }: ViewSelectorProps) {
   return (

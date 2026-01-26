@@ -4,7 +4,7 @@ import { OpenSeaSDK, Chain } from "opensea-js";
 import { JsonRpcProvider } from "ethers";
 import { logger } from "@/lib/logger";
 
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
     const address = searchParams.get("address");
@@ -92,4 +92,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

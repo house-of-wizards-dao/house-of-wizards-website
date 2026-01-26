@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { fetchWarriorsWithForgedWeapon } from "@/lib/frwc-graphql";
 
-export async function GET() {
+export const GET = async () => {
   try {
     const data = await fetchWarriorsWithForgedWeapon();
     return NextResponse.json(data);
@@ -15,4 +15,4 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+};

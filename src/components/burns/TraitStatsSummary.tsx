@@ -1,7 +1,7 @@
-interface TraitStatsSummaryProps {
+type TraitStatsSummaryProps = {
   showing: number;
   total: number;
-}
+};
 
 export function TraitStatsSummary({ showing, total }: TraitStatsSummaryProps) {
   return (

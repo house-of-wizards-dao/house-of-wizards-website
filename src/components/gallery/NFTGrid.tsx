@@ -6,9 +6,9 @@ import { NFTCard } from "./NFTCard";
 import { useGallery } from "@/contexts/GalleryContext";
 import { frwcAddresses } from "@/config/addresses";
 
-interface NFTGridProps {
+type NFTGridProps = {
   nfts: WalletNFTsByCollection | null;
-}
+};
 
 function CollectionGrid({
   nfts,

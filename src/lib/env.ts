@@ -2,10 +2,10 @@
  * Environment variable validation and configuration
  */
 
-interface EnvConfig {
+type EnvConfig = {
   NODE_ENV: "development" | "test" | "production";
   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID?: string;
-}
+};
 
 class EnvironmentError extends Error {
   constructor(message: string) {
@@ -14,11 +14,11 @@ class EnvironmentError extends Error {
   }
 }
 
-export function validateEnvVar(
+export const validateEnvVar = (
   key: string,
   value: string | undefined,
   required = true,
-): string {
+): string => {
   if (!value) {
     if (required) {
       throw new EnvironmentError(
@@ -33,9 +33,9 @@ export function validateEnvVar(
   }
 
   return value.trim();
-}
+};
 
-function validateSupabaseUrl(url: string): string {
+const validateSupabaseUrl = (url: string): string => {
   try {
     const parsedUrl = new URL(url);
     if (!parsedUrl.hostname.includes("supabase")) {
@@ -45,9 +45,9 @@ function validateSupabaseUrl(url: string): string {
   } catch (error) {
     throw new EnvironmentError(`Invalid SUPABASE_PROJECT_URL format: ${url}`);
   }
-}
+};
 
-function validateSupabaseKey(key: string, type: "anon" | "service"): string {
+const validateSupabaseKey = (key: string, type: "anon" | "service"): string => {
   // Skip validation in test environment
   if (process.env.NODE_ENV === "test") {
     return key;
@@ -65,13 +65,13 @@ function validateSupabaseKey(key: string, type: "anon" | "service"): string {
   }
 
   return key;
-}
+};
 
 /**
  * Validates and returns environment configuration
  * Throws EnvironmentError if validation fails
  */
-export function getValidatedEnv(): EnvConfig {
+export const getValidatedEnv = (): EnvConfig => {
   try {
     return {
       NODE_ENV:
@@ -87,19 +87,19 @@ export function getValidatedEnv(): EnvConfig {
       `Environment validation failed: ${error instanceof Error ? error.message : "Unknown error"}`,
     );
   }
-}
+};
 
 /**
  * Checks if we're in a server-side context
  */
-export function isServerSide(): boolean {
+export const isServerSide = (): boolean => {
   return typeof window === "undefined";
-}
+};
 
 /**
  * Gets environment config with fallbacks for build time
  */
-export function getEnvWithFallbacks(): EnvConfig {
+export const getEnvWithFallbacks = (): EnvConfig => {
   if (isServerSide()) {
     try {
       return getValidatedEnv();
@@ -121,7 +121,7 @@ export function getEnvWithFallbacks(): EnvConfig {
 
   // Client-side validation
   return getValidatedEnv();
-}
+};
 
 // Export the validated environment
 export const env = getEnvWithFallbacks();

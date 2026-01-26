@@ -14,13 +14,13 @@ interface UseProcessedTraitsParams {
   sortDirection: SortDirection;
 }
 
-export function useProcessedTraits({
+export const useProcessedTraits = ({
   traits,
   selectedType,
   searchQuery,
   sortField,
   sortDirection,
-}: UseProcessedTraitsParams): ProcessedTrait[] {
+}: UseProcessedTraitsParams): ProcessedTrait[] => {
   return useMemo<ProcessedTrait[]>(() => {
     if (!traits) return [];
 
@@ -84,4 +84,4 @@ export function useProcessedTraits({
           : (bValue as number) - (aValue as number);
       });
   }, [traits, selectedType, searchQuery, sortField, sortDirection]);
-}
+};

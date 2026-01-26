@@ -4,12 +4,12 @@ import Link from "next/link";
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 import { LazyImage } from "@/components/ui/LazyImage";
 
-interface NFTCardProps {
+type NFTCardProps = {
   nft: OpenSeaNFT;
   contract: string;
   imagesOnly?: boolean;
   imageSize?: number;
-}
+};
 
 function NFTImageOnly({
   nft,

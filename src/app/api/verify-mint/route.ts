@@ -15,7 +15,7 @@ type TokenResult = {
   error?: string;
 };
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
     const { ids } = body;
@@ -183,4 +183,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

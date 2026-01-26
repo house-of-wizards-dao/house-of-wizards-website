@@ -20,7 +20,7 @@ type RouteParams = {
   params: Promise<{ id: string }>;
 };
 
-async function getNewsItem(id: number): Promise<NewsItem | null> {
+const getNewsItem = async (id: number): Promise<NewsItem | null> => {
   const supabase = getSupabaseClient();
   const { data, error } = await supabase
     .from(tableNames.CULT_CONTENT_CHRONICLE)
@@ -30,9 +30,9 @@ async function getNewsItem(id: number): Promise<NewsItem | null> {
 
   if (error || !data) return null;
   return data as NewsItem;
-}
+};
 
-export async function GET(_request: NextRequest, { params }: RouteParams) {
+export const GET = async (_request: NextRequest, { params }: RouteParams) => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -61,9 +61,9 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ news: newsItem });
-}
+};
 
-export async function PATCH(request: NextRequest, { params }: RouteParams) {
+export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -137,9 +137,12 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ news: data as NewsItem });
-}
+};
 
-export async function DELETE(_request: NextRequest, { params }: RouteParams) {
+export const DELETE = async (
+  _request: NextRequest,
+  { params }: RouteParams,
+) => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
     return NextResponse.json(
@@ -184,4 +187,4 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   }
 
   return NextResponse.json({ success: true });
-}
+};

@@ -3,7 +3,7 @@ import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { logger } from "@/lib/logger";
 
-export async function GET() {
+export const GET = async () => {
   try {
     const supabase = getSupabaseClient();
 
@@ -47,4 +47,4 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+};

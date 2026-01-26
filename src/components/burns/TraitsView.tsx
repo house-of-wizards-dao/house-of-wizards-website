@@ -9,9 +9,9 @@ import { TraitStatsSummary } from "@/components/burns/TraitStatsSummary";
 import type { StatsData } from "@/lib/burn-stats";
 import { TRAITS } from "@/lib/traits";
 
-interface TraitsViewProps {
+type TraitsViewProps = {
   data: StatsData;
-}
+};
 
 export function TraitsView({ data }: TraitsViewProps) {
   const [selectedType, setSelectedType] = useState<string>("all");

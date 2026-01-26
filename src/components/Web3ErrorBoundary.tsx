@@ -4,17 +4,17 @@ import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw, Wallet } from "lucide-react";
 import { logger } from "@/lib/logger";
 
-interface Props {
+type Props = {
   children: ReactNode;
   fallback?: ReactNode;
   onError?: (error: Error, errorInfo: ErrorInfo) => void;
-}
+};
 
-interface State {
+type State = {
   hasError: boolean;
   error?: Error;
   errorType?: "connection" | "transaction" | "contract" | "network" | "generic";
-}
+};
 
 export default class Web3ErrorBoundary extends Component<Props, State> {
   public state: State = {

@@ -3,11 +3,11 @@
 import { SortArrow } from "./SortArrow";
 import type { SortField, SortDirection } from "@/hooks/useTraitSorting";
 
-interface TraitTableHeaderProps {
+type TraitTableHeaderProps = {
   sortField: SortField;
   sortDirection: SortDirection;
   onSort: (field: SortField) => void;
-}
+};
 
 const columns: Array<{ field: SortField; label: string; sortable: boolean }> = [
   { field: "value", label: "Trait Name", sortable: true },

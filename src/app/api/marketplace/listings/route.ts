@@ -14,7 +14,7 @@ export const revalidate = 60;
  * - limit: number (optional, default 50, max 100)
  * - next: string (optional, cursor for pagination)
  */
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
     const collectionKey = searchParams.get(
@@ -73,4 +73,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

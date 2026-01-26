@@ -170,52 +170,53 @@ const PONIES_QUERY = gql`
  * Fetch all wizards and souls from the GraphQL endpoint using Apollo Client in a single query
  * The query uses GraphQL relationships to include wizard data with each soul
  */
-export async function fetchAllSoulsWithTransmutedWizard(): Promise<WizardsAndSoulsResponse> {
-  try {
-    const { data } = await apolloClient.query<WizardsAndSoulsResponse>({
-      query: ALL_SOULS_WITH_TRANSMUTED_WIZARD_QUERY,
-    });
+export const fetchAllSoulsWithTransmutedWizard =
+  async (): Promise<WizardsAndSoulsResponse> => {
+    try {
+      const { data } = await apolloClient.query<WizardsAndSoulsResponse>({
+        query: ALL_SOULS_WITH_TRANSMUTED_WIZARD_QUERY,
+      });
 
-    if (data?.Soul) {
-      return data;
+      if (data?.Soul) {
+        return data;
+      }
+
+      throw new Error("Invalid GraphQL response structure");
+    } catch (error) {
+      console.error("Error fetching wizards and souls from GraphQL:", error);
+      throw error;
     }
-
-    throw new Error("Invalid GraphQL response structure");
-  } catch (error) {
-    console.error("Error fetching wizards and souls from GraphQL:", error);
-    throw error;
-  }
-}
+  };
 
 /**
  * Fetch all warriors with forged weapons from the GraphQL endpoint
  */
-export async function fetchWarriorsWithForgedWeapon(): Promise<WarriorsWithForgedWeaponResponse> {
-  try {
-    const { data } = await apolloClient.query<WarriorsWithForgedWeaponResponse>(
-      {
-        query: WARRIORS_WITH_FORGED_WEAPON_QUERY,
-      },
-    );
+export const fetchWarriorsWithForgedWeapon =
+  async (): Promise<WarriorsWithForgedWeaponResponse> => {
+    try {
+      const { data } =
+        await apolloClient.query<WarriorsWithForgedWeaponResponse>({
+          query: WARRIORS_WITH_FORGED_WEAPON_QUERY,
+        });
 
-    if (data?.Warrior) {
-      return data;
+      if (data?.Warrior) {
+        return data;
+      }
+
+      throw new Error("Invalid GraphQL response structure");
+    } catch (error) {
+      console.error(
+        "Error fetching warriors with forged weapons from GraphQL:",
+        error,
+      );
+      throw error;
     }
-
-    throw new Error("Invalid GraphQL response structure");
-  } catch (error) {
-    console.error(
-      "Error fetching warriors with forged weapons from GraphQL:",
-      error,
-    );
-    throw error;
-  }
-}
+  };
 
 /**
  * Fetch all ponies from the GraphQL endpoint
  */
-export async function fetchPonies(): Promise<PoniesResponse> {
+export const fetchPonies = async (): Promise<PoniesResponse> => {
   try {
     const { data } = await apolloClient.query<PoniesResponse>({
       query: PONIES_QUERY,
@@ -230,4 +231,4 @@ export async function fetchPonies(): Promise<PoniesResponse> {
     console.error("Error fetching ponies from GraphQL:", error);
     throw error;
   }
-}
+};

@@ -35,6 +35,6 @@ export const collectionNames: Record<string, string> = {
 /**
  * Get friendly collection name from contract address
  */
-export function getCollectionName(contractAddress: string): string {
+export const getCollectionName = (contractAddress: string): string => {
   return collectionNames[contractAddress.toLowerCase()] || contractAddress;
-}
+};

@@ -14,7 +14,7 @@ export const revalidate = 30;
  * - collection: CollectionKey (required)
  * - tokenId: string (required)
  */
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
     const collectionKey = searchParams.get(
@@ -70,4 +70,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { StatsData } from "@/lib/burn-stats";
 
-export function useBurnStats() {
+export const useBurnStats = () => {
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -32,4 +32,4 @@ export function useBurnStats() {
   }, []);
 
   return { data, loading, error };
-}
+};

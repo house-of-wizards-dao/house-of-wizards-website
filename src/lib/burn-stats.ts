@@ -40,15 +40,15 @@ export interface StatsData {
 // Legacy export for backwards compatibility during migration
 export type TraitStat = TraitBurnStat;
 
-export function isCacheValid(): boolean {
+export const isCacheValid = (): boolean => {
   if (!cachedStats) return false;
   const now = Date.now();
   return now - lastUpdateTime < CACHE_DURATION;
-}
+};
 
-export async function getStats(
+export const getStats = async (
   forceRefresh: boolean = false,
-): Promise<StatsData> {
+): Promise<StatsData> => {
   // Return cached data if still valid and not forcing refresh
   if (!forceRefresh && isCacheValid()) {
     return cachedStats!;
@@ -269,4 +269,4 @@ export async function getStats(
     console.error("Error in getStats:", error);
     throw error;
   }
-}
+};

@@ -23,13 +23,13 @@ import {
 } from "./MarketplaceItemCard";
 import { ItemDetailOverlay } from "./ItemDetailOverlay";
 
-interface MarketplaceBrowserProps {
+type MarketplaceBrowserProps = {
   initialCollection?: CollectionKey;
   /** Pre-fetched listings from server-side rendering */
   initialListings?: MarketplaceItem[];
   /** Pre-fetched collection info from server-side rendering */
   initialCollectionInfo?: CollectionInfo;
-}
+};
 
 /**
  * Collection tabs for switching between collections

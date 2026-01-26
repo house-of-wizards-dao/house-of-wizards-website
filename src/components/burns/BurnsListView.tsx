@@ -5,10 +5,10 @@ import Link from "next/link";
 import type { Burn } from "@/lib/burn-stats";
 import { LazyImage } from "../ui/LazyImage";
 
-interface BurnsListViewProps {
+type BurnsListViewProps = {
   burns: Burn[];
   primaryType: "wizard" | "soul";
-}
+};
 
 export function BurnsListView({ burns, primaryType }: BurnsListViewProps) {
   const isWizardFirst = primaryType === "wizard";

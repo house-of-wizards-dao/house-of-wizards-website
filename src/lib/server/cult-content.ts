@@ -27,9 +27,9 @@ const CACHE_REVALIDATE_SECONDS = 300;
 /**
  * Internal function to fetch chronicle items from the database
  */
-async function fetchChronicleFromDb(
+const fetchChronicleFromDb = async (
   limit: number,
-): Promise<CultContentDbItem[]> {
+): Promise<CultContentDbItem[]> => {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
@@ -45,7 +45,7 @@ async function fetchChronicleFromDb(
   }
 
   return data ?? [];
-}
+};
 
 /**
  * Cached version of chronicle fetch
@@ -66,16 +66,18 @@ const getCachedChronicle = unstable_cache(
  * Only returns items with status = 'published'
  * Results are cached for 5 minutes to avoid redundant database calls
  */
-export async function fetchCultContentChronicle(
+export const fetchCultContentChronicle = async (
   limit: number = 20,
-): Promise<CultContentDbItem[]> {
+): Promise<CultContentDbItem[]> => {
   return getCachedChronicle(limit);
-}
+};
 
 /**
  * Internal function to fetch a single item from database
  */
-async function fetchItemFromDb(id: number): Promise<CultContentDbItem | null> {
+const fetchItemFromDb = async (
+  id: number,
+): Promise<CultContentDbItem | null> => {
   const supabase = getSupabaseClient();
 
   const { data, error } = await supabase
@@ -94,7 +96,7 @@ async function fetchItemFromDb(id: number): Promise<CultContentDbItem | null> {
   }
 
   return data;
-}
+};
 
 /**
  * Cached version of single item fetch
@@ -113,9 +115,9 @@ const getCachedItem = unstable_cache(
  * First checks the cached chronicle list (already loaded by landing page)
  * Falls back to individual item cache if not found in list
  */
-export async function fetchCultContentById(
+export const fetchCultContentById = async (
   id: number,
-): Promise<CultContentDbItem | null> {
+): Promise<CultContentDbItem | null> => {
   // Try to find the item in the cached chronicle list first
   // This avoids a separate DB call when navigating from landing page to detail
   try {
@@ -131,23 +133,23 @@ export async function fetchCultContentById(
 
   // Item not in the cached list (older item or different limit) - fetch individually
   return getCachedItem(id);
-}
+};
 
 /**
  * Extracts Twitter/X post URLs from text
  */
-export function extractTwitterUrls(text: string): string[] {
+export const extractTwitterUrls = (text: string): string[] => {
   // Match twitter.com and x.com URLs
   const twitterRegex =
     /https?:\/\/(?:twitter\.com|x\.com)\/\w+\/status\/(\d+)/g;
   const matches = text.match(twitterRegex);
   return matches ?? [];
-}
+};
 
 /**
  * Extracts the tweet ID from a Twitter/X URL
  */
-export function extractTweetId(url: string): string | null {
+export const extractTweetId = (url: string): string | null => {
   const match = url.match(/status\/(\d+)/);
   return match ? match[1] : null;
-}
+};

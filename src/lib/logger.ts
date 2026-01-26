@@ -11,13 +11,13 @@ export enum LogLevel {
 // Re-export LogContext for backward compatibility and easier imports
 export type { LogContext } from "./error-utils";
 
-interface LogEntry {
+type LogEntry = {
   timestamp: string;
   level: LogLevel;
   message: string;
   context?: LogContext;
   environment: string;
-}
+};
 
 class Logger {
   private readonly isProduction = env.NODE_ENV === "production";
@@ -219,7 +219,7 @@ class Logger {
 export const logger = new Logger();
 
 // Request logging middleware
-export function requestLogger() {
+export const requestLogger = () => {
   return (req: any, res: any, next: any) => {
     const startTime = Date.now();
 
@@ -233,6 +233,6 @@ export function requestLogger() {
 
     next();
   };
-}
+};
 
 export default logger;

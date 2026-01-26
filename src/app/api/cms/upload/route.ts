@@ -36,18 +36,18 @@ const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_AUDIO_SIZE = 50 * 1024 * 1024; // 50MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
 
-function getMediaType(
+const getMediaType = (
   mimeType: string,
-): "image" | "audio" | "video" | "unknown" {
+): "image" | "audio" | "video" | "unknown" => {
   if (ALLOWED_IMAGE_TYPES.includes(mimeType)) return "image";
   if (ALLOWED_AUDIO_TYPES.includes(mimeType)) return "audio";
   if (ALLOWED_VIDEO_TYPES.includes(mimeType)) return "video";
   return "unknown";
-}
+};
 
-function getMaxSize(
+const getMaxSize = (
   mediaType: "image" | "audio" | "video" | "unknown",
-): number {
+): number => {
   switch (mediaType) {
     case "image":
       return MAX_IMAGE_SIZE;
@@ -58,9 +58,9 @@ function getMaxSize(
     default:
       return 0;
   }
-}
+};
 
-function generateFileName(originalName: string, userId: string): string {
+const generateFileName = (originalName: string, userId: string): string => {
   const timestamp = Date.now();
   const randomSuffix = Math.random().toString(36).substring(2, 8);
   const extension = originalName.split(".").pop() || "bin";
@@ -70,9 +70,9 @@ function generateFileName(originalName: string, userId: string): string {
     .substring(0, 50); // Limit length
 
   return `${userId}/${timestamp}-${sanitizedName}-${randomSuffix}.${extension}`;
-}
+};
 
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   // Verify CMS access
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
@@ -177,4 +177,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

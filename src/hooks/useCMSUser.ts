@@ -9,7 +9,7 @@ type CMSUserResponse = {
   address: string;
 };
 
-async function fetchCMSUser(): Promise<CMSUserResponse> {
+const fetchCMSUser = async (): Promise<CMSUserResponse> => {
   const response = await fetch("/api/cms/users/me");
   if (!response.ok) {
     if (response.status === 401) {
@@ -18,9 +18,9 @@ async function fetchCMSUser(): Promise<CMSUserResponse> {
     throw new Error("Failed to fetch CMS user");
   }
   return response.json();
-}
+};
 
-export function useCMSUser() {
+export const useCMSUser = () => {
   const { data: session, status: sessionStatus } = useSession();
 
   const {
@@ -54,4 +54,4 @@ export function useCMSUser() {
     error,
     refetch,
   };
-}
+};

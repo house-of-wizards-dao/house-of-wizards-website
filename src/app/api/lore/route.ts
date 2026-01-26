@@ -12,7 +12,7 @@ export type LoreResponse = {
   };
 };
 
-export async function GET() {
+export const GET = async () => {
   try {
     const query = `{
       PaginatedLore(order_by: {createdAtBlock: desc}, limit: 5, where: {
@@ -70,4 +70,4 @@ export async function GET() {
       { status: 500 },
     );
   }
-}
+};

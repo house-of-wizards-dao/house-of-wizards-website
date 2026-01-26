@@ -12,13 +12,13 @@ import {
 import Image, { type ImageProps } from "next/image";
 import { cn } from "@/lib/utils";
 
-interface LazyImageProps extends Omit<ImageProps, "loading"> {
+type LazyImageProps = Omit<ImageProps, "loading"> & {
   threshold?: number;
   fallback?: ReactNode | null; // null to disable default fallback
   errorFallback?: ReactNode | null; // null to disable default error fallback
   priority?: boolean;
   containerClassName?: string; // Optional className for the container div
-}
+};
 
 /**
  * Optimized lazy loading image component with intersection observer

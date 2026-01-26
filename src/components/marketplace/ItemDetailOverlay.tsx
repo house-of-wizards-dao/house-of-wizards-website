@@ -9,12 +9,12 @@ import type { MarketplaceItem, Offer } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 import { useMarketplaceActions, useNFTOwnership } from "@/hooks/useMarketplace";
 
-interface ItemDetailOverlayProps {
+type ItemDetailOverlayProps = {
   item: MarketplaceItem;
   isOpen: boolean;
   onClose: () => void;
   onActionComplete?: () => void;
-}
+};
 
 export function ItemDetailOverlay({
   item,

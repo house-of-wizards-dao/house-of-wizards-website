@@ -1,9 +1,9 @@
 import type { StatsData } from "@/lib/burn-stats";
 import { FilteredBurnsView } from "@/components/burns/FilteredBurnsView";
 
-interface WizardsViewProps {
+type WizardsViewProps = {
   data: StatsData;
-}
+};
 
 export function WizardsView({ data }: WizardsViewProps) {
   return (

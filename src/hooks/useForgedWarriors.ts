@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 
-export function useForgedWarriors() {
+export const useForgedWarriors = () => {
   const [data, setData] = useState<WarriorGraphQLResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -32,4 +32,4 @@ export function useForgedWarriors() {
   }, []);
 
   return { data, loading, error };
-}
+};

@@ -209,10 +209,10 @@ const SEAPORT_ABI = [
 /**
  * Encode the transaction calldata based on the function name and input data
  */
-function encodeSeaportCall(
+const encodeSeaportCall = (
   functionName: string,
   inputData: Record<string, unknown>,
-): `0x${string}` {
+): `0x${string}` => {
   // Extract the base function name (remove parameter signature if present)
   // e.g., "fulfillAdvancedOrder((address,...))" -> "fulfillAdvancedOrder"
   const baseFunctionName = functionName.split("(")[0];
@@ -272,7 +272,7 @@ function encodeSeaportCall(
     functionName: normalizedFn,
     args: args as never,
   });
-}
+};
 
 /**
  * POST /api/marketplace/fulfill
@@ -285,7 +285,7 @@ function encodeSeaportCall(
  * - accountAddress: string (required) - buyer/seller address
  * - side: "listing" | "offer" (required) - whether this is a listing or offer
  */
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
     const {
@@ -383,4 +383,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

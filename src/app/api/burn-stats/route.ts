@@ -3,7 +3,7 @@ import { getStats, isCacheValid } from "@/lib/burn-stats";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(_request: Request) {
+export const GET = async (_request: Request) => {
   try {
     // Check if cache is valid
     const cacheValid = isCacheValid();
@@ -27,4 +27,4 @@ export async function GET(_request: Request) {
       { status: 500 },
     );
   }
-}
+};

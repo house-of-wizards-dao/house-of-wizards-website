@@ -44,10 +44,10 @@ export interface ContractError extends Web3Error {
  * Safely converts any error type to LogContext
  * This is the primary function to use in catch blocks
  */
-export function createLogContext(
+export const createLogContext = (
   error: unknown,
   additionalContext?: Partial<LogContext>,
-): LogContext {
+): LogContext => {
   const baseContext: LogContext = {
     ...additionalContext,
   };
@@ -130,12 +130,12 @@ export function createLogContext(
     errorValue: error,
     errorType: "UnknownError",
   };
-}
+};
 
 /**
  * Type guard for Supabase errors
  */
-export function isSupabaseError(error: unknown): error is SupabaseError {
+export const isSupabaseError = (error: unknown): error is SupabaseError => {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -143,12 +143,12 @@ export function isSupabaseError(error: unknown): error is SupabaseError {
     typeof (error as any).message === "string" &&
     ("code" in error || "details" in error || "hint" in error)
   );
-}
+};
 
 /**
  * Type guard for Web3 errors
  */
-export function isWeb3Error(error: unknown): error is Web3Error {
+export const isWeb3Error = (error: unknown): error is Web3Error => {
   return (
     typeof error === "object" &&
     error !== null &&
@@ -156,32 +156,32 @@ export function isWeb3Error(error: unknown): error is Web3Error {
     typeof (error as any).message === "string" &&
     ("code" in error || "reason" in error || "data" in error)
   );
-}
+};
 
 /**
  * Type guard for Contract errors (extends Web3Error)
  */
-export function isContractError(error: unknown): error is ContractError {
+export const isContractError = (error: unknown): error is ContractError => {
   return (
     isWeb3Error(error) &&
     ("method" in error || "contract" in error || "args" in error)
   );
-}
+};
 
 /**
  * Safely extracts error message from unknown error objects
  */
-function getErrorMessage(error: any): string {
+const getErrorMessage = (error: any): string => {
   if (typeof error.message === "string") return error.message;
   if (typeof error.error === "string") return error.error;
   if (typeof error.toString === "function") return error.toString();
   return "Unknown error occurred";
-}
+};
 
 /**
  * Sanitizes error objects to prevent circular references and sensitive data leakage
  */
-function sanitizeErrorObject(error: any): any {
+const sanitizeErrorObject = (error: any): any => {
   try {
     const seen = new WeakSet();
     return JSON.parse(
@@ -215,98 +215,98 @@ function sanitizeErrorObject(error: any): any {
   } catch {
     return { sanitizationError: "Could not sanitize error object" };
   }
-}
+};
 
 /**
  * Specialized helper for database operation errors
  */
-export function createDatabaseErrorContext(
+export const createDatabaseErrorContext = (
   error: unknown,
   operation: string,
   table: string,
   additionalContext?: Partial<LogContext>,
-): LogContext {
+): LogContext => {
   return createLogContext(error, {
     ...additionalContext,
     operation,
     table,
     errorCategory: "database",
   });
-}
+};
 
 /**
  * Specialized helper for API request errors
  */
-export function createApiErrorContext(
+export const createApiErrorContext = (
   error: unknown,
   endpoint: string,
   method: string,
   additionalContext?: Partial<LogContext>,
-): LogContext {
+): LogContext => {
   return createLogContext(error, {
     ...additionalContext,
     endpoint,
     method,
     errorCategory: "api",
   });
-}
+};
 
 /**
  * Specialized helper for Web3/Contract errors
  */
-export function createWeb3ErrorContext(
+export const createWeb3ErrorContext = (
   error: unknown,
   contractMethod: string,
   contractAddress?: string,
   additionalContext?: Partial<LogContext>,
-): LogContext {
+): LogContext => {
   return createLogContext(error, {
     ...additionalContext,
     contractMethod,
     contractAddress,
     errorCategory: "web3",
   });
-}
+};
 
 /**
  * Specialized helper for authentication errors
  */
-export function createAuthErrorContext(
+export const createAuthErrorContext = (
   error: unknown,
   authEvent: string,
   userId?: string,
   additionalContext?: Partial<LogContext>,
-): LogContext {
+): LogContext => {
   return createLogContext(error, {
     ...additionalContext,
     authEvent,
     userId,
     errorCategory: "auth",
   });
-}
+};
 
 /**
  * Utility to safely convert string to number for bid amounts, etc.
  */
-export function safeParseNumber(
+export const safeParseNumber = (
   value: string | number | undefined,
   fallback: number = 0,
-): number {
+): number => {
   if (typeof value === "number") return value;
   if (typeof value === "string") {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? fallback : parsed;
   }
   return fallback;
-}
+};
 
 /**
  * Utility to safely convert string to bigint for Web3 operations
  */
-export function safeParseBigInt(
+export const safeParseBigInt = (
   value: string | number | bigint | undefined,
   fallback: bigint = BigInt(0),
-): bigint {
+): bigint => {
   if (typeof value === "bigint") return value;
   if (typeof value === "number") return BigInt(Math.floor(value));
   if (typeof value === "string") {
@@ -317,4 +317,4 @@ export function safeParseBigInt(
     }
   }
   return fallback;
-}
+};

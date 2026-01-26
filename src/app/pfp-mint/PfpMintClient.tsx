@@ -22,9 +22,9 @@ const getWizardImage = (idx: number): string => {
 
 const MINT_PRICE_WEI = parseEther("0.00069");
 
-interface PfpMintClientProps {
+type PfpMintClientProps = {
   initialMintedTokenIds: number[];
-}
+};
 
 export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
   const [snowflakes, setSnowflakes] = useState<HTMLImageElement[]>([]);

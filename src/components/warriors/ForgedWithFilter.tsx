@@ -3,10 +3,10 @@
 import { useMemo, useState, useEffect } from "react";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 
-interface ForgedWithFilterProps {
+type ForgedWithFilterProps = {
   warriors: WarriorGraphQLResponse[];
   onFilterChange: (filtered: WarriorGraphQLResponse[]) => void;
-}
+};
 
 export function ForgedWithFilter({
   warriors,

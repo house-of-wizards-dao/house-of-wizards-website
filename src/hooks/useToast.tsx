@@ -10,16 +10,16 @@ import React, {
 import ErrorMessage from "@/components/ui/ErrorMessage";
 import SuccessMessage from "@/components/ui/SuccessMessage";
 
-export interface Toast {
+export type Toast = {
   id: string;
   type: "success" | "error" | "warning" | "info";
   title?: string;
   message: string;
   duration?: number;
   onRetry?: () => void;
-}
+};
 
-interface ToastContextType {
+type ToastContextType = {
   toasts: Toast[];
   addToast: (toast: Omit<Toast, "id">) => void;
   removeToast: (id: string) => void;
@@ -32,23 +32,25 @@ interface ToastContextType {
   ) => void;
   warning: (message: string, title?: string, duration?: number) => void;
   info: (message: string, title?: string, duration?: number) => void;
-}
+};
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export function useToast(): ToastContextType {
+export const useToast = (): ToastContextType => {
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error("useToast must be used within a ToastProvider");
   }
   return context;
-}
+};
 
-interface ToastProviderProps {
+type ToastProviderProps = {
   children: ReactNode;
-}
+};
 
-export function ToastProvider({ children }: ToastProviderProps): JSX.Element {
+export const ToastProvider = ({
+  children,
+}: ToastProviderProps): JSX.Element => {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const addToast = useCallback((toast: Omit<Toast, "id">) => {
@@ -119,17 +121,17 @@ export function ToastProvider({ children }: ToastProviderProps): JSX.Element {
       <ToastContainer toasts={toasts} onRemove={removeToast} />
     </ToastContext.Provider>
   );
-}
+};
 
-interface ToastContainerProps {
+type ToastContainerProps = {
   toasts: Toast[];
   onRemove: (id: string) => void;
-}
+};
 
-function ToastContainer({
+const ToastContainer = ({
   toasts,
   onRemove,
-}: ToastContainerProps): JSX.Element {
+}: ToastContainerProps): JSX.Element => {
   if (toasts.length === 0) {
     return <></>;
   }
@@ -166,14 +168,14 @@ function ToastContainer({
       ))}
     </div>
   );
-}
+};
 
 // Utility function to use toasts outside of components (for API calls, etc.)
 let toastInstance: ToastContextType | null = null;
 
-export function setToastInstance(instance: ToastContextType): void {
+export const setToastInstance = (instance: ToastContextType): void => {
   toastInstance = instance;
-}
+};
 
 export const toast = {
   success: (message: string, title?: string, duration?: number) => {

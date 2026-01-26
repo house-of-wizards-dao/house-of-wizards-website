@@ -19,52 +19,55 @@ export interface WizardsData {
 /**
  * Get all wizard data as a typed object
  */
-export function getWizards(): WizardsData {
+export const getWizards = (): WizardsData => {
   return wizziesData as WizardsData;
-}
+};
 
 /**
  * Get a specific wizard by token ID
  */
-export function getWizard(tokenId: string): WizardData | undefined {
+export const getWizard = (tokenId: string): WizardData | undefined => {
   const wizzies = getWizards();
   return wizzies[tokenId];
-}
+};
 
 /**
  * Get wizard name by token ID
  */
-export function getWizardName(tokenId: string): string {
+export const getWizardName = (tokenId: string): string => {
   const wizard = getWizard(tokenId);
   return wizard?.name || "";
-}
+};
 
 /**
  * Get a specific trait value for a wizard
  */
-export function getWizardTrait(
+export const getWizardTrait = (
   tokenId: string,
   trait: TraitType,
-): string | undefined {
+): string | undefined => {
   const wizard = getWizard(tokenId);
   return wizard?.[trait];
-}
+};
 
 /**
  * Get all wizards that have a specific trait value
  */
-export function getWizardsByTrait(trait: TraitType, value: string): string[] {
+export const getWizardsByTrait = (
+  trait: TraitType,
+  value: string,
+): string[] => {
   const wizzies = getWizards();
   return Object.keys(wizzies).filter((tokenId) => {
     const wizard = wizzies[tokenId];
     return wizard[trait] === value;
   });
-}
+};
 
 /**
  * Get all unique trait values for a given trait type
  */
-export function getTraitValues(trait: TraitType): string[] {
+export const getTraitValues = (trait: TraitType): string[] => {
   const wizzies = getWizards();
   const values = new Set<string>();
 
@@ -76,11 +79,11 @@ export function getTraitValues(trait: TraitType): string[] {
   });
 
   return Array.from(values).sort();
-}
+};
 
 /**
  * Get total number of wizards
  */
-export function getWizardCount(): number {
+export const getWizardCount = (): number => {
   return Object.keys(getWizards()).length;
-}
+};

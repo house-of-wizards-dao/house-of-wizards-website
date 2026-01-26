@@ -18,7 +18,7 @@ export const revalidate = 120;
  * Query params:
  * - collection: CollectionKey (required)
  */
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
     const collectionKey = searchParams.get(
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};
 
 /**
  * POST /api/marketplace/nftx
@@ -97,7 +97,7 @@ export async function GET(request: NextRequest) {
  * - action: "quote" | "buy" (optional, default "quote")
  * - buyerAddress: string (required if action is "buy")
  */
-export async function POST(request: NextRequest) {
+export const POST = async (request: NextRequest) => {
   try {
     const body = await request.json();
     const {
@@ -192,4 +192,4 @@ export async function POST(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

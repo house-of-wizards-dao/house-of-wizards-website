@@ -5,9 +5,9 @@ import { frwcAddresses } from "@/config/addresses";
 import { isAddress, isENSName } from "@/lib/ens";
 import { useGallery } from "@/contexts/GalleryContext";
 
-interface GallerySettingsProps {
+type GallerySettingsProps = {
   // No props needed - uses context
-}
+};
 
 export function GallerySettings({}: GallerySettingsProps) {
   const {

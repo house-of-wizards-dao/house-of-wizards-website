@@ -39,17 +39,17 @@ const MARKETPLACE_ZAP_ABI = [
 /**
  * Get wizard image URL by token ID
  */
-function getWizardImageUrl(tokenId: string): string {
+const getWizardImageUrl = (tokenId: string): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${tokenId}.png`;
-}
+};
 
 /**
  * Get wizard data by token ID from local data
  */
-function getWizardData(tokenId: string): Wizard | undefined {
+const getWizardData = (tokenId: string): Wizard | undefined => {
   const idx = parseInt(tokenId, 10);
   return wizardsWithTraits[idx];
-}
+};
 
 /**
  * Public RPC endpoint for Ethereum mainnet
@@ -87,16 +87,16 @@ export const nftxVaults: Record<string, NFTXVaultConfig> = {
 /**
  * Get NFTX vault config for a collection
  */
-export function getNFTXVault(
+export const getNFTXVault = (
   collectionKey: CollectionKey,
-): NFTXVaultConfig | null {
+): NFTXVaultConfig | null => {
   return nftxVaults[collectionKey] || null;
-}
+};
 
 /**
  * Make an eth_call to a contract
  */
-async function ethCall(to: string, data: string): Promise<string | null> {
+const ethCall = async (to: string, data: string): Promise<string | null> => {
   try {
     const response = await fetch(ETH_RPC, {
       method: "POST",
@@ -119,67 +119,67 @@ async function ethCall(to: string, data: string): Promise<string | null> {
     console.error("eth_call failed:", error);
     return null;
   }
-}
+};
 
 /**
  * Pad an address to 32 bytes for ABI encoding
  */
-function padAddress(address: string): string {
+const padAddress = (address: string): string => {
   return address.toLowerCase().replace("0x", "").padStart(64, "0");
-}
+};
 
 /**
  * Pad a number to 32 bytes for ABI encoding
  */
-function padNumber(num: number): string {
+const padNumber = (num: number): string => {
   return num.toString(16).padStart(64, "0");
-}
+};
 
 /**
  * Parse a uint256 result from hex
  */
-function parseUint256(hex: string | null): number {
+const parseUint256 = (hex: string | null): number => {
   if (!hex || hex === "0x") return 0;
   return parseInt(hex, 16);
-}
+};
 
 /**
  * Query ERC721 balanceOf for an address
  * balanceOf(address) selector: 0x70a08231
  */
-async function getERC721Balance(
+const getERC721Balance = async (
   nftContract: string,
   owner: string,
-): Promise<number> {
+): Promise<number> => {
   const data = `0x70a08231${padAddress(owner)}`;
   const result = await ethCall(nftContract, data);
   return parseUint256(result);
-}
+};
 
 /**
  * Query ERC721 tokenOfOwnerByIndex
  * tokenOfOwnerByIndex(address,uint256) selector: 0x2f745c59
  */
-async function getTokenOfOwnerByIndex(
+const getTokenOfOwnerByIndex = async (
   nftContract: string,
   owner: string,
   index: number,
-): Promise<number | null> {
+): Promise<number | null> => {
   const data = `0x2f745c59${padAddress(owner)}${padNumber(index)}`;
   const result = await ethCall(nftContract, data);
   if (!result || result === "0x") return null;
   return parseUint256(result);
-}
+};
 
 /**
  * Fetch all token IDs owned by an address (vault)
  * Uses ERC721Enumerable interface
  */
-async function fetchVaultTokenIds(
+const fetchVaultTokenIds = async (
   nftContract: string,
   vaultAddress: string,
   maxTokens: number = 500,
-): Promise<string[]> {
+): Promise<string[]> => {
   // First get the balance
   const balance = await getERC721Balance(nftContract, vaultAddress);
   if (balance === 0) return [];
@@ -203,7 +203,7 @@ async function fetchVaultTokenIds(
   }
 
   return tokenIds;
-}
+};
 
 /**
  * Default NFTX v2 fees (5% redeem fee is standard)
@@ -275,10 +275,10 @@ const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
  * Get amounts out from SushiSwap router
  * getAmountsOut(uint256,address[]) selector: 0xd06ca61f
  */
-async function getAmountsOut(
+const getAmountsOut = async (
   amountIn: bigint,
   path: string[],
-): Promise<bigint[] | null> {
+): Promise<bigint[] | null> => {
   // Encode the function call
   // getAmountsOut(uint256 amountIn, address[] memory path)
   const amountHex = amountIn.toString(16).padStart(64, "0");
@@ -311,7 +311,7 @@ async function getAmountsOut(
   }
 
   return amounts;
-}
+};
 
 /**
  * Fetch vToken price in ETH from SushiSwap (cached)
@@ -355,10 +355,10 @@ export const fetchVTokenPrice = unstable_cache(
  * Calculate the total price to buy an NFT from NFTX pool
  * Price = 1 vToken + redeem fee (in vToken equivalent converted to ETH)
  */
-export function calculateNFTXPrice(
+export const calculateNFTXPrice = (
   vTokenPriceEth: string,
   redeemFeePercent: string,
-): { totalPriceEth: string; feeEth: string } {
+): { totalPriceEth: string; feeEth: string } => {
   const vTokenPrice = parseFloat(vTokenPriceEth);
   // Fee is in wei format as percentage (50000000000000000 = 5%)
   const feePercent = parseFloat(redeemFeePercent) / 1e18;
@@ -372,15 +372,15 @@ export function calculateNFTXPrice(
     totalPriceEth: totalPriceEth.toFixed(6),
     feeEth: feeEth.toFixed(6),
   };
-}
+};
 
 /**
  * Fetch NFTX listings for a collection
  * Returns MarketplaceItems with NFTX listing data
  */
-export async function fetchNFTXListings(
+export const fetchNFTXListings = async (
   collectionKey: CollectionKey,
-): Promise<MarketplaceItem[]> {
+): Promise<MarketplaceItem[]> => {
   const vaultConfig = getNFTXVault(collectionKey);
   if (!vaultConfig) {
     return []; // No NFTX vault for this collection
@@ -451,13 +451,13 @@ export async function fetchNFTXListings(
   });
 
   return items;
-}
+};
 
 /**
  * Get NFTX buy quote for specific NFT IDs
  * This is used when the user wants to buy a specific NFT from the pool
  */
-export async function getNFTXBuyQuote(
+export const getNFTXBuyQuote = async (
   collectionKey: CollectionKey,
   tokenIds: string[],
 ): Promise<{
@@ -465,7 +465,7 @@ export async function getNFTXBuyQuote(
   pricePerNft: string;
   feePerNft: string;
   vaultAddress: string;
-} | null> {
+} | null> => {
   const vaultConfig = getNFTXVault(collectionKey);
   if (!vaultConfig) {
     return null;
@@ -505,13 +505,13 @@ export async function getNFTXBuyQuote(
     feePerNft,
     vaultAddress: vaultConfig.vaultAddress,
   };
-}
+};
 
 /**
  * Get transaction data for buying NFTs from NFTX pool
  * Returns the transaction parameters to send
  */
-export async function getNFTXBuyTransaction(
+export const getNFTXBuyTransaction = async (
   collectionKey: CollectionKey,
   tokenIds: string[],
   buyerAddress: string,
@@ -519,7 +519,7 @@ export async function getNFTXBuyTransaction(
   to: string;
   data: string;
   value: string; // in wei
-} | null> {
+} | null> => {
   const vaultConfig = getNFTXVault(collectionKey);
   if (!vaultConfig) {
     return null;
@@ -556,4 +556,4 @@ export async function getNFTXBuyTransaction(
     data,
     value: valueWei,
   };
-}
+};

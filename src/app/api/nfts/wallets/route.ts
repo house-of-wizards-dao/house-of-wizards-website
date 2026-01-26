@@ -5,7 +5,7 @@ import { frwcAddresses, getCollectionName } from "@/config/addresses";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
     // Get all wallet parameters (supports multiple ?wallets=...&wallets=...)
@@ -124,4 +124,4 @@ export async function GET(request: NextRequest) {
       { status: 500 },
     );
   }
-}
+};

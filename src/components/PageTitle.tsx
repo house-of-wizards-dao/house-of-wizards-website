@@ -1,9 +1,9 @@
-interface PageTitleProps {
+type PageTitleProps = {
   title: string;
   subtitle?: string;
   className?: string;
   subtitleClassName?: string;
-}
+};
 
 export function PageTitle({
   title,

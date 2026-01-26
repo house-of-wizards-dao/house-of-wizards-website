@@ -4,13 +4,13 @@ import { NFTCard, NFTCardSkeleton } from "@/components/ui/NFTCard";
 import type { MarketplaceItem } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 
-interface MarketplaceItemCardProps {
+type MarketplaceItemCardProps = {
   item: MarketplaceItem;
   onClick?: (item: MarketplaceItem) => void;
   onBuy?: (item: MarketplaceItem) => void;
   selected?: boolean;
   isBuyLoading?: boolean;
-}
+};
 
 export function MarketplaceItemCard({
   item,
