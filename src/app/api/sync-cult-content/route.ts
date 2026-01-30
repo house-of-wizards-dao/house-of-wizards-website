@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { fetchCultContent } from "@/lib/cult-content";
@@ -32,29 +33,29 @@ export const GET = async () => {
 
   try {
     // Check if a sync has already happened since the last Wednesday midnight UTC
-    const lastWednesday = getMostRecentWednesdayMidnightUTC();
+    // const lastWednesday = getMostRecentWednesdayMidnightUTC();
 
-    const { count, error: countError } = await supabase
-      .from(tableNames.CULT_CONTENT_CHRONICLE)
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", lastWednesday.toISOString());
+    // const { count, error: countError } = await supabase
+    //   .from(tableNames.CULT_CONTENT_CHRONICLE)
+    //   .select("*", { count: "exact", head: true })
+    //   .gte("created_at", lastWednesday.toISOString());
 
-    if (countError) {
-      console.error("Error checking last sync:", countError);
-      return NextResponse.json(
-        { error: "Failed to check sync status", details: countError.message },
-        { status: 500 },
-      );
-    }
+    // if (countError) {
+    //   console.error("Error checking last sync:", countError);
+    //   return NextResponse.json(
+    //     { error: "Failed to check sync status", details: countError.message },
+    //     { status: 500 },
+    //   );
+    // }
 
-    if (count && count > 0) {
-      return NextResponse.json({
-        success: true,
-        message: "No-op: sync already completed this week",
-        skipped: true,
-        weekStartedAt: lastWednesday.toISOString(),
-      });
-    }
+    // if (count && count > 0) {
+    //   return NextResponse.json({
+    //     success: true,
+    //     message: "No-op: sync already completed this week",
+    //     skipped: true,
+    //     weekStartedAt: lastWednesday.toISOString(),
+    //   });
+    // }
 
     // Optional: simple auth via header token
     // const authToken = request.headers.get("x-sync-token");
@@ -90,6 +91,9 @@ export const GET = async () => {
         { status: 500 },
       );
     }
+
+    // Invalidate the cult-content cache so the landing page shows fresh data
+    revalidateTag("cult-content");
 
     return NextResponse.json({
       success: true,

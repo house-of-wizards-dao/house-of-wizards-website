@@ -36,7 +36,7 @@ const fetchChronicleFromDb = async (
     .from(tableNames.CULT_CONTENT_CHRONICLE)
     .select("*")
     .eq("status", "published")
-    .order("date", { ascending: true })
+    .order("date", { ascending: false })
     .limit(limit);
 
   if (error) {
