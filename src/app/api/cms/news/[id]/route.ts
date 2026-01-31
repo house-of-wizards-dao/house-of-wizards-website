@@ -6,6 +6,7 @@
  * DELETE /api/cms/news/[id] - Delete news item (author or admin)
  */
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag, revalidatePath } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import {
@@ -136,6 +137,10 @@ export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
     );
   }
 
+  // Invalidate caches so landing page shows fresh data
+  revalidateTag("cult-content");
+  revalidatePath("/");
+
   return NextResponse.json({ news: data as NewsItem });
 };
 
@@ -185,6 +190,10 @@ export const DELETE = async (
       { status: 500 },
     );
   }
+
+  // Invalidate caches so landing page shows fresh data
+  revalidateTag("cult-content");
+  revalidatePath("/");
 
   return NextResponse.json({ success: true });
 };

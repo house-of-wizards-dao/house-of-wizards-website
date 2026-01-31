@@ -5,6 +5,7 @@
  * POST /api/cms/news - Create news item (editor/admin)
  */
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag, revalidatePath } from "next/cache";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { requireCMSUser, isAuthError } from "@/lib/cms-auth";
@@ -105,6 +106,10 @@ export const POST = async (request: NextRequest) => {
       { status: 500 },
     );
   }
+
+  // Invalidate caches so landing page shows fresh data
+  revalidateTag("cult-content");
+  revalidatePath("/");
 
   return NextResponse.json({ news: data as NewsItem }, { status: 201 });
 };
