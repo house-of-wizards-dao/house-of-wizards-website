@@ -61,6 +61,11 @@ const magicDropdown: NavDropdown = {
   label: "MAGIC",
   items: [
     {
+      label: "Forgotten Tomes",
+      href: "https://forgotten-tomes.vercel.app/",
+      external: true,
+    },
+    {
       label: "The Pyre",
       href: "https://forgottenrunes.com/burning",
       external: true,
