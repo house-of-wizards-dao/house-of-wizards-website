@@ -4,7 +4,7 @@
  */
 
 import { unstable_cache } from "next/cache";
-import { encodeFunctionData } from "viem";
+import { createPublicClient, encodeFunctionData, http } from "viem";
 import { wizardsWithTraits } from "@/data/wizardsWithTraits";
 import { warriorsWithTraits } from "@/data/warriorsWithTraits";
 import type {
@@ -121,41 +121,6 @@ export const getNFTXVault = (
   collectionKey: CollectionKey,
 ): NFTXVaultConfig | null => {
   return nftxVaults[collectionKey] || null;
-};
-
-/**
- * Make an eth_call to a contract
- */
-const ethCall = async (to: string, data: string): Promise<string | null> => {
-  try {
-    const response = await fetch(ETH_RPC, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        jsonrpc: "2.0",
-        method: "eth_call",
-        params: [{ to, data }, "latest"],
-        id: 1,
-      }),
-    });
-
-    const json = await response.json();
-    if (json.error) {
-      console.error("eth_call error:", json.error);
-      return null;
-    }
-    return json.result;
-  } catch (error) {
-    console.error("eth_call failed:", error);
-    return null;
-  }
-};
-
-/**
- * Pad an address to 32 bytes for ABI encoding
- */
-const padAddress = (address: string): string => {
-  return address.toLowerCase().replace("0x", "").padStart(64, "0");
 };
 
 /**
@@ -295,6 +260,32 @@ export const fetchVaultHoldings = unstable_cache(
  */
 const SUSHISWAP_ROUTER = "0xd9e1cE17f2641f24aE83637ab66a2cca9C378B9F";
 const WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+const SUSHI_ROUTER_ABI = [
+  {
+    name: "getAmountsOut",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "amountIn", type: "uint256" },
+      { name: "path", type: "address[]" },
+    ],
+    outputs: [{ name: "amounts", type: "uint256[]" }],
+  },
+  {
+    name: "getAmountsIn",
+    type: "function",
+    stateMutability: "view",
+    inputs: [
+      { name: "amountOut", type: "uint256" },
+      { name: "path", type: "address[]" },
+    ],
+    outputs: [{ name: "amounts", type: "uint256[]" }],
+  },
+] as const;
+
+const ethClient = createPublicClient({
+  transport: http(ETH_RPC),
+});
 
 /**
  * Get amounts out from SushiSwap router
@@ -304,38 +295,50 @@ const getAmountsOut = async (
   amountIn: bigint,
   path: string[],
 ): Promise<bigint[] | null> => {
-  // Encode the function call
-  // getAmountsOut(uint256 amountIn, address[] memory path)
-  const amountHex = amountIn.toString(16).padStart(64, "0");
-
-  // Offset to path array (32 bytes after amountIn)
-  const pathOffset =
-    "0000000000000000000000000000000000000000000000000000000000000040";
-
-  // Path array length
-  const pathLength = path.length.toString(16).padStart(64, "0");
-
-  // Path addresses
-  const pathAddresses = path.map((addr) => padAddress(addr)).join("");
-
-  const data = `0xd06ca61f${amountHex}${pathOffset}${pathLength}${pathAddresses}`;
-
-  const result = await ethCall(SUSHISWAP_ROUTER, data);
-  if (!result || result === "0x" || result.length < 130) return null;
-
-  // Parse the result - it's an array of uint256
-  // Skip first 64 chars (0x + offset) and next 64 (array length)
-  const dataWithoutPrefix = result.slice(2);
-  const arrayLength = parseInt(dataWithoutPrefix.slice(64, 128), 16);
-  const amounts: bigint[] = [];
-
-  for (let i = 0; i < arrayLength; i++) {
-    const start = 128 + i * 64;
-    const hex = dataWithoutPrefix.slice(start, start + 64);
-    amounts.push(BigInt("0x" + hex));
+  try {
+    const amounts = await ethClient.readContract({
+      address: SUSHISWAP_ROUTER,
+      abi: SUSHI_ROUTER_ABI,
+      functionName: "getAmountsOut",
+      args: [amountIn, path as `0x${string}`[]],
+    });
+    return [...amounts];
+  } catch (error) {
+    console.error("getAmountsOut failed:", error);
+    return null;
   }
+};
 
-  return amounts;
+/**
+ * Get amounts in from SushiSwap router
+ * getAmountsIn(uint256,address[]) selector: 0x1f00ca74
+ */
+const getAmountsIn = async (
+  amountOut: bigint,
+  path: string[],
+): Promise<bigint[] | null> => {
+  try {
+    const amounts = await ethClient.readContract({
+      address: SUSHISWAP_ROUTER,
+      abi: SUSHI_ROUTER_ABI,
+      functionName: "getAmountsIn",
+      args: [amountOut, path as `0x${string}`[]],
+    });
+    return [...amounts];
+  } catch (error) {
+    console.error("getAmountsIn failed:", error);
+    return null;
+  }
+};
+
+/**
+ * Convert wei bigint to ETH decimal string.
+ */
+const weiToEthString = (wei: bigint, decimals: number = 6): string => {
+  const whole = wei / 1000000000000000000n;
+  const fraction = wei % 1000000000000000000n;
+  const fractionStr = fraction.toString().padStart(18, "0").slice(0, decimals);
+  return `${whole.toString()}.${fractionStr}`;
 };
 
 /**
@@ -485,6 +488,7 @@ export const getNFTXBuyQuote = async (
   tokenIds: string[],
 ): Promise<{
   totalPriceEth: string;
+  totalPriceWei: string;
   pricePerNft: string;
   feePerNft: string;
   vaultAddress: string;
@@ -511,20 +515,35 @@ export const getNFTXBuyQuote = async (
     }
   }
 
-  const { totalPriceEth: pricePerNft, feeEth: feePerNft } = calculateNFTXPrice(
-    vTokenPriceEth,
-    vaultData.fees.redeemFee,
+  const { totalPriceEth: pricePerNftSpot, feeEth: feePerNftSpot } =
+    calculateNFTXPrice(vTokenPriceEth, vaultData.fees.redeemFee);
+  const redeemFeeWei = BigInt(vaultData.fees.redeemFee);
+  const perNftVTokenWei = 1000000000000000000n + redeemFeeWei;
+  const totalVTokenOutWei = perNftVTokenWei * BigInt(tokenIds.length);
+
+  // Use exact-output routing math: how much WETH input is needed to buy
+  // enough vTokens to redeem the requested NFT count.
+  const amountsIn = await getAmountsIn(totalVTokenOutWei, [
+    WETH_ADDRESS,
+    vaultConfig.vTokenAddress,
+  ]);
+  if (!amountsIn || amountsIn.length < 2) {
+    return null;
+  }
+
+  const totalPriceWei = amountsIn[0];
+  const totalPriceEth = weiToEthString(totalPriceWei);
+  const pricePerNftEth = weiToEthString(
+    totalPriceWei / BigInt(tokenIds.length),
   );
 
-  // Total price for all NFTs
-  // Note: For multiple NFTs, price impact would increase, but for simplicity
-  // we're using linear pricing here. A more accurate implementation would
-  // use the SushiSwap router to get an exact quote.
-  const totalPriceEth = (parseFloat(pricePerNft) * tokenIds.length).toFixed(6);
+  // Keep a user-facing fee estimate from spot pricing for now.
+  const feePerNft = feePerNftSpot;
 
   return {
     totalPriceEth,
-    pricePerNft,
+    totalPriceWei: totalPriceWei.toString(),
+    pricePerNft: pricePerNftEth || pricePerNftSpot,
     feePerNft,
     vaultAddress: vaultConfig.vaultAddress,
   };
@@ -554,9 +573,10 @@ export const getNFTXBuyTransaction = async (
     return null;
   }
 
-  // Add 5% slippage buffer to the price
-  const priceWithSlippage = parseFloat(quote.totalPriceEth) * 1.05;
-  const valueWei = BigInt(Math.floor(priceWithSlippage * 1e18)).toString();
+  // Add 10% slippage buffer using integer wei math.
+  const priceWithSlippageWei =
+    (BigInt(quote.totalPriceWei) * BigInt(110)) / 100n;
+  const valueWei = priceWithSlippageWei.toString();
 
   // Encode the buyAndRedeem function call using viem
   const data = encodeFunctionData({

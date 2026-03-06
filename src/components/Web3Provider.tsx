@@ -11,7 +11,7 @@ import { WagmiProvider } from "wagmi";
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useState } from "react";
-import { config } from "@/lib/web3-config";
+import { getWeb3Config } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
 type Web3ProviderProps = {
@@ -23,6 +23,7 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 });
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
+  const [config] = useState(() => getWeb3Config());
   const [queryClient] = useState(
     () =>
       new QueryClient({
