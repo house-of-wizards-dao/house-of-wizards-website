@@ -10,8 +10,8 @@ import {
 import { WagmiProvider } from "wagmi";
 import { SessionProvider } from "next-auth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
-import { getWeb3Config } from "@/lib/web3-config";
+import { ReactNode, useEffect, useState } from "react";
+import { getClientWeb3Config, getWeb3Config } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
 type Web3ProviderProps = {
@@ -23,7 +23,8 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 });
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
-  const [config] = useState(() => getWeb3Config());
+  const [config, setConfig] = useState(() => getWeb3Config());
+  const [providerInstanceKey, setProviderInstanceKey] = useState(0);
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -35,9 +36,30 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
       }),
   );
 
+  useEffect(() => {
+    let active = true;
+    getClientWeb3Config()
+      .then((nextConfig) => {
+        if (active) {
+          setConfig(nextConfig);
+          // Force provider remount so connector registry refreshes to full client config.
+          setProviderInstanceKey(1);
+        }
+      })
+      .catch(() => undefined);
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   return (
     <Web3ErrorBoundary>
-      <WagmiProvider config={config} reconnectOnMount={true}>
+      <WagmiProvider
+        key={providerInstanceKey}
+        config={config}
+        reconnectOnMount={true}
+      >
         <SessionProvider refetchInterval={0}>
           <QueryClientProvider client={queryClient}>
             <RainbowKitSiweNextAuthProvider
