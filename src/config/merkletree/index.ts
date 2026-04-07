@@ -1,0 +1,1 @@
+export { getShieldProof } from "./guard";
