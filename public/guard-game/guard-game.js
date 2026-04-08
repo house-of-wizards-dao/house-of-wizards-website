@@ -50702,6 +50702,9 @@ var Hd = class e extends on.Scene {
 	constructor() {
 		super("select-warrior");
 	}
+	init() {
+		this.isTransitioning = !1, this.uiState.loading = !1, this.uiState.error = void 0;
+	}
 	preload() {
 		this.textures.exists("select-warrior-bg") || this.load.image("select-warrior-bg", cn);
 	}
@@ -51082,8 +51085,6 @@ var Yd = (/* @__PURE__ */ ".....................................................
 	keyW;
 	keyE;
 	keySpace;
-	statusText;
-	cameraDebugText;
 	canMove = !0;
 	hasResolved = !1;
 	parallaxBack2;
@@ -51102,45 +51103,26 @@ var Yd = (/* @__PURE__ */ ".....................................................
 	constructor() {
 		super("pledge");
 	}
+	init() {
+		this.player = void 0, this.cursors = void 0, this.keyA = void 0, this.keyD = void 0, this.keyS = void 0, this.keyW = void 0, this.keyE = void 0, this.keySpace = void 0, this.canMove = !0, this.hasResolved = !1, this.parallaxBack2 = void 0, this.parallaxBack = void 0, this.parallaxMiddle = void 0, this.parallaxNear = void 0, this.velocityY = 0, this.isGrounded = !1, this.jumpCount = 0, this.isCameraRecentering = !1, this.isCameraRecenterSettled = !1, this.conversation = void 0;
+	}
 	async create() {
 		if (!wd.selected) {
 			this.scene.start("select-warrior");
 			return;
 		}
-		this.cameras.main.setBackgroundColor("#1c1730"), this.cameras.main.setRoundPixels(!1), this.cameras.main.setZoom(1.5), this.cameras.main.fadeIn(Of, Df.r, Df.g, Df.b), await Bd(this), this.drawParallax(), this.drawMap(), this.placeDecorations(), await this.spawnCrowd(), await this.spawnPlayer(), this.statusText = this.add.text(0, 0, "Walk to the wizard and press E to seek judgement.", {
-			fontFamily: "Courier New",
-			fontSize: "15px",
-			color: "#f7f0dd",
-			wordWrap: { width: 680 }
-		}), this.statusText.setScrollFactor(0), this.cameraDebugText = this.add.text(0, 0, "", {
-			fontFamily: "Courier New",
-			fontSize: "12px",
-			color: "#c2bad8"
-		}), this.cameraDebugText.setScrollFactor(0), this.positionHud(), this.cursors = this.input.keyboard?.createCursorKeys(), this.keyA = this.input.keyboard?.addKey("A"), this.keyD = this.input.keyboard?.addKey("D"), this.keyS = this.input.keyboard?.addKey("S"), this.keyW = this.input.keyboard?.addKey("W"), this.keyE = this.input.keyboard?.addKey("E"), this.keySpace = this.input.keyboard?.addKey("SPACE"), Dd(), this.configureGameplayCamera();
+		this.cameras.main.setBackgroundColor("#1c1730"), this.cameras.main.setRoundPixels(!1), this.cameras.main.setZoom(1.5), this.cameras.main.fadeIn(Of, Df.r, Df.g, Df.b), await Bd(this), this.drawParallax(), this.drawMap(), this.placeDecorations(), await this.spawnCrowd(), await this.spawnPlayer(), this.cursors = this.input.keyboard?.createCursorKeys(), this.keyA = this.input.keyboard?.addKey("A"), this.keyD = this.input.keyboard?.addKey("D"), this.keyS = this.input.keyboard?.addKey("S"), this.keyW = this.input.keyboard?.addKey("W"), this.keyE = this.input.keyboard?.addKey("E"), this.keySpace = this.input.keyboard?.addKey("SPACE"), Dd(), this.configureGameplayCamera();
 		let e = () => {
 			let e = window.innerWidth;
 			this.scale.resize(e, this.scale.height);
 			let t = Math.ceil(e / 2);
-			this.parallaxBack2 && (this.parallaxBack2.width = t), this.parallaxBack && (this.parallaxBack.width = t), this.parallaxMiddle && (this.parallaxMiddle.width = t), this.parallaxNear && (this.parallaxNear.width = t), this.positionHud(), this.player && (this.isCameraRecentering ? this.cameras.main.setDeadzone() : this.applyGameplayDeadzone());
+			this.parallaxBack2 && (this.parallaxBack2.width = t), this.parallaxBack && (this.parallaxBack.width = t), this.parallaxMiddle && (this.parallaxMiddle.width = t), this.parallaxNear && (this.parallaxNear.width = t), this.player && (this.isCameraRecentering ? this.cameras.main.setDeadzone() : this.applyGameplayDeadzone());
 		};
 		window.addEventListener("resize", e), this.events.on("shutdown", () => window.removeEventListener("resize", e));
-	}
-	screenToWorld(e, t) {
-		let n = this.cameras.main;
-		return {
-			x: (e - n.width / 2) / n.zoom + n.width / 2,
-			y: (t - n.height / 2) / n.zoom + n.height / 2
-		};
 	}
 	zoomOffsetY() {
 		let e = this.cameras.main;
 		return e.height / 2 * (1 - 1 / e.zoom);
-	}
-	positionHud() {
-		let e = this.screenToWorld(12, 12);
-		this.statusText && this.statusText.setPosition(e.x, e.y);
-		let t = this.screenToWorld(12, 42);
-		this.cameraDebugText && this.cameraDebugText.setPosition(t.x, t.y);
 	}
 	applyGameplayDeadzone() {
 		let e = Math.max(48, this.cameras.main.width * Cf);
@@ -51311,8 +51293,8 @@ var Yd = (/* @__PURE__ */ ".....................................................
 		await Vd(this, e, 8), t.forEach((e, t) => {
 			let r = `crowd-${e}`;
 			if (!this.textures.exists(r)) return;
-			let i = n + 60 + t * 42, a = this.findGroundY(i);
-			this.add.image(i, a + 4, r).setOrigin(.5, 1);
+			let i = n + 60 + t * 42, a = this.findGroundY(i), o = this.add.image(i, a + 4, r);
+			o.setOrigin(.5, 1), o.setScale(2);
 		});
 	}
 	async spawnPlayer() {
@@ -51365,7 +51347,6 @@ var Yd = (/* @__PURE__ */ ".....................................................
 			let e = `${this.player.texture.key}-idle`;
 			this.anims.exists(e) && this.player.play(e, !0);
 		}
-		this.statusText && this.statusText.setVisible(!1);
 		let e = (mf + hf) / 2, t = pf - 148;
 		this.conversation = new uf(this, {
 			steps: _f,
@@ -51373,32 +51354,29 @@ var Yd = (/* @__PURE__ */ ".....................................................
 			anchorY: t,
 			onEnd: (e) => {
 				this.conversation = void 0, e === _f.length - 1 ? this.resolveJudgement() : this.time.delayedCall(100, () => {
-					this.canMove = !0, this.statusText && this.statusText.setVisible(!0);
+					this.canMove = !0;
 				});
 			}
 		}), this.conversation.start();
 	}
 	async resolveJudgement() {
-		if (!wd.selected || !this.player || !this.statusText) return;
-		this.hasResolved = !0, this.statusText.setVisible(!0), this.statusText.setText("The wizard judges your warrior..."), this.statusText.setColor("#ebdfba");
+		if (!wd.selected || !this.player) return;
+		this.hasResolved = !0;
 		let { walletAddress: e, tokenId: t } = wd.selected, n = await vd(e, t);
 		if (n.alreadyPledged) {
-			this.statusText.setColor("#9ce8c4"), this.statusText.setText("The pledged warriors cheer. \"Welcome back, sworn blade.\""), Od(`Warrior #${t.toString()} is already pledged and welcomed by the guild.`);
+			Od("The pledged warriors cheer. \"Welcome back, sworn blade.\"");
 			return;
 		}
 		if (n.worthy) {
-			this.statusText.setColor("#9ce8c4"), this.statusText.setText("The wizard nods. \"You may pledge allegiance to the guild.\" Signing tx...");
 			try {
-				let r = await _d(e, t, n.canPledgeWithoutShield), i = n.canPledgeWithoutShield ? "pledge" : "pledgeWithShield";
-				this.statusText.setText("Your oath is sent to the chain. Awaiting the guild ledger..."), Od(`Warrior #${t.toString()} is worthy (${n.reason}). Called ${i}() in tx ${r}.`);
+				await _d(e, t, n.canPledgeWithoutShield), Od(`Warrior #${t.toString()} is worthy (${n.reason}).`);
 			} catch (e) {
-				this.statusText.setColor("#ffcf8a"), this.statusText.setText("The wizard waits. Your pledge transaction was rejected or failed.");
 				let r = e instanceof Error ? e.message : "Unknown wallet/contract error.";
 				Od(`Warrior #${t.toString()} is worthy (${n.reason}) but tx failed: ${r}`);
 			}
 			return;
 		}
-		this.statusText.setColor("#ff9b99"), this.statusText.setText("The wizard rejects your oath. The ground opens beneath you."), this.triggerDeath(n.reason);
+		this.triggerDeath(n.reason);
 	}
 	triggerDeath(e) {
 		this.player && (this.canMove = !1, Od(`Unworthy: ${e}`), this.strikeLightning(() => this.animatePitFall()));
@@ -51546,7 +51524,7 @@ var Yd = (/* @__PURE__ */ ".....................................................
 	updateParallaxAndDebug() {
 		if (!this.player) return;
 		let e = this.cameras.main.scrollX;
-		this.parallaxBack2 && (this.parallaxBack2.tilePositionX = e * .02), this.parallaxBack && (this.parallaxBack.tilePositionX = e * .06), this.parallaxMiddle && (this.parallaxMiddle.tilePositionX = e * .14), this.parallaxNear && (this.parallaxNear.tilePositionX = e * .26), this.cameraDebugText && this.cameraDebugText.setText(`x:${Math.round(this.player.x)} y:${Math.round(this.player.y)} velY:${this.velocityY.toFixed(1)} grounded:${this.isGrounded} cam:${Math.round(e)}`);
+		this.parallaxBack2 && (this.parallaxBack2.tilePositionX = e * .02), this.parallaxBack && (this.parallaxBack.tilePositionX = e * .06), this.parallaxMiddle && (this.parallaxMiddle.tilePositionX = e * .14), this.parallaxNear && (this.parallaxNear.tilePositionX = e * .26);
 	}
 }, Af = {
 	type: on.AUTO,

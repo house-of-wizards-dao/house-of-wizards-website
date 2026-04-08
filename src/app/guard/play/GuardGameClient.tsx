@@ -78,7 +78,7 @@ export function GuardGameClient() {
   return (
     <div className="space-y-2">
       {status !== "mounted" && (
-        <div className="rounded border border-violet-500/35 bg-violet-950/35 px-3 py-2 text-xs text-[#d8c8ff]">
+        <div className="rounded bg-violet-950/35 px-3 py-2 text-xs text-[#d8c8ff]">
           Loading game:{" "}
           {status === "idle"
             ? "idle"
@@ -89,7 +89,7 @@ export function GuardGameClient() {
       )}
       <div
         ref={ref}
-        className="guard-phaser-embed border border-violet-500/25"
+        className="guard-phaser-embed"
         style={{ width: "100%", minHeight: "min(720px, 85dvh)" }}
       />
     </div>
