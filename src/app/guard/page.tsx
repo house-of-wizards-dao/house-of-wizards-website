@@ -5,14 +5,6 @@ export default function GuardPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#080510] via-[#140a24] to-[#05030b] text-[#e7ddff]">
       <section className="mx-auto flex max-w-5xl flex-col items-center gap-8 px-6 py-16 text-center">
-        <p className="text-sm text-[#b8a8d9]">
-          <Link
-            href="/guard/play"
-            className="font-semibold text-[#c9a6ff] underline decoration-violet-500/50 underline-offset-4 transition hover:text-[#e0d0ff]"
-          >
-            Play the minigame
-          </Link>
-        </p>
         <h1 className="text-4xl font-bold text-[#c9a6ff] md:text-6xl">
           The Guard of the Puppet and the Goat
         </h1>
@@ -43,14 +35,21 @@ export default function GuardPage() {
 
         <div className="w-full max-w-3xl rounded-lg border border-violet-500/35 bg-violet-950/35 p-6 text-left backdrop-blur-[1px]">
           <h2 className="mb-3 text-xl font-bold text-[#c9a6ff]">
-            To Join the Secret Guard:
+            Not all are worthy to join the Guard:
           </h2>
           <ul className="space-y-2 text-[#d2c7ea]">
-            <li>👹 Be a Warrior with a Shield of the Puppet</li>
-            <li>🐐 Be a Warrior with a Shield of the Goat</li>
-            <li>🏛️ Be a lucky Warrior</li>
+            <li>👹 Warriors with a Shield of the Puppet are prepared</li>
+            <li>🐐 Warriors with a Shield of the Goat are prepared</li>
+            <li>🏛️ And some warriors are lucky</li>
           </ul>
         </div>
+
+        <Link
+          href="/guard/play"
+          className="mt-4 bg-violet text-white px-8 py-3 rounded-full hover:bg-violet-600 transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-violet focus:ring-opacity-50 font-medium shadow-lg hover:shadow-xl"
+        >
+          Find the temple and join the Guard
+        </Link>
       </section>
     </main>
   );
