@@ -51134,41 +51134,27 @@ async function xf(e, t, n) {
 	} catch {}
 }
 //#endregion
-//#region src/game/scenes/PledgeScene.ts
-var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180, kf = [
-	{ text: "Halt. You stand before the Altar of Oaths." },
-	{
-		text: "Do you bring a warrior to pledge?",
-		choices: [{ text: "I seek judgement." }, {
-			text: "Not yet.",
-			next: -1
-		}]
-	},
-	{ text: "Then let the rite begin..." }
-], Af = 40, jf = [{ text: "Hm... I remember reading about this creature in the Desert Bestiary!" }], Mf = [
-	{ text: "Barren Court keeps no lanterns on this road." },
-	{ text: "I can walk beside you only this far. From here, you go alone." },
-	{ text: "Find your brothers in arms. I must return and rejoin mine." }
-], Nf = .45, Pf = -10.5, Ff = 9, If = 12, Lf = 16, Rf = Lf * 2, zf = 67.5 * Rf, Bf = 58, Vf = 2, Hf = 3, Uf = 4, Wf = [
+//#region src/game/scenes/pledgeSceneConversations.ts
+var Sf = 16, Cf = Sf * 2 * 67.5, wf = 2, Tf = 3, Ef = 4, Df = [
 	{ text: "As-salamu alaykum! Greetings fellow adventurer!" },
 	{
 		text: "I am Shaman Alizam. I have crossed The Sand and guarded what lies within. If you need my help, tell me... what is the true purpose of the Heart of Zaros?",
 		choices: [
 			{
 				text: "To grant immortality to its bearer.",
-				next: Vf
+				next: wf
 			},
 			{
 				text: "To maintain the magical balance of the land.",
-				next: Uf
+				next: Ef
 			},
 			{
 				text: "To summon storms across The Sand.",
-				next: Hf
+				next: Tf
 			},
 			{
 				text: "To open a portal to the Fertile Crescent.",
-				next: Hf
+				next: Tf
 			}
 		]
 	},
@@ -51184,11 +51170,585 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		text: "Yes... the Heart sustains the balance of all magic across the oasis and The Sand. You carry wisdom, adventurer. May the Whispering Winds guide your path.",
 		next: -1
 	}
-], Gf = .33, Kf = .055, qf = .12, Jf = 10, Yf = 4, Xf = .5, Zf = 96, Qf = 14, $f = 20, ep = {
+], Of = [
+	{ text: "Halt. You stand before the Altar of Oaths." },
+	{
+		text: "Do you bring a warrior to pledge?",
+		choices: [{ text: "I seek judgement." }, {
+			text: "Not yet.",
+			next: -1
+		}]
+	},
+	{ text: "Then let the rite begin..." }
+], kf = [{ text: "Hm... I remember reading about this creature in the Desert Bestiary!" }], Af = ["I wonder what happened to him...", "Looks like not all warriors reach the temple."], jf = [
+	{ text: "Barren Court keeps no lanterns on this road." },
+	{ text: "I can walk beside you only this far. From here, you go alone." },
+	{ text: "Find your brothers in arms. I must return and rejoin mine." }
+];
+function Mf(e, t) {
+	if (!t) return;
+	let n = `${t.texture.key}-idle`;
+	e.anims.exists(n) && t.play(n, !0);
+}
+function Nf(e, t) {
+	e.time.delayedCall(100, () => {
+		t(!0);
+	});
+}
+function Pf(e) {
+	e.setCanMove(!1), Mf(e.scene, e.getPlayer());
+	let t = e.mapOriginY + Sf, n = new _f(e.scene, {
+		steps: Df,
+		anchorX: Cf,
+		anchorY: t,
+		pointerX: Cf,
+		tailSide: "top",
+		onEnd: (t) => {
+			if (e.clearConversation(), t === Ef) {
+				e.stopSandstorm(), Nf(e.scene, e.setCanMove);
+				return;
+			}
+			if (t === wf) {
+				e.triggerSandstormDeath();
+				return;
+			}
+			Nf(e.scene, e.setCanMove);
+		}
+	});
+	e.setConversation(n), n.start();
+}
+function Ff(e) {
+	e.setCanMove(!1), Mf(e.scene, e.getPlayer());
+	let t = e.findGroundY(100) - 120, n = new _f(e.scene, {
+		steps: jf,
+		anchorX: 180,
+		anchorY: t,
+		pointerX: 100,
+		onEnd: () => {
+			e.clearConversation(), Nf(e.scene, e.setCanMove);
+		}
+	});
+	e.setConversation(n), n.start();
+}
+function If(e) {
+	let t = e.getPlayer();
+	if (!t) return;
+	e.setCanMove(!1), Mf(e.scene, t);
+	let n = t.y - t.displayHeight / 2 - 20, r = new _f(e.scene, {
+		steps: kf,
+		anchorX: t.x,
+		anchorY: n,
+		pointerX: t.x,
+		onEnd: () => {
+			e.clearConversation(), Nf(e.scene, e.setCanMove);
+		}
+	});
+	e.setConversation(r), r.start();
+}
+function Lf(e) {
+	let t = e.getPlayer();
+	if (!t) return;
+	e.setCanMove(!1), Mf(e.scene, t);
+	let n = t.y - t.displayHeight / 2 - 20, r = Af[Math.floor(Math.random() * Af.length)], i = new _f(e.scene, {
+		steps: [{ text: r }],
+		anchorX: t.x,
+		anchorY: n,
+		pointerX: t.x,
+		onEnd: () => {
+			e.clearConversation(), Nf(e.scene, e.setCanMove);
+		}
+	});
+	e.setConversation(i), i.start();
+}
+function Rf(e) {
+	e.setCanMove(!1), Mf(e.scene, e.getPlayer());
+	let t = e.getWizardWorldX(), n = e.getWizardTileTopY() - 100, r = new _f(e.scene, {
+		steps: Of,
+		anchorX: t,
+		anchorY: n,
+		pointerX: t,
+		onEnd: (t) => {
+			if (e.clearConversation(), t === Of.length - 1) {
+				e.resolveJudgement();
+				return;
+			}
+			Nf(e.scene, e.setCanMove);
+		}
+	});
+	e.setConversation(r), r.start();
+}
+//#endregion
+//#region src/game/scenes/pledgeSceneDecorations.ts
+var zf = 8, Bf = [
+	{
+		key: "prop-crystal-1",
+		x: 100,
+		embed: 38,
+		scale: 2,
+		flipX: !1
+	},
+	{
+		key: "prop-crystal-2",
+		x: 480,
+		embed: 42,
+		scale: 1.8,
+		flipX: !0
+	},
+	{
+		key: "prop-crystal-1",
+		x: 880,
+		embed: 36,
+		scale: 2.2,
+		flipX: !1
+	},
+	{
+		key: "prop-crystal-2",
+		x: 1350,
+		embed: 40,
+		scale: 2,
+		flipX: !0
+	},
+	{
+		key: "prop-crystal-1",
+		x: 1870,
+		embed: 38,
+		scale: 1.8,
+		flipX: !1
+	},
+	{
+		key: "prop-crystal-2",
+		x: 4200,
+		embed: 42,
+		scale: 2,
+		flipX: !1
+	},
+	{
+		key: "prop-crystal-1",
+		x: 5400,
+		embed: 36,
+		scale: 2.2,
+		flipX: !0
+	},
+	{
+		key: "prop-crystal-2",
+		x: 6300,
+		embed: 40,
+		scale: 1.8,
+		flipX: !1
+	}
+], Vf = [
+	{
+		key: "prop-plant-1",
+		x: 250,
+		embed: 14,
+		scale: 2,
+		flipX: !1
+	},
+	{
+		key: "prop-plant-2",
+		x: 750,
+		embed: 15,
+		scale: 1.8,
+		flipX: !0
+	},
+	{
+		key: "prop-plant-1",
+		x: 1600,
+		embed: 14,
+		scale: 2,
+		flipX: !1
+	},
+	{
+		key: "prop-plant-2",
+		x: 3100,
+		embed: 15,
+		scale: 1.8,
+		flipX: !1
+	},
+	{
+		key: "prop-plant-1",
+		x: 4600,
+		embed: 14,
+		scale: 2,
+		flipX: !0
+	},
+	{
+		key: "prop-plant-2",
+		x: 5800,
+		embed: 15,
+		scale: 1.8,
+		flipX: !1
+	}
+], Hf = [
+	{
+		key: "prop-ashpile",
+		x: 3050,
+		embed: 13,
+		scale: 1.8,
+		flipX: !0
+	},
+	{
+		key: "prop-blood-guts",
+		x: 3300,
+		embed: 13,
+		scale: 1.6,
+		flipX: !1
+	},
+	{
+		key: "prop-bones",
+		x: 4400,
+		embed: 13,
+		scale: 1.8,
+		flipX: !1
+	}
+], Uf = [
+	{
+		key: "prop-animal-1",
+		x: 380,
+		embed: 12,
+		scale: .48
+	},
+	{
+		key: "prop-animal-4",
+		x: 920,
+		embed: 12,
+		scale: .45
+	},
+	{
+		key: "prop-animal-1",
+		x: 1480,
+		embed: 12,
+		scale: .51
+	},
+	{
+		key: "prop-animal-3",
+		x: 2020,
+		embed: 12,
+		scale: .42
+	},
+	{
+		key: "prop-animal-2",
+		x: 3500,
+		embed: 12,
+		scale: .48
+	},
+	{
+		key: "prop-animal-6",
+		x: 4100,
+		embed: 12,
+		scale: .45
+	},
+	{
+		key: "prop-animal-5",
+		x: 5200,
+		embed: 12,
+		scale: .51
+	},
+	{
+		key: "prop-animal-2",
+		x: 5900,
+		embed: 12,
+		scale: .42
+	},
+	{
+		key: "prop-animal-3",
+		x: 6100,
+		embed: 12,
+		scale: .48
+	}
+];
+function Wf(e, t, n) {
+	let r = n(t.x), i = e.add.image(t.x, r + t.embed + zf, t.key);
+	return i.setOrigin(.5, 1), i.setScale(t.scale), i.setFlipX(t.flipX ?? !1), i;
+}
+function Gf(e, t) {
+	for (let n of Bf) Wf(e, n, t).setDepth(-1);
+	for (let n of Vf) Wf(e, n, t);
+	let n = Hf.map((n) => Wf(e, n, t));
+	return {
+		animalSprites: Uf.map((n) => Wf(e, n, t)),
+		goreSprites: n
+	};
+}
+function Kf(e, t) {
+	for (let n of t) n.setFlipX(e.x > n.x);
+}
+//#endregion
+//#region src/game/scenes/pledgeSceneEffects.ts
+var qf = "sandstorm-dust", Jf = .44, Yf = .58, Xf = .74, Zf = .82, Qf = .42, $f = 850, ep = 120, tp = .0014, np = 84, rp = 85, ip = 86, ap = 87, op = 88, sp = .68, cp = class {
+	scene;
+	pulseEvent;
+	active = !1;
+	layers = {};
+	constructor(e) {
+		this.scene = e;
+	}
+	get isActive() {
+		return this.active;
+	}
+	create() {
+		this.ensureTexture();
+		let e = this.scene.cameras.main;
+		this.layers.haze = this.scene.add.rectangle(e.width / 2, e.height / 2, e.width, e.height, 14004340, 0).setDepth(np).setScrollFactor(0), this.layers.back = this.scene.add.tileSprite(0, 0, e.width, e.height, qf).setOrigin(0, 0).setDepth(rp).setScrollFactor(0).setTint(14205578).setAlpha(0), this.layers.mid = this.scene.add.tileSprite(0, 0, e.width, e.height, qf).setOrigin(0, 0).setDepth(ip).setScrollFactor(0).setTint(14928274).setAlpha(0), this.layers.front = this.scene.add.tileSprite(0, 0, e.width, e.height, qf).setOrigin(0, 0).setDepth(ap).setScrollFactor(0).setTint(15717024).setAlpha(0), this.layers.gust = this.scene.add.tileSprite(0, 0, e.width, e.height, qf).setOrigin(0, 0).setDepth(op).setScrollFactor(0).setTint(16178608).setAlpha(0);
+	}
+	resize() {
+		let e = this.scene.cameras.main;
+		this.layers.back?.setSize(e.width, e.height), this.layers.mid?.setSize(e.width, e.height), this.layers.front?.setSize(e.width, e.height), this.layers.gust?.setSize(e.width, e.height), this.layers.haze && (this.layers.haze.setPosition(e.width / 2, e.height / 2), this.layers.haze.setSize(e.width, e.height));
+	}
+	toggle() {
+		if (this.active) {
+			this.stop();
+			return;
+		}
+		this.start();
+	}
+	start(e = !0) {
+		this.active = !0, e && Od("A sandstorm rolls in. Press T to clear it.");
+		let t = this.getLayerTargets();
+		this.scene.tweens.killTweensOf(t), this.layers.back && this.scene.tweens.add({
+			targets: this.layers.back,
+			alpha: Jf,
+			duration: 350,
+			ease: "Sine.easeOut"
+		}), this.layers.mid && this.scene.tweens.add({
+			targets: this.layers.mid,
+			alpha: Yf,
+			duration: 350,
+			ease: "Sine.easeOut"
+		}), this.layers.front && this.scene.tweens.add({
+			targets: this.layers.front,
+			alpha: Xf,
+			duration: 350,
+			ease: "Sine.easeOut"
+		}), this.layers.gust && this.scene.tweens.add({
+			targets: this.layers.gust,
+			alpha: Zf,
+			duration: 350,
+			ease: "Sine.easeOut"
+		}), this.layers.haze && this.scene.tweens.add({
+			targets: this.layers.haze,
+			alpha: Qf,
+			duration: 350,
+			ease: "Sine.easeOut"
+		}), this.pulseEvent?.destroy(), this.pulseEvent = this.scene.time.addEvent({
+			delay: $f,
+			loop: !0,
+			callback: () => {
+				this.active && this.scene.cameras.main.shake(ep, tp, !0);
+			}
+		});
+	}
+	stop() {
+		this.active = !1, this.scene.tweens.killTweensOf(this.getLayerTargets());
+		let e = 1200;
+		this.layers.gust && this.scene.tweens.add({
+			targets: this.layers.gust,
+			alpha: 0,
+			duration: e * .4,
+			ease: "Sine.easeOut"
+		}), this.layers.front && this.scene.tweens.add({
+			targets: this.layers.front,
+			alpha: 0,
+			duration: e * .6,
+			ease: "Sine.easeOut",
+			delay: 150
+		}), this.layers.mid && this.scene.tweens.add({
+			targets: this.layers.mid,
+			alpha: 0,
+			duration: e * .8,
+			ease: "Sine.easeOut",
+			delay: 300
+		}), this.layers.back && this.scene.tweens.add({
+			targets: this.layers.back,
+			alpha: 0,
+			duration: e,
+			ease: "Sine.easeOut",
+			delay: 400
+		}), this.layers.haze && this.scene.tweens.add({
+			targets: this.layers.haze,
+			alpha: 0,
+			duration: e,
+			ease: "Sine.easeOut",
+			delay: 300
+		}), this.pulseEvent?.destroy(), this.pulseEvent = void 0;
+	}
+	intensify() {
+		this.active = !0, this.scene.tweens.killTweensOf(this.getLayerTargets()), this.layers.back && this.scene.tweens.add({
+			targets: this.layers.back,
+			alpha: .72,
+			duration: 600,
+			ease: "Sine.easeIn"
+		}), this.layers.mid && this.scene.tweens.add({
+			targets: this.layers.mid,
+			alpha: .82,
+			duration: 600,
+			ease: "Sine.easeIn"
+		}), this.layers.front && this.scene.tweens.add({
+			targets: this.layers.front,
+			alpha: .92,
+			duration: 600,
+			ease: "Sine.easeIn"
+		}), this.layers.gust && this.scene.tweens.add({
+			targets: this.layers.gust,
+			alpha: .96,
+			duration: 600,
+			ease: "Sine.easeIn"
+		}), this.layers.haze && this.scene.tweens.add({
+			targets: this.layers.haze,
+			alpha: .7,
+			duration: 600,
+			ease: "Sine.easeIn"
+		}), this.pulseEvent?.destroy(), this.pulseEvent = this.scene.time.addEvent({
+			delay: 350,
+			loop: !0,
+			callback: () => {
+				this.active && this.scene.cameras.main.shake(200, .004, !0);
+			}
+		});
+	}
+	update(e) {
+		if (!this.layers.back || !this.layers.mid || !this.layers.front || !this.layers.gust) return;
+		let t = e * .066, n = this.active ? 1 : .24;
+		this.layers.back.tilePositionX += t * 2.6 * n, this.layers.back.tilePositionY -= t * .42 * n, this.layers.mid.tilePositionX += t * 3.9 * n, this.layers.mid.tilePositionY -= t * .64 * n, this.layers.front.tilePositionX += t * 5.8 * n, this.layers.front.tilePositionY -= t * 1.02 * n, this.layers.gust.tilePositionX += t * 7.2 * n, this.layers.gust.tilePositionY -= t * 1.3 * n;
+	}
+	ensureTexture() {
+		if (this.scene.textures.exists(qf)) return;
+		let e = this.scene.add.graphics({
+			x: 0,
+			y: 0
+		});
+		e.setVisible(!1), e.fillStyle(0, 0), e.fillRect(0, 0, 128, 128);
+		for (let t = 0; t < 380; t += 1) {
+			let t = .22 + Math.random() * .34, n = Math.random() > .7 ? 2 : 1;
+			e.fillStyle(16777215, t), e.fillRect(Math.random() * 128, Math.random() * 128, n, n);
+		}
+		e.lineStyle(1, 16777215, .18);
+		for (let t = 0; t < 46; t += 1) {
+			let t = Math.random() * 128, n = Math.random() * 128;
+			e.lineBetween(t - 4, n, t + 6, n + 1);
+		}
+		e.generateTexture(qf, 128, 128), e.destroy();
+	}
+	getLayerTargets() {
+		return [
+			this.layers.back,
+			this.layers.mid,
+			this.layers.front,
+			this.layers.gust,
+			this.layers.haze
+		].filter(Boolean);
+	}
+};
+function lp(e, t, n) {
+	let r = n.wizardX - 28, i = n.wizardGroundY + n.embedPixels + n.groundAlignmentOffset - 100, a = t.x, o = t.y, s = () => {
+		let e = [{
+			x: r,
+			y: i
+		}];
+		for (let t = 1; t < 8; t++) {
+			let n = t / 8, s = 24 * (1 - Math.abs(n - .5) * 2);
+			e.push({
+				x: r + (a - r) * n + (Math.random() - .5) * s * 2,
+				y: i + (o - i) * n + (Math.random() - .5) * s
+			});
+		}
+		return e.push({
+			x: a,
+			y: o
+		}), e;
+	}, c = (e, t) => {
+		e.clear(), e.lineStyle(6, 6724095, .35), e.beginPath(), e.moveTo(t[0].x, t[0].y);
+		for (let n = 1; n < t.length; n += 1) e.lineTo(t[n].x, t[n].y);
+		e.strokePath(), e.lineStyle(2, 16777215, 1), e.beginPath(), e.moveTo(t[0].x, t[0].y);
+		for (let n = 1; n < t.length; n += 1) e.lineTo(t[n].x, t[n].y);
+		e.strokePath();
+	}, l = e.add.graphics().setDepth(50);
+	c(l, s()), e.cameras.main.flash(250, 180, 200, 255), t.setTintFill(16777215), e.time.delayedCall(100, () => {
+		l.setVisible(!1), t.clearTint();
+	}), e.time.delayedCall(200, () => {
+		c(l, s()), l.setVisible(!0), t.setTintFill(11193599);
+	}), e.time.delayedCall(300, () => {
+		l.setVisible(!1), t.clearTint();
+	}), e.time.delayedCall(450, () => {
+		c(l, s()), l.setVisible(!0), e.cameras.main.flash(150, 140, 160, 255), t.setTintFill(16777215);
+	}), e.time.delayedCall(600, () => {
+		l.setVisible(!1), t.clearTint();
+	}), e.time.delayedCall(900, () => {
+		l.destroy(), n.onComplete();
+	});
+}
+function up(e, t, n) {
+	let r = n.worldHeight + 680, i = n.pitCenterX, a = [
+		e.add.image(i - 50, r, "prop-crystal-1").setOrigin(.5, 1).setScale(2.2).setAngle(12),
+		e.add.image(i + 55, r, "prop-crystal-2").setOrigin(.5, 1).setScale(2).setAngle(-8),
+		e.add.image(i - 15, r, "prop-crystal-1").setOrigin(.5, 1).setScale(1.6).setAngle(-15),
+		e.add.image(i + 20, r, "prop-bones").setOrigin(.5, 1).setScale(2),
+		e.add.image(i - 35, r, "prop-blood-guts").setOrigin(.5, 1).setScale(1.8),
+		e.add.image(i + 45, r, "prop-ashpile").setOrigin(.5, 1).setScale(1.6)
+	];
+	for (let e of a) e.setDepth(0);
+	e.cameras.main.setBounds(0, 0, n.worldWidth, r + 200), e.cameras.main.startFollow(t, !1, 1, .8), e.cameras.main.setDeadzone(0, 0);
+	let o = t.x, s = t.y - 180, c = (o + i) / 2, l = r - t.displayHeight / 2 + 20;
+	e.tweens.add({
+		targets: t,
+		x: c,
+		y: s,
+		angle: -20,
+		duration: 500,
+		ease: "Sine.easeOut",
+		onComplete: () => {
+			t.setDepth(1), e.tweens.add({
+				targets: t,
+				x: i,
+				y: l,
+				angle: 450,
+				duration: 2e3,
+				ease: "Quad.easeIn",
+				onComplete: () => {
+					e.cameras.main.stopFollow(), t.setAngle(90), e.tweens.add({
+						targets: t,
+						y: l + 8,
+						duration: 120,
+						yoyo: !0,
+						ease: "Sine.easeOut",
+						onComplete: () => {
+							e.time.delayedCall(1200, n.onComplete);
+						}
+					});
+				}
+			});
+		}
+	});
+}
+function dp(e, t, n, r) {
+	n.intensify();
+	let i = t.x, a = t.y;
+	e.tweens.add({
+		targets: t,
+		alpha: 0,
+		duration: 1800,
+		ease: "Sine.easeIn",
+		onComplete: () => {
+			let t = e.add.image(i, a, "prop-ashpile-riding");
+			t.setOrigin(.5, .5), t.setScale(2.2), t.setAlpha(0), e.tweens.add({
+				targets: t,
+				alpha: 1,
+				duration: 800,
+				ease: "Sine.easeOut",
+				onComplete: () => {
+					e.time.delayedCall(2e3, r);
+				}
+			});
+		}
+	});
+}
+//#endregion
+//#region src/game/scenes/PledgeScene.ts
+var fp = 6600, pp = 540, mp = 410, hp = 306 / 2 * 32, gp = .45, _p = -10.5, vp = 9, yp = 12, bp = 16, xp = bp * 2, Sp = .33, Cp = .055, wp = .12, Tp = 10, Ep = 4, Dp = .5, Op = 96, kp = 14, Ap = 20, jp = {
 	r: 10,
 	g: 7,
 	b: 18
-}, tp = 2500, np = 8, rp = "sandstorm-dust", ip = .68, ap = .44, op = .58, sp = .74, cp = .82, lp = .42, up = 850, dp = 120, fp = .0014, pp = 84, mp = 85, hp = 86, gp = 87, _p = 88, vp = class extends Z.Scene {
+}, Mp = 2500, Np = 8, Pp = class extends Z.Scene {
 	player;
 	cursors;
 	keyA;
@@ -51204,7 +51764,7 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 	parallaxBack;
 	parallaxMiddle;
 	parallaxNear;
-	pitCenterX = Tf;
+	pitCenterX = hp;
 	velocityY = 0;
 	isGrounded = !1;
 	jumpCount = 0;
@@ -51213,15 +51773,10 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 	collisionGrid = [];
 	mapOriginY = 0;
 	conversation;
-	sandstormBack;
-	sandstormMid;
-	sandstormFront;
-	sandstormGust;
-	sandstormHaze;
-	sandstormPulseEvent;
-	sandstormActive = !1;
+	sandstormFx;
 	animalSprites = [];
-	gameplayCameraBoundsHeight = Cf;
+	goreSprites = [];
+	gameplayCameraBoundsHeight = pp;
 	isReloadingScene = !1;
 	isAwaitingRetry = !1;
 	retryBackdrop;
@@ -51233,19 +51788,19 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		super("pledge");
 	}
 	init() {
-		this.player = void 0, this.cursors = void 0, this.keyA = void 0, this.keyD = void 0, this.keyS = void 0, this.keyW = void 0, this.keyE = void 0, this.keySpace = void 0, this.keyT = void 0, this.canMove = !0, this.hasResolved = !1, this.parallaxBack2 = void 0, this.parallaxBack = void 0, this.parallaxMiddle = void 0, this.parallaxNear = void 0, this.velocityY = 0, this.isGrounded = !1, this.jumpCount = 0, this.isCameraRecentering = !1, this.isCameraRecenterSettled = !1, this.conversation = void 0, this.sandstormBack = void 0, this.sandstormMid = void 0, this.sandstormFront = void 0, this.sandstormGust = void 0, this.sandstormHaze = void 0, this.sandstormPulseEvent = void 0, this.sandstormActive = !1, this.animalSprites = [], this.gameplayCameraBoundsHeight = Cf, this.isReloadingScene = !1, this.isAwaitingRetry = !1, this.retryBackdrop = void 0, this.retryPanel = void 0, this.retryTitle = void 0, this.retryButton = void 0, this.retryButtonLabel = void 0;
+		this.player = void 0, this.cursors = void 0, this.keyA = void 0, this.keyD = void 0, this.keyS = void 0, this.keyW = void 0, this.keyE = void 0, this.keySpace = void 0, this.keyT = void 0, this.canMove = !0, this.hasResolved = !1, this.parallaxBack2 = void 0, this.parallaxBack = void 0, this.parallaxMiddle = void 0, this.parallaxNear = void 0, this.velocityY = 0, this.isGrounded = !1, this.jumpCount = 0, this.isCameraRecentering = !1, this.isCameraRecenterSettled = !1, this.conversation = void 0, this.sandstormFx = void 0, this.animalSprites = [], this.goreSprites = [], this.gameplayCameraBoundsHeight = pp, this.isReloadingScene = !1, this.isAwaitingRetry = !1, this.retryBackdrop = void 0, this.retryPanel = void 0, this.retryTitle = void 0, this.retryButton = void 0, this.retryButtonLabel = void 0;
 	}
 	async create() {
 		if (!wd.selected) {
 			this.scene.start("select-warrior");
 			return;
 		}
-		this.cameras.main.setBackgroundColor("#1c1730"), this.cameras.main.setRoundPixels(!0), this.cameras.main.setZoom(1.5), this.cameras.main.fadeIn(tp, ep.r, ep.g, ep.b), await Bd(this), this.drawParallax(), this.drawMap(), this.createSandstormFx(), this.placeDecorations(), await yf(this, 2530n, this.getWizardWorldX(), this.getWizardTileTopY()), await yf(this, 50n, 67.5 * Rf, this.mapOriginY + Lf), await this.spawnCrowd(), await this.spawnBarrenCourtGuide(), await this.spawnPlayer(), this.cursors = this.input.keyboard?.createCursorKeys(), this.keyA = this.input.keyboard?.addKey("A"), this.keyD = this.input.keyboard?.addKey("D"), this.keyS = this.input.keyboard?.addKey("S"), this.keyW = this.input.keyboard?.addKey("W"), this.keyE = this.input.keyboard?.addKey("E"), this.keySpace = this.input.keyboard?.addKey("SPACE"), this.keyT = this.input.keyboard?.addKey("T"), Dd(), this.startSandstorm(!1), this.configureGameplayCamera();
+		this.cameras.main.setBackgroundColor("#1c1730"), this.cameras.main.setRoundPixels(!0), this.cameras.main.setZoom(1.5), this.cameras.main.fadeIn(Mp, jp.r, jp.g, jp.b), await Bd(this), this.drawParallax(), this.drawMap(), this.createSandstormFx(), this.placeDecorations(), await yf(this, 2530n, this.getWizardWorldX(), this.getWizardTileTopY()), await yf(this, 50n, 67.5 * xp, this.mapOriginY + bp), await this.spawnCrowd(), await this.spawnBarrenCourtGuide(), await this.spawnPlayer(), this.cursors = this.input.keyboard?.createCursorKeys(), this.keyA = this.input.keyboard?.addKey("A"), this.keyD = this.input.keyboard?.addKey("D"), this.keyS = this.input.keyboard?.addKey("S"), this.keyW = this.input.keyboard?.addKey("W"), this.keyE = this.input.keyboard?.addKey("E"), this.keySpace = this.input.keyboard?.addKey("SPACE"), this.keyT = this.input.keyboard?.addKey("T"), Dd(), this.startSandstorm(!1), this.configureGameplayCamera();
 		let e = () => {
 			let e = window.innerWidth;
 			this.scale.resize(e, this.scale.height);
 			let t = Math.ceil(e / 2);
-			this.parallaxBack2 && (this.parallaxBack2.width = t), this.parallaxBack && (this.parallaxBack.width = t), this.parallaxMiddle && (this.parallaxMiddle.width = t), this.parallaxNear && (this.parallaxNear.width = t), this.player && (this.isCameraRecentering ? this.cameras.main.setDeadzone() : this.applyGameplayDeadzone()), this.resizeSandstormFx(), this.layoutRetryOverlay();
+			this.parallaxBack2 && (this.parallaxBack2.width = t), this.parallaxBack && (this.parallaxBack.width = t), this.parallaxMiddle && (this.parallaxMiddle.width = t), this.parallaxNear && (this.parallaxNear.width = t), this.resizeSandstormFx(), this.player && (this.isCameraRecentering ? this.cameras.main.setDeadzone() : this.applyGameplayDeadzone()), this.resizeSandstormFx(), this.layoutRetryOverlay();
 		};
 		window.addEventListener("resize", e), this.events.on("shutdown", () => window.removeEventListener("resize", e));
 	}
@@ -51254,438 +51809,83 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		return e.height / 2 * (1 - 1 / e.zoom);
 	}
 	applyGameplayDeadzone() {
-		let e = Math.max(48, this.cameras.main.width * Gf);
+		let e = Math.max(48, this.cameras.main.width * Sp);
 		this.cameras.main.setDeadzone(e, this.cameras.main.height);
 	}
 	configureGameplayCamera() {
-		let e = this.cameras.main, t = this.mapOriginY + this.collisionGrid.length * Lf, n = Math.max(Cf, t);
-		if (this.gameplayCameraBoundsHeight = n, e.setBounds(0, 0, Sf, n), !this.player) return;
-		let r = this.mapOriginY + (Qf - 1) * Rf, i = e.height / e.zoom, a = Math.max(0, n - i);
-		e.scrollY = Z.Math.Clamp(r - i, 0, a), this.isCameraRecentering = !1, e.startFollow(this.player, !1, Kf, 0), this.applyGameplayDeadzone();
+		let e = this.cameras.main, t = this.mapOriginY + this.collisionGrid.length * bp, n = Math.max(pp, t);
+		if (this.gameplayCameraBoundsHeight = n, e.setBounds(0, 0, fp, n), !this.player) return;
+		let r = this.mapOriginY + (kp - 1) * xp, i = e.height / e.zoom, a = Math.max(0, n - i);
+		e.scrollY = Z.Math.Clamp(r - i, 0, a), this.isCameraRecentering = !1, e.startFollow(this.player, !1, Cp, 0), this.applyGameplayDeadzone();
 	}
 	enterCameraRecentering() {
-		this.player && (this.isCameraRecentering = !0, this.isCameraRecenterSettled = !1, this.cameras.main.setLerp(Kf, 0), this.cameras.main.setDeadzone());
+		this.player && (this.isCameraRecentering = !0, this.isCameraRecenterSettled = !1, this.cameras.main.setLerp(Cp, 0), this.cameras.main.setDeadzone());
 	}
 	exitCameraRecentering() {
-		this.isCameraRecentering = !1, this.isCameraRecenterSettled = !1, this.cameras.main.setLerp(Kf, 0), this.applyGameplayDeadzone();
+		this.isCameraRecentering = !1, this.isCameraRecenterSettled = !1, this.cameras.main.setLerp(Cp, 0), this.applyGameplayDeadzone();
 	}
 	updateGameplayCameraFollow(e) {
 		if (!this.player) return;
 		this.updateVerticalCameraFollow();
 		let t = this.cameras.main, n = t.deadzone;
 		if (!this.isCameraRecentering) {
-			n && (this.player.x < n.left - Yf || this.player.x > n.right + Yf) && this.enterCameraRecentering();
+			n && (this.player.x < n.left - Ep || this.player.x > n.right + Ep) && this.enterCameraRecentering();
 			return;
 		}
-		Math.abs(this.player.x - t.midPoint.x) <= Jf && (this.isCameraRecenterSettled = !0), this.isCameraRecenterSettled && e && this.exitCameraRecentering();
+		Math.abs(this.player.x - t.midPoint.x) <= Tp && (this.isCameraRecenterSettled = !0), this.isCameraRecenterSettled && e && this.exitCameraRecentering();
 	}
 	updateVerticalCameraFollow() {
 		if (!this.player) return;
-		let e = this.cameras.main, t = e.height / e.zoom, n = Math.max(0, this.gameplayCameraBoundsHeight - t), r = e.scrollY + t * Xf, i = e.scrollY + t - Zf, a = e.scrollY;
-		if (this.player.y < r ? a = this.player.y - t * Xf : this.player.y > i && (a = this.player.y - (t - Zf)), a = Z.Math.Clamp(a, 0, n), Math.abs(a - e.scrollY) < .25) {
+		let e = this.cameras.main, t = e.height / e.zoom, n = Math.max(0, this.gameplayCameraBoundsHeight - t), r = e.scrollY + t * Dp, i = e.scrollY + t - Op, a = e.scrollY;
+		if (this.player.y < r ? a = this.player.y - t * Dp : this.player.y > i && (a = this.player.y - (t - Op)), a = Z.Math.Clamp(a, 0, n), Math.abs(a - e.scrollY) < .25) {
 			e.scrollY = a;
 			return;
 		}
-		e.scrollY = Z.Math.Linear(e.scrollY, a, qf);
+		e.scrollY = Z.Math.Linear(e.scrollY, a, wp);
 	}
 	drawParallax() {
 		let e = Math.ceil(this.cameras.main.width / 2), t = this.zoomOffsetY();
 		this.parallaxBack2 = this.add.tileSprite(0, t, e, 240, "rocky-back2").setOrigin(0, 0).setScale(2).setScrollFactor(0), this.parallaxBack = this.add.tileSprite(0, t, e, 240, "rocky-back").setOrigin(0, 0).setScale(2).setScrollFactor(0), this.parallaxMiddle = this.add.tileSprite(0, t, e, 240, "rocky-middle").setOrigin(0, 0).setScale(2).setScrollFactor(0), this.parallaxNear = this.add.tileSprite(0, t, e, 240, "rocky-near").setOrigin(0, 0).setScale(2).setScrollFactor(0);
 	}
-	ensureSandstormTexture() {
-		if (this.textures.exists(rp)) return;
-		let e = this.add.graphics({
-			x: 0,
-			y: 0
-		});
-		e.setVisible(!1), e.fillStyle(0, 0), e.fillRect(0, 0, 128, 128);
-		for (let t = 0; t < 380; t += 1) {
-			let t = .22 + Math.random() * .34, n = Math.random() > .7 ? 2 : 1;
-			e.fillStyle(16777215, t), e.fillRect(Math.random() * 128, Math.random() * 128, n, n);
-		}
-		e.lineStyle(1, 16777215, .18);
-		for (let t = 0; t < 46; t += 1) {
-			let t = Math.random() * 128, n = Math.random() * 128;
-			e.lineBetween(t - 4, n, t + 6, n + 1);
-		}
-		e.generateTexture(rp, 128, 128), e.destroy();
-	}
 	createSandstormFx() {
-		this.ensureSandstormTexture();
-		let e = this.cameras.main;
-		this.sandstormHaze = this.add.rectangle(e.width / 2, e.height / 2, e.width, e.height, 14004340, 0).setDepth(pp).setScrollFactor(0), this.sandstormBack = this.add.tileSprite(0, 0, e.width, e.height, rp).setOrigin(0, 0).setDepth(mp).setScrollFactor(0).setTint(14205578).setAlpha(0), this.sandstormMid = this.add.tileSprite(0, 0, e.width, e.height, rp).setOrigin(0, 0).setDepth(hp).setScrollFactor(0).setTint(14928274).setAlpha(0), this.sandstormFront = this.add.tileSprite(0, 0, e.width, e.height, rp).setOrigin(0, 0).setDepth(gp).setScrollFactor(0).setTint(15717024).setAlpha(0), this.sandstormGust = this.add.tileSprite(0, 0, e.width, e.height, rp).setOrigin(0, 0).setDepth(_p).setScrollFactor(0).setTint(16178608).setAlpha(0);
+		this.sandstormFx = new cp(this), this.sandstormFx.create();
 	}
 	resizeSandstormFx() {
-		let e = this.cameras.main;
-		this.sandstormBack && (this.sandstormBack.width = e.width, this.sandstormBack.height = e.height), this.sandstormMid && (this.sandstormMid.width = e.width, this.sandstormMid.height = e.height), this.sandstormFront && (this.sandstormFront.width = e.width, this.sandstormFront.height = e.height), this.sandstormGust && (this.sandstormGust.width = e.width, this.sandstormGust.height = e.height), this.sandstormHaze && (this.sandstormHaze.setPosition(e.width / 2, e.height / 2), this.sandstormHaze.width = e.width, this.sandstormHaze.height = e.height);
+		this.sandstormFx?.resize();
 	}
 	toggleSandstorm() {
-		if (this.sandstormActive) {
-			this.stopSandstorm();
-			return;
-		}
-		this.startSandstorm();
+		this.sandstormFx?.toggle();
 	}
 	startSandstorm(e = !0) {
-		this.sandstormActive = !0, e && Od("A sandstorm rolls in. Press T to clear it.");
-		let t = [
-			this.sandstormBack,
-			this.sandstormMid,
-			this.sandstormFront,
-			this.sandstormGust,
-			this.sandstormHaze
-		].filter(Boolean);
-		this.tweens.killTweensOf(t), this.sandstormBack && this.tweens.add({
-			targets: this.sandstormBack,
-			alpha: ap,
-			duration: 350,
-			ease: "Sine.easeOut"
-		}), this.sandstormMid && this.tweens.add({
-			targets: this.sandstormMid,
-			alpha: op,
-			duration: 350,
-			ease: "Sine.easeOut"
-		}), this.sandstormFront && this.tweens.add({
-			targets: this.sandstormFront,
-			alpha: sp,
-			duration: 350,
-			ease: "Sine.easeOut"
-		}), this.sandstormGust && this.tweens.add({
-			targets: this.sandstormGust,
-			alpha: cp,
-			duration: 350,
-			ease: "Sine.easeOut"
-		}), this.sandstormHaze && this.tweens.add({
-			targets: this.sandstormHaze,
-			alpha: lp,
-			duration: 350,
-			ease: "Sine.easeOut"
-		}), this.sandstormPulseEvent?.destroy(), this.sandstormPulseEvent = this.time.addEvent({
-			delay: up,
-			loop: !0,
-			callback: () => {
-				this.sandstormActive && this.cameras.main.shake(dp, fp, !0);
-			}
-		});
+		this.sandstormFx?.start(e);
 	}
 	stopSandstorm() {
-		this.sandstormActive = !1;
-		let e = [
-			this.sandstormBack,
-			this.sandstormMid,
-			this.sandstormFront,
-			this.sandstormGust,
-			this.sandstormHaze
-		].filter(Boolean);
-		this.tweens.killTweensOf(e);
-		let t = 1200;
-		this.sandstormGust && this.tweens.add({
-			targets: this.sandstormGust,
-			alpha: 0,
-			duration: t * .4,
-			ease: "Sine.easeOut"
-		}), this.sandstormFront && this.tweens.add({
-			targets: this.sandstormFront,
-			alpha: 0,
-			duration: t * .6,
-			ease: "Sine.easeOut",
-			delay: 150
-		}), this.sandstormMid && this.tweens.add({
-			targets: this.sandstormMid,
-			alpha: 0,
-			duration: t * .8,
-			ease: "Sine.easeOut",
-			delay: 300
-		}), this.sandstormBack && this.tweens.add({
-			targets: this.sandstormBack,
-			alpha: 0,
-			duration: t,
-			ease: "Sine.easeOut",
-			delay: 400
-		}), this.sandstormHaze && this.tweens.add({
-			targets: this.sandstormHaze,
-			alpha: 0,
-			duration: t,
-			ease: "Sine.easeOut",
-			delay: 300
-		}), this.sandstormPulseEvent?.destroy(), this.sandstormPulseEvent = void 0;
-	}
-	intensifySandstorm() {
-		this.sandstormActive = !0;
-		let e = [
-			this.sandstormBack,
-			this.sandstormMid,
-			this.sandstormFront,
-			this.sandstormGust,
-			this.sandstormHaze
-		].filter(Boolean);
-		this.tweens.killTweensOf(e), this.sandstormBack && this.tweens.add({
-			targets: this.sandstormBack,
-			alpha: .72,
-			duration: 600,
-			ease: "Sine.easeIn"
-		}), this.sandstormMid && this.tweens.add({
-			targets: this.sandstormMid,
-			alpha: .82,
-			duration: 600,
-			ease: "Sine.easeIn"
-		}), this.sandstormFront && this.tweens.add({
-			targets: this.sandstormFront,
-			alpha: .92,
-			duration: 600,
-			ease: "Sine.easeIn"
-		}), this.sandstormGust && this.tweens.add({
-			targets: this.sandstormGust,
-			alpha: .96,
-			duration: 600,
-			ease: "Sine.easeIn"
-		}), this.sandstormHaze && this.tweens.add({
-			targets: this.sandstormHaze,
-			alpha: .7,
-			duration: 600,
-			ease: "Sine.easeIn"
-		}), this.sandstormPulseEvent?.destroy(), this.sandstormPulseEvent = this.time.addEvent({
-			delay: 350,
-			loop: !0,
-			callback: () => {
-				this.sandstormActive && this.cameras.main.shake(200, .004, !0);
-			}
-		});
+		this.sandstormFx?.stop();
 	}
 	triggerSandstormDeath() {
-		if (!this.player) return;
-		this.canMove = !1, this.intensifySandstorm();
-		let e = this.player.x, t = this.player.y;
-		this.tweens.add({
-			targets: this.player,
-			alpha: 0,
-			duration: 1800,
-			ease: "Sine.easeIn",
-			onComplete: () => {
-				let n = this.add.image(e, t, "prop-ashpile-riding");
-				n.setOrigin(.5, .5), n.setScale(2.2), n.setAlpha(0), this.tweens.add({
-					targets: n,
-					alpha: 1,
-					duration: 800,
-					ease: "Sine.easeOut",
-					onComplete: () => {
-						this.time.delayedCall(2e3, () => {
-							this.scene.start("select-warrior");
-						});
-					}
-				});
-			}
-		});
+		!this.player || !this.sandstormFx || (this.canMove = !1, dp(this, this.player, this.sandstormFx, () => {
+			this.scene.start("select-warrior");
+		}));
 	}
 	updateSandstormFx(e) {
-		if (!this.sandstormBack || !this.sandstormMid || !this.sandstormFront || !this.sandstormGust) return;
-		let t = e * .066, n = this.sandstormActive ? 1 : .24;
-		this.sandstormBack.tilePositionX += t * 2.6 * n, this.sandstormBack.tilePositionY -= t * .42 * n, this.sandstormMid.tilePositionX += t * 3.9 * n, this.sandstormMid.tilePositionY -= t * .64 * n, this.sandstormFront.tilePositionX += t * 5.8 * n, this.sandstormFront.tilePositionY -= t * 1.02 * n, this.sandstormGust.tilePositionX += t * 7.2 * n, this.sandstormGust.tilePositionY -= t * 1.3 * n;
+		this.sandstormFx?.update(e);
 	}
 	updateAnimalFacing() {
-		if (!this.player) return;
-		let e = this.player.x;
-		for (let t of this.animalSprites) t.setFlipX(e > t.x);
+		this.player && Kf(this.player, this.animalSprites);
 	}
 	drawMap() {
-		this.mapOriginY = wf - 3 * Lf * 2, this.collisionGrid = Qd($d), Zd(this, $d, this.mapOriginY);
+		this.mapOriginY = mp - 3 * bp * 2, this.collisionGrid = Qd($d), Zd(this, $d, this.mapOriginY);
 	}
 	placeDecorations() {
-		for (let e of [
-			{
-				key: "prop-crystal-1",
-				x: 100,
-				embed: 38,
-				scale: 2,
-				flipX: !1
-			},
-			{
-				key: "prop-crystal-2",
-				x: 480,
-				embed: 42,
-				scale: 1.8,
-				flipX: !0
-			},
-			{
-				key: "prop-crystal-1",
-				x: 880,
-				embed: 36,
-				scale: 2.2,
-				flipX: !1
-			},
-			{
-				key: "prop-crystal-2",
-				x: 1350,
-				embed: 40,
-				scale: 2,
-				flipX: !0
-			},
-			{
-				key: "prop-crystal-1",
-				x: 1870,
-				embed: 38,
-				scale: 1.8,
-				flipX: !1
-			},
-			{
-				key: "prop-crystal-2",
-				x: 4200,
-				embed: 42,
-				scale: 2,
-				flipX: !1
-			},
-			{
-				key: "prop-crystal-1",
-				x: 5400,
-				embed: 36,
-				scale: 2.2,
-				flipX: !0
-			},
-			{
-				key: "prop-crystal-2",
-				x: 6300,
-				embed: 40,
-				scale: 1.8,
-				flipX: !1
-			}
-		]) {
-			let t = this.findGroundY(e.x), n = this.add.image(e.x, t + e.embed + np, e.key);
-			n.setOrigin(.5, 1), n.setScale(e.scale), n.setFlipX(e.flipX), n.setDepth(-1);
-		}
-		for (let e of [
-			{
-				key: "prop-plant-1",
-				x: 250,
-				embed: 14,
-				scale: 2,
-				flipX: !1
-			},
-			{
-				key: "prop-plant-2",
-				x: 750,
-				embed: 15,
-				scale: 1.8,
-				flipX: !0
-			},
-			{
-				key: "prop-plant-1",
-				x: 1600,
-				embed: 14,
-				scale: 2,
-				flipX: !1
-			},
-			{
-				key: "prop-plant-2",
-				x: 3100,
-				embed: 15,
-				scale: 1.8,
-				flipX: !1
-			},
-			{
-				key: "prop-plant-1",
-				x: 4600,
-				embed: 14,
-				scale: 2,
-				flipX: !0
-			},
-			{
-				key: "prop-plant-2",
-				x: 5800,
-				embed: 15,
-				scale: 1.8,
-				flipX: !1
-			},
-			{
-				key: "prop-ashpile",
-				x: 3050,
-				embed: 13,
-				scale: 1.8,
-				flipX: !0
-			},
-			{
-				key: "prop-blood-guts",
-				x: 3300,
-				embed: 13,
-				scale: 1.6,
-				flipX: !1
-			},
-			{
-				key: "prop-bones",
-				x: 4400,
-				embed: 13,
-				scale: 1.8,
-				flipX: !1
-			}
-		]) {
-			let t = this.findGroundY(e.x), n = this.add.image(e.x, t + e.embed + np, e.key);
-			n.setOrigin(.5, 1), n.setScale(e.scale), n.setFlipX(e.flipX);
-		}
-		for (let e of [
-			{
-				key: "prop-animal-1",
-				x: 380,
-				embed: 12,
-				scale: .48
-			},
-			{
-				key: "prop-animal-4",
-				x: 920,
-				embed: 12,
-				scale: .45
-			},
-			{
-				key: "prop-animal-1",
-				x: 1480,
-				embed: 12,
-				scale: .51
-			},
-			{
-				key: "prop-animal-3",
-				x: 2020,
-				embed: 12,
-				scale: .42
-			},
-			{
-				key: "prop-animal-2",
-				x: 3500,
-				embed: 12,
-				scale: .48
-			},
-			{
-				key: "prop-animal-6",
-				x: 4100,
-				embed: 12,
-				scale: .45
-			},
-			{
-				key: "prop-animal-5",
-				x: 5200,
-				embed: 12,
-				scale: .51
-			},
-			{
-				key: "prop-animal-2",
-				x: 5900,
-				embed: 12,
-				scale: .42
-			},
-			{
-				key: "prop-animal-3",
-				x: 6100,
-				embed: 12,
-				scale: .48
-			}
-		]) {
-			let t = this.findGroundY(e.x), n = this.add.image(e.x, t + e.embed + np, e.key);
-			n.setOrigin(.5, 1), n.setScale(e.scale), this.animalSprites.push(n);
-		}
+		let e = Gf(this, (e) => this.findGroundY(e));
+		this.animalSprites = e.animalSprites, this.goreSprites = e.goreSprites;
 	}
 	async spawnCrowd() {
-		let e = 167.5 * Rf;
-		await bf(this, e, (e) => this.findGroundY(e), np);
+		let e = 167.5 * xp;
+		await bf(this, e, (e) => this.findGroundY(e), Np);
 	}
 	async spawnBarrenCourtGuide() {
-		await xf(this, (e) => this.findGroundY(e), np);
+		await xf(this, (e) => this.findGroundY(e), Np);
 	}
 	async spawnPlayer() {
 		let e = wd.selected.tokenId;
@@ -51697,7 +51897,7 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 			e.fillStyle(16777215), e.fillRect(0, 0, 12, 12), e.generateTexture("fallback-player", 12, 12), e.destroy(), this.player = this.add.sprite(160, 0, "fallback-player"), this.player.setScale(2.2);
 		}
 		let t = this.findGroundY(160);
-		this.player.y = t - this.player.displayHeight / 2 + If + np, this.velocityY = 0, this.isGrounded = !0, this.jumpCount = 0;
+		this.player.y = t - this.player.displayHeight / 2 + yp + Np, this.velocityY = 0, this.isGrounded = !0, this.jumpCount = 0;
 	}
 	update(e, t) {
 		if (!this.player || !this.cursors || !this.keyA || !this.keyD || !this.keyE || this.isAwaitingRetry) return;
@@ -51707,8 +51907,8 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		}
 		let n = t / (1e3 / 60);
 		if (this.canMove) {
-			let e = this.cursors.left.isDown || this.keyA.isDown, t = this.cursors.right.isDown || this.keyD.isDown, r = e || t, i = this.cursors.down.isDown || this.keyS?.isDown, a = this.cursors.up.isDown || this.keyW?.isDown, o = 2.2 * n * (this.sandstormActive ? ip : 1), s = this.player.x;
-			if (e ? (this.player.x = Math.max(40, this.player.x - o), this.player.setFlipX(!0)) : t && (this.player.x = Math.min(Sf - 40, this.player.x + o), this.player.setFlipX(!1)), this.resolveHorizontalCollision(s), this.jumpCount < 2 && this.velocityY <= 0 && this.keySpace && Z.Input.Keyboard.JustDown(this.keySpace) && (this.velocityY = Pf, this.isGrounded = !1, this.jumpCount += 1), this.velocityY += Nf * n, this.velocityY > Ff && (this.velocityY = Ff), this.player.y += this.velocityY * n, this.resolveVerticalCollision(), this.shouldReloadAfterFall()) {
+			let e = this.cursors.left.isDown || this.keyA.isDown, t = this.cursors.right.isDown || this.keyD.isDown, r = e || t, i = this.cursors.down.isDown || this.keyS?.isDown, a = this.cursors.up.isDown || this.keyW?.isDown, o = 2.2 * n * (this.sandstormFx?.isActive ? sp : 1), s = this.player.x;
+			if (e ? (this.player.x = Math.max(40, this.player.x - o), this.player.setFlipX(!0)) : t && (this.player.x = Math.min(fp - 40, this.player.x + o), this.player.setFlipX(!1)), this.resolveHorizontalCollision(s), this.jumpCount < 2 && this.velocityY <= 0 && this.keySpace && Z.Input.Keyboard.JustDown(this.keySpace) && (this.velocityY = _p, this.isGrounded = !1, this.jumpCount += 1), this.velocityY += gp * n, this.velocityY > vp && (this.velocityY = vp), this.player.y += this.velocityY * n, this.resolveVerticalCollision(), this.shouldReloadAfterFall()) {
 				this.showTryAgainOverlay();
 				return;
 			}
@@ -51734,105 +51934,111 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		}
 		this.updateParallaxAndDebug(), this.updateSandstormFx(t), this.updateAnimalFacing();
 		let r = Z.Input.Keyboard.JustDown(this.keyE);
-		if (r && Math.abs(this.player.x - zf) <= Bf) {
+		if (r && Math.abs(this.player.x - 2160) <= 58) {
 			this.startWizard50Conversation();
 			return;
 		}
-		if (r && Math.abs(this.player.x - 100) <= Df) {
+		if (r && Math.abs(this.player.x - 100) <= 52) {
 			this.startBarrenCourtConversation();
 			return;
 		}
 		if (r) {
-			let e = this.animalSprites.find((e) => Math.abs(this.player.x - e.x) <= Af);
-			if (e) {
-				this.startAnimalConversation(e);
+			if (this.animalSprites.find((e) => Math.abs(this.player.x - e.x) <= 40)) {
+				this.startAnimalConversation();
+				return;
+			}
+			if (this.goreSprites.find((e) => Math.abs(this.player.x - e.x) <= 40)) {
+				this.startGoreConversation();
 				return;
 			}
 		}
-		!this.hasResolved && r && Math.abs(this.player.x - this.getWizardWorldX()) <= Ef && this.startWizardConversation();
+		!this.hasResolved && r && Math.abs(this.player.x - this.getWizardWorldX()) <= 58 && this.startWizardConversation();
 	}
 	startWizard50Conversation() {
-		if (this.canMove = !1, this.player) {
-			let e = `${this.player.texture.key}-idle`;
-			this.anims.exists(e) && this.player.play(e, !0);
-		}
-		let e = this.mapOriginY + Lf;
-		this.conversation = new _f(this, {
-			steps: Wf,
-			anchorX: zf,
-			anchorY: e,
-			pointerX: zf,
-			tailSide: "top",
-			onEnd: (e) => {
-				if (this.conversation = void 0, e === Uf) {
-					this.stopSandstorm(), this.time.delayedCall(100, () => {
-						this.canMove = !0;
-					});
-					return;
-				}
-				if (e === Vf) {
-					this.triggerSandstormDeath();
-					return;
-				}
-				this.time.delayedCall(100, () => {
-					this.canMove = !0;
-				});
-			}
-		}), this.conversation.start();
+		Pf({
+			scene: this,
+			mapOriginY: this.mapOriginY,
+			getPlayer: () => this.player,
+			setCanMove: (e) => {
+				this.canMove = e;
+			},
+			setConversation: (e) => {
+				this.conversation = e;
+			},
+			clearConversation: () => {
+				this.conversation = void 0;
+			},
+			stopSandstorm: () => this.stopSandstorm(),
+			triggerSandstormDeath: () => this.triggerSandstormDeath()
+		});
 	}
 	startBarrenCourtConversation() {
-		if (this.canMove = !1, this.player) {
-			let e = `${this.player.texture.key}-idle`;
-			this.anims.exists(e) && this.player.play(e, !0);
-		}
-		let e = this.findGroundY(100) - 120;
-		this.conversation = new _f(this, {
-			steps: Mf,
-			anchorX: Math.max(100, Of),
-			anchorY: e,
-			pointerX: 100,
-			onEnd: () => {
-				this.conversation = void 0, this.time.delayedCall(100, () => {
-					this.canMove = !0;
-				});
-			}
-		}), this.conversation.start();
+		Ff({
+			scene: this,
+			mapOriginY: this.mapOriginY,
+			getPlayer: () => this.player,
+			setCanMove: (e) => {
+				this.canMove = e;
+			},
+			setConversation: (e) => {
+				this.conversation = e;
+			},
+			clearConversation: () => {
+				this.conversation = void 0;
+			},
+			findGroundY: (e) => this.findGroundY(e)
+		});
 	}
-	startAnimalConversation(e) {
-		if (this.canMove = !1, this.player) {
-			let e = `${this.player.texture.key}-idle`;
-			this.anims.exists(e) && this.player.play(e, !0);
-		}
-		let t = this.player.y - this.player.displayHeight / 2 - 20;
-		this.conversation = new _f(this, {
-			steps: jf,
-			anchorX: this.player.x,
-			anchorY: t,
-			pointerX: this.player.x,
-			onEnd: () => {
-				this.conversation = void 0, this.time.delayedCall(100, () => {
-					this.canMove = !0;
-				});
+	startAnimalConversation() {
+		If({
+			scene: this,
+			mapOriginY: this.mapOriginY,
+			getPlayer: () => this.player,
+			setCanMove: (e) => {
+				this.canMove = e;
+			},
+			setConversation: (e) => {
+				this.conversation = e;
+			},
+			clearConversation: () => {
+				this.conversation = void 0;
 			}
-		}), this.conversation.start();
+		});
+	}
+	startGoreConversation() {
+		Lf({
+			scene: this,
+			mapOriginY: this.mapOriginY,
+			getPlayer: () => this.player,
+			setCanMove: (e) => {
+				this.canMove = e;
+			},
+			setConversation: (e) => {
+				this.conversation = e;
+			},
+			clearConversation: () => {
+				this.conversation = void 0;
+			}
+		});
 	}
 	startWizardConversation() {
-		if (this.canMove = !1, this.player) {
-			let e = `${this.player.texture.key}-idle`;
-			this.anims.exists(e) && this.player.play(e, !0);
-		}
-		let e = this.getWizardWorldX(), t = this.getWizardTileTopY() - 100;
-		this.conversation = new _f(this, {
-			steps: kf,
-			anchorX: e,
-			anchorY: t,
-			pointerX: e,
-			onEnd: (e) => {
-				this.conversation = void 0, e === kf.length - 1 ? this.resolveJudgement() : this.time.delayedCall(100, () => {
-					this.canMove = !0;
-				});
-			}
-		}), this.conversation.start();
+		Rf({
+			scene: this,
+			mapOriginY: this.mapOriginY,
+			getPlayer: () => this.player,
+			setCanMove: (e) => {
+				this.canMove = e;
+			},
+			setConversation: (e) => {
+				this.conversation = e;
+			},
+			clearConversation: () => {
+				this.conversation = void 0;
+			},
+			getWizardWorldX: () => this.getWizardWorldX(),
+			getWizardTileTopY: () => this.getWizardTileTopY(),
+			resolveJudgement: () => this.resolveJudgement()
+		});
 	}
 	async resolveJudgement() {
 		if (!wd.selected || !this.player) return;
@@ -51854,123 +52060,50 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		this.triggerDeath(n.reason);
 	}
 	triggerDeath(e) {
-		this.player && (this.canMove = !1, this.stopSandstorm(), Od(`Unworthy: ${e}`), this.strikeLightning(() => this.animatePitFall()));
-	}
-	strikeLightning(e) {
-		if (!this.player) {
-			e();
-			return;
-		}
-		let t = this.getWizardWorldX(), n = this.getWizardTileTopY(), r = t - 28, i = n + If + np - 100, a = this.player.x, o = this.player.y, s = () => {
-			let e = [{
-				x: r,
-				y: i
-			}];
-			for (let t = 1; t < 8; t++) {
-				let n = t / 8, s = 24 * (1 - Math.abs(n - .5) * 2);
-				e.push({
-					x: r + (a - r) * n + (Math.random() - .5) * s * 2,
-					y: i + (o - i) * n + (Math.random() - .5) * s
-				});
-			}
-			return e.push({
-				x: a,
-				y: o
-			}), e;
-		}, c = (e, t) => {
-			e.clear(), e.lineStyle(6, 6724095, .35), e.beginPath(), e.moveTo(t[0].x, t[0].y);
-			for (let n = 1; n < t.length; n++) e.lineTo(t[n].x, t[n].y);
-			e.strokePath(), e.lineStyle(2, 16777215, 1), e.beginPath(), e.moveTo(t[0].x, t[0].y);
-			for (let n = 1; n < t.length; n++) e.lineTo(t[n].x, t[n].y);
-			e.strokePath();
-		}, l = this.add.graphics().setDepth(50);
-		c(l, s()), this.cameras.main.flash(250, 180, 200, 255), this.player.setTintFill(16777215), this.time.delayedCall(100, () => {
-			l.setVisible(!1), this.player?.clearTint();
-		}), this.time.delayedCall(200, () => {
-			c(l, s()), l.setVisible(!0), this.player?.setTintFill(11193599);
-		}), this.time.delayedCall(300, () => {
-			l.setVisible(!1), this.player?.clearTint();
-		}), this.time.delayedCall(450, () => {
-			c(l, s()), l.setVisible(!0), this.cameras.main.flash(150, 140, 160, 255), this.player?.setTintFill(16777215);
-		}), this.time.delayedCall(600, () => {
-			l.setVisible(!1), this.player?.clearTint();
-		}), this.time.delayedCall(900, () => {
-			l.destroy(), e();
-		});
-	}
-	animatePitFall() {
-		if (!this.player) return;
-		let e = Cf + 680, t = this.pitCenterX, n = [
-			this.add.image(t - 50, e, "prop-crystal-1").setOrigin(.5, 1).setScale(2.2).setAngle(12),
-			this.add.image(t + 55, e, "prop-crystal-2").setOrigin(.5, 1).setScale(2).setAngle(-8),
-			this.add.image(t - 15, e, "prop-crystal-1").setOrigin(.5, 1).setScale(1.6).setAngle(-15),
-			this.add.image(t + 20, e, "prop-bones").setOrigin(.5, 1).setScale(2),
-			this.add.image(t - 35, e, "prop-blood-guts").setOrigin(.5, 1).setScale(1.8),
-			this.add.image(t + 45, e, "prop-ashpile").setOrigin(.5, 1).setScale(1.6)
-		];
-		for (let e of n) e.setDepth(0);
-		this.cameras.main.setBounds(0, 0, Sf, e + 200), this.cameras.main.startFollow(this.player, !1, 1, .8), this.cameras.main.setDeadzone(0, 0);
-		let r = this.player.x, i = this.player.y - 180, a = (r + t) / 2, o = e - this.player.displayHeight / 2 + 20;
-		this.tweens.add({
-			targets: this.player,
-			x: a,
-			y: i,
-			angle: -20,
-			duration: 500,
-			ease: "Sine.easeOut",
+		this.player && (this.canMove = !1, this.stopSandstorm(), Od(`Unworthy: ${e}`), lp(this, this.player, {
+			wizardX: this.getWizardWorldX(),
+			wizardGroundY: this.getWizardTileTopY(),
+			embedPixels: yp,
+			groundAlignmentOffset: Np,
 			onComplete: () => {
-				this.player.setDepth(1), this.tweens.add({
-					targets: this.player,
-					x: t,
-					y: o,
-					angle: 450,
-					duration: 2e3,
-					ease: "Quad.easeIn",
+				this.player && up(this, this.player, {
+					pitCenterX: this.pitCenterX,
+					worldHeight: pp,
+					worldWidth: fp,
 					onComplete: () => {
-						this.cameras.main.stopFollow(), this.player.setAngle(90), this.tweens.add({
-							targets: this.player,
-							y: o + 8,
-							duration: 120,
-							yoyo: !0,
-							ease: "Sine.easeOut",
-							onComplete: () => {
-								this.time.delayedCall(1200, () => {
-									this.scene.start("select-warrior");
-								});
-							}
-						});
+						this.scene.start("select-warrior");
 					}
 				});
 			}
-		});
+		}));
 	}
 	findGroundY(e) {
-		let t = Math.floor(e / Lf);
-		for (let e = 0; e < this.collisionGrid.length; e++) if (this.collisionGrid[e]?.[t]) return this.mapOriginY + e * Lf;
-		return wf;
+		let t = Math.floor(e / bp);
+		for (let e = 0; e < this.collisionGrid.length; e++) if (this.collisionGrid[e]?.[t]) return this.mapOriginY + e * bp;
+		return mp;
 	}
 	getWizardWorldX() {
-		return 164.5 * Rf;
+		return 164.5 * xp;
 	}
 	getWizardTileTopY() {
-		return this.mapOriginY + 11 * Rf + Lf;
+		return this.mapOriginY + 11 * xp + bp;
 	}
 	resolveVerticalCollision() {
 		if (!this.player || this.velocityY < 0) {
 			this.velocityY < 0 && (this.isGrounded = !1);
 			return;
 		}
-		let e = this.player.displayHeight / 2, t = this.player.y + e, n = Math.floor((t - If - this.mapOriginY) / Lf);
+		let e = this.player.displayHeight / 2, t = this.player.y + e, n = Math.floor((t - yp - this.mapOriginY) / bp);
 		if (n < 0 || n >= this.collisionGrid.length) {
 			this.isGrounded = !1;
 			return;
 		}
-		let r = Math.floor(this.player.x / Lf), i = this.collisionGrid[n];
+		let r = Math.floor(this.player.x / bp), i = this.collisionGrid[n];
 		if (r >= 0 && r < i.length && i[r]) {
 			let t = n;
 			this.gridSolid(r, n - 1) && !this.gridSolid(r, n - 2) && (t = n - 1);
-			let i = this.mapOriginY + t * Lf;
-			this.player.y = i - e + If + np, this.velocityY = 0, this.isGrounded = !0, this.jumpCount = 0;
+			let i = this.mapOriginY + t * bp;
+			this.player.y = i - e + yp + Np, this.velocityY = 0, this.isGrounded = !0, this.jumpCount = 0;
 		} else this.isGrounded = !1;
 	}
 	gridSolid(e, t) {
@@ -51978,27 +52111,27 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 	}
 	resolveHorizontalCollision(e) {
 		if (!this.player) return;
-		let t = this.player.displayHeight / 2, n = Math.floor(this.player.x / Lf);
-		if (n === Math.floor(e / Lf)) return;
+		let t = this.player.displayHeight / 2, n = Math.floor(this.player.x / bp);
+		if (n === Math.floor(e / bp)) return;
 		if (!this.isGrounded) {
-			let r = Math.floor((this.player.y - t - this.mapOriginY) / Lf), i = Math.floor((this.player.y - this.mapOriginY) / Lf);
+			let r = Math.floor((this.player.y - t - this.mapOriginY) / bp), i = Math.floor((this.player.y - this.mapOriginY) / bp);
 			(this.gridSolid(n, r) || this.gridSolid(n, i)) && (this.player.x = e);
 			return;
 		}
-		let r = Math.floor((this.player.y + t - If - this.mapOriginY) / Lf), i = -1;
+		let r = Math.floor((this.player.y + t - yp - this.mapOriginY) / bp), i = -1;
 		for (let e = r + 1; e >= Math.max(0, r - 4); e--) if (this.gridSolid(n, e) && !this.gridSolid(n, e - 1)) {
 			i = e;
 			break;
 		}
 		if (i >= 0) r - i > 2 && (this.player.x = e);
 		else {
-			let t = Math.floor((this.player.y - this.mapOriginY) / Lf);
+			let t = Math.floor((this.player.y - this.mapOriginY) / bp);
 			this.gridSolid(n, t) && (this.player.x = e);
 		}
 	}
 	shouldReloadAfterFall() {
 		if (!this.player) return !1;
-		let e = this.mapOriginY + ($f - 1) * Rf;
+		let e = this.mapOriginY + (Ap - 1) * xp;
 		return this.player.y > e;
 	}
 	showTryAgainOverlay() {
@@ -52034,7 +52167,7 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 		let e = this.cameras.main.scrollX;
 		this.parallaxBack2 && (this.parallaxBack2.tilePositionX = e * .02), this.parallaxBack && (this.parallaxBack.tilePositionX = e * .06), this.parallaxMiddle && (this.parallaxMiddle.tilePositionX = e * .14), this.parallaxNear && (this.parallaxNear.tilePositionX = e * .26);
 	}
-}, yp = {
+}, Fp = {
 	type: Z.AUTO,
 	width: window.innerWidth,
 	height: 720,
@@ -52045,19 +52178,19 @@ var Sf = 6600, Cf = 540, wf = 410, Tf = 306 / 2 * 32, Ef = 58, Df = 52, Of = 180
 	scene: [
 		sn,
 		Wd,
-		vp
+		Pp
 	]
 };
 //#endregion
 //#region src/mount.ts
-function bp(e) {
+function Ip(e) {
 	e.innerHTML = "", e.setAttribute("data-guard-mount", "");
 	let t = document.createElement("div");
 	t.id = "hud";
 	let n = document.createElement("div");
 	n.id = "game-root", e.append(t, n);
 	let r = new Z.Game({
-		...yp,
+		...Fp,
 		parent: n
 	});
 	return {
@@ -52068,4 +52201,4 @@ function bp(e) {
 	};
 }
 //#endregion
-export { bp as mountGuardGame };
+export { Ip as mountGuardGame };

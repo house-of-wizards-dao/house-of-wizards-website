@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { warriorsWithTraitsMap } from "@/data/warriorsWithTraitsMap";
 
 const CACHE_HEADERS = {
-  "Cache-Control": "public, max-age=31536000, immutable",
+  "Cache-Control": "public, max-age=86400, immutable",
 } as const;
 
 export const GET = async (
@@ -22,11 +22,9 @@ export const GET = async (
   return NextResponse.json(
     {
       name: "Guard Pledge",
-      description:
-        "Placeholder metadata for the Guard experience. Replace with final copy and media URIs before mainnet.",
-      image: "https://example.com/guard/placeholder.png",
-      animation_url: "https://example.com/guard/placeholder.webm",
-      external_url: "https://example.com/guard",
+      description: `I, ${warriorsWithTraitsMap[id].name}, pledge my blade, my blood, and my undying spirit to the Guard of the Puppet and the Goat. Through scorched peaks and endless night, I shall not waver. My watch begins now and ends only when the last star falls — when the prophecy is fulfilled and the sacred balance is made whole.`,
+      image:
+        "https://sgypzehngyhcdvtwlwst.supabase.co/storage/v1/object/public/guard/pledge.png",
       attributes: [
         {
           trait_type: "Affiliation",
@@ -35,7 +33,7 @@ export const GET = async (
         { trait_type: "Faction", value: getFaction(id) },
       ],
     },
-    // { headers: CACHE_HEADERS },
+    { headers: CACHE_HEADERS },
   );
 };
 
