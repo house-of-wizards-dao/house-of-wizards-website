@@ -7,7 +7,10 @@ type ViewSelectorProps = {
   onViewChange: (view: BurnView) => void;
 };
 
-export const ViewSelector = ({ currentView, onViewChange }: ViewSelectorProps) => {
+export const ViewSelector = ({
+  currentView,
+  onViewChange,
+}: ViewSelectorProps) => {
   return (
     <div className="flex gap-2 font-atirose font-lg">
       <button

@@ -1,4 +1,4 @@
-export const wizardsWithTraitsMap: Record<
+export const warriorsWithTraitsMap: Record<
   string,
   {
     idx: number;

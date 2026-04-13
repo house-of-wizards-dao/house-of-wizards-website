@@ -21,4 +21,4 @@ export const ClientOnlyWeb3 = ({
   }
 
   return <>{children}</>;
-}
+};

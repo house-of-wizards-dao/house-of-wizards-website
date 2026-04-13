@@ -21,7 +21,9 @@ type NewsCardProps = {
 /**
  * Formats the author handle for display
  */
-const formatAuthorHandle = (author: string): {
+const formatAuthorHandle = (
+  author: string,
+): {
   display: string;
   href: string;
 } => {

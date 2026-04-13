@@ -113,3 +113,12 @@
 .prose-invert a:hover {
   color: #c287ff;
 }
+
+/* Guard Phaser embed: game CSS uses 100vw + overflow:hidden — inside the site shell that clips the canvas */
+.guard-phaser-embed[data-guard-mount] {
+  width: 100% !important;
+  max-width: 100%;
+  height: auto !important;
+  min-height: 720px;
+  overflow: visible !important;
+}
