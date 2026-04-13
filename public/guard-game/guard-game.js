@@ -51440,19 +51440,19 @@ var zf = 8, Bf = [
 	},
 	{
 		key: "prop-animal-5",
-		x: 5200,
+		x: 5150,
 		embed: 12,
 		scale: .51
 	},
 	{
 		key: "prop-animal-2",
-		x: 5900,
+		x: 5850,
 		embed: 12,
 		scale: .42
 	},
 	{
 		key: "prop-animal-3",
-		x: 6100,
+		x: 6050,
 		embed: 12,
 		scale: .48
 	}
