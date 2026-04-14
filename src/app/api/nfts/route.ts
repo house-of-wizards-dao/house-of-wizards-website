@@ -6,6 +6,7 @@ import { logger } from "@/lib/logger";
 
 export const GET = async (request: NextRequest) => {
   try {
+    const excludedContract = "0x347fb25125762980ea77633216f99534784dd4fe";
     const { searchParams } = request.nextUrl;
     const address = searchParams.get("address");
     const limit = searchParams.get("limit");
@@ -47,7 +48,7 @@ export const GET = async (request: NextRequest) => {
 
     // Initialize OpenSea SDK with a minimal provider
     const apiKey = process.env.OPENSEA_API_KEY;
-    const provider = new JsonRpcProvider("https://mainnet.base.org");
+    const provider = new JsonRpcProvider("https://eth.llamarpc.com");
     const sdk = new OpenSeaSDK(
       provider,
       {
@@ -61,19 +62,32 @@ export const GET = async (request: NextRequest) => {
       },
     );
 
-    // Fetch NFTs owned by the account
-    const data = await sdk.api.getNFTsByAccount(
-      address,
-      limitNum,
-      next || undefined,
-      "base" as any,
-    );
+    // Fetch NFTs owned by the account on both Base and Ethereum mainnet
+    const [baseData, ethereumData] = await Promise.all([
+      sdk.api.getNFTsByAccount(
+        address,
+        limitNum,
+        next || undefined,
+        "base" as any,
+      ),
+      sdk.api.getNFTsByAccount(
+        address,
+        limitNum,
+        next || undefined,
+        "ethereum" as any,
+      ),
+    ]);
+
+    const nfts = [
+      ...(baseData.nfts || []),
+      ...(ethereumData.nfts || []),
+    ].filter((nft) => nft.contract.toLowerCase() !== excludedContract);
 
     // Return the NFTs data with cache headers
     return NextResponse.json(
       {
-        nfts: data.nfts || [],
-        next: data.next || null,
+        nfts,
+        next: baseData.next || ethereumData.next || null,
       },
       {
         headers: {
