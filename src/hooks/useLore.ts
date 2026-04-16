@@ -37,6 +37,16 @@ export const getTokenName = (token: LoreEntry["token"] | undefined) => {
   return "Unknown";
 };
 
+export const getCollectionSlug = (token: LoreEntry["token"] | undefined) => {
+  if (token == null) return "unknown";
+  if (token.beast) return "beasts";
+  if (token.beastSpawn) return "beast-spawns";
+  if (token.wizard) return "wizards";
+  if (token.warrior) return "warriors";
+  if (token.soul) return "souls";
+  if (token.pony) return "ponies";
+};
+
 const fetchLore = async (): Promise<LoreEntry[]> => {
   const response = await fetch("/api/lore");
 

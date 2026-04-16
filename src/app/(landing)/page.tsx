@@ -70,11 +70,13 @@ const NewsGrid = ({ items }: { items: CultContentDbItem[] }) => {
     <div className="space-y-4">
       {/* Top row: Highlight card + LoreWidget side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-stretch">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 h-full">
           <NewsCard item={highlightItem} variant="highlight" />
         </div>
-        <div className="lg:col-span-1">
-          <LoreWidget />
+        <div className="lg:col-span-1 h-full min-h-0 lg:relative">
+          <div className="h-full min-h-0 lg:absolute lg:inset-0">
+            <LoreWidget />
+          </div>
         </div>
       </div>
 
