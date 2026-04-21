@@ -50,6 +50,11 @@ const gamesDropdown: NavDropdown = {
       external: true,
     },
     {
+      label: "Shucks - Pumpkin Panic",
+      href: "https://feckless.dev/shucks/",
+      external: true,
+    },
+    {
       label: "Runes TCG",
       href: "https://www.runes-tcg.com/",
       external: true,
@@ -60,6 +65,10 @@ const gamesDropdown: NavDropdown = {
 const magicDropdown: NavDropdown = {
   label: "MAGIC",
   items: [
+    {
+      label: "The Guard",
+      href: "/guard",
+    },
     {
       label: "Forgotten Tomes",
       href: "https://forgotten-tomes.vercel.app/",
