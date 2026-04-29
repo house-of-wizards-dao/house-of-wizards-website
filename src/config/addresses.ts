@@ -31,10 +31,3 @@ export const collectionNames: Record<string, string> = {
   [frwcAddresses.athenaeum.toLowerCase()]: "Athenaeum",
   [frwcAddresses.impBox.toLowerCase()]: "Imp's Treat Boxes",
 };
-
-/**
- * Get friendly collection name from contract address
- */
-export const getCollectionName = (contractAddress: string): string => {
-  return collectionNames[contractAddress.toLowerCase()] || contractAddress;
-};

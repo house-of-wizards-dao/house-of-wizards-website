@@ -16,15 +16,32 @@ export type WizardTraitPart = (typeof wizardTraitParts)[number];
 export type Trait = {
   idx: number;
   displayName: string;
+  description?: string;
   affinity: Affinity[];
   part?: "prop" | "rune" | "familiar" | "head" | "body";
 };
 
 export const wizardTraits: Trait[] = [
-  { idx: 0, displayName: "Black", affinity: [] },
-  { idx: 1, displayName: "Blue", affinity: [] },
-  { idx: 2, displayName: "Green", affinity: [] },
-  { idx: 3, displayName: "Red", affinity: [] },
+  {
+    idx: 0,
+    displayName: "Black",
+    affinity: [],
+  },
+  {
+    idx: 1,
+    displayName: "Blue",
+    affinity: [],
+  },
+  {
+    idx: 2,
+    displayName: "Green",
+    affinity: [],
+  },
+  {
+    idx: 3,
+    displayName: "Red",
+    affinity: [],
+  },
   {
     idx: 5,
     displayName: "Desert Wear",
@@ -1002,6 +1019,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 88,
     displayName: "Forever Bat",
+    description:
+      "They may seem a common bat upon first glance, but Forever Bats hold the powers of ageless immortality. This endless lifespan is, of course, achieved through the drinking of blood, from a living source. The Forever Bat's immortality keeps is free of diseases and other maladies, so the bites are generally clean. Wizards who keep them as Familiars are said to nourish them with their own blood, an unsavory ritual that apparently benefits both the feeder and the fed.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "22", name: "Blackness" },
@@ -1015,6 +1034,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 89,
     displayName: "Dirt Rabbit",
+    description:
+      "The Dirt Rabbit is a popular Familiar amongst Brown Hat Wizards and Wizards of all creeds who tend to the earth. The Dirt Rabbit may appear to have garnered its name due to the dusty, dun coloring of its fur, but these creatures also possess an uncanny sense for finding rich soil.",
     affinity: [
       { idx: "77", name: "Earth" },
       { idx: "34", name: "Brownish" },
@@ -1028,6 +1049,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 90,
     displayName: "Psychic Rabbit",
+    description:
+      "The Psychic Rabbit is a Wizard Familiar and the only known type of bonding Familiar with the ability to communicate directly with their Wizard telepathically, rather than through body language or magical speech. Psychic Rabbits are often skeptical of Wizardkind due to a deep understanding of their nature, but develop unbreakable bonds with those whom they trust.",
     affinity: [
       { idx: "272", name: "White Magic" },
       { idx: "54", name: "Cold" },
@@ -1041,6 +1064,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 91,
     displayName: "Pink Butterfly",
+    description:
+      "The Pink Butterfly is a rare sight in the Runiverse, and some believe the beautiful insects to have arrived with visitors from another world. When a Wizard bonds with these large and fragile creatures, they may seal the Familiarity with a dance. Pink Butterflies rarely leave their Wizards once they bond.",
     affinity: [
       { idx: "182", name: "Pink" },
       { idx: "167", name: "Nature" },
@@ -1053,6 +1078,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 93,
     displayName: "Lucky Black Cat",
+    description:
+      "The Lucky Black Cat is a Wizard Familiar which grants unnatural luck to the Wizard to which it is bonded. Some believe these felines to draw the luck from others who cross its path, which is then delivered to their bonded Wizard through proximity. Witches are known to adore Lucky Black Cats as Familiars, though any Wizard may bond to the animals if the connection is apt.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "50", name: "Urban" },
@@ -1065,6 +1092,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 94,
     displayName: "Sun Cat",
+    description:
+      "Sun Cats are mostly found in the desert regions of the Runiverse, and are sometimes adopted as familiars by Wizards in those areas. The Sun Cat is also included as one of the 13 signs of the Runic Zodiac. Some Wizards allege that due to adaptions to their habitat, Sun Cats are able to absorb the sun's rays for energy. They can even store this energy, without consuming it, for long periods of time (similar to camels with water). Some enterprising mages have reportedly figured out how to harness this energy, making the sun cat a popular familiar for desert Wizards.",
     affinity: [
       { idx: "174", name: "Orange" },
       { idx: "50", name: "Urban" },
@@ -1077,6 +1106,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 95,
     displayName: "Bliss Cat",
+    description:
+      "The Bliss Cat comes in a variety of sizes, though all of their coats are stark white, illuminating their eerie red eyes. These felines earned their name from the euphoric feeling that results from their proximity, which is even more apparent with touch. Yellow Hat Wizards particularly enjoy the company of Bliss Cats, even if they have not bonded as Familiars.",
     affinity: [
       { idx: "272", name: "White Magic" },
       { idx: "50", name: "Urban" },
@@ -1090,12 +1121,16 @@ export const wizardTraits: Trait[] = [
   {
     idx: 92,
     displayName: "Bengal Cat",
+    description:
+      "Bengal Cats are the result of a mixed breeding between wild leopard cats and more domestic breeds. This breeding often results in coats that bear spots and rosettes. Bengals are energetic and playful companions that love water. Ironically, the only known Wizard to bond with a Bengal is the cyborg skeleton, Arcanist EyesTeethFlesh.",
     affinity: [{ idx: "257", name: "Unique" }],
     part: "familiar",
   },
   {
     idx: 96,
     displayName: "Mesozoic Cockatrice",
+    description:
+      "The Mesozoic Cockatrice is a small species of Cockatrice that lives in the Runiverse. It should not be confused with the Beast, the Triple Crowned Cockatrice, as they are two distinct species. As such, the Cockatrice Egg Beast Spawn do not yield Mesozoic Cockatrices upon hatching, but are spawn of the Beast itself. However, like all species of cockatrice, the Mesozoic Cockatrice gathers eggs from other birds to fill its nest. Once hatched, the foreign offspring provide a source of food for the cockatrice young. This species of cockatrice is known to form familiar bonds with Wizards across the world.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "107", name: "Verdant" },
@@ -1110,6 +1145,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 97,
     displayName: "Crackerjack Crow",
+    description:
+      "The Crackerjack Crow is a wild bird Wizard Familiar that enjoys collecting treasures of its own. In their attraction to shiny objects, many Blue Hats have found both Crackerjack Crows to be excellent companions, with a few being responsible for the discovery of many different items in the Athenaeum.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "22", name: "Blackness" },
@@ -1126,12 +1163,16 @@ export const wizardTraits: Trait[] = [
   {
     idx: 98,
     displayName: "Pink Footed Crow",
+    description:
+      "The Pink Footed Crow is a rare specimen in the Runiverse, and likely to be a mutation of the common Crackerjack Crow. There is only one Wizard known to have bonded to a Pink Footed Crow, Crow Master Claire Sliver. It is unknown whether the Crow Master had involvement in the mutation, or if its unique appearance is magical or biological.",
     affinity: [{ idx: "51", name: "Claire" }],
     part: "familiar",
   },
   {
     idx: 99,
     displayName: "Field Dog",
+    description:
+      "The Field Dog is one of the most loyal Familiars that can bond with a Wizard. They are fiercely protective of their Wizards, providing both protection and companionship. Field Dogs are known to be brilliant herders and also excel in hunting and tracking tasks.",
     affinity: [
       { idx: "209", name: "Rugged" },
       { idx: "34", name: "Brownish" },
@@ -1145,6 +1186,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 100,
     displayName: "White Dog",
+    description:
+      "The White Dog is a Wizard Familiar with many similarities to the Field Dog. However, these canines are more acclimated to the colder regions in the northern parts of the Runiverse. These loyal Familiars have adapted to life in the snow and often assist in rescuing those who have ventured into the icy biome unprepared.",
     affinity: [
       { idx: "272", name: "White Magic" },
       { idx: "68", name: "Dog" },
@@ -1154,12 +1197,16 @@ export const wizardTraits: Trait[] = [
   {
     idx: 102,
     displayName: "3D Frog",
+    description:
+      "The 3D Frog appears to be a Swamp Bullfrog wearing a pair of 3D glasses. It's likely that this Familiar received this accessory from 3D Wizz DeeZe, though the reason is not known. Some speculate the 3D Wizard was given his own glasses by the bullfrog during his time tripping in the wetlands. This theory has never been confirmed or denied.",
     affinity: [{ idx: "97", name: "Frog" }],
     part: "familiar",
   },
   {
     idx: 117,
     displayName: "Astral Snail",
+    description:
+      'The Astral Snail is an exceptional species of snail with astronomical abilities. Wizards who keep Astral Snails gain exposure to secrets of the cosmos, stars, and heavenly bodies. Their magical slime trails are highly prized among alchemists—a potent substance that can fetch high prices. Their shells, which seem to spiral infinitely, represent a gateway into non-cartesian space, and perhaps a veritable "wormhole" to other worlds.',
     affinity: [
       { idx: "227", name: "Snail" },
       { idx: "56", name: "Cosmic" },
@@ -1173,6 +1220,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 101,
     displayName: "Fox Trickster",
+    description:
+      "The Fox Trickster is a Familiar known for its guile and deceit. The cunning of a Fox Trickster can make them desirable Familiars, and they have the ability to outsmart many other animals as well as some intellectually disinclined Warriors and most Kobolds. Wizards bonded to Trickster Foxes often find themselves in trouble due to the creatures' mischief.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "162", name: "Mountains" },
@@ -1187,6 +1236,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 103,
     displayName: "Golden Toad",
+    description:
+      "The Golden Toad is an amphibious Wizard Familiar with a golden sheen to its skin. Some believe this gilded appearance to be the result of years populating habitats rich with gold deposits. There are a few known wetland ecosystems in the Runiverse with an abundance of this precious ore, thought to be produced from contact with a Midas Rod—its Magic affecting both flora and fauna.",
     affinity: [
       { idx: "243", name: "Swamp" },
       { idx: "94", name: "Forest" },
@@ -1199,6 +1250,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 104,
     displayName: "Swamp Bullfrog",
+    description:
+      "The Swamp Bullfrog is a common green frog found all over the Runiverse. The most prized frogs, however, are found in Frog Master Marsh, where a subtle Magic has seeped into them. It is rumored that some of the Swamp Bullfrogs are actually baby kobolds. They seem to share a similar appearance and also have a taste for mischief and shenanigans. Others allege that this is actually a form of prejudice (although there is disagreement over whether this is against the Kobolds or the Bullfrogs).",
     affinity: [
       { idx: "243", name: "Swamp" },
       { idx: "94", name: "Forest" },
@@ -1210,6 +1263,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 105,
     displayName: "Ember Frog",
+    description:
+      "The Ember Frog is an amphibian known to spontaneously burst into flame. The same secretion from its skin which causes it to ignite under certain circumstances also prevents harm while it is in this volatile state. Unsurprisingly, Pyromancers often seek out Ember Frogs as familiars due to a belief that their own Magic is tied to the nature of these creatures.",
     affinity: [
       { idx: "243", name: "Swamp" },
       { idx: "201", name: "Crimson" },
@@ -1222,6 +1277,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 106,
     displayName: "Jewled Hummingbird",
+    description:
+      'The Jeweled Hummingbird is a small, aloof, and strangely territorial Wizard Familiar. These tiny birds are known to produce sounds through the rapid beating of their wings as well as when performing "courting dives," both for attracting mates as well as Wizards. Those who bond with Jeweled Hummingbirds attune to hear these distinct sounds even with miles between them. Some Warriors believe they return to the Runiverse as hummingbirds if felled in battle. Battlemages who bond to Jeweled Hummingbirds often share this belief and view it as a sign of their strength.',
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "162", name: "Mountains" },
@@ -1235,6 +1292,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 107,
     displayName: "Giant Ladybug",
+    description:
+      "Like many things in the Runiverse post-Singularity, the Giant Ladybug is a transformed remnant from the Old World. A once-small insect has now attained the size of a common housecat. Wizards who bond with Giant Ladybugs are considered to have good luck, while some believe it to be a sign of Magical protection from another plane. Many healing Wizards bond to these creatures.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "162", name: "Mountains" },
@@ -1248,6 +1307,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 108,
     displayName: "Merlin's Monkey",
+    description:
+      "It's Merlin's Monkey, first belonging to the great Wizard Merlin. However, many other Wizards also claim Familiarity with the primate. It is not known if Merlin's Monkey has been duplicated through Magic or if the animal has truly bonded to multiple Wizards over the ages. Some say the Familiar passes on Merlin's wisdom to other students of Magic with whom it comes in close contact.",
     affinity: [
       { idx: "128", name: "Jungle" },
       { idx: "198", name: "Rainbow" },
@@ -1260,6 +1321,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 109,
     displayName: "Great Owl",
+    description:
+      "Great Owls are a highly prized familiar among some of the most elite Wizards. These feathered paragons of wisdom grow in power as they age, and some of the most revered are several thousand years old. They can be incredible repositories of lore, spells, knowledge, and advice for their Wizard companions. Great Owls display a variety of temperaments, some are wild, difficult to tame and prefer staying up all hours of the night hunting mice in the forests or city back alleys. Others are calm and pensive, preferring a quiet perch in a library or athenaeum. No matter their temperament, they all share a great intellect that is on par with the most learned Wizards.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "50", name: "Urban" },
@@ -1273,6 +1336,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 111,
     displayName: "Plague Rat",
+    description:
+      "Plague Rats have a nasty infection can often be neutralized by Wizards and serve as excellent familiars. Such rats are not contagious to their owners, but can be deadly to those who cross the Wizard to whom the rats belong.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "34", name: "Brownish" },
@@ -1284,6 +1349,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 110,
     displayName: "Blue Rat",
+    description:
+      'The Blue Rat is a domesticated fancy rat bred by Wizards who "fancy" fauna as a hobby or interest. This Familiar\'s blue-tinged coat is the result of selective breeding. While some might assume this type of interest would be common among Green Hat Wizards, those in the Green City are typically against this fancy and have no respect for Wizards who gain Familiars in this way.',
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "25", name: "Blue Shift" },
@@ -1297,6 +1364,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 112,
     displayName: "Albino Rat",
+    description:
+      "Albino Rats are a standard Familiar among many Wizards. Their commonality shouldn't deceive, however, for even very common things can have great power.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "272", name: "White Magic" },
@@ -1309,6 +1378,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 113,
     displayName: "Skramps",
+    description:
+      "Skramps is a scraggly little dog breed. A favorite Familiar to scraggly Wizards and Kobolds. Often seen scrounging about the streets of Red Wizard Capital, Goblin Town, and Alessar's Keep. Is known to sometimes carry rabies, but also has an affinity for Magic that should not be underestimated.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "61", name: "Darkness" },
@@ -1322,6 +1393,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 114,
     displayName: "Sapphire Slime",
+    description:
+      "Slimes are friends to all Wizards and a novice Warrior's worst nightmare. Alchemists value slimes as Familiars for their strange amorphous makeup, which have numerous magical properties across their variety of colors: Emerald, Topaz, and Sapphire. The Beast Gigas Chad is known to use Slimes as a hair tonic.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "215", name: "Sea" },
@@ -1334,6 +1407,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 115,
     displayName: "Emerald Slime",
+    description:
+      "Slimes are friends to all Wizards and a novice Warrior's worst nightmare. Alchemists value slimes as Familiars for their strange amorphous makeup, which have numerous magical properties across their variety of colors: Emerald, Topaz, and Sapphire. The Beast Gigas Chad is known to use Slimes as a hair tonic.",
     affinity: [
       { idx: "107", name: "Verdant" },
       { idx: "243", name: "Swamp" },
@@ -1345,6 +1420,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 116,
     displayName: "Topaz Slime",
+    description:
+      "Slimes are friends to all Wizards and a novice Warrior's worst nightmare. Alchemists value slimes as Familiars for their strange amorphous makeup, which have numerous magical properties across their variety of colors: Emerald, Topaz, and Sapphire. The Beast Gigas Chad is known to use Slimes as a hair tonic.",
     affinity: [
       { idx: "174", name: "Orange" },
       { idx: "213", name: "Academic" },
@@ -1356,6 +1433,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 118,
     displayName: "Golden Viper",
+    description:
+      "The Golden Viper is a reptilian Wizard Familiar. Like the Golden Toad, many believe that years of habitation in ecosystems with rich magical gold ore deposits have affected the biology of these snakes. The bite of a Golden Viper causes a slow and painful death by turning the blood of its victims into liquid gold.",
     affinity: [
       { idx: "228", name: "Snake" },
       { idx: "282", name: "Amber" },
@@ -1368,6 +1447,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 119,
     displayName: "Green Asp",
+    description:
+      "The Green Asp is a venemous reptilian Wizard Familiar and is diurnal in contrast to most of its viper relatives. Some believe the Green Asp originated from the same source as Medusa's Eye in an ancient time before the Singularity. Occasionally, Green Asps develop an inexplicable magical ability to travel through Spacetime.",
     affinity: [
       { idx: "228", name: "Snake" },
       { idx: "107", name: "Verdant" },
@@ -1380,6 +1461,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 120,
     displayName: "Red Mamba",
+    description:
+      "The Red Mamba is a highly venomous reptilian Wizard Familiar. This snake is a tree-dwelling species and a diurnal predator, bonding only to Wizards who are full of courage. Red Mambas are incredibly fast and quick to spot those who might oppose their bonded Wizards, and display this judgment with hisses and rises of their bodies.",
     affinity: [
       { idx: "228", name: "Snake" },
       { idx: "201", name: "Crimson" },
@@ -1391,6 +1474,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 121,
     displayName: "Ancient Sphinx",
+    description:
+      "A rare and elusive creature found in many deserts around the Runiverse. They are secretive and if seen at all, it is only during dusk or dawn. Though mostly catlike in appearance, they have feathery wings and oddly human looking faces. A few Wizards have been known to speak with them, though only in secretive tones. Rumors have circulated that certain sphinxes have a love of riddles and will force a game of questions upon journeymen in the desert. The outcome of these games can often have dire consequences on those who lose.",
     affinity: [
       { idx: "67", name: "Desert" },
       { idx: "56", name: "Cosmic" },
@@ -1404,6 +1489,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 122,
     displayName: "Rain Toucan",
+    description:
+      "The Rain Toucan is a Wizard Familiar and an incredibly social bird. When a Rain Toucan bonds with a Wizard, their flock recognizes the Wizard as a natural part of the group. These Familiars may show affection by grooming their bonded Wizard and communicate through a wide range of calls. These birds thrive in the areas around the Banana Groves and in the forests surrounding Green Wizard City.",
     affinity: [
       { idx: "270", name: "Warm" },
       { idx: "128", name: "Jungle" },
@@ -1415,6 +1502,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 123,
     displayName: "Onyx Wolf",
+    description:
+      "The Onyx Wolf is a canine Wizard Familiar that typically bonds with those who have an affinity for the night. If the Wizard is traveling with others, the Onyx Wolf protects the entire pack as it would its own bonded Wizard. Green Hats enjoy the company of Onyx Wolves for their loyalty without the sacrifice of their wild nature. These Familiars may spend days or weeks apart from their Wizards, but always return and somehow appear when needed.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "22", name: "Blackness" },
@@ -1428,6 +1517,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 124,
     displayName: "Aura Wolf",
+    description:
+      "The Aura Wolf is a white wolf with the ability to detect and determine the true essence of a living thing. Depending on the bonded Wizard, these Familiars may display their judgements by nuzzling their Wizard's hand, wagging their tail, baring their teeth, raising their hackles, and other such behaviors dependent on the aura in question.",
     affinity: [
       { idx: "272", name: "White Magic" },
       { idx: "198", name: "Rainbow" },
@@ -3003,6 +3094,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 245,
     displayName: "Mug of Ale",
+    description:
+      "A popular drink among all folk of the Runiverse—Brown Hat Wizards in particular are known to imbibe. Most Wizards can handle their drink, and barmen across the land are happy to serve them, but tales of drunken Wizard bar fights have prompted some pubs to invoke a strict three-mug limit on Wizardkind. Lore The Mug of Ale is a supposed Warrior Weapon, and a popular drink among all folk of the Runiverse—Warriors and Wizards alike are known to imbibe. Unlike Wizards, however, bartenders have not yet implemented any drinking restrictions upon Warriors. While this Weapon is mostly useful in attack of the wielder’s own senses, Warriors have used both empty and full mugs as projectiles and blunt instruments in brawls.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "209", name: "Rugged" },
@@ -3014,6 +3107,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 246,
     displayName: "Isaac's Apple",
+    description:
+      "Isaac's Apple is a seemingly inconspicuous fruit with a curious, magical gravitational pull, drawing objects toward the wielding Wizard on command.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "162", name: "Mountains" },
@@ -3030,6 +3125,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 247,
     displayName: "Siren's Bell",
+    description:
+      "One of the many musical instruments of the Sirens’ temptation, the Siren’s Bell was once rung by one of these humanlike creatures, enchanting it with a tranquilizing effect that can subdue even the Sirens themselves when rung by a powerful Wizard.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "213", name: "Academic" },
@@ -3042,6 +3139,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 248,
     displayName: "Vile of Virgin's Blood",
+    description:
+      "Contrary to popular belief, virgin’s blood refers to blood from a human or animal that has never before been used in alchemical ritual. Though untainted when collected, the Vile of Virgin Blood may become useless if another Wizard uses blood from the donor first for their own magical means.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "95", name: "Formal" },
@@ -3054,6 +3153,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 249,
     displayName: "Book of Magic",
+    description:
+      "Most Wizards possess a Book of Magic whether they show it off or not, for it is a vital part of any Wizard's arsenal. Each book is unique, containing the spells, philosophies, and reveries of the individual Wizard.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "50", name: "Urban" },
@@ -3065,6 +3166,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 250,
     displayName: "Candle of Intuition",
+    description:
+      "A subtle and inconspicuous item. From the workshops of the most clever Artificers, the Candle of Intuition heightens Wizards' psychic abilities like clairvoyance, telepathy, and fortune-telling.",
     affinity: [
       { idx: "209", name: "Rugged" },
       { idx: "213", name: "Academic" },
@@ -3079,6 +3182,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 251,
     displayName: "Ace in the Hole",
+    description:
+      "Ace in the Hole may be a simple playing card, or it may be an enchanted, magical object with powerful abilities to be used as a last resort.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "106", name: "Goofy" },
@@ -3093,6 +3198,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 252,
     displayName: "Crystal Ball",
+    description:
+      "A popular item among oracles, soothsayers, and fortune-tellers, the Crystal Ball is used by many Wizards for scrying.",
     affinity: [
       { idx: "194", name: "Prophecy" },
       { idx: "173", name: "Oracle" },
@@ -3106,6 +3213,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 253,
     displayName: "Egg of Unknown Beast",
+    description:
+      "An egg laid by an unknown Beast—perhaps from the Seventh Realm or another plane beyond. It is unclear what method of incubation might reveal its hatchling, if any.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "162", name: "Mountains" },
@@ -3120,6 +3229,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 254,
     displayName: "Gorgon's Eye",
+    description:
+      "The Gorgon's Eye is a magical optical organ which has been removed from a Gorgon. Wizards who carry a Gorgon's Eye must use caution, as the eyes contain the power to turn any onlooker to stone—including the wielder themself.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "22", name: "Blackness" },
@@ -3136,6 +3247,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 255,
     displayName: "Dragon Fireworks",
+    description:
+      "Dragon Fireworks are a particularly magical pyrotechnic made from potassium nitrate extracted from dragon guano. They are traditionally enjoyed by many Wizards for post-centennial birthday celebrations.",
     affinity: [
       { idx: "213", name: "Academic" },
       { idx: "209", name: "Rugged" },
@@ -3149,6 +3262,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 256,
     displayName: "Goblet of Immortality",
+    description:
+      "The Goblet of Immortality is a sacred relic sought by many Runiverse inhabitants, offering the gift of eternal life. However, many Wizards who have sipped from this cup would claim its bestowal is instead a curse.",
     affinity: [
       { idx: "95", name: "Formal" },
       { idx: "105", name: "Gold" },
@@ -3162,6 +3277,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 257,
     displayName: "Siren's Harp",
+    description:
+      "One of the many musical instruments of the Sirens’ temptation, the Siren’s Harp is a lyre which has been plucked by one of these humanlike creatures, enchanting it with the power to bind the listener when a powerful Wizard plays its captivating song.",
     affinity: [
       { idx: "95", name: "Formal" },
       { idx: "105", name: "Gold" },
@@ -3174,6 +3291,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 258,
     displayName: "Lucky Horseshoe",
+    description:
+      "The Lucky Horseshoe is a magical focus which drives off evil spirits and works against Black Magic. Many Wizards hang horseshoes above their doors for this very reason.",
     affinity: [
       { idx: "209", name: "Rugged" },
       { idx: "213", name: "Academic" },
@@ -3189,6 +3308,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 259,
     displayName: "Sphinx's Hourglass",
+    description:
+      "The Sphinx’s Hourglass is an ancient magical artifact guarded by a Sphinx with the head of a human, the body of a lion, and the wings of an eagle. It is widely believed that the first Chronomancers achieved the ability to manipulate Time by answering the Riddle of the Sphinx, after which the beast was forced to relinquish the Time-bending hourglass.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "213", name: "Academic" },
@@ -3201,6 +3322,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 260,
     displayName: "Key of the 7th Realm",
+    description:
+      "The Key of the 7th Realm is a sacred object which was used to help lock The Gate to the Seventh Realm, which held seven great Beasts. The subsequent, reckless reopening of the Gate by 42 Wizards released the Beasts back into the world.",
     affinity: [
       { idx: "95", name: "Formal" },
       { idx: "105", name: "Gold" },
@@ -3214,6 +3337,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 261,
     displayName: "Bag of Tricks",
+    description:
+      "Every Wizard has their idiomatic \"Bag of Tricks,\" but this is the literal version! What's inside? Nobody knows except the bag's owner. Sometimes the content can be as benign as silly party favors, and sometimes it's as catastrophic as a hurricane. It often considered rude to ask a Wizard about the contents of their bag.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "209", name: "Rugged" },
@@ -3226,6 +3351,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 262,
     displayName: "Green Mushroom",
+    description:
+      "There are many species of Green Mushroom across the Runiverse, all of which have a wide variety of attributes. Some are known to physicians and surgeons for their medicinal properties. Many are popular among necromancers and assassins for their poisonous effects. Perhaps most peculiar, though, are the quantum varieties discovered by famed Wizard .",
     affinity: [
       { idx: "167", name: "Nature" },
       { idx: "209", name: "Rugged" },
@@ -3240,6 +3367,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 263,
     displayName: "Red Mushroom",
+    description:
+      "There are many species of Red Mushrooms in the Runiverse with a vast array of properties. Some are a staple for any chef's kitchen and considered culinary delicacies. Some have powerful, mind-altering, psychedelic effects, and some even have strange, size-altering effects on living things.",
     affinity: [
       { idx: "167", name: "Nature" },
       { idx: "209", name: "Rugged" },
@@ -3254,6 +3383,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 264,
     displayName: "Shaman's Peyote",
+    description:
+      'Shaman\'s Peyote holds the power to open channels into the cosmos. Many Wizards, especially Shamans, use peyote to send their minds into esoteric realms by peeling back the veil and seeing the unseen. Peyote Cults have spread across the land, and new strains of Peyote are being cultivated every season. Shaman\'s Peyote made an appearance in the Magic Machine storyboard, Illusions in the Sand. holds a pair of the cactuses in his hand, musing: "Peyote. Cactus of gods and dreams..." Shaman\'s Peyote was Day 16 of Runiverse Riddles in the Dark: "In my grasp, order is lost, I command confusion at any cost. What am I, that chaos has embossed?"',
     affinity: [
       { idx: "167", name: "Nature" },
       { idx: "209", name: "Rugged" },
@@ -3271,6 +3402,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 265,
     displayName: "Phoenix Feather",
+    description:
+      "The downy Phoenix Feather has the ability to revive the recently deceased as they burst into flame and become reborn by Magic. There is a popular and widespread philosophical debate about the consistency of Self of Wizards who are reborn.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "272", name: "White Magic" },
@@ -3285,6 +3418,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 266,
     displayName: "Wizard's Pipe",
+    description:
+      "Standard equipment for many a Wizard. Tobacco is commonly smoked in Wizards' Pipes, but some Wizards prefer the more exotic weeds, leaves, and herbs found across the Runiverse. The image of a Wizard with a pipe evokes deep contemplation and wisdom but ironically, many of these weeds can dull the wits and fog the mind.",
     affinity: [
       { idx: "213", name: "Academic" },
       { idx: "209", name: "Rugged" },
@@ -3298,6 +3433,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 267,
     displayName: "Astral Potion",
+    description:
+      'The extremely powerful Astral Potion is distilled from meteorites and comes in many shades of blue. When ingested, the user undergoes an out of body experience, which some call "Astral Projection." Wizards have used this potion to travel across the Runiverse and far beyond.',
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "282", name: "Amber" },
@@ -3310,6 +3447,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 268,
     displayName: "Cannabis Potion",
+    description:
+      "There are several strains of Cannabis Potion, which are made from a variety of cannabis plants. Generally known for relaxing properties, these potions can also inspire creativity, calmness, and meditative states. Purple, Green, and Yellow Hats are particularly fond of Cannabis Potions for their own unique reasons.",
     affinity: [
       { idx: "107", name: "Verdant" },
       { idx: "201", name: "Crimson" },
@@ -3321,6 +3460,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 269,
     displayName: "Mandrake Potion",
+    description:
+      "A potion with countless medicinal properties, Mandrake Potions are often mixed with a variety of ingredients for a wide range of effects. Generally a rich orange in color, the properties of the mandrake are still under lengthy study and new uses for it are discovered every year. The Mandrake Potion is known to have analgesic properties and may be used by many in the Runiverse for pain relief. Some Wizards claim it to give prophetic dreams. If prepared incorrectly, the potion is poisonous. has written a treatise on the mandrake potion, including musings on its ingredients and effects.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "282", name: "Amber" },
@@ -3333,6 +3474,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 270,
     displayName: "Nightshade Potion",
+    description:
+      "Depending on the species of plant used in the Nightshade Potion, the effects can have drastic differences ranging from deadly poison to enhancement of psychic ability. Generally associated with the darker arcane arts, nightshade is often used as poison. In smaller doses, however, this potion can be a powerful hallucinogen or sleep inducer. Certain practitioners, like Necromancers, often use nightshade to communicate with demons.",
     affinity: [
       { idx: "282", name: "Amber" },
       { idx: "196", name: "Purple Haze" },
@@ -3345,6 +3488,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 271,
     displayName: "Passion Potion",
+    description:
+      "A potion with a lovely shade of red, the Passion Potion is often used by Charmers to Enchanters to arouse the drinker in sensual ways. Though it is often used to stimulate carnal desires, this potion can also be used by Wizards to inspire creativity, or any activity which requires intense, emotional energy.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "107", name: "Verdant" },
@@ -3356,6 +3501,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 272,
     displayName: "Chroma Crystal",
+    description:
+      "A supremely powerful item. In the hands of a novice, it divides light into a full color spectrum. But in the hands of a master, the Chroma Crystal can split any kind of singularity into elemental components. The White Hats have discovered that this crystal possesses capabilities useful in scrying, divination, and viewing different times, places, and dimensions. These crystals are plentiful along Chroma Crystal Row. Despite their abundance, most of the crystals found here are either too cloudy or vividly colored to harness any magical properties. It is only the perfectly clear, translucent crystals that hold significant magical potential.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "198", name: "Rainbow" },
@@ -3367,6 +3514,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 273,
     displayName: "Eternal Rose",
+    description:
+      "The Eternal Rose embodies beauty, strength & love. There is a magic within most of them that preserves their red, delicate petals far beyond the lifespan of ordinary roses. While there is no \"official\" tale, it's clear that Eternal Roses are often at the center of stories of love, pain, longing & lust. Their bountiful beauty, grace and power make them the objects of true love, but also of deep lust and greed. One such tale rumours that The Eternal Rose's began in the Red Wizard Capital, in a garden tended by a humble Brown-Hat Wizard, by the name of Battle Mage Samuel of the Canyon. He grew the rose for the peasants and low folk of the city but when their beauty was discovered by the Oligarchs of the Capital, they chased the peasants out, poor Sam included. But Sam took a cutting of the briar and other seeds and cuttings, so that he might start a new garden. With those cuts, the magic of the city garden was cut, and the remaining roses on the vine became eternally blooming, even after they were cut. While the rest of the garden died and withered, those last roses live on, eternally. Now, the roses are hunted by the wealthy and greedy, as their beauty is unmatched. Those humble wizards who love the roses for their magic, keep their eternal roses a secret so they don't fall into the wrong hands. To read the fully story of Sam and the Origins of the Eternal Rose, read Sam's lore, or find it here. Other stories tell of the Rose's being born into being during moments of extreme love and sacrifice. This tale tells of a greedy king who wanted to keep the beauty of the world hidden from others. When his daughter escaped with her true love, his rage ultimately lead to the lovers make the Eternal Sacrifice and stepping through the The Sacred Flame so that their love could live on, Eternally. All that was left behind was a Rose on a grave. There are 159 Wizards with Eternal Rose props, making it the 39th rarest prop a Wizard could have. (38th if you don't count \"none\" as a prop) When passed through the Sacred Flame, the Eternal Rose appears to turn into the prop: Flaming Rose. It appears 3 of the 159 Eternal Rose holders have walked through The Sacred Flame. Baby Wizards who might grow up to hold Eternal Roses are often holding Rose Buds The Tale of Sam goes on to bloom into the idea of the Enchanted Garden. While this mythical place has no direct connection to the Eternal Roses themselves, it was a place inspired by The Eternal Roses and the longing for a place for Wizards, Warriors and Wanderers who need a sanctuary: Somewhere free from oppressors, safe from the elements, and a fertile ground to plan their ideas, gardens and roots. In the story of Sam, he fled the Capital and started a new garden, which stays magically hidden from those who seek out the roses and their beauty only satiate their greed and lust. The garden will only reveal itself to those who are of a true heart and in true need. The garden is said to contain magical healing properties and has appeared for many Wizards & Warriors giving them food, shelter, healing & guidance. There have even been rumours that the great Cockatrice uses the Enchanted Garden as a save haven where she can roost, keeping her eggs safe from the Wizards who wish to steal her children from her. Some Wizards have started to gather in the Enchanted Garden to collaborate, connect, play & learn together. If you're the kind of community member interested in helping others grow: join us! The Order of the Eternal Rose is a secret organization of Wizards, Warriors and others who have taken a vow to protect the Eternal Roses and the Enchanted Garden. While many of the Order poses Eternal Roses themselves, there are many member who do not. Witch Tabitha of the Marsh has been rumoured to be a non-rose holding member of the Order, for example. On the flip side: possessing an Eternal Rose does not automatically grant holders membership in the Order either. Many who hold roses don't even know of the existence of the Order. Some of the stories of the Order can be found on a collaborative Mirror.xyz page: The Order of the Eternal Rose If you want to learn more about the Order and how to get involved in the story telling of this collaborative tale, join the Enchanted Garden discord page or message The Keeper on Twitter or in discord The beginnings of the story telling of Sam, the Enchanted Garden, the Order and more have been rumoured to link back to crypto OG NotSoFast who famously destroyed his rare, beautiful Black Lotus Magic the Gathering card in a piece of performance art that kicked off his NFT Lotus Project. This project intended to launch a collections of 10,000 beautiful Lotus NFTs that would remember the sacrifice of the original Veblen good. This project was however, put on an Eternal pause, just hours before the mint due to incoming legal action from Hasbro, the manufacture of Magic the Gathering who claimed IP infringement on the project. While the case was stacked in favour of NotSoFast and his team, sadly, agreeing to fight in court could have meant public doxxing for the crypto anon. The 200 Ether that has been crowd funded for the project was returned in full and the project was stopped, dead in its tracks. Shortly after the collapse of the Lotus project, Notsofast and the Keeper showed up in the Forgotten Runes discord, the Eternal Rose prop floor was swept by NotSoFast himself shortly after. Sam, and a couple others reside in his gallery still. Some have speculated that the Origin story of Sam and his tale mirror that of NotSoFast and the Lotus project. Both sought to bring something beautiful to the community and saw oppression from powerful overreaching overlords who used their influence to keep the magic all for themselves. Archives of the art from the Lotus project can be found on the Keepers Twitter if you're willing to scroll back a bit. On August 22nd 2022, The Eternal Rose art project launched. With its roots in Not So Fasts Lotus Project, the Eternal Roses saw the same backgrounds, spells, enchantments and artifacts blended with brand new Rose art. All the art for this project was done by Mankind, an outstanding crypto artist who has been active in the space for years. The deployment of the contract saw a 251 people airdropped a rose, most of whom were members of the Forgotten Runes Wizard Cult. Airdrops were based upon: - The OG lore writers list. - All wallets holding at least 1 Eternal Rose wielding Wizard - A dozen additional community members who helped build, project or grow the Forgotten Runes community and the Enchanted Garden. The Keeper teased the drop in the secret tower for 10 days, by dropping background art labeled as places from around the Runiverse. Some of those arts have been uploaded to the Wizzypedia articles for those locations. Additional story, lore and worldbuilding may follow, but the primary objective of this project is nothing more than beautiful art. For those curious, you can check out the public mint page. 1 - The Black Sands pony races in 2023 will include some prizes of Eternal Rose NFTs. Details to be reveled! 2 - The very first Runes TCG tournament featured an Eternal Rose as the prize. Winner Varncass selected this beauty as his prize and the event was memorialized by the Runes TCG team in this special 1 of 1 card. There will be poetry written about the most beautiful objects and as such, its no surprise that there is some poems written about the Eternal Roses. Poem by MeepleDad & the Loracle (Verse 1, Slow and Melodic) In the heart of the Runiverse, where magic unfurls, Lies a garden of secrets, where Eternal Roses twirls. A symbol of love, forever in bloom, Their magic enchants, dispels all gloom. (Spoken Word Rhyme, Rapid) Samuel's fury, his love's demise, From the capital gardens, he takes his prize. Enchanted pockets, seeds and roses, A commoner's guise, his sorrow he stows. From his hands, a new garden springs, A haven for all, beneath his wings. Eternal Roses, their magic he cleaved, In the capital gardens, no more to be weaved. (Verse 2, Slow and Melodic) The Order they rally, roses in hand, Against the darkness, they make their stand. Eternal Roses, in hearts held dear, Their magic sings, striking fear clear. (Closing Line) In the Runiverse vast, one truth we know, In the heart of the Eternal Rose, love ever grows.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "107", name: "Verdant" },
@@ -3380,6 +3529,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 274,
     displayName: "Crystal Skull",
+    description:
+      "Crystal Skulls are found all over the world from various cultures and time periods. Their purpose is as ambiguous as their origins, ranging from decorative to paranormal.",
     affinity: [
       { idx: "225", name: "Skull" },
       { idx: "61", name: "Darkness" },
@@ -3393,6 +3544,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 275,
     displayName: "Mystic Ice Cream",
+    description:
+      "Wizards have myriad ways to channel childlike wonder and nostalgia, but enjoying a Mystic Ice Cream may be the pinnacle. Many Purple Hats enjoy the elevation of magical whimsy from Mystic Ice Cream. Others claim the mystical treat to restore lost memories from their youth.",
     affinity: [
       { idx: "213", name: "Academic" },
       { idx: "209", name: "Rugged" },
@@ -3406,6 +3559,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 276,
     displayName: "A dumb stick...",
+    description:
+      "A dumb stick is typically a magical branch or a crafted wand. There are a number of magical trees or plants in the Runiverse that make excellent sources for this artifact. There are many notable Wizards that hold this item.",
     affinity: [
       { idx: "167", name: "Nature" },
       { idx: "209", name: "Rugged" },
@@ -3419,6 +3574,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 277,
     displayName: "Prometheus's Torch",
+    description:
+      "Prometheus's Torch was given to Wizards before the events of the Singularity. Its flame carries the first light of Inspiration. Some believe its fire to be the origin of Magic itself.",
     affinity: [
       { idx: "89", name: "Fire" },
       { idx: "209", name: "Rugged" },
@@ -3432,6 +3589,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 278,
     displayName: "Venus Fly Trap",
+    description:
+      'For the plant Wizard prop, see Flesh Eating Plant. The horn of a unicorn. The Unihorn, or alicorn, is one of the most valuable assets that a Wizard may possess. Dust and chips of the unihorn are known to be a panacea to cure all ills. While still joined to the mystical unicorn, its Magic can purify contaminated waters. Still, there is no snare to capture the creature alive, and as such, possession of their horns carries a sinister weight. In the original Wizard NFT metadata, the Unihorn was originally listed as "Venus Fly Trap" by mistake. However, this has since been retroactively corrected. The actual "Venus Fly Trap" prop is labeled "Flesh Eating Plant".',
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "198", name: "Rainbow" },
@@ -3445,6 +3604,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 279,
     displayName: "Flesh Eating Plant",
+    description:
+      "The Flesh Eating Plant is often confused with the Venus Fly Trap, much to the chagrin of many unsuspecting Wizards. It is found natively in the wooded area south of Racoon Mountains, though the plant is highly cultivated by the Imps in their own forest.",
     affinity: [
       { idx: "213", name: "Academic" },
       { idx: "209", name: "Rugged" },
@@ -3459,6 +3620,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 280,
     displayName: "The Midas Rod",
+    description:
+      "The Midas Rod is a golden, magical wand set with a large, blue gem. The rod is imbued with the powers of a vain and ancient king in the time before the Singularity. It contains the power to turn all that it touches into gold.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "105", name: "Gold" },
@@ -3471,6 +3634,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 281,
     displayName: "The World Egg",
+    description:
+      "The World Egg is an ancient magical egg encircled by a serpent. The creature from whence the egg came is unknown, but many have speculated that its eventual hatching will release The First Rune and the birth of a new plane of existence.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "213", name: "Academic" },
@@ -3484,6 +3649,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 305,
     displayName: "Thor's Wrath: the Lightning Spell",
+    description:
+      "Thor’s Wrath is a Wizard spell that draws its power from a deity that pre-dates the Singularity, allowing its caster to harness the strength of storms and rain lightning down upon their foes.",
     affinity: [
       { idx: "81", name: "Electrification" },
       { idx: "56", name: "Cosmic" },
@@ -3497,6 +3664,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 306,
     displayName: "Fairy Glamour: the Dazzle Spell",
+    description:
+      "Fairy Glamour is a Wizard spell which calls upon the power of fairies, conjuring dust from these Fey creatures to cast opponents into a daze.",
     affinity: [
       { idx: "231", name: "Sparkles" },
       { idx: "106", name: "Goofy" },
@@ -3511,6 +3680,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 307,
     displayName: "Grim Reaper's Breath: the Death Spell",
+    description:
+      "Grim Reaper's Breath is a spell bestowed upon Wizards by the Soul of Death Itself. This power of this spell of Dark Magic ranges from simple paralysis to death.",
     affinity: [
       { idx: "65", name: "Death" },
       { idx: "22", name: "Blackness" },
@@ -3525,6 +3696,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 308,
     displayName: "The Gnome's Tooth: the Earth Spell",
+    description:
+      "The Gnome’s Tooth is a spell that allows Wizards to collect energy and strength from the world itself. Those who wield The Gnome’s Tooth command the very soil and the stone beneath them.",
     affinity: [
       { idx: "76", name: "Earth" },
       { idx: "209", name: "Rugged" },
@@ -3537,6 +3710,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 309,
     displayName: "Salamander's Tongue: the Fire Spell",
+    description:
+      "Salamander’s Tongue is a spell of intense flame. While pyromancers first unlocked the secrets of the Salamander’s Tongue, with enough study, most any Wizard can learn the ways of this blaze.",
     affinity: [
       { idx: "89", name: "Fire" },
       { idx: "61", name: "Darkness" },
@@ -3550,6 +3725,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 310,
     displayName: "Hobgoblin's Flame: the Wayward Spell",
+    description:
+      "Hobgoblin's Flame is an unpredictable spell learned by Wizardkind from mischievous hobgoblins. While the spell may be used domestically in Wizards' homes as sources of light, it is also frequently cast in battle with a range of effects from actual burning to illusory confusion. Hobgoblin's Flame is also a trick given out on Halloween by the Nightmare Imp.",
     affinity: [
       { idx: "189", name: "Poison" },
       { idx: "243", name: "Swamp" },
@@ -3563,6 +3740,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 311,
     displayName: "Aphrodite's Heart: the Love Spell",
+    description:
+      "Aphrodite's Heart is a powerful spell that channels divine energy from a goddess of love. Often having an effect opposite of the spell-casters intention, love spells generally cause more pain and destruction than goodwill and joy. For this reason, it is forbidden in many regions of the world.",
     affinity: [
       { idx: "141", name: "Love" },
       { idx: "201", name: "Crimson" },
@@ -3574,6 +3753,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 312,
     displayName: "Dryad's Ear: the Plant Spell",
+    description:
+      "Dryad’s Ear is a spell which calls upon the favor of forest-dwelling Fey Folk and stirs the natural heart of all plant life.",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "107", name: "Verdant" },
@@ -3590,6 +3771,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 313,
     displayName: "Loki's Bridge: the Rainbow Spell",
+    description:
+      "Loki's Bridge draws upon the collective energy of all Color Magic to summon a stable conjuration of Hue Master's Pass. This often unpredictable bridge can lead the casting Wizard to a destination of their choosing, and is one of the only ways to reach Cuckoo Land.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "198", name: "Rainbow" },
@@ -3601,6 +3784,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 314,
     displayName: "Kelpie's Fury: the Water Spell",
+    description:
+      "Kelpie's Fury is a spell which borrows power from the great Salt Kelpies. Casting Kelpie's Fury can have a range of effects, depending on the intention of the caster, from a great torrent of water to granting the ability to breathe beneath the waves.",
     affinity: [
       { idx: "271", name: "Water Magic" },
       { idx: "215", name: "Sea" },
@@ -3614,6 +3799,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 315,
     displayName: "Zephyr's Laugh: the Wind Spell",
+    description:
+      "Zephyr’s Laugh is a Wizard spell that calls upon the imperceptible force of the wind. Applications of this spell range from summoning magical tornados to manipulating items with a gentle breeze, and advanced casters can even use the spell to unlock the ability of flight.",
     affinity: [
       { idx: "274", name: "Wind" },
       { idx: "282", name: "Amber" },
@@ -3628,6 +3815,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 318,
     displayName: "The Orb Staff",
+    description:
+      "The Orb Staff is a wooden rod wielded by Wizards which holds a magical Orb cradled in the twisted branches at its end. What the Orb contains depends on the wielding Wizard—some use it for scrying and divination while others may use the Orb it to trap the essences of other beings, leeching power from their containment.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "167", name: "Nature" },
@@ -3640,6 +3829,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 319,
     displayName: "A Big Magic Stick",
+    description:
+      "It's a big stick. But it's also magical, so watch out. A wise man once said, \"Speak softly but carry a big stick\"",
     affinity: [
       { idx: "94", name: "Forest" },
       { idx: "107", name: "Verdant" },
@@ -3655,6 +3846,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 320,
     displayName: "The Bone Stave",
+    description:
+      "The Bone Stave appears to have been carved from the bones of a monstrous beast, and is widely favored by necromancers across the Runiverse. However, many other Wizards also wield Bone Staves for their imposing and intimidating nature.",
     affinity: [
       { idx: "268", name: "Voodoo" },
       { idx: "225", name: "Skull" },
@@ -3667,6 +3860,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 321,
     displayName: "Guillaume's Broom",
+    description:
+      "Guillaume's Broom is a magical object with the ability of flight, allowing wielding Wizards to travel great distances in a short span of time.",
     affinity: [
       { idx: "50", name: "Urban" },
       { idx: "243", name: "Swamp" },
@@ -3681,6 +3876,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 322,
     displayName: "Caduceus",
+    description:
+      "A staff with a legendary origin, the Caduceus was popularized by Hermes Trismegistus. Characterized by two intertwining serpents with wings, this iconic stave suggests a connection to the Quantum Ouroboros. Its magical properties are powerful and far-reaching.",
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "213", name: "Academic" },
@@ -3694,6 +3891,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 316,
     displayName: "Ruby Staff",
+    description:
+      "The Ruby Staff is a magical rod wielded by Wizards which excels in the castings of passion and protection spells. A suspended ruby gemstone floats in its crescent finial.",
     affinity: [
       { idx: "209", name: "Rugged" },
       { idx: "167", name: "Nature" },
@@ -3706,6 +3905,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 323,
     displayName: "Harmony Staff",
+    description:
+      "The Harmony Staff is a hooked, blue, magical staff carried by Wizards used to promote peace and balance. While it does not always require physical contact, anyone caught in the staff's hook becomes tranquilized.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "282", name: "Amber" },
@@ -3717,6 +3918,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 324,
     displayName: "Staff",
+    description:
+      "The Staff is a golden, hooked, magical rod that a Wizard uses as a conduit for their power. While wielded as a symbol of wisdom and authority, Wizards also use the Staff practically to aid in their walking or grounding to the earth.",
     affinity: [
       { idx: "174", name: "Orange" },
       { idx: "106", name: "Goofy" },
@@ -3728,6 +3931,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 325,
     displayName: "Jinx Staff",
+    description:
+      "The Jinx Staff is a hooked, purple, magical rod excelling in use for small and mostly harmless spells. Wizards wielding a Jinx Staff may be fond of causing temporary annoyances and general trickery or mischief.",
     affinity: [
       { idx: "196", name: "Purple Haze" },
       { idx: "56", name: "Cosmic" },
@@ -3740,6 +3945,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 326,
     displayName: "Courage Staff",
+    description:
+      "A Courage Staff imbues the wielding Wizard with a sense of invigorated bravery and vitality, though this may only be an illusion.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "24", name: "Blood" },
@@ -3752,6 +3959,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 327,
     displayName: "Peace Staff",
+    description:
+      "The Peace Staff is a hooked, white, magical rod which gives the wielding Wizard a growing sense of inner peace the longer they carry it. Those caught in its crook are pacified.",
     affinity: [
       { idx: "272", name: "White Magic" },
       { idx: "281", name: "Wraith" },
@@ -3764,6 +3973,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 328,
     displayName: "Joy Staff",
+    description:
+      "The Joy Staff is a hooked, yellow, magical focus which excels in bringing great joy and happiness to both its wielding Wizard and the object of its power.",
     affinity: [
       { idx: "282", name: "Amber" },
       { idx: "106", name: "Goofy" },
@@ -3775,6 +3986,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 317,
     displayName: "Emerald Staff",
+    description:
+      "Many Wizards carry Emerald Staves, but alchemists and mystic healers in particular favor them. The staves bear a suspended emerald gemstone in their crook.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "209", name: "Rugged" },
@@ -3786,6 +3999,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 329,
     displayName: "Ether Staff",
+    description:
+      "The Ether Staff is a Wizard staff of the fifth element, connecting the space of the void between all things. It has properties which negate the effects of other elements and is particularly potent against Souls.",
     affinity: [
       { idx: "196", name: "Purple Haze" },
       { idx: "209", name: "Rugged" },
@@ -3797,6 +4012,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 330,
     displayName: "Phosphorus Spear",
+    description:
+      "The Phosphorus Spear is a magical ranseur with a tip that burns blue with a greatness dependent on the wielding Wizard's inner spark. The spear can strike the space between the material and spiritual worlds.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "89", name: "Fire" },
@@ -3809,6 +4026,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 331,
     displayName: "Golden Bull Staff",
+    description:
+      "The Golden Bull Staff is a magical item that allows the wielder to issue any decree into existence. The radius of its power depends upon the Wizard who carries it, though the staff's ability may be intensified when used alongside the Rune of Up Only.",
     affinity: [
       { idx: "105", name: "Gold" },
       { idx: "281", name: "Wraith" },
@@ -3819,6 +4038,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 332,
     displayName: "Lunar Staff",
+    description:
+      "The Lunar Staff is a yellow rod with a crescent moon as its finial. Magic cast with the Lunar Staff has an enhanced effect when used by Wizards under the cover of night.",
     affinity: [
       { idx: "13", name: "Astral" },
       { idx: "161", name: "Moon" },
@@ -3829,10 +4050,19 @@ export const wizardTraits: Trait[] = [
     ],
     part: "prop",
   },
-  { idx: 333, displayName: "Indigo Moon Staff", affinity: [], part: "prop" },
+  {
+    idx: 333,
+    displayName: "Indigo Moon Staff",
+    description:
+      "The Indigo Moon Staff is a magical rod crowned with a purple crescent moon. This staff gives Wizards a deep connection to the night, and magic cast with the Indigo Moon Staff is heightened after daylight—particularly during eclipses.",
+    affinity: [],
+    part: "prop",
+  },
   {
     idx: 334,
     displayName: "Chaos Staff",
+    description:
+      'A popular stave among Dark Arcanists, the Chaos Staff possesses malevolent and destructive properties. Though its nature is seemingly sinister, the effects of the Chaos Staff are ultimately dependent on the intentions of the wielding Wizard. Chaos Staff was the answer to Day 15 of Runiverse Riddles in the Dark: "In my grasp, order is lost, I command confusion at any cost. What am I, that chaos has embossed?"',
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "65", name: "Death" },
@@ -3848,6 +4078,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 335,
     displayName: "Soul Harvester",
+    description:
+      "The Soul Harvester is a mystical tool used by Wizards to harvest the Dark Magic energy from Souls. In doing so, the inherent power of the weapon increases, though the Wizard's affinity with Dark Magic also increases, necessitating balance of use and occasional safe discharge of the Dark Magic. Souls who have had their Dark energy harvested no longer succumb to malignant instincts.",
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "65", name: "Death" },
@@ -3862,6 +4094,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 336,
     displayName: "Golden Soul Reaper",
+    description:
+      "The Golden Soul Reaper is a magical scythe with the power to transform the Soul of a Wizard into a mound of gold coins.",
     affinity: [
       { idx: "105", name: "Gold" },
       { idx: "65", name: "Death" },
@@ -3874,6 +4108,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 337,
     displayName: "The Mamba Stick",
+    description:
+      "The Mamba Stick is a green, magical rod taking the form of the highly venomous mamba. Wizards who wield The Mamba Stick may cast the staff before them, transforming it into a deadly serpent under their psychic control.",
     affinity: [
       { idx: "228", name: "Snake" },
       { idx: "61", name: "Darkness" },
@@ -3887,6 +4123,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 338,
     displayName: "Stellar Staff",
+    description:
+      "The Stellar Staff is a blue rod with a radiant, luminous star finial that brims with energy as a Wizard focuses their Magic through it. Spells and enchantments cast through a Stellar Staff intensify under clear night skies when power may be drawn from particular constellations.",
     affinity: [
       { idx: "13", name: "Astral" },
       { idx: "56", name: "Cosmic" },
@@ -3900,6 +4138,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 339,
     displayName: "Solar Staff",
+    description:
+      "The Solar Staff is a yellow rod with a gleaming sun as its finial. Magic cast with the Solar Staff has an enhanced effect when used by Wizards under the light of the Runiverse’s burning star.",
     affinity: [
       { idx: "105", name: "Gold" },
       { idx: "201", name: "Crimson" },
@@ -3914,6 +4154,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 340,
     displayName: "Garnet Staff",
+    description:
+      "The Garnet Staff is a magical focus wielded by Wizards which enhances connection with the world's energy. A suspended gemstone floats in its fork.",
     affinity: [
       { idx: "167", name: "Nature" },
       { idx: "174", name: "Orange" },
@@ -3926,6 +4168,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 282,
     displayName: "Rune of Air",
+    description:
+      "The element of air represents intellect, communication, and knowledge. It is useful on spells related to mental clarity and wisdom. The Rune of Air whispers secrets through the leaves and guides the drifting clouds. Elusive and ever-moving, this rune is invoked by those who seek clarity of thought, swift movement, or freedom from worldly constraints. Uvlius's studies of Runes conclude that the Rune of Air is not directly tied to a word in this set, but he theorizes it may govern the unseen ideas that connect all things, the breath between words.",
     affinity: [
       { idx: "282", name: "Amber" },
       { idx: "210", name: "Rune" },
@@ -3936,6 +4180,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 283,
     displayName: "Rune of Brass",
+    description:
+      "Forged in smoke and solder, the Rune of Brass hums with the resonance of invention. It is the rune of artisans, tinkerers, and machines that seem to think for themselves. Brass binds structure to spirit. Uvlius has yet to complete his association of Brass with a specific Word, though he believes it resonates strongly with tools, melody, or measure.",
     affinity: [
       { idx: "34", name: "Brownish" },
       { idx: "107", name: "Verdant" },
@@ -3947,6 +4193,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 284,
     displayName: "Rune of Brimstone",
+    description:
+      'The Rune of Brimstone embodies purification through fire—capable of both cleansing and total destruction in large quantities. This rune is used to eradicate the old, broken, or impure, making way for renewal and new beginnings. The Rune of Brimstone crackles with the power of rebellion and change. It is invoked in moments of defiance, when the status quo must be burned away to make room for something new. Uvlius\'s studies of Runes conclude that the Rune of Brimstone is often represented by the word "Defy", as brimstone conjures rebellion, fire, and the will to break boundaries.',
     affinity: [
       { idx: "61", name: "Darkness" },
       { idx: "201", name: "Crimson" },
@@ -3959,6 +4207,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 285,
     displayName: "Rune of Cinnabar",
+    description:
+      "This vivid, red-orange rune channels raw life force and transformation. Cinnabar pulses with alchemical energy, capable of healing or poisoning—depending on the will of the caster. Uvlius's studies of Runes conclude that the Rune of Cinnabar is often represented by the word \"Avocado\", as cinnabar symbolizes vitality and magical transformation—qualities found in nature's nutrient-rich fruit.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "174", name: "Orange" },
@@ -3970,6 +4220,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 286,
     displayName: "Rune of Down",
+    description:
+      'Misc A rune used to decrease power of spells, abilities, and any subtractive function. Featherlight and comforting, the Rune of Down brings rest, gentleness, and quiet protection. It is often stitched into blankets, whispered into lullabies, or hidden in the hush of falling snow. Uvlius\'s studies of Runes conclude that the Rune of Down is often represented by the word "Sock", as down brings softness, warmth, and comfort—just like a cozy sock.',
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "210", name: "Rune" },
@@ -3980,6 +4232,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 287,
     displayName: "Rune of Earth",
+    description:
+      'Elemental Earth is the foundation upon which life is built. This rune confers stability, fertility, physicality, and healing to spells. A foundational rune of patience and growth, the Rune of Earth holds steady under all things. It is the rune of farmers, builders, and those who dig deep for strength. Uvlius\'s studies of Runes conclude that the Rune of Earth is often represented by the word "Hand", as hands plant seeds, shape clay, and build—perfectly grounded in the elemental power of Earth.',
     affinity: [
       { idx: "34", name: "Brownish" },
       { idx: "107", name: "Verdant" },
@@ -3991,6 +4245,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 288,
     displayName: "Rune of Fire",
+    description:
+      "Elemental Fire is the element of energy, passion, and purification. Spells augmented with this rune are supercharged with the destructive or purifying force of fire. The Rune of Fire blazes with passion, destruction, and rebirth. It is the rune of the forge and the flame, representing both creativity and chaos. Invoked in moments of urgency or inspiration, it leaves nothing unchanged. Uvlius believes Fire may be too wild to be pinned to a single word from his current research—but suspects it may align with expressions of boldness, heat, or raw power.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "210", name: "Rune" },
@@ -4001,6 +4257,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 289,
     displayName: "Rune of Infinity",
+    description:
+      'Misc Perhaps the most powerful rune of all, wizards with infinity enhancement seem to have no limits on their magical abilities. A symbol of boundlessness and eternal loops, the Rune of Infinity hums with cosmic resonance. It is used in rites of reincarnation, perpetual motion, and endless possibility. Uvlius\'s studies of Runes conclude that the Rune of Infinity is often represented by the word "Pyramid", as pyramids, ancient and enduring, mirror the eternal and unending nature of infinity.',
     affinity: [
       { idx: "56", name: "Cosmic" },
       { idx: "281", name: "Wraith" },
@@ -4013,6 +4271,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 290,
     displayName: "Rune of Jupiter",
+    description:
+      'Planetary / Alchemy From the ruler of the gods himself, Jupiter, a rune of growth, prosperity, and wisdom. The influence of this rune can enhance learning and wealth accumulation. Majestic and generous, the Rune of Jupiter governs expansion, fortune, and journeys across land or stars. It is a rune of leadership, belief, and wide-open skies. Uvlius\'s studies of Runes conclude that the Rune of Jupiter is often represented by the word "Ticket", as Jupiter governs expansion and adventure, and a ticket is a gateway to grand journeys.',
     affinity: [
       { idx: "174", name: "Orange" },
       { idx: "210", name: "Rune" },
@@ -4023,6 +4283,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 291,
     displayName: "Rune of Lime",
+    description:
+      "Bright, sharp, and full of energy, the Rune of Lime cuts through stagnation with zesty clarity. It carries the essence of surprise and sparkle, often favored by tricksters and spirits of renewal. Uvlius has not yet linked Lime to a definitive Word, but suspects it hums in harmony with laughter, refreshment, or the zing of a clever idea.",
     affinity: [
       { idx: "107", name: "Verdant" },
       { idx: "282", name: "Amber" },
@@ -4034,6 +4296,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 292,
     displayName: "Rune of Mars",
+    description:
+      "Planetary / Alchemy Violence! War! Conflict! The rune of aggression and battle. Tempering magic with the Rune of Mars can add extreme power, especially with spells of destruction. The Rune of Mars is a rune of warriors and conflict. It pulses with adrenaline, strategy, and courage. It is invoked by those preparing to fight—or protect. Uvlius's field notes suggest Mars may tie to urgent action or challenge, but a precise Word remains elusive in this set.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "22", name: "Blackness" },
@@ -4046,6 +4310,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 293,
     displayName: "Rune of Mercury",
+    description:
+      'Planetary / Alchemy Based on the speediest planet in the solar system, and the god of communication, trickery, and deceit. This rune can add speed to spells, and aid in communication magic. Fleet-footed and clever, the Rune of Mercury governs motion, messages, and mental agility. It zips through the world like thought itself—connecting people, ideas, and places. Uvlius\'s studies of Runes conclude that the Rune of Mercury is often represented by the word "Follow", as Mercury, the messenger, leads through language and movement, guiding those who follow.',
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "201", name: "Crimson" },
@@ -4057,6 +4323,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 294,
     displayName: "Rune of Neptune",
+    description:
+      "Planetary / Alchemy A rune of dreams, illusions, and intuition. Wizards using this rune find it intensifies psychic abilities and is helpful in penetrating mystical planes of alternate realities Deep, dreamy, and unknowable, the Rune of Neptune governs illusions, emotions, and the tides of magic. It is called upon for visions, dreams, and journeys beneath the surface. Uvlius has not completed Neptune’s entry in his active scrolls, but suspects it is submerged in mysteries tied to depth, dreams, or water’s pull.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "196", name: "Purple Haze" },
@@ -4068,6 +4336,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 295,
     displayName: "Rune of Omega",
+    description:
+      "Misc A rune of supreme power and a final state of being. Wizards wielding this rune are often incredibly powerful having pushed their arcane practice to it's limits. The Rune of Omega marks the end of things: the final page, the closing bell, the last breath. But endings hold power, and this rune is revered in rituals of completion and rest. Uvlius has not linked Omega to a word in this particular set, but notes it often whispers behind moments of finality, graduation, or graceful exit.",
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "272", name: "White Magic" },
@@ -4079,6 +4349,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 296,
     displayName: "Rune of Pluto",
+    description:
+      'Planetary / Alchemy A planet located in the extremity of the solar system and the namesake of the god of the underworld, this rune embodies extremities, power, change, death and rebirth. This rune is often employed in communion with demons, darkness, and the shadow self. Mysterious and transformative, the Rune of Pluto governs the unseen—death, rebirth, and the power of what lies below. It is both feared and honored, for it changes all who touch it. Uvlius\'s studies of Runes conclude that the Rune of Pluto is often represented by the word "Disease", as Pluto evokes transformation, endings, and the unseen forces that challenge life.',
     affinity: [
       { idx: "196", name: "Purple Haze" },
       { idx: "210", name: "Rune" },
@@ -4089,6 +4361,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 301,
     displayName: "Rune of Up Only",
+    description:
+      "Misc A rune used to increase power of spells, abilities, and any additive function. A modern mystery in an ancient shape, the Rune of Up Only points eternally skyward. It represents progress, optimism, and the unshakable belief that tomorrow will be better. Uvlius suspects Up Only resonates with the very nature of ascent—perhaps a word like “Goal” or “Hope” would best align in future investigations.",
     affinity: [
       { idx: "107", name: "Verdant" },
       { idx: "210", name: "Rune" },
@@ -4099,6 +4373,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 297,
     displayName: "Rune of Saturn",
+    description:
+      'Planetary / Alchemy With a glyph shaped like a scythe, this rune is favored by farmers for its influence in agriculture and husbandry. This rune instills discipline and structure, and is great for bringing stability to magic. The Rune of Saturn turns with slow gravity. It governs time, discipline, memory, and the patterns that shape fate. In its presence, all things must wait and endure. Uvlius\'s studies of Runes conclude that the Rune of Saturn is often represented by the word "Year", as Saturn rules over time, cycles, and the steady march of seasons.',
     affinity: [
       { idx: "282", name: "Amber" },
       { idx: "210", name: "Rune" },
@@ -4109,6 +4385,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 298,
     displayName: "Rune of Sigma",
+    description:
+      'Misc This rune is quite mysterious, and its uses are still being discovered. Though difficult to define, is is most often considered a rune of transcendence, with its users often on paths of spiritual independence. Associated with logic, mathematics, and the sum of parts, the Rune of Sigma is invoked in calculations and predictions. It is both pattern and precision. Uvlius\'s studies of Runes conclude that the Rune of Sigma is often represented by the word "Twice", as Sigma reflects patterns, math, and repetition—concepts captured in doubling.',
     affinity: [
       { idx: "107", name: "Verdant" },
       { idx: "210", name: "Rune" },
@@ -4119,6 +4397,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 299,
     displayName: "Rune of Steel",
+    description:
+      'Cold, exact, and enduring, the Rune of Steel sharpens resolve and fortifies the body and mind. It is drawn by smiths, soldiers, and those who do not bend. Uvlius\'s studies of Runes conclude that the Rune of Steel is often represented by the word "Resist", as steel symbolizes resilience and strength—resistance forged in metal.',
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "272", name: "White Magic" },
@@ -4131,6 +4411,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 300,
     displayName: "Rune of Sun",
+    description:
+      "Radiant and life-giving, the Rune of Sun blazes with warmth, vision, and illumination. It is a rune of clarity, growth, and shining one’s truth into the world. Uvlius has not definitively matched the Sun rune with a word from this set but believes it is present in all acts of hope, illumination, and beginning again.",
     affinity: [
       { idx: "282", name: "Amber" },
       { idx: "201", name: "Crimson" },
@@ -4144,6 +4426,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 302,
     displayName: "Rune of Uranus",
+    description:
+      "Planetary / Alchemy A rune of freedom, innovation, and rebellion, Uranus is an excellent amplifier for creative expression. It is a rune that is often found influencing the most genius and original thinkers of ever age. Wild, eccentric, and revolutionary, the Rune of Uranus governs chaos that becomes genius. It breaks old rules, invents new paths, and shocks stagnant systems awake. Uvlius considers Uranus a difficult rune to categorize, but imagines it might one day be tied to surprising words like “Zap,” “Flip,” or “Unravel.”",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "196", name: "Purple Haze" },
@@ -4155,6 +4439,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 303,
     displayName: "Rune of Venus",
+    description:
+      'Planetary / Alchemy A rune of love, beauty, emotion, and aesthetics. The rune can be used to influence relationships and matters of the heart The Rune of Venus glows with beauty, love, and magnetic charm. It is the rune of attraction, art, softness, and the tenderest forms of power. Uvlius\'s studies of Runes conclude that the Rune of Venus is often represented by the word "Wink", as Venus radiates charm, beauty, and flirtation—a wink holds all three.',
     affinity: [
       { idx: "201", name: "Crimson" },
       { idx: "174", name: "Orange" },
@@ -4167,6 +4453,8 @@ export const wizardTraits: Trait[] = [
   {
     idx: 304,
     displayName: "Rune of Water",
+    description:
+      "Elemental Water is the element of intuition, emotion, and the subconscious. This rune is invoked in rituals and spells of love and psychic abilities. Flowing, feeling, and ever-changing, the Rune of Water speaks to emotion, adaptability, and intuition. It can nurture or erode, depending on the current. Uvlius has not yet matched Water to a word in this series, but believes it dances closely with themes of emotion, reflection, and connection.",
     affinity: [
       { idx: "25", name: "Blue Shift" },
       { idx: "196", name: "Purple Haze" },

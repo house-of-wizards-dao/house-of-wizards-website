@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchNFTsForWallets, type OpenSeaNFT } from "@/lib/opensea-nfts";
 import { resolveAddressesOrENS } from "@/lib/ens";
-import { frwcAddresses, getCollectionName } from "@/config/addresses";
+import { frwcAddresses } from "@/config/addresses";
+import { getCollectionName } from "@/data/traitUtilities";
 
 export const dynamic = "force-dynamic";
 
