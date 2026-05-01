@@ -17,6 +17,7 @@ export type NFTCardProps = {
   priceLabel?: string;
   onBuy?: (e: React.MouseEvent) => void;
   isBuyLoading?: boolean;
+  size?: "default" | "compact";
 };
 
 /**
@@ -34,9 +35,11 @@ export const NFTCard = ({
   priceLabel,
   onBuy,
   isBuyLoading = false,
+  size = "default",
 }: NFTCardProps) => {
   const [imageError, setImageError] = useState(false);
   const hasImage = imageUrl && !imageError;
+  const isCompact = size === "compact";
 
   const handleBuyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -82,17 +85,27 @@ export const NFTCard = ({
         )}
         {/* Source badge */}
         {priceLabel && (
-          <div className="absolute top-2 right-2 px-2 py-0.5 text-xs font-bold rounded bg-pink-600 text-white">
+          <div
+            className={cn(
+              "absolute font-bold rounded bg-pink-600 text-white",
+              isCompact
+                ? "top-1.5 right-1.5 px-1.5 py-0.5 text-[10px]"
+                : "top-2 right-2 px-2 py-0.5 text-xs",
+            )}
+          >
             {priceLabel}
           </div>
         )}
       </div>
 
       {/* Info */}
-      <div className="p-3">
+      <div className={cn(isCompact ? "p-2" : "p-3")}>
         {/* Token ID and Name on same line */}
         <div
-          className="text-white text-sm truncate"
+          className={cn(
+            "text-white truncate",
+            isCompact ? "text-xs" : "text-sm",
+          )}
           title={`#${tokenId} ${name}`}
         >
           #{tokenId} {name}
@@ -100,13 +113,14 @@ export const NFTCard = ({
 
         {/* Price and Buy button */}
         {price && (
-          <div className="mt-2">
+          <div className={cn(isCompact ? "mt-1.5" : "mt-2")}>
             {onBuy ? (
               <button
                 onClick={handleBuyClick}
                 disabled={isBuyLoading || disabled}
                 className={cn(
-                  "w-full px-4 py-2 text-sm font-bold rounded-lg transition-all",
+                  "w-full font-bold rounded-lg transition-all whitespace-nowrap",
+                  isCompact ? "px-2 py-1.5 text-xs" : "px-4 py-2 text-sm",
                   "bg-brand-700 hover:bg-brand-600 text-white",
                   "shadow-lg shadow-brand-700/25 hover:shadow-brand-600/40",
                   (isBuyLoading || disabled) &&
@@ -115,10 +129,17 @@ export const NFTCard = ({
               >
                 {isBuyLoading
                   ? "Buying..."
-                  : `Buy for ${price} ${priceCurrency}`}
+                  : isCompact
+                    ? `${price} ${priceCurrency}`
+                    : `Buy for ${price} ${priceCurrency}`}
               </button>
             ) : (
-              <div className="text-sm font-semibold text-white">
+              <div
+                className={cn(
+                  "font-semibold text-white",
+                  isCompact ? "text-xs" : "text-sm",
+                )}
+              >
                 {price} {priceCurrency}
               </div>
             )}

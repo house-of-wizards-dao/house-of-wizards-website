@@ -10,6 +10,14 @@ type MarketplaceItemCardProps = {
   onBuy?: (item: MarketplaceItem) => void;
   selected?: boolean;
   isBuyLoading?: boolean;
+  size?: "default" | "compact";
+};
+
+const formatCompactEth = (price: string | undefined) => {
+  if (!price) return price;
+  const value = Number(price);
+  if (!Number.isFinite(value)) return price;
+  return value.toFixed(value < 1 ? 3 : 2);
 };
 
 export const MarketplaceItemCard = ({
@@ -18,6 +26,7 @@ export const MarketplaceItemCard = ({
   onBuy,
   selected = false,
   isBuyLoading = false,
+  size = "default",
 }: MarketplaceItemCardProps) => {
   const { nft, bestListing, nftxListing } = item;
 
@@ -33,6 +42,10 @@ export const MarketplaceItemCard = ({
     priceSource = "nftx";
   }
 
+  if (size === "compact") {
+    listingPrice = formatCompactEth(listingPrice);
+  }
+
   return (
     <NFTCard
       tokenId={nft.identifier}
@@ -45,6 +58,7 @@ export const MarketplaceItemCard = ({
       priceLabel={priceSource === "nftx" ? "NFTX" : undefined}
       onBuy={onBuy ? () => onBuy(item) : undefined}
       isBuyLoading={isBuyLoading}
+      size={size}
     />
   );
 };

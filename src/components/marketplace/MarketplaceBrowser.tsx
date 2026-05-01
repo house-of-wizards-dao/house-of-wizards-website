@@ -44,6 +44,8 @@ type MarketplaceBrowserProps = {
   initialCollectionInfo?: CollectionInfo;
 };
 
+type MarketplaceCardSize = "default" | "compact";
+
 /**
  * Collection tabs for switching between collections
  */
@@ -58,6 +60,11 @@ const collectionOptions: { key: CollectionKey; label: string }[] = [
   { key: "locks", label: "Seventh Realm" },
   { key: "athenaeum", label: "Athenaeum" },
   { key: "impBox", label: "Treat Boxes" },
+];
+
+const cardSizeOptions: { key: MarketplaceCardSize; label: string }[] = [
+  { key: "default", label: "Large" },
+  { key: "compact", label: "Small" },
 ];
 
 // Pre-compute trait lookups for wizards and warriors
@@ -141,6 +148,7 @@ export const MarketplaceBrowser = ({
   const [buyingTokenId, setBuyingTokenId] = useState<string | null>(null);
   const [marketplaceSource, setMarketplaceSource] =
     useState<MarketplaceSource>("all");
+  const [cardSize, setCardSize] = useState<MarketplaceCardSize>("default");
 
   // Trait filters for wizards and warriors
   const [selectedWizardTraits, setSelectedWizardTraits] = useState<
@@ -702,14 +710,35 @@ export const MarketplaceBrowser = ({
         </div>
       )}
 
-      {/* Refresh button */}
-      <div className="flex items-center">
+      {/* Marketplace actions */}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <button
           onClick={refresh}
           className="text-sm text-violet-400 hover:text-violet-300"
         >
           Refresh
         </button>
+
+        <div className="flex items-center gap-2">
+          <span className="text-gray-400 text-sm">Card size:</span>
+          <div className="flex rounded-lg bg-gray-900 p-1">
+            {cardSizeOptions.map(({ key, label }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setCardSize(key)}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-colors",
+                  cardSize === key
+                    ? "bg-violet-600 text-white"
+                    : "text-gray-300 hover:bg-gray-800 hover:text-white",
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Wrong chain warning */}
@@ -747,7 +776,14 @@ export const MarketplaceBrowser = ({
       )}
 
       {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+      <div
+        className={cn(
+          "grid gap-4",
+          cardSize === "compact"
+            ? "grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10"
+            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5",
+        )}
+      >
         {isLoading && items.length === 0
           ? // Loading skeletons
             Array.from({ length: 12 }).map((_, i) => (
@@ -760,6 +796,7 @@ export const MarketplaceBrowser = ({
                 onClick={handleItemClick}
                 onBuy={isConnected ? handleBuy : undefined}
                 isBuyLoading={buyingTokenId === item.nft.identifier}
+                size={cardSize}
               />
             ))}
       </div>
