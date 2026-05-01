@@ -78,6 +78,10 @@ const getNFTName = (
  */
 const ETH_RPC = "https://ethereum-rpc.publicnode.com";
 
+const ethClient = createPublicClient({
+  transport: http(ETH_RPC),
+});
+
 /**
  * NFTX v2 contract addresses (Ethereum mainnet)
  */
@@ -122,6 +126,23 @@ export const getNFTXVault = (
 ): NFTXVaultConfig | null => {
   return nftxVaults[collectionKey] || null;
 };
+
+const NFTX_VAULT_ABI = [
+  {
+    name: "randomRedeemFee",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+  {
+    name: "targetRedeemFee",
+    type: "function",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint256" }],
+  },
+] as const;
 
 /**
  * Fetch token IDs owned by a vault for a specific collection using OpenSea API
@@ -195,15 +216,6 @@ const fetchVaultTokenIds = async (
 };
 
 /**
- * Default NFTX v2 fees (5% redeem fee is standard)
- */
-const DEFAULT_NFTX_FEES = {
-  mintFee: "50000000000000000", // 5%
-  redeemFee: "50000000000000000", // 5%
-  swapFee: "50000000000000000", // 5%
-};
-
-/**
  * Fetch vault holdings via OpenSea API (cached)
  */
 export const fetchVaultHoldings = unstable_cache(
@@ -232,12 +244,27 @@ export const fetchVaultHoldings = unstable_cache(
         amount: 1,
         dateAdded: 0, // Not available from OpenSea
       }));
+      const [randomRedeemFee, targetRedeemFee] = await Promise.all([
+        ethClient.readContract({
+          address: vaultConfig.vaultAddress as `0x${string}`,
+          abi: NFTX_VAULT_ABI,
+          functionName: "randomRedeemFee",
+        }),
+        ethClient.readContract({
+          address: vaultConfig.vaultAddress as `0x${string}`,
+          abi: NFTX_VAULT_ABI,
+          functionName: "targetRedeemFee",
+        }),
+      ]);
 
       return {
         vault: vaultConfig,
         holdings,
         totalHoldings: holdings.length,
-        fees: DEFAULT_NFTX_FEES,
+        fees: {
+          randomRedeemFee: randomRedeemFee.toString(),
+          targetRedeemFee: targetRedeemFee.toString(),
+        },
         usesFactoryFees: true,
       };
     } catch (error) {
@@ -282,10 +309,6 @@ const SUSHI_ROUTER_ABI = [
     outputs: [{ name: "amounts", type: "uint256[]" }],
   },
 ] as const;
-
-const ethClient = createPublicClient({
-  transport: http(ETH_RPC),
-});
 
 /**
  * Get amounts out from SushiSwap router
@@ -385,11 +408,11 @@ export const fetchVTokenPrice = unstable_cache(
  */
 export const calculateNFTXPrice = (
   vTokenPriceEth: string,
-  redeemFeePercent: string,
+  redeemFeeWei: string,
 ): { totalPriceEth: string; feeEth: string } => {
   const vTokenPrice = parseFloat(vTokenPriceEth);
-  // Fee is in wei format as percentage (50000000000000000 = 5%)
-  const feePercent = parseFloat(redeemFeePercent) / 1e18;
+  // NFTX fees are stored as vToken wei (30000000000000000 = 0.03 vTokens).
+  const feePercent = parseFloat(redeemFeeWei) / 1e18;
 
   // To buy 1 NFT, you need (1 + fee%) vTokens
   const totalVTokens = 1 + feePercent;
@@ -429,11 +452,24 @@ export const fetchNFTXListings = async (
     return [];
   }
 
-  // Calculate price for buying from pool
-  const { totalPriceEth, feeEth } = calculateNFTXPrice(
+  // Estimate the redeem fee for display, then price the actual buy path with
+  // exact-output routing. This same listing price is later used as msg.value.
+  const { feeEth } = calculateNFTXPrice(
     vTokenPriceEth,
-    vaultData.fees.redeemFee,
+    vaultData.fees.targetRedeemFee,
   );
+  const redeemFeeWei = BigInt(vaultData.fees.targetRedeemFee);
+  const perNftVTokenWei = 1000000000000000000n + redeemFeeWei;
+  const amountsIn = await getAmountsIn(perNftVTokenWei, [
+    WETH_ADDRESS,
+    vaultConfig.vTokenAddress,
+  ]);
+  if (!amountsIn || amountsIn.length < 2) {
+    return [];
+  }
+
+  const quotedPriceEth = weiToEthString(amountsIn[0]);
+  const quotedPriceWei = amountsIn[0].toString();
 
   // Convert holdings to MarketplaceItems
   const items: MarketplaceItem[] = vaultData.holdings.map((holding) => {
@@ -441,7 +477,8 @@ export const fetchNFTXListings = async (
       source: "nftx",
       vaultAddress: vaultConfig.vaultAddress,
       tokenId: holding.tokenId,
-      priceEth: totalPriceEth,
+      priceEth: quotedPriceEth,
+      priceWei: quotedPriceWei,
       vTokenPriceEth: vTokenPriceEth,
       feeEth: feeEth,
       dateAdded: holding.dateAdded,
@@ -479,35 +516,20 @@ export const fetchNFTXListings = async (
   return items;
 };
 
-/**
- * Get NFTX buy quote for specific NFT IDs
- * This is used when the user wants to buy a specific NFT from the pool
- */
-export const getNFTXBuyQuote = async (
+const assertNFTXTokensAvailable = async (
   collectionKey: CollectionKey,
   tokenIds: string[],
-): Promise<{
-  totalPriceEth: string;
-  totalPriceWei: string;
-  pricePerNft: string;
-  feePerNft: string;
-  vaultAddress: string;
-} | null> => {
+): Promise<boolean> => {
   const vaultConfig = getNFTXVault(collectionKey);
   if (!vaultConfig) {
-    return null;
+    return false;
   }
 
-  const [vaultData, vTokenPriceEth] = await Promise.all([
-    fetchVaultHoldings(vaultConfig),
-    fetchVTokenPrice(vaultConfig.vTokenAddress),
-  ]);
-
-  if (!vaultData || !vTokenPriceEth) {
-    return null;
+  const vaultData = await fetchVaultHoldings(vaultConfig);
+  if (!vaultData) {
+    return false;
   }
 
-  // Verify all requested token IDs are in the vault
   const holdingIds = new Set(vaultData.holdings.map((h) => h.tokenId));
   for (const tokenId of tokenIds) {
     if (!holdingIds.has(tokenId)) {
@@ -515,38 +537,7 @@ export const getNFTXBuyQuote = async (
     }
   }
 
-  const { totalPriceEth: pricePerNftSpot, feeEth: feePerNftSpot } =
-    calculateNFTXPrice(vTokenPriceEth, vaultData.fees.redeemFee);
-  const redeemFeeWei = BigInt(vaultData.fees.redeemFee);
-  const perNftVTokenWei = 1000000000000000000n + redeemFeeWei;
-  const totalVTokenOutWei = perNftVTokenWei * BigInt(tokenIds.length);
-
-  // Use exact-output routing math: how much WETH input is needed to buy
-  // enough vTokens to redeem the requested NFT count.
-  const amountsIn = await getAmountsIn(totalVTokenOutWei, [
-    WETH_ADDRESS,
-    vaultConfig.vTokenAddress,
-  ]);
-  if (!amountsIn || amountsIn.length < 2) {
-    return null;
-  }
-
-  const totalPriceWei = amountsIn[0];
-  const totalPriceEth = weiToEthString(totalPriceWei);
-  const pricePerNftEth = weiToEthString(
-    totalPriceWei / BigInt(tokenIds.length),
-  );
-
-  // Keep a user-facing fee estimate from spot pricing for now.
-  const feePerNft = feePerNftSpot;
-
-  return {
-    totalPriceEth,
-    totalPriceWei: totalPriceWei.toString(),
-    pricePerNft: pricePerNftEth || pricePerNftSpot,
-    feePerNft,
-    vaultAddress: vaultConfig.vaultAddress,
-  };
+  return true;
 };
 
 /**
@@ -557,6 +548,7 @@ export const getNFTXBuyTransaction = async (
   collectionKey: CollectionKey,
   tokenIds: string[],
   buyerAddress: string,
+  priceWei: string,
 ): Promise<{
   to: string;
   data: string;
@@ -567,16 +559,11 @@ export const getNFTXBuyTransaction = async (
     return null;
   }
 
-  // Get quote first
-  const quote = await getNFTXBuyQuote(collectionKey, tokenIds);
-  if (!quote) {
+  if (!(await assertNFTXTokensAvailable(collectionKey, tokenIds))) {
     return null;
   }
 
-  // Add 10% slippage buffer using integer wei math.
-  const priceWithSlippageWei =
-    (BigInt(quote.totalPriceWei) * BigInt(110)) / 100n;
-  const valueWei = priceWithSlippageWei.toString();
+  const valueWei = BigInt(priceWei).toString();
 
   // Encode the buyAndRedeem function call using viem
   const data = encodeFunctionData({

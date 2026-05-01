@@ -53,9 +53,10 @@ export type NFTXVaultData = {
   holdings: NFTXHolding[];
   totalHoldings: number;
   fees: {
-    mintFee: string; // Percentage in wei (e.g., "50000000000000000" = 5%)
-    redeemFee: string;
-    swapFee: string;
+    /** Fee in vToken wei for buying a random vault NFT */
+    randomRedeemFee: string;
+    /** Fee in vToken wei for buying a specific vault NFT */
+    targetRedeemFee: string;
   };
   usesFactoryFees: boolean;
 };
@@ -67,8 +68,10 @@ export type NFTXListing = {
   source: "nftx";
   vaultAddress: string;
   tokenId: string;
-  /** Price in ETH (includes fees) */
+  /** Exact NFTX buy quote in ETH, including fees but excluding slippage buffer */
   priceEth: string;
+  /** Exact NFTX buy quote in wei, used for transaction value */
+  priceWei: string;
   /** Raw vToken price without fees */
   vTokenPriceEth: string;
   /** Fee in ETH */

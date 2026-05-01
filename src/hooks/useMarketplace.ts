@@ -509,49 +509,13 @@ export const useNFTXBuy = () => {
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
 
   /**
-   * Get a quote for buying NFTs from NFTX pool
-   */
-  const getQuote = useCallback(
-    async (
-      collection: CollectionKey,
-      tokenIds: string[],
-    ): Promise<{
-      totalPriceEth: string;
-      pricePerNft: string;
-      feePerNft: string;
-      vaultAddress: string;
-    } | null> => {
-      try {
-        const response = await fetch("/api/marketplace/nftx", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ collection, tokenIds, action: "quote" }),
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to get quote");
-        }
-
-        return data.quote;
-      } catch (err) {
-        console.error("Error getting NFTX quote:", err);
-        return null;
-      }
-    },
-    [],
-  );
-
-  /**
    * Buy NFTs from NFTX pool using the MarketplaceZap contract
    */
   const buyFromPool = useCallback(
     async (
       collection: CollectionKey,
       tokenIds: string[],
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      _nftxListing: NFTXListing,
+      nftxListing: NFTXListing,
     ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
       if (!isConnected || !address || !walletClient) {
         return { success: false, error: "Wallet not connected" };
@@ -570,6 +534,7 @@ export const useNFTXBuy = () => {
             tokenIds,
             action: "buy",
             buyerAddress: address,
+            priceWei: nftxListing.priceWei,
           }),
         });
 
@@ -613,7 +578,6 @@ export const useNFTXBuy = () => {
     isProcessing,
     error,
     lastTxHash,
-    getQuote,
     buyFromPool,
   };
 };

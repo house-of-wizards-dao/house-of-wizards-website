@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   fetchNFTXListings,
   getNFTXVault,
-  getNFTXBuyQuote,
   getNFTXBuyTransaction,
 } from "@/lib/nftx";
 import { collections } from "@/lib/marketplace";
@@ -89,13 +88,14 @@ export const GET = async (request: NextRequest) => {
 
 /**
  * POST /api/marketplace/nftx
- * Get buy quote or transaction data for NFTX pool
+ * Get transaction data for buying from the NFTX pool
  *
  * Body:
  * - collection: CollectionKey (required)
  * - tokenIds: string[] (required) - NFT token IDs to buy
- * - action: "quote" | "buy" (optional, default "quote")
- * - buyerAddress: string (required if action is "buy")
+ * - action: "buy" (required)
+ * - buyerAddress: string (required)
+ * - priceWei: string (required) - raw NFTX listing price used by the UI
  */
 export const POST = async (request: NextRequest) => {
   try {
@@ -103,13 +103,15 @@ export const POST = async (request: NextRequest) => {
     const {
       collection: collectionKey,
       tokenIds,
-      action = "quote",
+      action,
       buyerAddress,
+      priceWei,
     } = body as {
       collection: CollectionKey;
       tokenIds: string[];
-      action?: "quote" | "buy";
+      action?: "buy";
       buyerAddress?: string;
+      priceWei?: string;
     };
 
     // Validate inputs
@@ -127,60 +129,44 @@ export const POST = async (request: NextRequest) => {
       );
     }
 
-    // Get quote first
-    const quote = await getNFTXBuyQuote(collectionKey, tokenIds);
-
-    if (!quote) {
+    if (action !== "buy") {
       return NextResponse.json(
-        {
-          error:
-            "Unable to get quote - vault may not exist or have no liquidity",
-        },
+        { error: "Unsupported NFTX action" },
         { status: 400 },
       );
     }
 
-    // If action is "buy", also return transaction data
-    if (action === "buy") {
-      if (!buyerAddress) {
-        return NextResponse.json(
-          { error: "buyerAddress is required for buy action" },
-          { status: 400 },
-        );
-      }
-
-      const transaction = await getNFTXBuyTransaction(
-        collectionKey,
-        tokenIds,
-        buyerAddress,
+    if (!buyerAddress) {
+      return NextResponse.json(
+        { error: "buyerAddress is required for buy action" },
+        { status: 400 },
       );
-
-      if (!transaction) {
-        return NextResponse.json(
-          { error: "Failed to generate buy transaction" },
-          { status: 500 },
-        );
-      }
-
-      return NextResponse.json({
-        success: true,
-        quote: {
-          ...quote,
-          tokenIds,
-          collection: collectionKey,
-        },
-        transaction,
-      });
     }
 
-    // Return quote only
+    if (!priceWei) {
+      return NextResponse.json(
+        { error: "priceWei is required for buy action" },
+        { status: 400 },
+      );
+    }
+
+    const transaction = await getNFTXBuyTransaction(
+      collectionKey,
+      tokenIds,
+      buyerAddress,
+      priceWei,
+    );
+
+    if (!transaction) {
+      return NextResponse.json(
+        { error: "Failed to generate buy transaction" },
+        { status: 500 },
+      );
+    }
+
     return NextResponse.json({
       success: true,
-      quote: {
-        ...quote,
-        tokenIds,
-        collection: collectionKey,
-      },
+      transaction,
     });
   } catch (error) {
     console.error("Error in POST /api/marketplace/nftx:", error);
