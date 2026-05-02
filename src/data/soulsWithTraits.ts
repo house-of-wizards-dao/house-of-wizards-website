@@ -28,7 +28,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 10,
     transmutedFrom: "Edge Arcanist Artchick",
-    burnOrder: 29
+    burnOrder: 29,
   },
   {
     idx: 16,
@@ -43,7 +43,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 16,
     transmutedFrom: "Sorcerer Alessar of the Moors",
-    burnOrder: 360
+    burnOrder: 360,
   },
   {
     idx: 28,
@@ -58,7 +58,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 28,
     transmutedFrom: "The Great and Magical UserGnome",
-    burnOrder: 5
+    burnOrder: 5,
   },
   {
     idx: 29,
@@ -73,7 +73,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 29,
     transmutedFrom: "Necromancer LeggoMyGreggo",
-    burnOrder: 543
+    burnOrder: 543,
   },
   {
     idx: 30,
@@ -88,7 +88,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 30,
     transmutedFrom: "Great Old One Andolini",
-    burnOrder: 390
+    burnOrder: 390,
   },
   {
     idx: 58,
@@ -103,7 +103,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 58,
     transmutedFrom: "Magus Hestia of the Wild",
-    burnOrder: 273
+    burnOrder: 273,
   },
   {
     idx: 72,
@@ -118,7 +118,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 72,
     transmutedFrom: "Supa Wizz 9272",
-    burnOrder: 643
+    burnOrder: 643,
   },
   {
     idx: 98,
@@ -133,7 +133,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 98,
     transmutedFrom: "Bard Gourdon of the Platonic Shadow",
-    burnOrder: 525
+    burnOrder: 525,
   },
   {
     idx: 101,
@@ -148,7 +148,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 101,
     transmutedFrom: "Archmagus Milton ",
-    burnOrder: 284
+    burnOrder: 284,
   },
   {
     idx: 106,
@@ -163,7 +163,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 106,
     transmutedFrom: " Zubin of the Rock",
-    burnOrder: 645
+    burnOrder: 645,
   },
   {
     idx: 110,
@@ -178,7 +178,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 110,
     transmutedFrom: "Arch-Magician Jasper of Arcadia",
-    burnOrder: 575
+    burnOrder: 575,
   },
   {
     idx: 133,
@@ -193,7 +193,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 133,
     transmutedFrom: "Enchanter Maia of the River",
-    burnOrder: 421
+    burnOrder: 421,
   },
   {
     idx: 142,
@@ -208,7 +208,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 142,
     transmutedFrom: "Ghost Eater Galatea of the Isle",
-    burnOrder: 688
+    burnOrder: 688,
   },
   {
     idx: 146,
@@ -223,7 +223,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 146,
     transmutedFrom: " Allistair in the Shadows",
-    burnOrder: 409
+    burnOrder: 409,
   },
   {
     idx: 165,
@@ -238,7 +238,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 165,
     transmutedFrom: "Witch Carmilla of the Wood",
-    burnOrder: 86
+    burnOrder: 86,
   },
   {
     idx: 169,
@@ -253,7 +253,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 334,
     transmutedFromNumber: 169,
     transmutedFrom: "Necromancer Seth of the Mountain",
-    burnOrder: 647
+    burnOrder: 647,
   },
   {
     idx: 177,
@@ -268,7 +268,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 177,
     transmutedFrom: "Shaman Crowley of Mu",
-    burnOrder: 209
+    burnOrder: 209,
   },
   {
     idx: 181,
@@ -283,7 +283,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 181,
     transmutedFrom: "Void Disciple Voidoth of the Cosmos",
-    burnOrder: 279
+    burnOrder: 279,
   },
   {
     idx: 184,
@@ -298,7 +298,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 184,
     transmutedFrom: "Sorcerer Iprix of the Plains",
-    burnOrder: 224
+    burnOrder: 224,
   },
   {
     idx: 240,
@@ -313,7 +313,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 240,
     transmutedFrom: "Spellsinger Celah of Avalon",
-    burnOrder: 144
+    burnOrder: 144,
   },
   {
     idx: 248,
@@ -328,7 +328,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 248,
     transmutedFrom: " Uvlius of the Hills",
-    burnOrder: 570
+    burnOrder: 570,
   },
   {
     idx: 260,
@@ -343,7 +343,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 260,
     transmutedFrom: "Ghost Eater Eden ",
-    burnOrder: 411
+    burnOrder: 411,
   },
   {
     idx: 271,
@@ -358,7 +358,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 271,
     transmutedFrom: "Shaman Xerxes of the Realm",
-    burnOrder: 478
+    burnOrder: 478,
   },
   {
     idx: 277,
@@ -373,7 +373,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 277,
     transmutedFrom: "Witch Zelda of the River",
-    burnOrder: 539
+    burnOrder: 539,
   },
   {
     idx: 283,
@@ -388,7 +388,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 283,
     transmutedFrom: "Hex Mage Trollin of the Wold",
-    burnOrder: 476
+    burnOrder: 476,
   },
   {
     idx: 322,
@@ -403,7 +403,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 322,
     transmutedFrom: "Shaman Mushy of the Cold",
-    burnOrder: 62
+    burnOrder: 62,
   },
   {
     idx: 331,
@@ -418,7 +418,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 331,
     transmutedFrom: "Ghost Eater Judas of the Tower",
-    burnOrder: 163
+    burnOrder: 163,
   },
   {
     idx: 334,
@@ -433,7 +433,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 334,
     transmutedFrom: "Battle Mage Wolfram of the Brambles",
-    burnOrder: 184
+    burnOrder: 184,
   },
   {
     idx: 336,
@@ -448,7 +448,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 336,
     transmutedFrom: "Holy Magus Ilu of the Ice",
-    burnOrder: 51
+    burnOrder: 51,
   },
   {
     idx: 343,
@@ -463,7 +463,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 343,
     transmutedFrom: "Witch Marceline of the Wood",
-    burnOrder: 102
+    burnOrder: 102,
   },
   {
     idx: 361,
@@ -478,7 +478,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 361,
     transmutedFrom: "Illusionist Gunthor of the Rock",
-    burnOrder: 717
+    burnOrder: 717,
   },
   {
     idx: 404,
@@ -493,7 +493,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 404,
     transmutedFrom: "Hedge Wizard Imeena of the Plains",
-    burnOrder: 256
+    burnOrder: 256,
   },
   {
     idx: 421,
@@ -508,7 +508,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 421,
     transmutedFrom: "Archmagus Apollo of the Plains",
-    burnOrder: 63
+    burnOrder: 63,
   },
   {
     idx: 428,
@@ -523,7 +523,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 428,
     transmutedFrom: "Witch Ivy of the Hills",
-    burnOrder: 458
+    burnOrder: 458,
   },
   {
     idx: 435,
@@ -538,7 +538,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 435,
     transmutedFrom: "Enchanter Angus from the Shadow",
-    burnOrder: 414
+    burnOrder: 414,
   },
   {
     idx: 445,
@@ -553,7 +553,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 445,
     transmutedFrom: "Archmagus Armstrong of the Platonic Shadow",
-    burnOrder: 480
+    burnOrder: 480,
   },
   {
     idx: 463,
@@ -568,7 +568,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 326,
     transmutedFromNumber: 463,
     transmutedFrom: "Adept Caligula of the Cosmos",
-    burnOrder: 440
+    burnOrder: 440,
   },
   {
     idx: 464,
@@ -583,7 +583,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 464,
     transmutedFrom: "Shaman Bobbin of the Bastion",
-    burnOrder: 504
+    burnOrder: 504,
   },
   {
     idx: 469,
@@ -598,7 +598,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 469,
     transmutedFrom: "Geomancer Woomba of the Wood",
-    burnOrder: 78
+    burnOrder: 78,
   },
   {
     idx: 474,
@@ -613,7 +613,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 474,
     transmutedFrom: "Arcanist Soya of the Ice",
-    burnOrder: 64
+    burnOrder: 64,
   },
   {
     idx: 480,
@@ -628,7 +628,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 480,
     transmutedFrom: "Archmagus Lin of the Brambles",
-    burnOrder: 679
+    burnOrder: 679,
   },
   {
     idx: 482,
@@ -643,7 +643,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 482,
     transmutedFrom: "Sorcerer Izible of the Bastion",
-    burnOrder: 609
+    burnOrder: 609,
   },
   {
     idx: 493,
@@ -658,7 +658,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 493,
     transmutedFrom: "Archmagus Katherine of the Desert",
-    burnOrder: 181
+    burnOrder: 181,
   },
   {
     idx: 512,
@@ -673,7 +673,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 512,
     transmutedFrom: "Witch Florah of the Mountain",
-    burnOrder: 680
+    burnOrder: 680,
   },
   {
     idx: 553,
@@ -688,7 +688,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 553,
     transmutedFrom: "Alchemist Celeste of the Field",
-    burnOrder: 463
+    burnOrder: 463,
   },
   {
     idx: 566,
@@ -703,7 +703,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 566,
     transmutedFrom: "Artificer Homer of Dreams",
-    burnOrder: 378
+    burnOrder: 378,
   },
   {
     idx: 572,
@@ -718,7 +718,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 572,
     transmutedFrom: "Geomancer Bathsheba of the Villa",
-    burnOrder: 350
+    burnOrder: 350,
   },
   {
     idx: 573,
@@ -733,7 +733,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 573,
     transmutedFrom: "Magus Bathsheba of the Grotto",
-    burnOrder: 347
+    burnOrder: 347,
   },
   {
     idx: 575,
@@ -748,7 +748,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 575,
     transmutedFrom: "Archmagus Basil of Xanadu",
-    burnOrder: 136
+    burnOrder: 136,
   },
   {
     idx: 576,
@@ -763,7 +763,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 576,
     transmutedFrom: "Augurer Eden of the Circle",
-    burnOrder: 33
+    burnOrder: 33,
   },
   {
     idx: 579,
@@ -778,7 +778,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 579,
     transmutedFrom: "Pyromancer Naoki of the Marsh",
-    burnOrder: 351
+    burnOrder: 351,
   },
   {
     idx: 580,
@@ -793,7 +793,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 580,
     transmutedFrom: "Sage Artis of the Brine",
-    burnOrder: 464
+    burnOrder: 464,
   },
   {
     idx: 621,
@@ -808,7 +808,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 621,
     transmutedFrom: "Hex Mage Ethan of the Valley",
-    burnOrder: 359
+    burnOrder: 359,
   },
   {
     idx: 628,
@@ -823,7 +823,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 628,
     transmutedFrom: "Arch-Magician Otto of the Hills",
-    burnOrder: 387
+    burnOrder: 387,
   },
   {
     idx: 633,
@@ -838,7 +838,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 633,
     transmutedFrom: "Battle Mage Blaise of the Sands",
-    burnOrder: 722
+    burnOrder: 722,
   },
   {
     idx: 652,
@@ -853,7 +853,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 652,
     transmutedFrom: "Alchemist Rita of the Plains",
-    burnOrder: 718
+    burnOrder: 718,
   },
   {
     idx: 658,
@@ -868,7 +868,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 658,
     transmutedFrom: "Magus Milo from the Abyss",
-    burnOrder: 656
+    burnOrder: 656,
   },
   {
     idx: 665,
@@ -883,7 +883,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 665,
     transmutedFrom: "Arcanist Carly of the Mist",
-    burnOrder: 585
+    burnOrder: 585,
   },
   {
     idx: 671,
@@ -898,7 +898,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 671,
     transmutedFrom: "Oracle Lin of the Wold",
-    burnOrder: 1
+    burnOrder: 1,
   },
   {
     idx: 693,
@@ -913,7 +913,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 693,
     transmutedFrom: " Aleister of the Mount",
-    burnOrder: 425
+    burnOrder: 425,
   },
   {
     idx: 697,
@@ -928,7 +928,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 697,
     transmutedFrom: "Adept Sabina of the Riviera",
-    burnOrder: 557
+    burnOrder: 557,
   },
   {
     idx: 705,
@@ -943,7 +943,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 705,
     transmutedFrom: " Zaros of the Isle",
-    burnOrder: 187
+    burnOrder: 187,
   },
   {
     idx: 711,
@@ -958,7 +958,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 711,
     transmutedFrom: "Archmagus Apollo of the Dunes",
-    burnOrder: 619
+    burnOrder: 619,
   },
   {
     idx: 721,
@@ -973,7 +973,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 721,
     transmutedFrom: "Illusionist Salvatore of the Platonic Shadow",
-    burnOrder: 568
+    burnOrder: 568,
   },
   {
     idx: 727,
@@ -988,7 +988,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 727,
     transmutedFrom: "Magus George of the Hall",
-    burnOrder: 709
+    burnOrder: 709,
   },
   {
     idx: 733,
@@ -1003,7 +1003,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 733,
     transmutedFrom: "Alchemist Epher of the Wood",
-    burnOrder: 644
+    burnOrder: 644,
   },
   {
     idx: 810,
@@ -1018,7 +1018,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 810,
     transmutedFrom: "Augurer Eric of the Tower",
-    burnOrder: 225
+    burnOrder: 225,
   },
   {
     idx: 818,
@@ -1033,7 +1033,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 818,
     transmutedFrom: "Enchanter Victoria of the Valley",
-    burnOrder: 365
+    burnOrder: 365,
   },
   {
     idx: 821,
@@ -1048,7 +1048,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 821,
     transmutedFrom: "Arch-Magician Sonja of the Grotto",
-    burnOrder: 657
+    burnOrder: 657,
   },
   {
     idx: 847,
@@ -1063,7 +1063,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 847,
     transmutedFrom: "Colormancer Colorman of the Capital",
-    burnOrder: 377
+    burnOrder: 377,
   },
   {
     idx: 865,
@@ -1078,7 +1078,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 865,
     transmutedFrom: " Calista of the Moors",
-    burnOrder: 738
+    burnOrder: 738,
   },
   {
     idx: 867,
@@ -1093,7 +1093,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 867,
     transmutedFrom: "Sorcerer Alizam of the Mist",
-    burnOrder: 694
+    burnOrder: 694,
   },
   {
     idx: 906,
@@ -1108,7 +1108,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 906,
     transmutedFrom: "Geomancer Aleister of the Riviera",
-    burnOrder: 134
+    burnOrder: 134,
   },
   {
     idx: 920,
@@ -1123,7 +1123,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 920,
     transmutedFrom: "Void Disciple Reza of the Cosmos",
-    burnOrder: 222
+    burnOrder: 222,
   },
   {
     idx: 928,
@@ -1138,7 +1138,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 928,
     transmutedFrom: " Hadrien of the Desert",
-    burnOrder: 190
+    burnOrder: 190,
   },
   {
     idx: 952,
@@ -1153,7 +1153,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 952,
     transmutedFrom: "Thaumaturge Woomba of the Mount",
-    burnOrder: 586
+    burnOrder: 586,
   },
   {
     idx: 955,
@@ -1168,7 +1168,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 955,
     transmutedFrom: "Chronomancer Zubin of Dreams",
-    burnOrder: 571
+    burnOrder: 571,
   },
   {
     idx: 965,
@@ -1183,7 +1183,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 965,
     transmutedFrom: "Necromancer Voidoth of the Veil",
-    burnOrder: 459
+    burnOrder: 459,
   },
   {
     idx: 988,
@@ -1198,7 +1198,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 988,
     transmutedFrom: "Shadow Mage Maia of the Keep",
-    burnOrder: 566
+    burnOrder: 566,
   },
   {
     idx: 1001,
@@ -1213,7 +1213,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1001,
     transmutedFrom: "Hedge Wizard Armstrong of the Mountain",
-    burnOrder: 401
+    burnOrder: 401,
   },
   {
     idx: 1013,
@@ -1228,7 +1228,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1013,
     transmutedFrom: "Archmagus Yookoo of the Woodlands",
-    burnOrder: 499
+    burnOrder: 499,
   },
   {
     idx: 1019,
@@ -1243,7 +1243,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1019,
     transmutedFrom: "Charmer Thana of the Cosmos",
-    burnOrder: 149
+    burnOrder: 149,
   },
   {
     idx: 1020,
@@ -1258,7 +1258,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1020,
     transmutedFrom: "Artificer Layla of the Hall",
-    burnOrder: 161
+    burnOrder: 161,
   },
   {
     idx: 1023,
@@ -1273,7 +1273,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1023,
     transmutedFrom: "Runecaster Nicolas of the Atheneum",
-    burnOrder: 157
+    burnOrder: 157,
   },
   {
     idx: 1028,
@@ -1288,7 +1288,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1028,
     transmutedFrom: "Sorcerer Aleister of the Inferno",
-    burnOrder: 182
+    burnOrder: 182,
   },
   {
     idx: 1033,
@@ -1303,7 +1303,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1033,
     transmutedFrom: "Druid Bullock of the Sands",
-    burnOrder: 34
+    burnOrder: 34,
   },
   {
     idx: 1045,
@@ -1318,7 +1318,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1045,
     transmutedFrom: "Archmagus Soya of the Citadel",
-    burnOrder: 702
+    burnOrder: 702,
   },
   {
     idx: 1046,
@@ -1333,7 +1333,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1046,
     transmutedFrom: "Cosmic Mage Artis of the Keep",
-    burnOrder: 392
+    burnOrder: 392,
   },
   {
     idx: 1049,
@@ -1348,7 +1348,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1049,
     transmutedFrom: "Cartomancer Aiko of the Bastion",
-    burnOrder: 312
+    burnOrder: 312,
   },
   {
     idx: 1056,
@@ -1363,7 +1363,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1056,
     transmutedFrom: "Mystic Merlon of the Heath",
-    burnOrder: 342
+    burnOrder: 342,
   },
   {
     idx: 1069,
@@ -1378,7 +1378,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1069,
     transmutedFrom: "Chronomancer Zixin of the Wold",
-    burnOrder: 326
+    burnOrder: 326,
   },
   {
     idx: 1078,
@@ -1393,7 +1393,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1078,
     transmutedFrom: "Archmagus Axel of Cuckoo Land",
-    burnOrder: 280
+    burnOrder: 280,
   },
   {
     idx: 1093,
@@ -1408,7 +1408,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1093,
     transmutedFrom: "Voodoo Priest Marius of the Mount",
-    burnOrder: 243
+    burnOrder: 243,
   },
   {
     idx: 1099,
@@ -1423,7 +1423,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1099,
     transmutedFrom: " Udor of the Grotto",
-    burnOrder: 467
+    burnOrder: 467,
   },
   {
     idx: 1103,
@@ -1438,7 +1438,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1103,
     transmutedFrom: "Electromancer Gunthor of the Moors",
-    burnOrder: 556
+    burnOrder: 556,
   },
   {
     idx: 1126,
@@ -1453,7 +1453,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1126,
     transmutedFrom: "Archmagus Casper of the Realm",
-    burnOrder: 91
+    burnOrder: 91,
   },
   {
     idx: 1140,
@@ -1468,7 +1468,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1140,
     transmutedFrom: "Witch Rita of the Valley",
-    burnOrder: 630
+    burnOrder: 630,
   },
   {
     idx: 1143,
@@ -1483,7 +1483,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1143,
     transmutedFrom: "Cryptomancer Aleister of the Obelisk",
-    burnOrder: 715
+    burnOrder: 715,
   },
   {
     idx: 1156,
@@ -1498,7 +1498,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 331,
     transmutedFromNumber: 1156,
     transmutedFrom: "Shaman Celeste of the Moors",
-    burnOrder: 45
+    burnOrder: 45,
   },
   {
     idx: 1181,
@@ -1513,7 +1513,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1181,
     transmutedFrom: "Hedge Wizard Mycho of the Heath",
-    burnOrder: 191
+    burnOrder: 191,
   },
   {
     idx: 1185,
@@ -1528,7 +1528,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1185,
     transmutedFrom: "Arcanist Eliphas of the Hall",
-    burnOrder: 698
+    burnOrder: 698,
   },
   {
     idx: 1186,
@@ -1543,7 +1543,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1186,
     transmutedFrom: "Battle Mage Angus of the Carnival",
-    burnOrder: 85
+    burnOrder: 85,
   },
   {
     idx: 1195,
@@ -1558,7 +1558,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1195,
     transmutedFrom: "Adept Lamia of the Valley",
-    burnOrder: 156
+    burnOrder: 156,
   },
   {
     idx: 1225,
@@ -1573,7 +1573,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1225,
     transmutedFrom: "Void Disciple Zane of Xanadu",
-    burnOrder: 547
+    burnOrder: 547,
   },
   {
     idx: 1230,
@@ -1588,7 +1588,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1230,
     transmutedFrom: "Solar Mage Iris of the Hollow",
-    burnOrder: 242
+    burnOrder: 242,
   },
   {
     idx: 1235,
@@ -1603,7 +1603,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 323,
     transmutedFromNumber: 1235,
     transmutedFrom: "Archmagus Shizu of the Canyon",
-    burnOrder: 41
+    burnOrder: 41,
   },
   {
     idx: 1275,
@@ -1618,7 +1618,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1275,
     transmutedFrom: "Clairvoyant Basil of the Palms",
-    burnOrder: 287
+    burnOrder: 287,
   },
   {
     idx: 1277,
@@ -1633,7 +1633,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1277,
     transmutedFrom: "Sage Cassius of the Garden",
-    burnOrder: 456
+    burnOrder: 456,
   },
   {
     idx: 1282,
@@ -1648,7 +1648,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1282,
     transmutedFrom: "Witch Rita of the Gnostics",
-    burnOrder: 524
+    burnOrder: 524,
   },
   {
     idx: 1294,
@@ -1663,7 +1663,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1294,
     transmutedFrom: "Sorcerer Uday of the Temple",
-    burnOrder: 83
+    burnOrder: 83,
   },
   {
     idx: 1295,
@@ -1678,7 +1678,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1295,
     transmutedFrom: "Witch Rowena of the Inferno",
-    burnOrder: 60
+    burnOrder: 60,
   },
   {
     idx: 1314,
@@ -1693,7 +1693,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1314,
     transmutedFrom: "Necromancer Aldus of the Atheneum",
-    burnOrder: 226
+    burnOrder: 226,
   },
   {
     idx: 1315,
@@ -1708,7 +1708,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1315,
     transmutedFrom: " Aleister of the Waste",
-    burnOrder: 200
+    burnOrder: 200,
   },
   {
     idx: 1327,
@@ -1723,7 +1723,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1327,
     transmutedFrom: "Sorcerer Ofaris of Elysium",
-    burnOrder: 292
+    burnOrder: 292,
   },
   {
     idx: 1367,
@@ -1738,7 +1738,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1367,
     transmutedFrom: "Hedge Wizard Umber of the Lake",
-    burnOrder: 598
+    burnOrder: 598,
   },
   {
     idx: 1369,
@@ -1753,7 +1753,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1369,
     transmutedFrom: "Sorcerer Gunthor of the Circle",
-    burnOrder: 109
+    burnOrder: 109,
   },
   {
     idx: 1370,
@@ -1768,7 +1768,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1370,
     transmutedFrom: "Bard Gogol of the Veil",
-    burnOrder: 484
+    burnOrder: 484,
   },
   {
     idx: 1409,
@@ -1783,7 +1783,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1409,
     transmutedFrom: "Shaman Cromwell of the Lake",
-    burnOrder: 237
+    burnOrder: 237,
   },
   {
     idx: 1443,
@@ -1798,7 +1798,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1443,
     transmutedFrom: "Magus Tengu of the Tower",
-    burnOrder: 155
+    burnOrder: 155,
   },
   {
     idx: 1446,
@@ -1813,7 +1813,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1446,
     transmutedFrom: "Druid Rixxa of El Dorado",
-    burnOrder: 97
+    burnOrder: 97,
   },
   {
     idx: 1458,
@@ -1828,7 +1828,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1458,
     transmutedFrom: "Hedge Wizard Victoria of the Hall",
-    burnOrder: 455
+    burnOrder: 455,
   },
   {
     idx: 1466,
@@ -1843,7 +1843,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1466,
     transmutedFrom: "Voodoo Priest Auguste of the Dunes",
-    burnOrder: 544
+    burnOrder: 544,
   },
   {
     idx: 1483,
@@ -1858,7 +1858,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1483,
     transmutedFrom: "Necromancer Malcom of Arcadia",
-    burnOrder: 71
+    burnOrder: 71,
   },
   {
     idx: 1498,
@@ -1873,7 +1873,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1498,
     transmutedFrom: "Sorcerer Azahl of the Mount",
-    burnOrder: 558
+    burnOrder: 558,
   },
   {
     idx: 1562,
@@ -1888,7 +1888,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1562,
     transmutedFrom: "Null Mage Charlord of the Light",
-    burnOrder: 89
+    burnOrder: 89,
   },
   {
     idx: 1604,
@@ -1903,7 +1903,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1604,
     transmutedFrom: "Arch-Magician Amanita of the Hall",
-    burnOrder: 14
+    burnOrder: 14,
   },
   {
     idx: 1632,
@@ -1918,7 +1918,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 343,
     transmutedFromNumber: 1632,
     transmutedFrom: "Archmagus Apollo of the Wood",
-    burnOrder: 363
+    burnOrder: 363,
   },
   {
     idx: 1634,
@@ -1933,7 +1933,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1634,
     transmutedFrom: "Druid Pepo of the Steppe",
-    burnOrder: 55
+    burnOrder: 55,
   },
   {
     idx: 1654,
@@ -1948,7 +1948,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1654,
     transmutedFrom: "Battle Mage Cassius of the Forest",
-    burnOrder: 28
+    burnOrder: 28,
   },
   {
     idx: 1667,
@@ -1963,7 +1963,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1667,
     transmutedFrom: "Magus  of the Cold",
-    burnOrder: 314
+    burnOrder: 314,
   },
   {
     idx: 1669,
@@ -1978,7 +1978,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1669,
     transmutedFrom: "Adept Nazim of the Oasis",
-    burnOrder: 316
+    burnOrder: 316,
   },
   {
     idx: 1670,
@@ -1993,7 +1993,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1670,
     transmutedFrom: "Pyromancer Azar of the Hills",
-    burnOrder: 319
+    burnOrder: 319,
   },
   {
     idx: 1678,
@@ -2008,7 +2008,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1678,
     transmutedFrom: "Shadow Mage Hagar of the Psychic Leap",
-    burnOrder: 221
+    burnOrder: 221,
   },
   {
     idx: 1686,
@@ -2023,7 +2023,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1686,
     transmutedFrom: "Artificer Benito of the Thorn",
-    burnOrder: 110
+    burnOrder: 110,
   },
   {
     idx: 1687,
@@ -2038,7 +2038,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1687,
     transmutedFrom: "Arch-Magician Lumos of the Wood",
-    burnOrder: 330
+    burnOrder: 330,
   },
   {
     idx: 1693,
@@ -2053,7 +2053,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1693,
     transmutedFrom: "Sorcerer Nassif of the Hollow",
-    burnOrder: 227
+    burnOrder: 227,
   },
   {
     idx: 1704,
@@ -2068,7 +2068,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1704,
     transmutedFrom: "Ghost Eater Diabolos of Tartarus",
-    burnOrder: 482
+    burnOrder: 482,
   },
   {
     idx: 1708,
@@ -2083,7 +2083,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1708,
     transmutedFrom: "Chronomancer Atlas of the Bastion",
-    burnOrder: 493
+    burnOrder: 493,
   },
   {
     idx: 1720,
@@ -2098,7 +2098,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1720,
     transmutedFrom: "Necromancer Voidoth of the Psychic Leap",
-    burnOrder: 189
+    burnOrder: 189,
   },
   {
     idx: 1722,
@@ -2113,7 +2113,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1722,
     transmutedFrom: "Enchanter Cassiopeia of the Brambles",
-    burnOrder: 453
+    burnOrder: 453,
   },
   {
     idx: 1732,
@@ -2128,7 +2128,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 332,
     transmutedFromNumber: 1732,
     transmutedFrom: "Artificer Magpie of the Gnostics",
-    burnOrder: 293
+    burnOrder: 293,
   },
   {
     idx: 1764,
@@ -2143,7 +2143,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1764,
     transmutedFrom: "Evoker Angus of the Temple",
-    burnOrder: 684
+    burnOrder: 684,
   },
   {
     idx: 1779,
@@ -2158,7 +2158,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1779,
     transmutedFrom: "Pyromancer Alatar of the Heath",
-    burnOrder: 123
+    burnOrder: 123,
   },
   {
     idx: 1780,
@@ -2173,7 +2173,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1780,
     transmutedFrom: "Sorcerer Ifran of the Citadel",
-    burnOrder: 515
+    burnOrder: 515,
   },
   {
     idx: 1781,
@@ -2188,7 +2188,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1781,
     transmutedFrom: "Arch-Magician Ixar of the Steppe",
-    burnOrder: 465
+    burnOrder: 465,
   },
   {
     idx: 1792,
@@ -2203,7 +2203,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1792,
     transmutedFrom: "Battlemage Pumlo of the Marsh",
-    burnOrder: 2
+    burnOrder: 2,
   },
   {
     idx: 1799,
@@ -2218,7 +2218,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 337,
     transmutedFromNumber: 1799,
     transmutedFrom: "Adept Alessar of the Sea",
-    burnOrder: 418
+    burnOrder: 418,
   },
   {
     idx: 1804,
@@ -2233,7 +2233,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1804,
     transmutedFrom: "Bard Titania of Arcadia",
-    burnOrder: 486
+    burnOrder: 486,
   },
   {
     idx: 1818,
@@ -2248,7 +2248,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1818,
     transmutedFrom: "Geomancer  of the Hills",
-    burnOrder: 648
+    burnOrder: 648,
   },
   {
     idx: 1820,
@@ -2263,7 +2263,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1820,
     transmutedFrom: "Oracle Sondra of the Forest",
-    burnOrder: 151
+    burnOrder: 151,
   },
   {
     idx: 1834,
@@ -2278,7 +2278,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1834,
     transmutedFrom: "Archmagus Oxnard of the Hills",
-    burnOrder: 96
+    burnOrder: 96,
   },
   {
     idx: 1847,
@@ -2293,7 +2293,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1847,
     transmutedFrom: "Arch-Magician Lucinda of the Fey",
-    burnOrder: 649
+    burnOrder: 649,
   },
   {
     idx: 1848,
@@ -2308,7 +2308,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1848,
     transmutedFrom: "Geomancer Le Blanc of the Rock",
-    burnOrder: 517
+    burnOrder: 517,
   },
   {
     idx: 1849,
@@ -2323,7 +2323,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1849,
     transmutedFrom: "Shadow Mage Gaspard of the Desert",
-    burnOrder: 341
+    burnOrder: 341,
   },
   {
     idx: 1855,
@@ -2338,7 +2338,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1855,
     transmutedFrom: "Cleric Iprix of El Dorado",
-    burnOrder: 266
+    burnOrder: 266,
   },
   {
     idx: 1864,
@@ -2353,7 +2353,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1864,
     transmutedFrom: "Runecaster Ekmira of the Event Horizon",
-    burnOrder: 439
+    burnOrder: 439,
   },
   {
     idx: 1872,
@@ -2368,7 +2368,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1872,
     transmutedFrom: "Sorcerer Naoki of the Tundra",
-    burnOrder: 683
+    burnOrder: 683,
   },
   {
     idx: 1949,
@@ -2383,7 +2383,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1949,
     transmutedFrom: "Alchemist Chiyo of the Valley",
-    burnOrder: 76
+    burnOrder: 76,
   },
   {
     idx: 1955,
@@ -2398,7 +2398,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1955,
     transmutedFrom: "Battle Mage Ratko of the Realm",
-    burnOrder: 587
+    burnOrder: 587,
   },
   {
     idx: 1970,
@@ -2413,7 +2413,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1970,
     transmutedFrom: "Enchanter Hongo of the Forest",
-    burnOrder: 216
+    burnOrder: 216,
   },
   {
     idx: 1972,
@@ -2428,7 +2428,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1972,
     transmutedFrom: "Runecaster Milton of the Sun",
-    burnOrder: 290
+    burnOrder: 290,
   },
   {
     idx: 1981,
@@ -2443,7 +2443,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1981,
     transmutedFrom: "Archmagus Crowley of the Inferno",
-    burnOrder: 452
+    burnOrder: 452,
   },
   {
     idx: 1983,
@@ -2458,7 +2458,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1983,
     transmutedFrom: " Aldus of the Thorn",
-    burnOrder: 269
+    burnOrder: 269,
   },
   {
     idx: 1986,
@@ -2473,7 +2473,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1986,
     transmutedFrom: "The Goblin King",
-    burnOrder: 247
+    burnOrder: 247,
   },
   {
     idx: 1990,
@@ -2488,7 +2488,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1990,
     transmutedFrom: "Charmer Larissa of the Valley",
-    burnOrder: 592
+    burnOrder: 592,
   },
   {
     idx: 1996,
@@ -2503,7 +2503,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 1996,
     transmutedFrom: "Sorcerer George of the Hills",
-    burnOrder: 600
+    burnOrder: 600,
   },
   {
     idx: 2004,
@@ -2518,7 +2518,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2004,
     transmutedFrom: "Artificer Corky of the Havens",
-    burnOrder: 220
+    burnOrder: 220,
   },
   {
     idx: 2008,
@@ -2533,7 +2533,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 318,
     transmutedFromNumber: 2008,
     transmutedFrom: "Sorcerer Apollo ",
-    burnOrder: 278
+    burnOrder: 278,
   },
   {
     idx: 2012,
@@ -2548,7 +2548,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2012,
     transmutedFrom: "Magus Aden of the Grotto",
-    burnOrder: 238
+    burnOrder: 238,
   },
   {
     idx: 2015,
@@ -2563,7 +2563,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2015,
     transmutedFrom: "Shadow Mage Titania of the Moors",
-    burnOrder: 81
+    burnOrder: 81,
   },
   {
     idx: 2027,
@@ -2578,7 +2578,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2027,
     transmutedFrom: "Archmagus Zelroth of the Secret Fire",
-    burnOrder: 262
+    burnOrder: 262,
   },
   {
     idx: 2035,
@@ -2593,7 +2593,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2035,
     transmutedFrom: "Runecaster Jaffer of the Sacred Pillars",
-    burnOrder: 327
+    burnOrder: 327,
   },
   {
     idx: 2041,
@@ -2608,7 +2608,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2041,
     transmutedFrom: "Pyromancer George of the Villa",
-    burnOrder: 624
+    burnOrder: 624,
   },
   {
     idx: 2067,
@@ -2623,7 +2623,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2067,
     transmutedFrom: "Adept Ratko of Dreams",
-    burnOrder: 417
+    burnOrder: 417,
   },
   {
     idx: 2073,
@@ -2638,7 +2638,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 318,
     transmutedFromNumber: 2073,
     transmutedFrom: "Charmer Jadis of the Wood",
-    burnOrder: 101
+    burnOrder: 101,
   },
   {
     idx: 2080,
@@ -2653,7 +2653,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2080,
     transmutedFrom: "Sorcerer Soran of the Wold",
-    burnOrder: 627
+    burnOrder: 627,
   },
   {
     idx: 2086,
@@ -2668,7 +2668,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2086,
     transmutedFrom: "Sorcerer Azahl of the Sacred Pillars",
-    burnOrder: 442
+    burnOrder: 442,
   },
   {
     idx: 2104,
@@ -2683,7 +2683,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2104,
     transmutedFrom: "Summoner Zane of the Marsh",
-    burnOrder: 164
+    burnOrder: 164,
   },
   {
     idx: 2106,
@@ -2698,7 +2698,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2106,
     transmutedFrom: "Shadow Mage Rita of the Mount",
-    burnOrder: 394
+    burnOrder: 394,
   },
   {
     idx: 2116,
@@ -2713,7 +2713,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2116,
     transmutedFrom: "Pyromancer Buttons of the Circle",
-    burnOrder: 125
+    burnOrder: 125,
   },
   {
     idx: 2120,
@@ -2728,7 +2728,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2120,
     transmutedFrom: "Conjurer Mushy of the Plains",
-    burnOrder: 580
+    burnOrder: 580,
   },
   {
     idx: 2164,
@@ -2743,7 +2743,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2164,
     transmutedFrom: "Aeromancer Jianyu of the Rock",
-    burnOrder: 672
+    burnOrder: 672,
   },
   {
     idx: 2177,
@@ -2758,7 +2758,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2177,
     transmutedFrom: "Archmagus Azahl of the Hills",
-    burnOrder: 39
+    burnOrder: 39,
   },
   {
     idx: 2201,
@@ -2773,7 +2773,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2201,
     transmutedFrom: "Magus Cosmo of the Villa",
-    burnOrder: 12
+    burnOrder: 12,
   },
   {
     idx: 2204,
@@ -2788,7 +2788,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2204,
     transmutedFrom: "Ice Mage Milo of the Ice",
-    burnOrder: 61
+    burnOrder: 61,
   },
   {
     idx: 2205,
@@ -2803,7 +2803,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 326,
     transmutedFromNumber: 2205,
     transmutedFrom: "Arcanist Celah of the Realm",
-    burnOrder: 343
+    burnOrder: 343,
   },
   {
     idx: 2206,
@@ -2818,7 +2818,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2206,
     transmutedFrom: "Witch Juniper of the Capital",
-    burnOrder: 135
+    burnOrder: 135,
   },
   {
     idx: 2208,
@@ -2833,7 +2833,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2208,
     transmutedFrom: "Sorcerer Ifran of the Villa",
-    burnOrder: 349
+    burnOrder: 349,
   },
   {
     idx: 2225,
@@ -2848,7 +2848,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2225,
     transmutedFrom: "Artificer Shivra of the Quantum Shadow",
-    burnOrder: 201
+    burnOrder: 201,
   },
   {
     idx: 2226,
@@ -2863,7 +2863,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2226,
     transmutedFrom: "Runecaster Solomon of the Gnostics",
-    burnOrder: 311
+    burnOrder: 311,
   },
   {
     idx: 2231,
@@ -2878,7 +2878,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2231,
     transmutedFrom: "Mystic Cassius of the Forest",
-    burnOrder: 553
+    burnOrder: 553,
   },
   {
     idx: 2245,
@@ -2893,7 +2893,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2245,
     transmutedFrom: "Shaman Gaspard of the Hall",
-    burnOrder: 710
+    burnOrder: 710,
   },
   {
     idx: 2248,
@@ -2908,7 +2908,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2248,
     transmutedFrom: "Electromancer Davos of the Desert",
-    burnOrder: 501
+    burnOrder: 501,
   },
   {
     idx: 2260,
@@ -2923,7 +2923,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2260,
     transmutedFrom: "Hedge Wizard Lucinda of the Mount",
-    burnOrder: 675
+    burnOrder: 675,
   },
   {
     idx: 2267,
@@ -2938,7 +2938,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2267,
     transmutedFrom: "Sky Master JackDaw of Mu",
-    burnOrder: 317
+    burnOrder: 317,
   },
   {
     idx: 2279,
@@ -2953,7 +2953,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2279,
     transmutedFrom: "Archmagus Eden of the Moors",
-    burnOrder: 617
+    burnOrder: 617,
   },
   {
     idx: 2287,
@@ -2968,7 +2968,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2287,
     transmutedFrom: "Hedge Wizard Hind of the Veil",
-    burnOrder: 117
+    burnOrder: 117,
   },
   {
     idx: 2309,
@@ -2983,7 +2983,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 335,
     transmutedFromNumber: 2309,
     transmutedFrom: "Sage Carly of the Lake",
-    burnOrder: 258
+    burnOrder: 258,
   },
   {
     idx: 2310,
@@ -2998,7 +2998,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 338,
     transmutedFromNumber: 2310,
     transmutedFrom: "Enchanter Sondra of the Field",
-    burnOrder: 658
+    burnOrder: 658,
   },
   {
     idx: 2311,
@@ -3013,7 +3013,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2311,
     transmutedFrom: "Geomancer Aslan of the Brine",
-    burnOrder: 353
+    burnOrder: 353,
   },
   {
     idx: 2316,
@@ -3028,7 +3028,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2316,
     transmutedFrom: "Arcanist Dante of the Oasis",
-    burnOrder: 356
+    burnOrder: 356,
   },
   {
     idx: 2317,
@@ -3043,7 +3043,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2317,
     transmutedFrom: "Chaos Mage Aiko of the Marsh",
-    burnOrder: 357
+    burnOrder: 357,
   },
   {
     idx: 2337,
@@ -3058,7 +3058,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2337,
     transmutedFrom: "Adept Sondra of the Villa",
-    burnOrder: 103
+    burnOrder: 103,
   },
   {
     idx: 2352,
@@ -3073,7 +3073,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2352,
     transmutedFrom: "Druid Ixar from the Abyss",
-    burnOrder: 611
+    burnOrder: 611,
   },
   {
     idx: 2366,
@@ -3088,7 +3088,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2366,
     transmutedFrom: "Archmagus Ozohr of the Forest",
-    burnOrder: 638
+    burnOrder: 638,
   },
   {
     idx: 2372,
@@ -3103,7 +3103,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2372,
     transmutedFrom: "Adept Voidoth of the Event Horizon",
-    burnOrder: 277
+    burnOrder: 277,
   },
   {
     idx: 2379,
@@ -3118,7 +3118,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2379,
     transmutedFrom: "Shaman Darick of the Dunes",
-    burnOrder: 546
+    burnOrder: 546,
   },
   {
     idx: 2385,
@@ -3133,7 +3133,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2385,
     transmutedFrom: "Archmagus Alessar of the Plains",
-    burnOrder: 419
+    burnOrder: 419,
   },
   {
     idx: 2399,
@@ -3148,7 +3148,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2399,
     transmutedFrom: "Archmagus Aleister from the Abyss",
-    burnOrder: 202
+    burnOrder: 202,
   },
   {
     idx: 2409,
@@ -3163,7 +3163,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2409,
     transmutedFrom: "Solar Mage Aiko of the Tower",
-    burnOrder: 348
+    burnOrder: 348,
   },
   {
     idx: 2410,
@@ -3178,7 +3178,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2410,
     transmutedFrom: "Archmagus Uvlius of the Hollow",
-    burnOrder: 94
+    burnOrder: 94,
   },
   {
     idx: 2417,
@@ -3193,7 +3193,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2417,
     transmutedFrom: "Geomancer Auguste of the Sun",
-    burnOrder: 153
+    burnOrder: 153,
   },
   {
     idx: 2430,
@@ -3208,7 +3208,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2430,
     transmutedFrom: "Geomancer Aslan of the Mist",
-    burnOrder: 107
+    burnOrder: 107,
   },
   {
     idx: 2443,
@@ -3223,7 +3223,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2443,
     transmutedFrom: "Diabolist Khudalf of El Dorado",
-    burnOrder: 481
+    burnOrder: 481,
   },
   {
     idx: 2450,
@@ -3238,7 +3238,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2450,
     transmutedFrom: "Magus Pumlo of Arcadia",
-    burnOrder: 708
+    burnOrder: 708,
   },
   {
     idx: 2455,
@@ -3253,7 +3253,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2455,
     transmutedFrom: "Sage Eric of the Canyon",
-    burnOrder: 545
+    burnOrder: 545,
   },
   {
     idx: 2479,
@@ -3268,7 +3268,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2479,
     transmutedFrom: "Oracle Celah of the Valley",
-    burnOrder: 371
+    burnOrder: 371,
   },
   {
     idx: 2486,
@@ -3283,7 +3283,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2486,
     transmutedFrom: "Magus Amir of the Mount",
-    burnOrder: 594
+    burnOrder: 594,
   },
   {
     idx: 2521,
@@ -3298,7 +3298,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2521,
     transmutedFrom: "Battle Mage Rodolfo of the Loch",
-    burnOrder: 516
+    burnOrder: 516,
   },
   {
     idx: 2527,
@@ -3313,7 +3313,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2527,
     transmutedFrom: "Chronomancer Marius of the Garden",
-    burnOrder: 559
+    burnOrder: 559,
   },
   {
     idx: 2532,
@@ -3328,7 +3328,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2532,
     transmutedFrom: "Adept Karasu of the Ether",
-    burnOrder: 308
+    burnOrder: 308,
   },
   {
     idx: 2544,
@@ -3343,7 +3343,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2544,
     transmutedFrom: "Druid Jabir of the Palms",
-    burnOrder: 457
+    burnOrder: 457,
   },
   {
     idx: 2549,
@@ -3358,7 +3358,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2549,
     transmutedFrom: "Archmagus Amir of the Psychic Leap",
-    burnOrder: 635
+    burnOrder: 635,
   },
   {
     idx: 2577,
@@ -3373,7 +3373,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2577,
     transmutedFrom: "Druid Diana of the Plains",
-    burnOrder: 82
+    burnOrder: 82,
   },
   {
     idx: 2581,
@@ -3388,7 +3388,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2581,
     transmutedFrom: "Charmer Adrienne of the River",
-    burnOrder: 263
+    burnOrder: 263,
   },
   {
     idx: 2593,
@@ -3403,7 +3403,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2593,
     transmutedFrom: "Battle Mage Nolan of the Heath",
-    burnOrder: 382
+    burnOrder: 382,
   },
   {
     idx: 2611,
@@ -3418,7 +3418,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2611,
     transmutedFrom: "Bard Bolin of El Dorado",
-    burnOrder: 494
+    burnOrder: 494,
   },
   {
     idx: 2677,
@@ -3433,7 +3433,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 329,
     transmutedFromNumber: 2677,
     transmutedFrom: "Necromancer Arcus of the Platonic Shadow",
-    burnOrder: 251
+    burnOrder: 251,
   },
   {
     idx: 2685,
@@ -3448,7 +3448,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2685,
     transmutedFrom: "Sage Juniper of the Marsh",
-    burnOrder: 582
+    burnOrder: 582,
   },
   {
     idx: 2692,
@@ -3463,7 +3463,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2692,
     transmutedFrom: "Oracle Astrid of the Swell",
-    burnOrder: 531
+    burnOrder: 531,
   },
   {
     idx: 2700,
@@ -3478,7 +3478,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2700,
     transmutedFrom: "Magus Nazim of the Ether",
-    burnOrder: 203
+    burnOrder: 203,
   },
   {
     idx: 2706,
@@ -3493,7 +3493,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2706,
     transmutedFrom: "Archmagus Aldus of the Mount",
-    burnOrder: 415
+    burnOrder: 415,
   },
   {
     idx: 2721,
@@ -3508,7 +3508,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2721,
     transmutedFrom: "Alchemist Alatar of Dreams",
-    burnOrder: 215
+    burnOrder: 215,
   },
   {
     idx: 2742,
@@ -3523,7 +3523,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2742,
     transmutedFrom: "Cosmic Mage Aleister of the Quantum Downs",
-    burnOrder: 426
+    burnOrder: 426,
   },
   {
     idx: 2751,
@@ -3538,7 +3538,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2751,
     transmutedFrom: "Geomancer Jasper of the Wood",
-    burnOrder: 395
+    burnOrder: 395,
   },
   {
     idx: 2753,
@@ -3553,7 +3553,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2753,
     transmutedFrom: "Witch Ivy of the Sacred Pillars",
-    burnOrder: 434
+    burnOrder: 434,
   },
   {
     idx: 2787,
@@ -3568,7 +3568,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2787,
     transmutedFrom: " Layla of the Desert",
-    burnOrder: 170
+    burnOrder: 170,
   },
   {
     idx: 2796,
@@ -3583,7 +3583,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2796,
     transmutedFrom: "Thaumaturge Dante of the Citadel",
-    burnOrder: 707
+    burnOrder: 707,
   },
   {
     idx: 2811,
@@ -3598,7 +3598,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2811,
     transmutedFrom: "Thaumaturge Horace of the Sun",
-    burnOrder: 579
+    burnOrder: 579,
   },
   {
     idx: 2839,
@@ -3613,7 +3613,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2839,
     transmutedFrom: " Basil of the Oasis",
-    burnOrder: 309
+    burnOrder: 309,
   },
   {
     idx: 2843,
@@ -3628,7 +3628,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2843,
     transmutedFrom: "Arch-Magician Ixar of the Ice",
-    burnOrder: 74
+    burnOrder: 74,
   },
   {
     idx: 2851,
@@ -3643,7 +3643,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 338,
     transmutedFromNumber: 2851,
     transmutedFrom: "Ghost Eater Aleister of Xanadu",
-    burnOrder: 147
+    burnOrder: 147,
   },
   {
     idx: 2854,
@@ -3658,7 +3658,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2854,
     transmutedFrom: "Archmagus Milton of the Swell",
-    burnOrder: 301
+    burnOrder: 301,
   },
   {
     idx: 2863,
@@ -3673,7 +3673,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2863,
     transmutedFrom: "Archmagus Kalo of the Brambles",
-    burnOrder: 668
+    burnOrder: 668,
   },
   {
     idx: 2884,
@@ -3688,7 +3688,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2884,
     transmutedFrom: "Alchemist Alice of the Bastion",
-    burnOrder: 231
+    burnOrder: 231,
   },
   {
     idx: 2892,
@@ -3703,7 +3703,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2892,
     transmutedFrom: "Sorcerer Udor ",
-    burnOrder: 608
+    burnOrder: 608,
   },
   {
     idx: 2908,
@@ -3718,7 +3718,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2908,
     transmutedFrom: " Lumos of the Hall",
-    burnOrder: 682
+    burnOrder: 682,
   },
   {
     idx: 2912,
@@ -3733,7 +3733,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 330,
     transmutedFromNumber: 2912,
     transmutedFrom: "Voodoo Priest Hothor of the Gnostics",
-    burnOrder: 23
+    burnOrder: 23,
   },
   {
     idx: 2918,
@@ -3748,7 +3748,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2918,
     transmutedFrom: "Adept Scorch of the Sacred Pillars",
-    burnOrder: 22
+    burnOrder: 22,
   },
   {
     idx: 2928,
@@ -3763,7 +3763,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2928,
     transmutedFrom: "Evil Arcanist Faustus of the Great Blue",
-    burnOrder: 57
+    burnOrder: 57,
   },
   {
     idx: 2932,
@@ -3778,7 +3778,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2932,
     transmutedFrom: "Enchanter Daphne of the Waste",
-    burnOrder: 406
+    burnOrder: 406,
   },
   {
     idx: 2944,
@@ -3793,7 +3793,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2944,
     transmutedFrom: "Shaman Nicolas of the Grotto",
-    burnOrder: 54
+    burnOrder: 54,
   },
   {
     idx: 2950,
@@ -3808,7 +3808,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2950,
     transmutedFrom: "Cleric Nori of the Mount",
-    burnOrder: 186
+    burnOrder: 186,
   },
   {
     idx: 2953,
@@ -3823,7 +3823,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2953,
     transmutedFrom: "Druid Hu of Xanadu",
-    burnOrder: 302
+    burnOrder: 302,
   },
   {
     idx: 2987,
@@ -3838,7 +3838,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 2987,
     transmutedFrom: "Shaman Azathoth of the Oasis",
-    burnOrder: 687
+    burnOrder: 687,
   },
   {
     idx: 3037,
@@ -3853,7 +3853,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3037,
     transmutedFrom: "Enchanter Larissa of the Grotto",
-    burnOrder: 166
+    burnOrder: 166,
   },
   {
     idx: 3047,
@@ -3868,7 +3868,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3047,
     transmutedFrom: "Archmagus Alatar of the Hollow",
-    burnOrder: 80
+    burnOrder: 80,
   },
   {
     idx: 3055,
@@ -3883,7 +3883,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3055,
     transmutedFrom: "Battle Mage Nolan of the Villa",
-    burnOrder: 496
+    burnOrder: 496,
   },
   {
     idx: 3059,
@@ -3898,7 +3898,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3059,
     transmutedFrom: "Battle Mage Tundror of the Wild",
-    burnOrder: 441
+    burnOrder: 441,
   },
   {
     idx: 3088,
@@ -3913,7 +3913,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3088,
     transmutedFrom: "Enchanter Lamia of the Oasis",
-    burnOrder: 537
+    burnOrder: 537,
   },
   {
     idx: 3098,
@@ -3928,7 +3928,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3098,
     transmutedFrom: "Witch Sylvia of the Heath",
-    burnOrder: 618
+    burnOrder: 618,
   },
   {
     idx: 3115,
@@ -3943,7 +3943,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3115,
     transmutedFrom: "Battlemage Jeldor of the Ice",
-    burnOrder: 114
+    burnOrder: 114,
   },
   {
     idx: 3122,
@@ -3958,7 +3958,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3122,
     transmutedFrom: "Magus Dr. Death of Xanadu",
-    burnOrder: 448
+    burnOrder: 448,
   },
   {
     idx: 3145,
@@ -3973,7 +3973,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3145,
     transmutedFrom: "Arch-Magician Aden of the Forest",
-    burnOrder: 241
+    burnOrder: 241,
   },
   {
     idx: 3174,
@@ -3988,7 +3988,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3174,
     transmutedFrom: "Battle Mage Malthus of the Valley",
-    burnOrder: 368
+    burnOrder: 368,
   },
   {
     idx: 3176,
@@ -4003,7 +4003,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3176,
     transmutedFrom: "Adept Nazim of the Villa",
-    burnOrder: 367
+    burnOrder: 367,
   },
   {
     idx: 3179,
@@ -4018,7 +4018,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3179,
     transmutedFrom: "Shaman Cullen of the Heath",
-    burnOrder: 9
+    burnOrder: 9,
   },
   {
     idx: 3197,
@@ -4033,7 +4033,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3197,
     transmutedFrom: "Pyromancer Ivy of the Obelisk",
-    burnOrder: 105
+    burnOrder: 105,
   },
   {
     idx: 3214,
@@ -4048,7 +4048,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3214,
     transmutedFrom: "Arch-Magician Karasu of the Plains",
-    burnOrder: 589
+    burnOrder: 589,
   },
   {
     idx: 3220,
@@ -4063,7 +4063,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3220,
     transmutedFrom: "Arcanist Dr. Death of the Ether",
-    burnOrder: 274
+    burnOrder: 274,
   },
   {
     idx: 3224,
@@ -4078,7 +4078,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3224,
     transmutedFrom: " Aldus of the Riviera",
-    burnOrder: 379
+    burnOrder: 379,
   },
   {
     idx: 3231,
@@ -4093,7 +4093,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3231,
     transmutedFrom: "Arcanist Victoria of the Hills",
-    burnOrder: 533
+    burnOrder: 533,
   },
   {
     idx: 3240,
@@ -4108,7 +4108,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3240,
     transmutedFrom: "Geomancer Poppy of the Lake",
-    burnOrder: 562
+    burnOrder: 562,
   },
   {
     idx: 3243,
@@ -4123,7 +4123,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 333,
     transmutedFromNumber: 3243,
     transmutedFrom: "Mystic Reza of the Capital",
-    burnOrder: 158
+    burnOrder: 158,
   },
   {
     idx: 3246,
@@ -4138,7 +4138,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3246,
     transmutedFrom: "Archmagus Isaac of the Ether",
-    burnOrder: 303
+    burnOrder: 303,
   },
   {
     idx: 3249,
@@ -4153,7 +4153,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3249,
     transmutedFrom: "Charmer Maia of the Valley",
-    burnOrder: 716
+    burnOrder: 716,
   },
   {
     idx: 3258,
@@ -4168,7 +4168,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3258,
     transmutedFrom: "Clairvoyant Aiko of the Astral Plane",
-    burnOrder: 124
+    burnOrder: 124,
   },
   {
     idx: 3259,
@@ -4183,7 +4183,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3259,
     transmutedFrom: "Archmagus Sharx of the Capital",
-    burnOrder: 252
+    burnOrder: 252,
   },
   {
     idx: 3263,
@@ -4198,7 +4198,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3263,
     transmutedFrom: "Arcanist Alizam of the Grotto",
-    burnOrder: 173
+    burnOrder: 173,
   },
   {
     idx: 3265,
@@ -4213,7 +4213,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3265,
     transmutedFrom: "Arch-Magician Astrid of the River",
-    burnOrder: 361
+    burnOrder: 361,
   },
   {
     idx: 3274,
@@ -4228,7 +4228,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3274,
     transmutedFrom: "Ghost Eater Azazel of the Hall",
-    burnOrder: 526
+    burnOrder: 526,
   },
   {
     idx: 3284,
@@ -4243,7 +4243,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3284,
     transmutedFrom: "Stellar Mage Bolin of the Havens",
-    burnOrder: 291
+    burnOrder: 291,
   },
   {
     idx: 3300,
@@ -4258,7 +4258,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3300,
     transmutedFrom: "Alchemist Uday of the Steppe",
-    burnOrder: 740
+    burnOrder: 740,
   },
   {
     idx: 3336,
@@ -4273,7 +4273,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 323,
     transmutedFromNumber: 3336,
     transmutedFrom: "Shadow Mage Nazim of Arcadia",
-    burnOrder: 261
+    burnOrder: 261,
   },
   {
     idx: 3365,
@@ -4288,7 +4288,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3365,
     transmutedFrom: "Magus Gourdon of the Brambles",
-    burnOrder: 90
+    burnOrder: 90,
   },
   {
     idx: 3394,
@@ -4303,7 +4303,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3394,
     transmutedFrom: "Battle Mage Caligula of Dreams",
-    burnOrder: 352
+    burnOrder: 352,
   },
   {
     idx: 3415,
@@ -4318,7 +4318,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3415,
     transmutedFrom: "Battle Mage Blaise of the Wild",
-    burnOrder: 228
+    burnOrder: 228,
   },
   {
     idx: 3417,
@@ -4333,7 +4333,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3417,
     transmutedFrom: "Archmagus Merlon of the Villa",
-    burnOrder: 430
+    burnOrder: 430,
   },
   {
     idx: 3418,
@@ -4348,7 +4348,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3418,
     transmutedFrom: "Voodoo Priest Gallo of the Rock",
-    burnOrder: 366
+    burnOrder: 366,
   },
   {
     idx: 3425,
@@ -4363,7 +4363,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3425,
     transmutedFrom: "Sorcerer Merlon of the Fey",
-    burnOrder: 6
+    burnOrder: 6,
   },
   {
     idx: 3429,
@@ -4378,7 +4378,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3429,
     transmutedFrom: "Alchemist Salvatore of the Mount",
-    burnOrder: 613
+    burnOrder: 613,
   },
   {
     idx: 3433,
@@ -4393,7 +4393,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 324,
     transmutedFromNumber: 3433,
     transmutedFrom: "Magus Wolfram of the Heath",
-    burnOrder: 204
+    burnOrder: 204,
   },
   {
     idx: 3446,
@@ -4408,7 +4408,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3446,
     transmutedFrom: "Stellar Mage Aamon of the Steppe",
-    burnOrder: 271
+    burnOrder: 271,
   },
   {
     idx: 3468,
@@ -4423,7 +4423,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3468,
     transmutedFrom: "Cosmic Mage Zolona of the Desert",
-    burnOrder: 218
+    burnOrder: 218,
   },
   {
     idx: 3483,
@@ -4438,7 +4438,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3483,
     transmutedFrom: "Magus Xiaosheng of the Marsh",
-    burnOrder: 19
+    burnOrder: 19,
   },
   {
     idx: 3494,
@@ -4453,7 +4453,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3494,
     transmutedFrom: "Witch Hagatha of the Sun",
-    burnOrder: 354
+    burnOrder: 354,
   },
   {
     idx: 3502,
@@ -4468,7 +4468,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3502,
     transmutedFrom: "Colormancer Hue of the Brambles",
-    burnOrder: 208
+    burnOrder: 208,
   },
   {
     idx: 3509,
@@ -4483,7 +4483,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3509,
     transmutedFrom: "Augurer Darick of the Valley",
-    burnOrder: 374
+    burnOrder: 374,
   },
   {
     idx: 3562,
@@ -4498,7 +4498,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3562,
     transmutedFrom: "Artificer Corky of Xanadu",
-    burnOrder: 285
+    burnOrder: 285,
   },
   {
     idx: 3563,
@@ -4513,7 +4513,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3563,
     transmutedFrom: "Battle Mage Tundror of the Surf",
-    burnOrder: 69
+    burnOrder: 69,
   },
   {
     idx: 3574,
@@ -4528,7 +4528,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3574,
     transmutedFrom: "Ghost Eater Udor of the Veil",
-    burnOrder: 205
+    burnOrder: 205,
   },
   {
     idx: 3586,
@@ -4543,7 +4543,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3586,
     transmutedFrom: "Enchanter Circe of the Wood",
-    burnOrder: 323
+    burnOrder: 323,
   },
   {
     idx: 3599,
@@ -4558,7 +4558,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3599,
     transmutedFrom: "Alchemist Xerxes of Alfheim",
-    burnOrder: 148
+    burnOrder: 148,
   },
   {
     idx: 3642,
@@ -4573,7 +4573,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 321,
     transmutedFromNumber: 3642,
     transmutedFrom: "Spellsinger Nikolas of the Ether",
-    burnOrder: 591
+    burnOrder: 591,
   },
   {
     idx: 3670,
@@ -4588,7 +4588,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3670,
     transmutedFrom: "Hedge Wizard Nicolas of the Oasis",
-    burnOrder: 705
+    burnOrder: 705,
   },
   {
     idx: 3684,
@@ -4603,7 +4603,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3684,
     transmutedFrom: "Shaman Magnus of the Valley",
-    burnOrder: 320
+    burnOrder: 320,
   },
   {
     idx: 3698,
@@ -4618,7 +4618,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3698,
     transmutedFrom: "Hedge Wizard Danny of the Desert",
-    burnOrder: 720
+    burnOrder: 720,
   },
   {
     idx: 3720,
@@ -4633,7 +4633,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 321,
     transmutedFromNumber: 3720,
     transmutedFrom: "Sage Morrow of the Bibliotheca",
-    burnOrder: 375
+    burnOrder: 375,
   },
   {
     idx: 3744,
@@ -4648,7 +4648,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 318,
     transmutedFromNumber: 3744,
     transmutedFrom: "Archmagus Moka of the Villa",
-    burnOrder: 138
+    burnOrder: 138,
   },
   {
     idx: 3745,
@@ -4663,7 +4663,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3745,
     transmutedFrom: "Ice Mage Cromwell of the Expanse",
-    burnOrder: 137
+    burnOrder: 137,
   },
   {
     idx: 3768,
@@ -4678,7 +4678,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3768,
     transmutedFrom: "Battle Mage Goliath of the Sands",
-    burnOrder: 719
+    burnOrder: 719,
   },
   {
     idx: 3774,
@@ -4693,7 +4693,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3774,
     transmutedFrom: "Hydromancer Layla of the Mountain",
-    burnOrder: 551
+    burnOrder: 551,
   },
   {
     idx: 3787,
@@ -4708,7 +4708,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3787,
     transmutedFrom: "Magus Jerret of the Quantum Downs",
-    burnOrder: 665
+    burnOrder: 665,
   },
   {
     idx: 3791,
@@ -4723,7 +4723,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3791,
     transmutedFrom: "Cryptomancer Jay of the Secret Fire",
-    burnOrder: 10
+    burnOrder: 10,
   },
   {
     idx: 3794,
@@ -4738,7 +4738,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3794,
     transmutedFrom: "Enchanter Ramiz of the Bibliotheca",
-    burnOrder: 289
+    burnOrder: 289,
   },
   {
     idx: 3802,
@@ -4753,7 +4753,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3802,
     transmutedFrom: "Archmagus Iris of the Veil",
-    burnOrder: 36
+    burnOrder: 36,
   },
   {
     idx: 3805,
@@ -4768,7 +4768,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3805,
     transmutedFrom: "Oracle Horace of the Cold",
-    burnOrder: 331
+    burnOrder: 331,
   },
   {
     idx: 3808,
@@ -4783,7 +4783,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3808,
     transmutedFrom: "Hedge Wizard Cromwell of the Wold",
-    burnOrder: 324
+    burnOrder: 324,
   },
   {
     idx: 3810,
@@ -4798,7 +4798,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3810,
     transmutedFrom: " Beyna of the Riviera",
-    burnOrder: 469
+    burnOrder: 469,
   },
   {
     idx: 3815,
@@ -4813,7 +4813,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3815,
     transmutedFrom: "Druid Ozohr of the Morning Star",
-    burnOrder: 428
+    burnOrder: 428,
   },
   {
     idx: 3842,
@@ -4828,7 +4828,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3842,
     transmutedFrom: "Arch-Magician Zubin of the Fey",
-    burnOrder: 461
+    burnOrder: 461,
   },
   {
     idx: 3925,
@@ -4843,7 +4843,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3925,
     transmutedFrom: "Stellar Mage Kalo of the Field",
-    burnOrder: 433
+    burnOrder: 433,
   },
   {
     idx: 3928,
@@ -4858,7 +4858,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3928,
     transmutedFrom: "Arch-Magician Caligari of the Obelisk",
-    burnOrder: 397
+    burnOrder: 397,
   },
   {
     idx: 3935,
@@ -4873,7 +4873,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3935,
     transmutedFrom: "Magus Herne of the Inferno",
-    burnOrder: 502
+    burnOrder: 502,
   },
   {
     idx: 3959,
@@ -4888,7 +4888,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3959,
     transmutedFrom: "Geomancer  of Cuckoo Land",
-    burnOrder: 616
+    burnOrder: 616,
   },
   {
     idx: 3962,
@@ -4903,7 +4903,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3962,
     transmutedFrom: "Archmagus Ofaris of the Canyon",
-    burnOrder: 436
+    burnOrder: 436,
   },
   {
     idx: 3963,
@@ -4918,7 +4918,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 3963,
     transmutedFrom: "Pyromancer Amir of the Obelisk",
-    burnOrder: 111
+    burnOrder: 111,
   },
   {
     idx: 4020,
@@ -4933,7 +4933,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4020,
     transmutedFrom: "Cryptomancer Amir of the Wold",
-    burnOrder: 636
+    burnOrder: 636,
   },
   {
     idx: 4022,
@@ -4948,7 +4948,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4022,
     transmutedFrom: "Sage Merlon of the River",
-    burnOrder: 726
+    burnOrder: 726,
   },
   {
     idx: 4026,
@@ -4963,7 +4963,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4026,
     transmutedFrom: "Battle Mage Malthus of Avalon",
-    burnOrder: 669
+    burnOrder: 669,
   },
   {
     idx: 4030,
@@ -4978,7 +4978,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4030,
     transmutedFrom: "Shaman Zubin of the Riviera",
-    burnOrder: 435
+    burnOrder: 435,
   },
   {
     idx: 4042,
@@ -4993,7 +4993,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4042,
     transmutedFrom: "Hedge Wizard Moloch of Avalon",
-    burnOrder: 497
+    burnOrder: 497,
   },
   {
     idx: 4047,
@@ -5008,7 +5008,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4047,
     transmutedFrom: "Medium Basil of the Capital",
-    burnOrder: 142
+    burnOrder: 142,
   },
   {
     idx: 4075,
@@ -5023,7 +5023,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4075,
     transmutedFrom: "Shaman Armstrong of the Riviera",
-    burnOrder: 254
+    burnOrder: 254,
   },
   {
     idx: 4094,
@@ -5038,7 +5038,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4094,
     transmutedFrom: "Cleric Tengu of the Valley",
-    burnOrder: 565
+    burnOrder: 565,
   },
   {
     idx: 4121,
@@ -5053,7 +5053,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 335,
     transmutedFromNumber: 4121,
     transmutedFrom: "Sorcerer Udor of the Keep",
-    burnOrder: 246
+    burnOrder: 246,
   },
   {
     idx: 4128,
@@ -5068,7 +5068,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4128,
     transmutedFrom: "Hedge Wizard Florah of the Hollow",
-    burnOrder: 257
+    burnOrder: 257,
   },
   {
     idx: 4135,
@@ -5083,7 +5083,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4135,
     transmutedFrom: "Pyromancer Auguste of the Hollow",
-    burnOrder: 270
+    burnOrder: 270,
   },
   {
     idx: 4158,
@@ -5098,7 +5098,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4158,
     transmutedFrom: "Artificer Jabir of the Steppe",
-    burnOrder: 56
+    burnOrder: 56,
   },
   {
     idx: 4170,
@@ -5113,7 +5113,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4170,
     transmutedFrom: "Void Disciple Moloch of the Veil",
-    burnOrder: 116
+    burnOrder: 116,
   },
   {
     idx: 4206,
@@ -5128,7 +5128,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4206,
     transmutedFrom: "Hedge Wizard Aiko of the Tower",
-    burnOrder: 699
+    burnOrder: 699,
   },
   {
     idx: 4230,
@@ -5143,7 +5143,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4230,
     transmutedFrom: "Archmagus Alatar of the Lake",
-    burnOrder: 139
+    burnOrder: 139,
   },
   {
     idx: 4235,
@@ -5158,7 +5158,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4235,
     transmutedFrom: "Archmagus Orpheus of the Hall",
-    burnOrder: 555
+    burnOrder: 555,
   },
   {
     idx: 4241,
@@ -5173,7 +5173,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 323,
     transmutedFromNumber: 4241,
     transmutedFrom: "Arch-Magician Iprix of the Road",
-    burnOrder: 362
+    burnOrder: 362,
   },
   {
     idx: 4252,
@@ -5188,7 +5188,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4252,
     transmutedFrom: "Void Disciple Zagan of the Catacombs",
-    burnOrder: 468
+    burnOrder: 468,
   },
   {
     idx: 4362,
@@ -5203,7 +5203,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 339,
     transmutedFromNumber: 4362,
     transmutedFrom: "Sorcerer Moloch of Limbo",
-    burnOrder: 606
+    burnOrder: 606,
   },
   {
     idx: 4371,
@@ -5218,7 +5218,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4371,
     transmutedFrom: "Enchanter Layla of Arcadia",
-    burnOrder: 38
+    burnOrder: 38,
   },
   {
     idx: 4400,
@@ -5233,7 +5233,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4400,
     transmutedFrom: "Enchanter Celeste of the Field",
-    burnOrder: 737
+    burnOrder: 737,
   },
   {
     idx: 4459,
@@ -5248,7 +5248,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4459,
     transmutedFrom: "Battle Mage Baird of the Plains",
-    burnOrder: 217
+    burnOrder: 217,
   },
   {
     idx: 4463,
@@ -5263,7 +5263,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4463,
     transmutedFrom: "Cartomancer Sarah of the Marsh",
-    burnOrder: 46
+    burnOrder: 46,
   },
   {
     idx: 4464,
@@ -5278,7 +5278,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4464,
     transmutedFrom: "Archmagus  of the Hall",
-    burnOrder: 492
+    burnOrder: 492,
   },
   {
     idx: 4470,
@@ -5293,7 +5293,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4470,
     transmutedFrom: "Sorcerer Jerret of the Moors",
-    burnOrder: 530
+    burnOrder: 530,
   },
   {
     idx: 4483,
@@ -5308,7 +5308,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4483,
     transmutedFrom: "Witch Lamia of the Hills",
-    burnOrder: 306
+    burnOrder: 306,
   },
   {
     idx: 4496,
@@ -5323,7 +5323,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4496,
     transmutedFrom: "Hydromancer Meloogen of Arcadia",
-    burnOrder: 704
+    burnOrder: 704,
   },
   {
     idx: 4509,
@@ -5338,7 +5338,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4509,
     transmutedFrom: "Alchemist Cairon of the River",
-    burnOrder: 678
+    burnOrder: 678,
   },
   {
     idx: 4513,
@@ -5353,7 +5353,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4513,
     transmutedFrom: "Artificer Bobbin of the Atheneum",
-    burnOrder: 73
+    burnOrder: 73,
   },
   {
     idx: 4517,
@@ -5368,7 +5368,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4517,
     transmutedFrom: "Adept Umber of the Wood",
-    burnOrder: 423
+    burnOrder: 423,
   },
   {
     idx: 4519,
@@ -5383,7 +5383,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4519,
     transmutedFrom: "Hedge Wizard Luther of Limbo",
-    burnOrder: 338
+    burnOrder: 338,
   },
   {
     idx: 4532,
@@ -5398,7 +5398,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4532,
     transmutedFrom: "Archmagus Jerret of the Wood",
-    burnOrder: 701
+    burnOrder: 701,
   },
   {
     idx: 4548,
@@ -5413,7 +5413,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4548,
     transmutedFrom: "Arcanist Alizam of the Veil",
-    burnOrder: 370
+    burnOrder: 370,
   },
   {
     idx: 4553,
@@ -5428,7 +5428,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4553,
     transmutedFrom: "Pyromancer Eden ",
-    burnOrder: 65
+    burnOrder: 65,
   },
   {
     idx: 4567,
@@ -5443,7 +5443,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4567,
     transmutedFrom: "  of the Desert",
-    burnOrder: 171
+    burnOrder: 171,
   },
   {
     idx: 4569,
@@ -5458,7 +5458,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4569,
     transmutedFrom: "Chaos Mage Nala of the Keep",
-    burnOrder: 334
+    burnOrder: 334,
   },
   {
     idx: 4605,
@@ -5473,7 +5473,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4605,
     transmutedFrom: "Summoner Giacomo ",
-    burnOrder: 337
+    burnOrder: 337,
   },
   {
     idx: 4607,
@@ -5488,7 +5488,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4607,
     transmutedFrom: "Voodoo Priest Uvlius of the Astral Plane",
-    burnOrder: 196
+    burnOrder: 196,
   },
   {
     idx: 4608,
@@ -5503,7 +5503,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4608,
     transmutedFrom: "Clairvoyant Soya of the Villa",
-    burnOrder: 730
+    burnOrder: 730,
   },
   {
     idx: 4613,
@@ -5518,7 +5518,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4613,
     transmutedFrom: "Magus Homer of the Keep",
-    burnOrder: 522
+    burnOrder: 522,
   },
   {
     idx: 4623,
@@ -5533,7 +5533,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4623,
     transmutedFrom: "Null Mage Eden ",
-    burnOrder: 744
+    burnOrder: 744,
   },
   {
     idx: 4643,
@@ -5548,7 +5548,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4643,
     transmutedFrom: "Geomancer Oxnard of the River",
-    burnOrder: 697
+    burnOrder: 697,
   },
   {
     idx: 4651,
@@ -5563,7 +5563,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4651,
     transmutedFrom: "Necromancer Calista of the Grotto",
-    burnOrder: 724
+    burnOrder: 724,
   },
   {
     idx: 4653,
@@ -5578,7 +5578,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4653,
     transmutedFrom: "Ice Mage Aiko of the Ice",
-    burnOrder: 329
+    burnOrder: 329,
   },
   {
     idx: 4662,
@@ -5593,7 +5593,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4662,
     transmutedFrom: "Adept Kryll of Dreams",
-    burnOrder: 35
+    burnOrder: 35,
   },
   {
     idx: 4663,
@@ -5608,7 +5608,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4663,
     transmutedFrom: "Alchemist Actaeon of the Thorn",
-    burnOrder: 646
+    burnOrder: 646,
   },
   {
     idx: 4665,
@@ -5623,7 +5623,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4665,
     transmutedFrom: " David of the Capital",
-    burnOrder: 88
+    burnOrder: 88,
   },
   {
     idx: 4672,
@@ -5638,7 +5638,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4672,
     transmutedFrom: "Druid Cromwell of the Palms",
-    burnOrder: 322
+    burnOrder: 322,
   },
   {
     idx: 4689,
@@ -5653,7 +5653,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4689,
     transmutedFrom: " David of Xanadu",
-    burnOrder: 195
+    burnOrder: 195,
   },
   {
     idx: 4740,
@@ -5668,7 +5668,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4740,
     transmutedFrom: "Sorcerer Milton of the Ether",
-    burnOrder: 479
+    burnOrder: 479,
   },
   {
     idx: 4748,
@@ -5683,7 +5683,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4748,
     transmutedFrom: "Alchemist Miyo of the Marsh",
-    burnOrder: 128
+    burnOrder: 128,
   },
   {
     idx: 4770,
@@ -5698,7 +5698,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4770,
     transmutedFrom: "Charmer Adrienne of the Carnival",
-    burnOrder: 731
+    burnOrder: 731,
   },
   {
     idx: 4792,
@@ -5713,7 +5713,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4792,
     transmutedFrom: "Necromancer Seth of the Cosmos",
-    burnOrder: 495
+    burnOrder: 495,
   },
   {
     idx: 4795,
@@ -5728,7 +5728,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 329,
     transmutedFromNumber: 4795,
     transmutedFrom: "Magus Giuseppe of the Hills",
-    burnOrder: 120
+    burnOrder: 120,
   },
   {
     idx: 4799,
@@ -5743,7 +5743,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4799,
     transmutedFrom: "Sage Enigma of the Realm",
-    burnOrder: 735
+    burnOrder: 735,
   },
   {
     idx: 4802,
@@ -5758,7 +5758,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4802,
     transmutedFrom: "Spellsinger Apollo of the Waste",
-    burnOrder: 429
+    burnOrder: 429,
   },
   {
     idx: 4819,
@@ -5773,7 +5773,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4819,
     transmutedFrom: "Pyromancer Borak of the Temple",
-    burnOrder: 660
+    burnOrder: 660,
   },
   {
     idx: 4829,
@@ -5788,7 +5788,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4829,
     transmutedFrom: " Solomon of the Grotto",
-    burnOrder: 666
+    burnOrder: 666,
   },
   {
     idx: 4845,
@@ -5803,7 +5803,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4845,
     transmutedFrom: "Battle Mage Dante of the Riviera",
-    burnOrder: 625
+    burnOrder: 625,
   },
   {
     idx: 4857,
@@ -5818,7 +5818,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4857,
     transmutedFrom: "Holy Monk  of the Field",
-    burnOrder: 498
+    burnOrder: 498,
   },
   {
     idx: 4860,
@@ -5833,7 +5833,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4860,
     transmutedFrom: "Arch-Magician  of the Toadstools",
-    burnOrder: 700
+    burnOrder: 700,
   },
   {
     idx: 4865,
@@ -5848,7 +5848,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4865,
     transmutedFrom: "Battle Mage Aslan of Arcadia",
-    burnOrder: 527
+    burnOrder: 527,
   },
   {
     idx: 4870,
@@ -5863,7 +5863,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4870,
     transmutedFrom: "Sage Nikolas of the Havens",
-    burnOrder: 451
+    burnOrder: 451,
   },
   {
     idx: 4872,
@@ -5878,7 +5878,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4872,
     transmutedFrom: "Runecaster Faye of the Plains",
-    burnOrder: 265
+    burnOrder: 265,
   },
   {
     idx: 4874,
@@ -5893,7 +5893,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4874,
     transmutedFrom: "Aeromancer Jabir of the Mount",
-    burnOrder: 146
+    burnOrder: 146,
   },
   {
     idx: 4876,
@@ -5908,7 +5908,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4876,
     transmutedFrom: "Magus Faye of the Quantum Downs",
-    burnOrder: 113
+    burnOrder: 113,
   },
   {
     idx: 4895,
@@ -5923,7 +5923,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4895,
     transmutedFrom: "Archmagus Nikolas in the Shadows",
-    burnOrder: 332
+    burnOrder: 332,
   },
   {
     idx: 4905,
@@ -5938,7 +5938,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4905,
     transmutedFrom: "Arcanist Casper of the Wood",
-    burnOrder: 614
+    burnOrder: 614,
   },
   {
     idx: 4924,
@@ -5953,7 +5953,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 334,
     transmutedFromNumber: 4924,
     transmutedFrom: "Conjurer Axis of Atlantis",
-    burnOrder: 685
+    burnOrder: 685,
   },
   {
     idx: 4937,
@@ -5968,7 +5968,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4937,
     transmutedFrom: "Necromancer Chiron of the Valley",
-    burnOrder: 742
+    burnOrder: 742,
   },
   {
     idx: 4944,
@@ -5983,7 +5983,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 4944,
     transmutedFrom: "Archmagus Iprix of El Dorado",
-    burnOrder: 540
+    burnOrder: 540,
   },
   {
     idx: 4966,
@@ -5998,7 +5998,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 340,
     transmutedFromNumber: 4966,
     transmutedFrom: "Artificer Aamon of the Hall",
-    burnOrder: 511
+    burnOrder: 511,
   },
   {
     idx: 5028,
@@ -6013,7 +6013,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5028,
     transmutedFrom: "Arch-Magician Qasim of the Mist",
-    burnOrder: 605
+    burnOrder: 605,
   },
   {
     idx: 5035,
@@ -6028,7 +6028,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5035,
     transmutedFrom: "Wizard Huizhong of the Veil",
-    burnOrder: 26
+    burnOrder: 26,
   },
   {
     idx: 5041,
@@ -6043,7 +6043,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5041,
     transmutedFrom: "Arch-Magician Merlon of the Heath",
-    burnOrder: 172
+    burnOrder: 172,
   },
   {
     idx: 5050,
@@ -6058,7 +6058,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5050,
     transmutedFrom: "Cleric Udor out of the Blizzard",
-    burnOrder: 507
+    burnOrder: 507,
   },
   {
     idx: 5051,
@@ -6073,7 +6073,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5051,
     transmutedFrom: "Archmagus Iprix of the Realm",
-    burnOrder: 723
+    burnOrder: 723,
   },
   {
     idx: 5055,
@@ -6088,7 +6088,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5055,
     transmutedFrom: "Archmagus Asmodeus of the Pit",
-    burnOrder: 534
+    burnOrder: 534,
   },
   {
     idx: 5064,
@@ -6103,7 +6103,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5064,
     transmutedFrom: "Artificer Salvatore of the Wood",
-    burnOrder: 412
+    burnOrder: 412,
   },
   {
     idx: 5068,
@@ -6118,7 +6118,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5068,
     transmutedFrom: "Ghost Eater Zhan of the Heath",
-    burnOrder: 383
+    burnOrder: 383,
   },
   {
     idx: 5075,
@@ -6133,7 +6133,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 340,
     transmutedFromNumber: 5075,
     transmutedFrom: "Magus Nolan of the Carnival",
-    burnOrder: 670
+    burnOrder: 670,
   },
   {
     idx: 5137,
@@ -6148,7 +6148,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5137,
     transmutedFrom: "Sorcerer Amir of the Mount",
-    burnOrder: 590
+    burnOrder: 590,
   },
   {
     idx: 5140,
@@ -6163,7 +6163,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5140,
     transmutedFrom: "Sorcerer Basil of the Berg",
-    burnOrder: 176
+    burnOrder: 176,
   },
   {
     idx: 5208,
@@ -6178,7 +6178,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5208,
     transmutedFrom: "Runecaster Zagan of Avalon",
-    burnOrder: 3
+    burnOrder: 3,
   },
   {
     idx: 5224,
@@ -6193,7 +6193,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5224,
     transmutedFrom: "Artificer Adium of the Mount",
-    burnOrder: 193
+    burnOrder: 193,
   },
   {
     idx: 5232,
@@ -6208,7 +6208,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5232,
     transmutedFrom: "Sage Aleister of the Gnostics",
-    burnOrder: 126
+    burnOrder: 126,
   },
   {
     idx: 5233,
@@ -6223,7 +6223,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 322,
     transmutedFromNumber: 5233,
     transmutedFrom: "Battle Mage Caligula of Mu",
-    burnOrder: 505
+    burnOrder: 505,
   },
   {
     idx: 5271,
@@ -6238,7 +6238,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5271,
     transmutedFrom: "Charmer Victoria of the Wood",
-    burnOrder: 667
+    burnOrder: 667,
   },
   {
     idx: 5320,
@@ -6253,7 +6253,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5320,
     transmutedFrom: "Alchemist Kalo of the River",
-    burnOrder: 500
+    burnOrder: 500,
   },
   {
     idx: 5325,
@@ -6268,7 +6268,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5325,
     transmutedFrom: "Archmagus Milton ",
-    burnOrder: 384
+    burnOrder: 384,
   },
   {
     idx: 5331,
@@ -6283,7 +6283,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5331,
     transmutedFrom: " Amir of the Brambles",
-    burnOrder: 340
+    burnOrder: 340,
   },
   {
     idx: 5343,
@@ -6298,7 +6298,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5343,
     transmutedFrom: "Mystic Borak of Avalon",
-    burnOrder: 471
+    burnOrder: 471,
   },
   {
     idx: 5348,
@@ -6313,7 +6313,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5348,
     transmutedFrom: "Artificer Bayard of the Psychic Leap",
-    burnOrder: 536
+    burnOrder: 536,
   },
   {
     idx: 5349,
@@ -6328,7 +6328,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5349,
     transmutedFrom: "Magus Buttons of the Marsh",
-    burnOrder: 112
+    burnOrder: 112,
   },
   {
     idx: 5352,
@@ -6343,7 +6343,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5352,
     transmutedFrom: "Artificer Arabella of the Steppe",
-    burnOrder: 641
+    burnOrder: 641,
   },
   {
     idx: 5358,
@@ -6358,7 +6358,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5358,
     transmutedFrom: "Magus Solomon of the Wood",
-    burnOrder: 477
+    burnOrder: 477,
   },
   {
     idx: 5376,
@@ -6373,7 +6373,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 328,
     transmutedFromNumber: 5376,
     transmutedFrom: " Nikolas of the Lake",
-    burnOrder: 548
+    burnOrder: 548,
   },
   {
     idx: 5404,
@@ -6388,7 +6388,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5404,
     transmutedFrom: "Magus Dario of El Dorado",
-    burnOrder: 162
+    burnOrder: 162,
   },
   {
     idx: 5423,
@@ -6403,7 +6403,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5423,
     transmutedFrom: "Spellsinger Arabella of Limbo",
-    burnOrder: 662
+    burnOrder: 662,
   },
   {
     idx: 5425,
@@ -6418,7 +6418,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5425,
     transmutedFrom: "Necromancer Diana of the Reach",
-    burnOrder: 599
+    burnOrder: 599,
   },
   {
     idx: 5439,
@@ -6433,7 +6433,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5439,
     transmutedFrom: "Geomancer Pix of the Mountain",
-    burnOrder: 673
+    burnOrder: 673,
   },
   {
     idx: 5455,
@@ -6448,7 +6448,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5455,
     transmutedFrom: "Mystic Ozohr of the Capital",
-    burnOrder: 472
+    burnOrder: 472,
   },
   {
     idx: 5462,
@@ -6463,7 +6463,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5462,
     transmutedFrom: "Sorcerer Zaim of the Capital",
-    burnOrder: 396
+    burnOrder: 396,
   },
   {
     idx: 5467,
@@ -6478,7 +6478,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5467,
     transmutedFrom: "Adept Taqi of the Marsh",
-    burnOrder: 207
+    burnOrder: 207,
   },
   {
     idx: 5469,
@@ -6493,7 +6493,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5469,
     transmutedFrom: "Ice Mage Angus of the Ice",
-    burnOrder: 686
+    burnOrder: 686,
   },
   {
     idx: 5497,
@@ -6508,7 +6508,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5497,
     transmutedFrom: "Witch Ophelia of the Arctic",
-    burnOrder: 567
+    burnOrder: 567,
   },
   {
     idx: 5516,
@@ -6523,7 +6523,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5516,
     transmutedFrom: "Arcanist Providence of the North",
-    burnOrder: 198
+    burnOrder: 198,
   },
   {
     idx: 5528,
@@ -6538,7 +6538,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5528,
     transmutedFrom: "Druid Duzzle of the Keep",
-    burnOrder: 214
+    burnOrder: 214,
   },
   {
     idx: 5530,
@@ -6553,7 +6553,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5530,
     transmutedFrom: "Necromancer  of the Keep",
-    burnOrder: 443
+    burnOrder: 443,
   },
   {
     idx: 5539,
@@ -6568,7 +6568,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5539,
     transmutedFrom: "Chaos Mage Azahl of the Loch",
-    burnOrder: 79
+    burnOrder: 79,
   },
   {
     idx: 5588,
@@ -6583,7 +6583,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 320,
     transmutedFromNumber: 5588,
     transmutedFrom: " Maia of the Plains",
-    burnOrder: 192
+    burnOrder: 192,
   },
   {
     idx: 5595,
@@ -6598,7 +6598,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5595,
     transmutedFrom: "Alchemist Delilah of the Canyon",
-    burnOrder: 328
+    burnOrder: 328,
   },
   {
     idx: 5614,
@@ -6613,7 +6613,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5614,
     transmutedFrom: "Hedge Wizard Gorg of the Sun",
-    burnOrder: 596
+    burnOrder: 596,
   },
   {
     idx: 5629,
@@ -6628,7 +6628,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 344,
     transmutedFromNumber: 5629,
     transmutedFrom: "Archmagus Uvlius of the Field",
-    burnOrder: 16
+    burnOrder: 16,
   },
   {
     idx: 5639,
@@ -6643,7 +6643,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5639,
     transmutedFrom: "Sorcerer Aleister of the Heath",
-    burnOrder: 240
+    burnOrder: 240,
   },
   {
     idx: 5647,
@@ -6658,7 +6658,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5647,
     transmutedFrom: "Sorcerer Nazim of the Veil",
-    burnOrder: 381
+    burnOrder: 381,
   },
   {
     idx: 5659,
@@ -6673,7 +6673,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5659,
     transmutedFrom: "Evoker Angus of the Fey",
-    burnOrder: 388
+    burnOrder: 388,
   },
   {
     idx: 5663,
@@ -6688,7 +6688,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5663,
     transmutedFrom: "Transmuter Onaxx of the Havens",
-    burnOrder: 358
+    burnOrder: 358,
   },
   {
     idx: 5702,
@@ -6703,7 +6703,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5702,
     transmutedFrom: "Battlemage Burnside of Mu",
-    burnOrder: 578
+    burnOrder: 578,
   },
   {
     idx: 5710,
@@ -6718,7 +6718,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5710,
     transmutedFrom: "Battle Mage Axel of the Canyon",
-    burnOrder: 66
+    burnOrder: 66,
   },
   {
     idx: 5732,
@@ -6733,7 +6733,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5732,
     transmutedFrom: "Alchemist Sharx of Alfheim",
-    burnOrder: 690
+    burnOrder: 690,
   },
   {
     idx: 5733,
@@ -6748,7 +6748,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5733,
     transmutedFrom: "Shaman Bartholomew of the Desert",
-    burnOrder: 741
+    burnOrder: 741,
   },
   {
     idx: 5759,
@@ -6763,7 +6763,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5759,
     transmutedFrom: "Battle Mage Nolan of the Realm",
-    burnOrder: 100
+    burnOrder: 100,
   },
   {
     idx: 5763,
@@ -6778,7 +6778,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5763,
     transmutedFrom: "Runecaster Cromwell of the Steppe",
-    burnOrder: 305
+    burnOrder: 305,
   },
   {
     idx: 5766,
@@ -6793,7 +6793,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 342,
     transmutedFromNumber: 5766,
     transmutedFrom: "Enchanter Devon of the Hollow",
-    burnOrder: 13
+    burnOrder: 13,
   },
   {
     idx: 5767,
@@ -6808,7 +6808,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5767,
     transmutedFrom: "Archmagus George of the Oasis",
-    burnOrder: 67
+    burnOrder: 67,
   },
   {
     idx: 5805,
@@ -6823,7 +6823,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5805,
     transmutedFrom: "Wild Mage David of the Sacred Pillars",
-    burnOrder: 267
+    burnOrder: 267,
   },
   {
     idx: 5837,
@@ -6838,7 +6838,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 325,
     transmutedFromNumber: 5837,
     transmutedFrom: "Artificer Angus of the Wood",
-    burnOrder: 236
+    burnOrder: 236,
   },
   {
     idx: 5848,
@@ -6853,7 +6853,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5848,
     transmutedFrom: "Conjurer Bullock of the Marsh",
-    burnOrder: 584
+    burnOrder: 584,
   },
   {
     idx: 5850,
@@ -6868,7 +6868,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5850,
     transmutedFrom: "Void Disciple Dr. Death of the River",
-    burnOrder: 118
+    burnOrder: 118,
   },
   {
     idx: 5852,
@@ -6883,7 +6883,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5852,
     transmutedFrom: "Archmagus Amanita of the Reach",
-    burnOrder: 310
+    burnOrder: 310,
   },
   {
     idx: 5907,
@@ -6898,7 +6898,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5907,
     transmutedFrom: "Archmagus Adrienne of the Forest",
-    burnOrder: 239
+    burnOrder: 239,
   },
   {
     idx: 5914,
@@ -6913,7 +6913,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5914,
     transmutedFrom: "Bard Brutus of the Astral Plane",
-    burnOrder: 691
+    burnOrder: 691,
   },
   {
     idx: 5922,
@@ -6928,7 +6928,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5922,
     transmutedFrom: "Cleric Darick of the Keep",
-    burnOrder: 739
+    burnOrder: 739,
   },
   {
     idx: 5960,
@@ -6943,7 +6943,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5960,
     transmutedFrom: "Alchemist Helix of the Veil",
-    burnOrder: 437
+    burnOrder: 437,
   },
   {
     idx: 5971,
@@ -6958,7 +6958,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5971,
     transmutedFrom: "Spellsinger Hecate of the Veil",
-    burnOrder: 167
+    burnOrder: 167,
   },
   {
     idx: 5998,
@@ -6973,7 +6973,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 5998,
     transmutedFrom: "Archmagus Qasim of the Field",
-    burnOrder: 143
+    burnOrder: 143,
   },
   {
     idx: 6006,
@@ -6988,7 +6988,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6006,
     transmutedFrom: "Battle Mage Hagar of the Wild",
-    burnOrder: 259
+    burnOrder: 259,
   },
   {
     idx: 6010,
@@ -7003,7 +7003,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6010,
     transmutedFrom: "Enchanter Angus of the Bastion",
-    burnOrder: 569
+    burnOrder: 569,
   },
   {
     idx: 6016,
@@ -7018,7 +7018,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6016,
     transmutedFrom: "Adept Axel of the Sacred Pillars",
-    burnOrder: 508
+    burnOrder: 508,
   },
   {
     idx: 6031,
@@ -7033,7 +7033,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6031,
     transmutedFrom: "Arcanist  of the Wood",
-    burnOrder: 75
+    burnOrder: 75,
   },
   {
     idx: 6036,
@@ -7048,7 +7048,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6036,
     transmutedFrom: "Alchemist Vossler of the Atheneum",
-    burnOrder: 391
+    burnOrder: 391,
   },
   {
     idx: 6044,
@@ -7063,7 +7063,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6044,
     transmutedFrom: "Hedge Wizard Dotta of the Carnival",
-    burnOrder: 424
+    burnOrder: 424,
   },
   {
     idx: 6054,
@@ -7078,7 +7078,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6054,
     transmutedFrom: "Shaman Ariadne of the Wood",
-    burnOrder: 131
+    burnOrder: 131,
   },
   {
     idx: 6056,
@@ -7093,7 +7093,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6056,
     transmutedFrom: " Iprix of the Canyon",
-    burnOrder: 307
+    burnOrder: 307,
   },
   {
     idx: 6076,
@@ -7108,7 +7108,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6076,
     transmutedFrom: "Sorcerer Qasim of the Mountain",
-    burnOrder: 438
+    burnOrder: 438,
   },
   {
     idx: 6112,
@@ -7123,7 +7123,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6112,
     transmutedFrom: "Wizard Lin of the Hollow",
-    burnOrder: 538
+    burnOrder: 538,
   },
   {
     idx: 6137,
@@ -7138,7 +7138,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6137,
     transmutedFrom: "Adept Eronin of the Mount",
-    burnOrder: 288
+    burnOrder: 288,
   },
   {
     idx: 6147,
@@ -7153,7 +7153,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6147,
     transmutedFrom: "Necromancer Rowena of the Grotto",
-    burnOrder: 68
+    burnOrder: 68,
   },
   {
     idx: 6155,
@@ -7168,7 +7168,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6155,
     transmutedFrom: "Archmagus Pumlo of Xanadu",
-    burnOrder: 676
+    burnOrder: 676,
   },
   {
     idx: 6163,
@@ -7183,7 +7183,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6163,
     transmutedFrom: "Augurer Arabella of the Heath",
-    burnOrder: 560
+    burnOrder: 560,
   },
   {
     idx: 6167,
@@ -7198,7 +7198,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6167,
     transmutedFrom: "Hydromancer Devin of the Salt",
-    burnOrder: 369
+    burnOrder: 369,
   },
   {
     idx: 6223,
@@ -7213,7 +7213,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6223,
     transmutedFrom: "Druid Orlando of the Obelisk",
-    burnOrder: 572
+    burnOrder: 572,
   },
   {
     idx: 6225,
@@ -7228,7 +7228,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6225,
     transmutedFrom: "Shaman Ekmira of the Sands",
-    burnOrder: 385
+    burnOrder: 385,
   },
   {
     idx: 6234,
@@ -7243,7 +7243,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6234,
     transmutedFrom: "Enchanter Pandora of the Marsh",
-    burnOrder: 639
+    burnOrder: 639,
   },
   {
     idx: 6241,
@@ -7258,7 +7258,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6241,
     transmutedFrom: "Battle Mage Nolan of the Plains",
-    burnOrder: 210
+    burnOrder: 210,
   },
   {
     idx: 6247,
@@ -7273,7 +7273,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6247,
     transmutedFrom: "Mystic Milton of the Event Horizon",
-    burnOrder: 601
+    burnOrder: 601,
   },
   {
     idx: 6248,
@@ -7288,7 +7288,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6248,
     transmutedFrom: "Ice Mage Solomon of the Tundra",
-    burnOrder: 304
+    burnOrder: 304,
   },
   {
     idx: 6283,
@@ -7303,7 +7303,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6283,
     transmutedFrom: "Alchemist Delilah of the Wild",
-    burnOrder: 564
+    burnOrder: 564,
   },
   {
     idx: 6303,
@@ -7318,7 +7318,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6303,
     transmutedFrom: "Cryptomancer Seth of Dreams",
-    burnOrder: 145
+    burnOrder: 145,
   },
   {
     idx: 6308,
@@ -7333,7 +7333,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 329,
     transmutedFromNumber: 6308,
     transmutedFrom: "Sorcerer Eden of the Cosmos",
-    burnOrder: 321
+    burnOrder: 321,
   },
   {
     idx: 6311,
@@ -7348,7 +7348,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6311,
     transmutedFrom: "Arch-Magician Nolan of the Hills",
-    burnOrder: 561
+    burnOrder: 561,
   },
   {
     idx: 6328,
@@ -7363,7 +7363,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6328,
     transmutedFrom: "Druid Lenora of the Dunes",
-    burnOrder: 655
+    burnOrder: 655,
   },
   {
     idx: 6335,
@@ -7378,7 +7378,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6335,
     transmutedFrom: "Hedge Wizard Duzzle of Mu",
-    burnOrder: 520
+    burnOrder: 520,
   },
   {
     idx: 6355,
@@ -7393,7 +7393,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 338,
     transmutedFromNumber: 6355,
     transmutedFrom: "Magus Sahir of the Realm",
-    burnOrder: 410
+    burnOrder: 410,
   },
   {
     idx: 6359,
@@ -7408,7 +7408,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6359,
     transmutedFrom: "Hedge Wizard Nolan of the Cold",
-    burnOrder: 11
+    burnOrder: 11,
   },
   {
     idx: 6386,
@@ -7423,7 +7423,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6386,
     transmutedFrom: "Cosmic Mage Zelroth of Elysium",
-    burnOrder: 728
+    burnOrder: 728,
   },
   {
     idx: 6395,
@@ -7438,7 +7438,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6395,
     transmutedFrom: "Shadow Mage Rafiq of Mu",
-    burnOrder: 160
+    burnOrder: 160,
   },
   {
     idx: 6399,
@@ -7453,7 +7453,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6399,
     transmutedFrom: "Archmagus Milo of the Light",
-    burnOrder: 152
+    burnOrder: 152,
   },
   {
     idx: 6433,
@@ -7468,7 +7468,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 341,
     transmutedFromNumber: 6433,
     transmutedFrom: "Sorcerer Jabir of the Cosmos",
-    burnOrder: 299
+    burnOrder: 299,
   },
   {
     idx: 6472,
@@ -7483,7 +7483,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6472,
     transmutedFrom: "Thaumaturge Lucien of the Citadel",
-    burnOrder: 736
+    burnOrder: 736,
   },
   {
     idx: 6489,
@@ -7498,7 +7498,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6489,
     transmutedFrom: "Alchemist Remus of the Keep",
-    burnOrder: 541
+    burnOrder: 541,
   },
   {
     idx: 6493,
@@ -7513,7 +7513,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6493,
     transmutedFrom: "Shadow Mage Lenora of the Hollow",
-    burnOrder: 295
+    burnOrder: 295,
   },
   {
     idx: 6495,
@@ -7528,7 +7528,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6495,
     transmutedFrom: "Hydromancer Homer of the River",
-    burnOrder: 563
+    burnOrder: 563,
   },
   {
     idx: 6503,
@@ -7543,7 +7543,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6503,
     transmutedFrom: "Geomancer Nixie of the Rock",
-    burnOrder: 623
+    burnOrder: 623,
   },
   {
     idx: 6518,
@@ -7558,7 +7558,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6518,
     transmutedFrom: "Battle Mage Baird of the Tower",
-    burnOrder: 355
+    burnOrder: 355,
   },
   {
     idx: 6520,
@@ -7573,7 +7573,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 334,
     transmutedFromNumber: 6520,
     transmutedFrom: "Thaumaturge Jerret of the Heath",
-    burnOrder: 92
+    burnOrder: 92,
   },
   {
     idx: 6522,
@@ -7588,7 +7588,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6522,
     transmutedFrom: "Cosmic Mage Drusilla of the Moors",
-    burnOrder: 485
+    burnOrder: 485,
   },
   {
     idx: 6527,
@@ -7603,7 +7603,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6527,
     transmutedFrom: "Runecaster Eden of the Veil",
-    burnOrder: 487
+    burnOrder: 487,
   },
   {
     idx: 6532,
@@ -7618,7 +7618,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6532,
     transmutedFrom: "Arcanist Crowley of the Hollow",
-    burnOrder: 282
+    burnOrder: 282,
   },
   {
     idx: 6536,
@@ -7633,7 +7633,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6536,
     transmutedFrom: "Archmagus Embrose of the Heath",
-    burnOrder: 84
+    burnOrder: 84,
   },
   {
     idx: 6625,
@@ -7648,7 +7648,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6625,
     transmutedFrom: "Shaman Rafiq of the Toadstools",
-    burnOrder: 72
+    burnOrder: 72,
   },
   {
     idx: 6629,
@@ -7663,7 +7663,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6629,
     transmutedFrom: "Artificer Setsuko of the Steppe",
-    burnOrder: 604
+    burnOrder: 604,
   },
   {
     idx: 6636,
@@ -7678,7 +7678,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6636,
     transmutedFrom: "Magus Damien of the Field",
-    burnOrder: 713
+    burnOrder: 713,
   },
   {
     idx: 6641,
@@ -7693,7 +7693,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6641,
     transmutedFrom: "Sage Rita of the Sacred Pillars",
-    burnOrder: 346
+    burnOrder: 346,
   },
   {
     idx: 6642,
@@ -7708,7 +7708,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6642,
     transmutedFrom: "Arch-Magician Thana of the Heath",
-    burnOrder: 345
+    burnOrder: 345,
   },
   {
     idx: 6646,
@@ -7723,7 +7723,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 328,
     transmutedFromNumber: 6646,
     transmutedFrom: "Alchemist Hagar of the Tower",
-    burnOrder: 344
+    burnOrder: 344,
   },
   {
     idx: 6652,
@@ -7738,7 +7738,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6652,
     transmutedFrom: "Diviner Angus of the Bastion",
-    burnOrder: 727
+    burnOrder: 727,
   },
   {
     idx: 6654,
@@ -7753,7 +7753,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6654,
     transmutedFrom: "Necromancer Soya of the Cosmos",
-    burnOrder: 129
+    burnOrder: 129,
   },
   {
     idx: 6673,
@@ -7768,7 +7768,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6673,
     transmutedFrom: "Illusionist Epher of the Hills",
-    burnOrder: 98
+    burnOrder: 98,
   },
   {
     idx: 6676,
@@ -7783,7 +7783,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 339,
     transmutedFromNumber: 6676,
     transmutedFrom: "Ghost Eater Edge of the Gnostics",
-    burnOrder: 95
+    burnOrder: 95,
   },
   {
     idx: 6688,
@@ -7798,7 +7798,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6688,
     transmutedFrom: "Artificer Gwendolin of Arcadia",
-    burnOrder: 447
+    burnOrder: 447,
   },
   {
     idx: 6712,
@@ -7813,7 +7813,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 319,
     transmutedFromNumber: 6712,
     transmutedFrom: "Druid Dante of the Rock",
-    burnOrder: 223
+    burnOrder: 223,
   },
   {
     idx: 6723,
@@ -7828,7 +7828,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6723,
     transmutedFrom: "Sorcerer Ofaris of Elysium",
-    burnOrder: 70
+    burnOrder: 70,
   },
   {
     idx: 6724,
@@ -7843,7 +7843,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6724,
     transmutedFrom: "Clairvoyant Hothor of Mu",
-    burnOrder: 206
+    burnOrder: 206,
   },
   {
     idx: 6757,
@@ -7858,7 +7858,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6757,
     transmutedFrom: "Adept Ixar of the Palms",
-    burnOrder: 199
+    burnOrder: 199,
   },
   {
     idx: 6759,
@@ -7873,7 +7873,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6759,
     transmutedFrom: "Witch Gwendolin of the North",
-    burnOrder: 651
+    burnOrder: 651,
   },
   {
     idx: 6769,
@@ -7888,7 +7888,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6769,
     transmutedFrom: "Hedge Wizard Zaim of the Road",
-    burnOrder: 7
+    burnOrder: 7,
   },
   {
     idx: 6810,
@@ -7903,7 +7903,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6810,
     transmutedFrom: " Artis of the Wood",
-    burnOrder: 154
+    burnOrder: 154,
   },
   {
     idx: 6820,
@@ -7918,7 +7918,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6820,
     transmutedFrom: "Witch Lilith of the Marsh",
-    burnOrder: 725
+    burnOrder: 725,
   },
   {
     idx: 6821,
@@ -7933,7 +7933,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6821,
     transmutedFrom: "Battlemage Pierre of the Inferno",
-    burnOrder: 677
+    burnOrder: 677,
   },
   {
     idx: 6824,
@@ -7948,7 +7948,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6824,
     transmutedFrom: "Void Disciple Zeromus of the Gnostics",
-    burnOrder: 121
+    burnOrder: 121,
   },
   {
     idx: 6830,
@@ -7963,7 +7963,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6830,
     transmutedFrom: "Arch-Magician Shigenjo of the Event Horizon",
-    burnOrder: 488
+    burnOrder: 488,
   },
   {
     idx: 6836,
@@ -7978,7 +7978,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6836,
     transmutedFrom: "Battle Mage Bayard of the Wood",
-    burnOrder: 178
+    burnOrder: 178,
   },
   {
     idx: 6847,
@@ -7993,7 +7993,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 327,
     transmutedFromNumber: 6847,
     transmutedFrom: "Archmagus Lumos of the Keep",
-    burnOrder: 268
+    burnOrder: 268,
   },
   {
     idx: 6853,
@@ -8008,7 +8008,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6853,
     transmutedFrom: "Summoner Wazir of the Cosmos",
-    burnOrder: 671
+    burnOrder: 671,
   },
   {
     idx: 6855,
@@ -8023,7 +8023,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 323,
     transmutedFromNumber: 6855,
     transmutedFrom: "Evoker Finn from the Abyss",
-    burnOrder: 427
+    burnOrder: 427,
   },
   {
     idx: 6856,
@@ -8038,7 +8038,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6856,
     transmutedFrom: "Illusionist Eggplant of Cuckoo Land",
-    burnOrder: 43
+    burnOrder: 43,
   },
   {
     idx: 6858,
@@ -8053,7 +8053,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6858,
     transmutedFrom: "Hedge Wizard Ariadne of the Steppe",
-    burnOrder: 179
+    burnOrder: 179,
   },
   {
     idx: 6876,
@@ -8068,7 +8068,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6876,
     transmutedFrom: "Arcanist Aleister of Tartarus",
-    burnOrder: 245
+    burnOrder: 245,
   },
   {
     idx: 6877,
@@ -8083,7 +8083,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6877,
     transmutedFrom: "Arcanist Luther of the Circle",
-    burnOrder: 77
+    burnOrder: 77,
   },
   {
     idx: 6878,
@@ -8098,7 +8098,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6878,
     transmutedFrom: "Archmagus Ofaris of the Belfry",
-    burnOrder: 150
+    burnOrder: 150,
   },
   {
     idx: 6891,
@@ -8113,7 +8113,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6891,
     transmutedFrom: "Bard Elena of the Obelisk",
-    burnOrder: 197
+    burnOrder: 197,
   },
   {
     idx: 6930,
@@ -8128,7 +8128,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6930,
     transmutedFrom: "Archmagus Jasper of the Brine",
-    burnOrder: 58
+    burnOrder: 58,
   },
   {
     idx: 6938,
@@ -8143,7 +8143,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6938,
     transmutedFrom: "Battlemage Eden out of the Blizzard",
-    burnOrder: 650
+    burnOrder: 650,
   },
   {
     idx: 6951,
@@ -8158,7 +8158,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 318,
     transmutedFromNumber: 6951,
     transmutedFrom: "Battle Mage Talon of the Isle",
-    burnOrder: 674
+    burnOrder: 674,
   },
   {
     idx: 6973,
@@ -8173,7 +8173,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6973,
     transmutedFrom: "Charmer Thana of the Reach",
-    burnOrder: 300
+    burnOrder: 300,
   },
   {
     idx: 6993,
@@ -8188,7 +8188,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 6993,
     transmutedFrom: "Magus Sondra of the Wood",
-    burnOrder: 529
+    burnOrder: 529,
   },
   {
     idx: 7002,
@@ -8203,7 +8203,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7002,
     transmutedFrom: "Hex Mage Devon of the Road",
-    burnOrder: 283
+    burnOrder: 283,
   },
   {
     idx: 7005,
@@ -8218,7 +8218,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7005,
     transmutedFrom: "Battle Mage Caligula of the Keep",
-    burnOrder: 554
+    burnOrder: 554,
   },
   {
     idx: 7019,
@@ -8233,7 +8233,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7019,
     transmutedFrom: "Necromancer Azazel of the Obelisk",
-    burnOrder: 513
+    burnOrder: 513,
   },
   {
     idx: 7031,
@@ -8248,7 +8248,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 319,
     transmutedFromNumber: 7031,
     transmutedFrom: " Isaac of the Hall",
-    burnOrder: 603
+    burnOrder: 603,
   },
   {
     idx: 7033,
@@ -8263,7 +8263,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 324,
     transmutedFromNumber: 7033,
     transmutedFrom: "Alchemist Cairon of the Toadstools",
-    burnOrder: 99
+    burnOrder: 99,
   },
   {
     idx: 7088,
@@ -8278,7 +8278,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7088,
     transmutedFrom: "Artificer Bayard of the Capital",
-    burnOrder: 460
+    burnOrder: 460,
   },
   {
     idx: 7096,
@@ -8293,7 +8293,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7096,
     transmutedFrom: "Arcanist Zelroth of the Capital",
-    burnOrder: 249
+    burnOrder: 249,
   },
   {
     idx: 7127,
@@ -8308,7 +8308,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7127,
     transmutedFrom: "Alchemist Bumble of the Bibliotheca",
-    burnOrder: 183
+    burnOrder: 183,
   },
   {
     idx: 7136,
@@ -8323,7 +8323,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7136,
     transmutedFrom: "Mystic Angus of the Secret Fire",
-    burnOrder: 21
+    burnOrder: 21,
   },
   {
     idx: 7147,
@@ -8338,7 +8338,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 319,
     transmutedFromNumber: 7147,
     transmutedFrom: " Celah of the Wood",
-    burnOrder: 483
+    burnOrder: 483,
   },
   {
     idx: 7159,
@@ -8353,7 +8353,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7159,
     transmutedFrom: "Shaman Tengukensei of Dreams",
-    burnOrder: 286
+    burnOrder: 286,
   },
   {
     idx: 7186,
@@ -8368,7 +8368,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7186,
     transmutedFrom: " Ofaris of the Circle",
-    burnOrder: 542
+    burnOrder: 542,
   },
   {
     idx: 7223,
@@ -8383,7 +8383,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7223,
     transmutedFrom: "Hedge Wizard Gellert of the Wold",
-    burnOrder: 631
+    burnOrder: 631,
   },
   {
     idx: 7226,
@@ -8398,7 +8398,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7226,
     transmutedFrom: "Necromancer Anton of the Fey",
-    burnOrder: 450
+    burnOrder: 450,
   },
   {
     idx: 7245,
@@ -8413,7 +8413,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7245,
     transmutedFrom: "Archmagus Aldus of the Mount",
-    burnOrder: 253
+    burnOrder: 253,
   },
   {
     idx: 7270,
@@ -8428,7 +8428,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7270,
     transmutedFrom: "Archmagus Oberon of the Citadel",
-    burnOrder: 449
+    burnOrder: 449,
   },
   {
     idx: 7273,
@@ -8443,7 +8443,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7273,
     transmutedFrom: "Mystic Wolfram of the Sacred Pillars",
-    burnOrder: 32
+    burnOrder: 32,
   },
   {
     idx: 7274,
@@ -8458,7 +8458,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7274,
     transmutedFrom: "Shaman Pino of the Tower",
-    burnOrder: 185
+    burnOrder: 185,
   },
   {
     idx: 7309,
@@ -8473,7 +8473,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7309,
     transmutedFrom: "Adept Aldo of the Cosmos",
-    burnOrder: 399
+    burnOrder: 399,
   },
   {
     idx: 7312,
@@ -8488,7 +8488,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7312,
     transmutedFrom: "Cleric Jasper of the Forest",
-    burnOrder: 398
+    burnOrder: 398,
   },
   {
     idx: 7313,
@@ -8503,7 +8503,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7313,
     transmutedFrom: "Conjurer Quddus of the Rock",
-    burnOrder: 93
+    burnOrder: 93,
   },
   {
     idx: 7316,
@@ -8518,7 +8518,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7316,
     transmutedFrom: "Battle Mage Darick of the Wood",
-    burnOrder: 194
+    burnOrder: 194,
   },
   {
     idx: 7340,
@@ -8533,7 +8533,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7340,
     transmutedFrom: "Cryptomancer David of the Platonic Shadow",
-    burnOrder: 294
+    burnOrder: 294,
   },
   {
     idx: 7359,
@@ -8548,7 +8548,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7359,
     transmutedFrom: "Artificer Danny of the Belfry",
-    burnOrder: 626
+    burnOrder: 626,
   },
   {
     idx: 7365,
@@ -8563,7 +8563,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7365,
     transmutedFrom: "Enchanter Lamia of the Steppe",
-    burnOrder: 211
+    burnOrder: 211,
   },
   {
     idx: 7381,
@@ -8578,7 +8578,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7381,
     transmutedFrom: "Battle Mage Baird of the Road",
-    burnOrder: 104
+    burnOrder: 104,
   },
   {
     idx: 7384,
@@ -8593,7 +8593,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7384,
     transmutedFrom: "Artificer Judas of the Steppe",
-    burnOrder: 583
+    burnOrder: 583,
   },
   {
     idx: 7387,
@@ -8608,7 +8608,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7387,
     transmutedFrom: "Hedge Wizard Muntjac of the Mountain",
-    burnOrder: 53
+    burnOrder: 53,
   },
   {
     idx: 7392,
@@ -8623,7 +8623,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7392,
     transmutedFrom: "Holy Monk Sisk of the Citadel",
-    burnOrder: 213
+    burnOrder: 213,
   },
   {
     idx: 7412,
@@ -8638,7 +8638,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7412,
     transmutedFrom: "Chronomancer Zorko of the Temple",
-    burnOrder: 336
+    burnOrder: 336,
   },
   {
     idx: 7432,
@@ -8653,7 +8653,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7432,
     transmutedFrom: "Ghost Eater Abaddon of the Desert",
-    burnOrder: 169
+    burnOrder: 169,
   },
   {
     idx: 7447,
@@ -8668,7 +8668,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7447,
     transmutedFrom: "Magus Maia of Arcadia",
-    burnOrder: 25
+    burnOrder: 25,
   },
   {
     idx: 7456,
@@ -8683,7 +8683,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7456,
     transmutedFrom: "Archmagus Milton of Avalon",
-    burnOrder: 489
+    burnOrder: 489,
   },
   {
     idx: 7467,
@@ -8698,7 +8698,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7467,
     transmutedFrom: "Alchemist Ilyas of the Keep",
-    burnOrder: 119
+    burnOrder: 119,
   },
   {
     idx: 7476,
@@ -8713,7 +8713,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 324,
     transmutedFromNumber: 7476,
     transmutedFrom: "Archmagus Davos of the Garden",
-    burnOrder: 607
+    burnOrder: 607,
   },
   {
     idx: 7518,
@@ -8728,7 +8728,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7518,
     transmutedFrom: "Diviner Finn of the Heath",
-    burnOrder: 693
+    burnOrder: 693,
   },
   {
     idx: 7532,
@@ -8743,7 +8743,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 319,
     transmutedFromNumber: 7532,
     transmutedFrom: "Mystic Aldo of the Keep",
-    burnOrder: 132
+    burnOrder: 132,
   },
   {
     idx: 7543,
@@ -8758,7 +8758,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7543,
     transmutedFrom: "Archmagus Sisk of the Rock",
-    burnOrder: 255
+    burnOrder: 255,
   },
   {
     idx: 7550,
@@ -8773,7 +8773,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7550,
     transmutedFrom: "Mystic Florah of the Hills",
-    burnOrder: 659
+    burnOrder: 659,
   },
   {
     idx: 7689,
@@ -8788,7 +8788,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7689,
     transmutedFrom: "Arcanist Milo of the Wood",
-    burnOrder: 573
+    burnOrder: 573,
   },
   {
     idx: 7704,
@@ -8803,7 +8803,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7704,
     transmutedFrom: "Archmagus Oberon of the Psychic Leap",
-    burnOrder: 232
+    burnOrder: 232,
   },
   {
     idx: 7715,
@@ -8818,7 +8818,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7715,
     transmutedFrom: "Chaos Mage Pumlo of the Valley",
-    burnOrder: 653
+    burnOrder: 653,
   },
   {
     idx: 7742,
@@ -8833,7 +8833,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7742,
     transmutedFrom: "Conjurer Larissa of the Canyon",
-    burnOrder: 535
+    burnOrder: 535,
   },
   {
     idx: 7743,
@@ -8848,7 +8848,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7743,
     transmutedFrom: "Archmagus Lumos of the Quantum Downs",
-    burnOrder: 248
+    burnOrder: 248,
   },
   {
     idx: 7772,
@@ -8863,7 +8863,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7772,
     transmutedFrom: "Archmagus Lenora of the Canyon",
-    burnOrder: 264
+    burnOrder: 264,
   },
   {
     idx: 7792,
@@ -8878,7 +8878,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7792,
     transmutedFrom: "Geomancer Tundror of the Hills",
-    burnOrder: 115
+    burnOrder: 115,
   },
   {
     idx: 7806,
@@ -8893,7 +8893,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7806,
     transmutedFrom: "Shadow Mage Optimus of the Keep",
-    burnOrder: 400
+    burnOrder: 400,
   },
   {
     idx: 7824,
@@ -8908,7 +8908,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7824,
     transmutedFrom: "Illusionist Seth of the Hall",
-    burnOrder: 444
+    burnOrder: 444,
   },
   {
     idx: 7844,
@@ -8923,7 +8923,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7844,
     transmutedFrom: "Evoker Celah of the Lake",
-    burnOrder: 681
+    burnOrder: 681,
   },
   {
     idx: 7866,
@@ -8938,7 +8938,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7866,
     transmutedFrom: "Geomancer Zhan of the Keep",
-    burnOrder: 577
+    burnOrder: 577,
   },
   {
     idx: 7867,
@@ -8953,7 +8953,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7867,
     transmutedFrom: "Chronomancer Daria of the Lake",
-    burnOrder: 229
+    burnOrder: 229,
   },
   {
     idx: 7872,
@@ -8968,7 +8968,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7872,
     transmutedFrom: "Magus Adrienne of the Valley",
-    burnOrder: 615
+    burnOrder: 615,
   },
   {
     idx: 7874,
@@ -8983,7 +8983,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7874,
     transmutedFrom: "Archmagus Sisk of the Mist",
-    burnOrder: 597
+    burnOrder: 597,
   },
   {
     idx: 7880,
@@ -8998,7 +8998,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7880,
     transmutedFrom: "Shaman Pozzik of the Gnostics",
-    burnOrder: 106
+    burnOrder: 106,
   },
   {
     idx: 7893,
@@ -9013,7 +9013,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7893,
     transmutedFrom: "Alchemist Lin of the Toadstools",
-    burnOrder: 315
+    burnOrder: 315,
   },
   {
     idx: 7909,
@@ -9028,7 +9028,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7909,
     transmutedFrom: "Enchanter Daphne of the Mountain",
-    burnOrder: 721
+    burnOrder: 721,
   },
   {
     idx: 7910,
@@ -9043,7 +9043,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7910,
     transmutedFrom: "Battle Mage Cassius of the Heath",
-    burnOrder: 509
+    burnOrder: 509,
   },
   {
     idx: 7916,
@@ -9058,7 +9058,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 320,
     transmutedFromNumber: 7916,
     transmutedFrom: "Arch-Magician Amir ",
-    burnOrder: 37
+    burnOrder: 37,
   },
   {
     idx: 7918,
@@ -9073,7 +9073,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7918,
     transmutedFrom: "Sorcerer Zaros of the Capital",
-    burnOrder: 510
+    burnOrder: 510,
   },
   {
     idx: 7925,
@@ -9088,7 +9088,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7925,
     transmutedFrom: "Battle Mage Cromwell of the Mount",
-    burnOrder: 620
+    burnOrder: 620,
   },
   {
     idx: 7927,
@@ -9103,7 +9103,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7927,
     transmutedFrom: "Illusionist Solomon of the Veil",
-    burnOrder: 281
+    burnOrder: 281,
   },
   {
     idx: 7945,
@@ -9118,7 +9118,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7945,
     transmutedFrom: "Magus Zorko ",
-    burnOrder: 490
+    burnOrder: 490,
   },
   {
     idx: 7950,
@@ -9133,7 +9133,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7950,
     transmutedFrom: "Adept Robert ",
-    burnOrder: 276
+    burnOrder: 276,
   },
   {
     idx: 7954,
@@ -9148,7 +9148,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7954,
     transmutedFrom: "Shadow Mage Iprix of the Keep",
-    burnOrder: 335
+    burnOrder: 335,
   },
   {
     idx: 7962,
@@ -9163,7 +9163,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 7962,
     transmutedFrom: "Archmagus Ozohr of the Bastion",
-    burnOrder: 629
+    burnOrder: 629,
   },
   {
     idx: 8006,
@@ -9178,7 +9178,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8006,
     transmutedFrom: "Chaos Mage Milo of the Heath",
-    burnOrder: 462
+    burnOrder: 462,
   },
   {
     idx: 8045,
@@ -9193,7 +9193,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8045,
     transmutedFrom: "Archmagus Eric of the Capital",
-    burnOrder: 654
+    burnOrder: 654,
   },
   {
     idx: 8049,
@@ -9208,7 +9208,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8049,
     transmutedFrom: "Sage Ilyas of the Secret Fire",
-    burnOrder: 706
+    burnOrder: 706,
   },
   {
     idx: 8074,
@@ -9223,7 +9223,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8074,
     transmutedFrom: "Artificer Behemoth of the Mount",
-    burnOrder: 446
+    burnOrder: 446,
   },
   {
     idx: 8083,
@@ -9238,7 +9238,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8083,
     transmutedFrom: "Druid Angus of the Havens",
-    burnOrder: 714
+    burnOrder: 714,
   },
   {
     idx: 8085,
@@ -9253,7 +9253,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8085,
     transmutedFrom: " Cassiopeia of the Steppe",
-    burnOrder: 373
+    burnOrder: 373,
   },
   {
     idx: 8087,
@@ -9268,7 +9268,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8087,
     transmutedFrom: "Charmer Sonja of the Marsh",
-    burnOrder: 574
+    burnOrder: 574,
   },
   {
     idx: 8099,
@@ -9283,7 +9283,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8099,
     transmutedFrom: "Hedge Wizard Qasim of the Obelisk",
-    burnOrder: 404
+    burnOrder: 404,
   },
   {
     idx: 8103,
@@ -9298,7 +9298,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8103,
     transmutedFrom: "Mystic David of the Quantum Shadow",
-    burnOrder: 318
+    burnOrder: 318,
   },
   {
     idx: 8111,
@@ -9313,7 +9313,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8111,
     transmutedFrom: "Alchemist Konoha of Elysium",
-    burnOrder: 733
+    burnOrder: 733,
   },
   {
     idx: 8164,
@@ -9328,7 +9328,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8164,
     transmutedFrom: "Druid Thor of the Hills",
-    burnOrder: 621
+    burnOrder: 621,
   },
   {
     idx: 8184,
@@ -9343,7 +9343,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8184,
     transmutedFrom: "Battle Mage Angus of Avalon",
-    burnOrder: 372
+    burnOrder: 372,
   },
   {
     idx: 8186,
@@ -9358,7 +9358,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8186,
     transmutedFrom: "Sorcerer Merlon of the Valley",
-    burnOrder: 475
+    burnOrder: 475,
   },
   {
     idx: 8191,
@@ -9373,7 +9373,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 318,
     transmutedFromNumber: 8191,
     transmutedFrom: "Ice Mage Flamos of the Cold",
-    burnOrder: 141
+    burnOrder: 141,
   },
   {
     idx: 8196,
@@ -9388,7 +9388,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 342,
     transmutedFromNumber: 8196,
     transmutedFrom: "Clairvoyant Thor of the Sun",
-    burnOrder: 18
+    burnOrder: 18,
   },
   {
     idx: 8202,
@@ -9403,7 +9403,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8202,
     transmutedFrom: "Alchemist Casper in the Shadows",
-    burnOrder: 122
+    burnOrder: 122,
   },
   {
     idx: 8210,
@@ -9418,7 +9418,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8210,
     transmutedFrom: "Hex Mage Apollo from the Shadow",
-    burnOrder: 40
+    burnOrder: 40,
   },
   {
     idx: 8213,
@@ -9433,7 +9433,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8213,
     transmutedFrom: "Alchemist Bayard of the Cosmos",
-    burnOrder: 47
+    burnOrder: 47,
   },
   {
     idx: 8240,
@@ -9448,7 +9448,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8240,
     transmutedFrom: "Stellar Mage Gunthor of the Ether",
-    burnOrder: 576
+    burnOrder: 576,
   },
   {
     idx: 8248,
@@ -9463,7 +9463,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8248,
     transmutedFrom: "Archmagus Isaac from the Shadow",
-    burnOrder: 298
+    burnOrder: 298,
   },
   {
     idx: 8267,
@@ -9478,7 +9478,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8267,
     transmutedFrom: "Witch Delilah out of the Void",
-    burnOrder: 416
+    burnOrder: 416,
   },
   {
     idx: 8288,
@@ -9493,7 +9493,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8288,
     transmutedFrom: "Battle Mage Nicolas of the Riviera",
-    burnOrder: 519
+    burnOrder: 519,
   },
   {
     idx: 8289,
@@ -9508,7 +9508,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8289,
     transmutedFrom: "Augurer Ixar of Atlantis",
-    burnOrder: 393
+    burnOrder: 393,
   },
   {
     idx: 8293,
@@ -9523,7 +9523,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 338,
     transmutedFromNumber: 8293,
     transmutedFrom: "Augurer Moka of the Circle",
-    burnOrder: 59
+    burnOrder: 59,
   },
   {
     idx: 8343,
@@ -9538,7 +9538,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8343,
     transmutedFrom: "Archmagus Iprix of Mu",
-    burnOrder: 581
+    burnOrder: 581,
   },
   {
     idx: 8357,
@@ -9553,7 +9553,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8357,
     transmutedFrom: " Lumos of the Gnostics",
-    burnOrder: 432
+    burnOrder: 432,
   },
   {
     idx: 8360,
@@ -9568,7 +9568,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8360,
     transmutedFrom: " Jeldor of the Hall",
-    burnOrder: 168
+    burnOrder: 168,
   },
   {
     idx: 8367,
@@ -9583,7 +9583,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8367,
     transmutedFrom: "Runecaster Samuel of the Reach",
-    burnOrder: 233
+    burnOrder: 233,
   },
   {
     idx: 8394,
@@ -9598,7 +9598,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8394,
     transmutedFrom: "Witch Florah of Elysium",
-    burnOrder: 734
+    burnOrder: 734,
   },
   {
     idx: 8397,
@@ -9613,7 +9613,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8397,
     transmutedFrom: "Pyromancer Fire Eater from the Abyss",
-    burnOrder: 405
+    burnOrder: 405,
   },
   {
     idx: 8399,
@@ -9628,7 +9628,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8399,
     transmutedFrom: "Thaumaturge Kazud out of the Void",
-    burnOrder: 188
+    burnOrder: 188,
   },
   {
     idx: 8402,
@@ -9643,7 +9643,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 326,
     transmutedFromNumber: 8402,
     transmutedFrom: "Artificer Nadeem of the Havens",
-    burnOrder: 633
+    burnOrder: 633,
   },
   {
     idx: 8415,
@@ -9658,7 +9658,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8415,
     transmutedFrom: "Magus Ming of the River",
-    burnOrder: 389
+    burnOrder: 389,
   },
   {
     idx: 8437,
@@ -9673,7 +9673,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8437,
     transmutedFrom: "Battle Mage Samuel of the Canyon",
-    burnOrder: 712
+    burnOrder: 712,
   },
   {
     idx: 8465,
@@ -9688,7 +9688,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8465,
     transmutedFrom: "Witch Sylvia of the Secret Fire",
-    burnOrder: 235
+    burnOrder: 235,
   },
   {
     idx: 8499,
@@ -9703,7 +9703,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8499,
     transmutedFrom: "Enchanter Jadis of the Heath",
-    burnOrder: 474
+    burnOrder: 474,
   },
   {
     idx: 8500,
@@ -9718,7 +9718,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8500,
     transmutedFrom: "Alchemist Lumos ",
-    burnOrder: 0
+    burnOrder: 0,
   },
   {
     idx: 8506,
@@ -9733,7 +9733,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8506,
     transmutedFrom: "Arch-Magician Allistair of the Gnostics",
-    burnOrder: 532
+    burnOrder: 532,
   },
   {
     idx: 8531,
@@ -9748,7 +9748,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 320,
     transmutedFromNumber: 8531,
     transmutedFrom: "Battle Mage Magnus of the Fey",
-    burnOrder: 250
+    burnOrder: 250,
   },
   {
     idx: 8540,
@@ -9763,7 +9763,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8540,
     transmutedFrom: "Hydromancer Angus of the Wood",
-    burnOrder: 491
+    burnOrder: 491,
   },
   {
     idx: 8556,
@@ -9778,7 +9778,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8556,
     transmutedFrom: "Arch-Magician Angus of the Brambles",
-    burnOrder: 244
+    burnOrder: 244,
   },
   {
     idx: 8572,
@@ -9793,7 +9793,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8572,
     transmutedFrom: "Archmagus Alessar of the Cosmos",
-    burnOrder: 127
+    burnOrder: 127,
   },
   {
     idx: 8586,
@@ -9808,7 +9808,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8586,
     transmutedFrom: "Artificer Onaxx of the Heath",
-    burnOrder: 663
+    burnOrder: 663,
   },
   {
     idx: 8602,
@@ -9823,7 +9823,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8602,
     transmutedFrom: "Magus Zorko of the Heath",
-    burnOrder: 518
+    burnOrder: 518,
   },
   {
     idx: 8631,
@@ -9838,7 +9838,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8631,
     transmutedFrom: "Shaman Edge of the Surf",
-    burnOrder: 695
+    burnOrder: 695,
   },
   {
     idx: 8634,
@@ -9853,7 +9853,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8634,
     transmutedFrom: "Adept Duzzle of the Rock",
-    burnOrder: 4
+    burnOrder: 4,
   },
   {
     idx: 8639,
@@ -9868,7 +9868,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8639,
     transmutedFrom: "Enchanter Carly of the Grotto",
-    burnOrder: 610
+    burnOrder: 610,
   },
   {
     idx: 8700,
@@ -9883,7 +9883,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8700,
     transmutedFrom: " Cairon of the Lake",
-    burnOrder: 177
+    burnOrder: 177,
   },
   {
     idx: 8702,
@@ -9898,7 +9898,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8702,
     transmutedFrom: "Geomancer Jagger of the Brambles",
-    burnOrder: 48
+    burnOrder: 48,
   },
   {
     idx: 8723,
@@ -9913,7 +9913,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8723,
     transmutedFrom: "Diabolist Impy of Arcadia",
-    burnOrder: 8
+    burnOrder: 8,
   },
   {
     idx: 8743,
@@ -9928,7 +9928,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8743,
     transmutedFrom: "Battlemage Ming of the Field",
-    burnOrder: 50
+    burnOrder: 50,
   },
   {
     idx: 8753,
@@ -9943,7 +9943,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8753,
     transmutedFrom: "Hedge Wizard Trollin of the Valley",
-    burnOrder: 333
+    burnOrder: 333,
   },
   {
     idx: 8756,
@@ -9958,7 +9958,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8756,
     transmutedFrom: " Alatar of the Hills",
-    burnOrder: 376
+    burnOrder: 376,
   },
   {
     idx: 8757,
@@ -9973,7 +9973,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8757,
     transmutedFrom: "Holy Monk Fark of the Mount",
-    burnOrder: 470
+    burnOrder: 470,
   },
   {
     idx: 8791,
@@ -9988,7 +9988,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8791,
     transmutedFrom: "Enchanter Chooki of the Marsh",
-    burnOrder: 386
+    burnOrder: 386,
   },
   {
     idx: 8792,
@@ -10003,7 +10003,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8792,
     transmutedFrom: "Hedge Wizard Calypso of the Citadel",
-    burnOrder: 466
+    burnOrder: 466,
   },
   {
     idx: 8793,
@@ -10018,7 +10018,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8793,
     transmutedFrom: "Enchanter Jahid out of the Void",
-    burnOrder: 230
+    burnOrder: 230,
   },
   {
     idx: 8799,
@@ -10033,7 +10033,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8799,
     transmutedFrom: "Sorcerer Artis of the Realm",
-    burnOrder: 528
+    burnOrder: 528,
   },
   {
     idx: 8800,
@@ -10048,7 +10048,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 335,
     transmutedFromNumber: 8800,
     transmutedFrom: "Hex Mage Aleister of the Oasis",
-    burnOrder: 44
+    burnOrder: 44,
   },
   {
     idx: 8884,
@@ -10063,7 +10063,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8884,
     transmutedFrom: "Sorcerer Remus of the Obelisk",
-    burnOrder: 703
+    burnOrder: 703,
   },
   {
     idx: 8905,
@@ -10078,7 +10078,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8905,
     transmutedFrom: "Shaman Ilyas of the Hall",
-    burnOrder: 130
+    burnOrder: 130,
   },
   {
     idx: 8926,
@@ -10093,7 +10093,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8926,
     transmutedFrom: "Wild Mage Ofaris of the Hills",
-    burnOrder: 325
+    burnOrder: 325,
   },
   {
     idx: 8927,
@@ -10108,7 +10108,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8927,
     transmutedFrom: "Druid Impy of the Sacred Pillars",
-    burnOrder: 503
+    burnOrder: 503,
   },
   {
     idx: 8963,
@@ -10123,7 +10123,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8963,
     transmutedFrom: "Cosmic Mage Crowley of the Riviera",
-    burnOrder: 133
+    burnOrder: 133,
   },
   {
     idx: 8977,
@@ -10138,7 +10138,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8977,
     transmutedFrom: "Sage Azahl ",
-    burnOrder: 297
+    burnOrder: 297,
   },
   {
     idx: 8986,
@@ -10153,7 +10153,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8986,
     transmutedFrom: "Cleric Gogol of the Tower",
-    burnOrder: 30
+    burnOrder: 30,
   },
   {
     idx: 8996,
@@ -10168,7 +10168,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8996,
     transmutedFrom: "Magus Soya ",
-    burnOrder: 175
+    burnOrder: 175,
   },
   {
     idx: 8997,
@@ -10183,7 +10183,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 342,
     transmutedFromNumber: 8997,
     transmutedFrom: "Arcanist Angus of the Tundra",
-    burnOrder: 602
+    burnOrder: 602,
   },
   {
     idx: 8998,
@@ -10198,7 +10198,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 8998,
     transmutedFrom: "Battle Mage Gunthor of the Mount",
-    burnOrder: 313
+    burnOrder: 313,
   },
   {
     idx: 9006,
@@ -10213,7 +10213,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9006,
     transmutedFrom: "Aeromancer Rook of the Sun",
-    burnOrder: 42
+    burnOrder: 42,
   },
   {
     idx: 9011,
@@ -10228,7 +10228,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9011,
     transmutedFrom: "Runecaster David of the Hall",
-    burnOrder: 234
+    burnOrder: 234,
   },
   {
     idx: 9056,
@@ -10243,7 +10243,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9056,
     transmutedFrom: "Hedge Wizard Homer of the Field",
-    burnOrder: 402
+    burnOrder: 402,
   },
   {
     idx: 9073,
@@ -10258,7 +10258,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9073,
     transmutedFrom: "Cosmic Mage Magnus of the Havens",
-    burnOrder: 180
+    burnOrder: 180,
   },
   {
     idx: 9099,
@@ -10273,7 +10273,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9099,
     transmutedFrom: "Adept Eden of the Ether",
-    burnOrder: 159
+    burnOrder: 159,
   },
   {
     idx: 9117,
@@ -10288,7 +10288,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9117,
     transmutedFrom: "Voodoo Priest Gorgana of the Marsh",
-    burnOrder: 445
+    burnOrder: 445,
   },
   {
     idx: 9130,
@@ -10303,7 +10303,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9130,
     transmutedFrom: "Shaman Ekmira of the Heath",
-    burnOrder: 732
+    burnOrder: 732,
   },
   {
     idx: 9150,
@@ -10318,7 +10318,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9150,
     transmutedFrom: "Holy Monk Fark of the Keep",
-    burnOrder: 24
+    burnOrder: 24,
   },
   {
     idx: 9179,
@@ -10333,7 +10333,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9179,
     transmutedFrom: "Electromancer Horace of Dreams",
-    burnOrder: 165
+    burnOrder: 165,
   },
   {
     idx: 9198,
@@ -10348,7 +10348,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9198,
     transmutedFrom: "Enchanter Faye of the Forest",
-    burnOrder: 272
+    burnOrder: 272,
   },
   {
     idx: 9213,
@@ -10363,7 +10363,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9213,
     transmutedFrom: "Enchanter Atlas of the Dunes",
-    burnOrder: 729
+    burnOrder: 729,
   },
   {
     idx: 9224,
@@ -10378,7 +10378,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9224,
     transmutedFrom: "Aeromancer Rook of the Havens",
-    burnOrder: 364
+    burnOrder: 364,
   },
   {
     idx: 9237,
@@ -10393,7 +10393,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9237,
     transmutedFrom: "Enchanter Atlanta of the Brambles",
-    burnOrder: 407
+    burnOrder: 407,
   },
   {
     idx: 9252,
@@ -10408,7 +10408,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9252,
     transmutedFrom: "Summoner Celah of the Hall",
-    burnOrder: 549
+    burnOrder: 549,
   },
   {
     idx: 9289,
@@ -10423,7 +10423,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9289,
     transmutedFrom: "Artificer Axel of the Wood",
-    burnOrder: 632
+    burnOrder: 632,
   },
   {
     idx: 9302,
@@ -10438,7 +10438,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9302,
     transmutedFrom: "Magus Suki of the Hall",
-    burnOrder: 634
+    burnOrder: 634,
   },
   {
     idx: 9308,
@@ -10453,7 +10453,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9308,
     transmutedFrom: "Sorcerer Zane of Atlantis",
-    burnOrder: 593
+    burnOrder: 593,
   },
   {
     idx: 9313,
@@ -10468,7 +10468,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9313,
     transmutedFrom: " Lumos of the Wood",
-    burnOrder: 661
+    burnOrder: 661,
   },
   {
     idx: 9316,
@@ -10483,7 +10483,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9316,
     transmutedFrom: "Summoner Oberon of the Tundra",
-    burnOrder: 31
+    burnOrder: 31,
   },
   {
     idx: 9318,
@@ -10498,7 +10498,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9318,
     transmutedFrom: "Witch Elena of the Valley",
-    burnOrder: 506
+    burnOrder: 506,
   },
   {
     idx: 9329,
@@ -10513,7 +10513,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9329,
     transmutedFrom: "Summoner Yanlin of the Reach",
-    burnOrder: 595
+    burnOrder: 595,
   },
   {
     idx: 9343,
@@ -10528,7 +10528,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9343,
     transmutedFrom: "Arch-Magician Silas of the Canyon",
-    burnOrder: 550
+    burnOrder: 550,
   },
   {
     idx: 9365,
@@ -10543,7 +10543,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9365,
     transmutedFrom: "Archmagus Alessar of the Tower",
-    burnOrder: 696
+    burnOrder: 696,
   },
   {
     idx: 9367,
@@ -10558,7 +10558,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9367,
     transmutedFrom: "Artificer Amanita of the Veil",
-    burnOrder: 743
+    burnOrder: 743,
   },
   {
     idx: 9383,
@@ -10573,7 +10573,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9383,
     transmutedFrom: "Arch-Magician Poppy of the Technochrome",
-    burnOrder: 260
+    burnOrder: 260,
   },
   {
     idx: 9388,
@@ -10588,7 +10588,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9388,
     transmutedFrom: "Shadow Mage Alatar of the Steppe",
-    burnOrder: 637
+    burnOrder: 637,
   },
   {
     idx: 9431,
@@ -10603,7 +10603,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9431,
     transmutedFrom: "Magus Impy of the Valley",
-    burnOrder: 174
+    burnOrder: 174,
   },
   {
     idx: 9445,
@@ -10618,7 +10618,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9445,
     transmutedFrom: "Archmagus Davos of the Steppe",
-    burnOrder: 642
+    burnOrder: 642,
   },
   {
     idx: 9449,
@@ -10633,7 +10633,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9449,
     transmutedFrom: "Chaos Mage Godfrey of the Grotto",
-    burnOrder: 552
+    burnOrder: 552,
   },
   {
     idx: 9451,
@@ -10648,7 +10648,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9451,
     transmutedFrom: "Arch-Magician Alessar of the Garden",
-    burnOrder: 403
+    burnOrder: 403,
   },
   {
     idx: 9500,
@@ -10663,7 +10663,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9500,
     transmutedFrom: "Battle Mage Ulysse of the Wold",
-    burnOrder: 628
+    burnOrder: 628,
   },
   {
     idx: 9523,
@@ -10678,7 +10678,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9523,
     transmutedFrom: " Orpheus of the Pit",
-    burnOrder: 212
+    burnOrder: 212,
   },
   {
     idx: 9528,
@@ -10693,7 +10693,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9528,
     transmutedFrom: "Summoner Alatar of the Gnostics",
-    burnOrder: 219
+    burnOrder: 219,
   },
   {
     idx: 9561,
@@ -10708,7 +10708,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9561,
     transmutedFrom: "Druid Scorch of Tartarus",
-    burnOrder: 523
+    burnOrder: 523,
   },
   {
     idx: 9581,
@@ -10723,7 +10723,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 319,
     transmutedFromNumber: 9581,
     transmutedFrom: "Artificer Finch of the Moors",
-    burnOrder: 664
+    burnOrder: 664,
   },
   {
     idx: 9592,
@@ -10738,7 +10738,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9592,
     transmutedFrom: "Arcanist Oiq of the Moors",
-    burnOrder: 431
+    burnOrder: 431,
   },
   {
     idx: 9593,
@@ -10753,7 +10753,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9593,
     transmutedFrom: "Battle Mage Magnus of the Field",
-    burnOrder: 454
+    burnOrder: 454,
   },
   {
     idx: 9620,
@@ -10768,7 +10768,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9620,
     transmutedFrom: "Charmer Larissa of the Hills",
-    burnOrder: 711
+    burnOrder: 711,
   },
   {
     idx: 9631,
@@ -10783,7 +10783,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9631,
     transmutedFrom: "Spellsinger Aldus of the Realm",
-    burnOrder: 87
+    burnOrder: 87,
   },
   {
     idx: 9635,
@@ -10798,7 +10798,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9635,
     transmutedFrom: "Enchanter Circe of the Sea",
-    burnOrder: 422
+    burnOrder: 422,
   },
   {
     idx: 9644,
@@ -10813,7 +10813,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9644,
     transmutedFrom: "Shadow Mage Onaxx of the Sands",
-    burnOrder: 140
+    burnOrder: 140,
   },
   {
     idx: 9659,
@@ -10828,7 +10828,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9659,
     transmutedFrom: "Magus Azathoth of the Tower",
-    burnOrder: 380
+    burnOrder: 380,
   },
   {
     idx: 9669,
@@ -10843,7 +10843,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9669,
     transmutedFrom: "Thaumaturge Orlando of the Cosmos",
-    burnOrder: 15
+    burnOrder: 15,
   },
   {
     idx: 9670,
@@ -10858,7 +10858,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9670,
     transmutedFrom: "Druid Setsuko of the Citadel",
-    burnOrder: 339
+    burnOrder: 339,
   },
   {
     idx: 9671,
@@ -10873,7 +10873,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9671,
     transmutedFrom: "Artificer Nikolas of the Light",
-    burnOrder: 108
+    burnOrder: 108,
   },
   {
     idx: 9693,
@@ -10888,7 +10888,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9693,
     transmutedFrom: "Magus Amanita of the Hollow",
-    burnOrder: 612
+    burnOrder: 612,
   },
   {
     idx: 9705,
@@ -10903,7 +10903,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9705,
     transmutedFrom: "Battle Mage Thor of the Palms",
-    burnOrder: 296
+    burnOrder: 296,
   },
   {
     idx: 9706,
@@ -10918,7 +10918,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9706,
     transmutedFrom: "Artificer Lenora of the Road",
-    burnOrder: 652
+    burnOrder: 652,
   },
   {
     idx: 9707,
@@ -10933,7 +10933,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9707,
     transmutedFrom: "Shadow Mage Kalo of the Plains",
-    burnOrder: 514
+    burnOrder: 514,
   },
   {
     idx: 9733,
@@ -10948,7 +10948,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9733,
     transmutedFrom: "Arch-Magician Gellert of the Steppe",
-    burnOrder: 20
+    burnOrder: 20,
   },
   {
     idx: 9755,
@@ -10963,7 +10963,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9755,
     transmutedFrom: "Enchanter Circe of the Field",
-    burnOrder: 408
+    burnOrder: 408,
   },
   {
     idx: 9760,
@@ -10978,7 +10978,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9760,
     transmutedFrom: "Archmagus Orpheus of the Valley",
-    burnOrder: 27
+    burnOrder: 27,
   },
   {
     idx: 9781,
@@ -10993,7 +10993,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9781,
     transmutedFrom: "Aeromancer Amanita of the Tower",
-    burnOrder: 49
+    burnOrder: 49,
   },
   {
     idx: 9788,
@@ -11008,7 +11008,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9788,
     transmutedFrom: "Voodoo Priest Hugo of the Desert",
-    burnOrder: 473
+    burnOrder: 473,
   },
   {
     idx: 9798,
@@ -11023,7 +11023,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 335,
     transmutedFromNumber: 9798,
     transmutedFrom: "Druid Norix of the Light",
-    burnOrder: 588
+    burnOrder: 588,
   },
   {
     idx: 9805,
@@ -11038,7 +11038,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9805,
     transmutedFrom: "Archmagus Merlon from the Abyss",
-    burnOrder: 420
+    burnOrder: 420,
   },
   {
     idx: 9807,
@@ -11053,7 +11053,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9807,
     transmutedFrom: "Hydromancer Ratko of the Wold",
-    burnOrder: 413
+    burnOrder: 413,
   },
   {
     idx: 9819,
@@ -11068,7 +11068,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9819,
     transmutedFrom: "Augurer Chu Hua of the Wood",
-    burnOrder: 692
+    burnOrder: 692,
   },
   {
     idx: 9831,
@@ -11083,7 +11083,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9831,
     transmutedFrom: "Cleric Althea of the Hollow",
-    burnOrder: 689
+    burnOrder: 689,
   },
   {
     idx: 9835,
@@ -11098,7 +11098,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9835,
     transmutedFrom: "Conjurer Nori of the Brambles",
-    burnOrder: 521
+    burnOrder: 521,
   },
   {
     idx: 9841,
@@ -11113,7 +11113,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 336,
     transmutedFromNumber: 9841,
     transmutedFrom: "Archmagus Max of the Capital",
-    burnOrder: 17
+    burnOrder: 17,
   },
   {
     idx: 9851,
@@ -11128,7 +11128,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9851,
     transmutedFrom: "Enchanter Adrienne of the Steppe",
-    burnOrder: 52
+    burnOrder: 52,
   },
   {
     idx: 9894,
@@ -11143,7 +11143,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9894,
     transmutedFrom: "Magus Amir of the Grotto",
-    burnOrder: 512
+    burnOrder: 512,
   },
   {
     idx: 9900,
@@ -11158,7 +11158,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9900,
     transmutedFrom: "Arcanist Kazem of the Sun",
-    burnOrder: 275
+    burnOrder: 275,
   },
   {
     idx: 9925,
@@ -11173,7 +11173,7 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9925,
     transmutedFrom: "Magus Wazir of the Sun",
-    burnOrder: 622
+    burnOrder: 622,
   },
   {
     idx: 9964,
@@ -11188,6 +11188,6 @@ export const soulsWithTraits: Soul[] = [
     undesirable: 7777,
     transmutedFromNumber: 9964,
     transmutedFrom: "Shaman Caligari of the Desert",
-    burnOrder: 640
-  }
+    burnOrder: 640,
+  },
 ];
