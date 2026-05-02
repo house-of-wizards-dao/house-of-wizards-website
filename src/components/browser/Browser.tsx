@@ -8,15 +8,26 @@ import {
 import { useAccount } from "wagmi";
 import { useWalletNFTs } from "@/hooks/useWalletNFTs";
 import { NFTCard } from "@/components/ui/NFTCard";
-import { Warrior } from "@/data/warriorsWithTraits";
-import { Wizard } from "@/data/wizardsWithTraits";
 import { TraitFilters } from "./TraitFilters";
-// Base item type that both Wizard and Warrior extend
-export type BrowserItem = Warrior | Wizard;
+
+export type BrowserItem = {
+  idx: number;
+  name: string;
+};
+
+type BrowserWizardItem = BrowserItem & {
+  title?: string;
+  firstName?: string;
+  origin?: string;
+};
 
 // Type guard to check if an item is a Wizard
-const isWizard = (item: BrowserItem): item is Wizard => {
+const isWizard = (item: BrowserItem): item is BrowserWizardItem => {
   return "title" in item;
+};
+
+const getWizardItems = (items: readonly BrowserItem[]): BrowserWizardItem[] => {
+  return items.filter(isWizard);
 };
 
 // Trait type that works for both collections
@@ -25,11 +36,6 @@ export type BrowserTrait<TPart extends string> = {
   displayName: string;
   description?: string;
   part?: TPart;
-};
-
-const getWizzypediaTraitUrl = (displayName: string) => {
-  const pageName = displayName.trim().replace(/ /g, "_");
-  return `https://wizzypedia.forgottenrunes.com/${encodeURIComponent(pageName)}`;
 };
 
 export type BrowserProps<TPart extends string, TItem extends BrowserItem> = {
@@ -91,15 +97,9 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
     () => (isConnected && address ? [address] : []),
     [isConnected, address],
   );
-  const {
-    data: walletNFTs,
-    loading: isLoadingNFTs,
-    error: nftsError,
-  } = useWalletNFTs(walletInputs);
+  const { data: walletNFTs, loading: isLoadingNFTs } =
+    useWalletNFTs(walletInputs);
 
-  console.log("@@@@ walletInputs", walletInputs);
-  console.log("@@@@ nftsError", nftsError);
-  console.log("@@@@ walletNFTS", walletNFTs);
   // Extract owned token IDs into a Set from the API response
   const ownedTokenIds = useMemo(() => {
     if (!walletNFTs || !filterMyCharacters) return new Set<number>();
@@ -164,67 +164,13 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
     return result;
   }, [traitIndexToDisplayName, traits, items, traitParts]);
 
-  const traitDescriptionGroups = useMemo(() => {
-    const byPart = new Map<
-      string,
-      Array<{
-        key: string;
-        displayName: string;
-        description: string;
-        href: string;
-      }>
-    >();
-    const seenByPart = new Map<string, Set<string>>();
-
-    for (const trait of traits) {
-      if (!trait.description) continue;
-
-      const part = trait.part ?? "other";
-      const dedupeKey = `${trait.displayName}:${trait.description}`;
-      const seen = seenByPart.get(part) ?? new Set<string>();
-
-      if (seen.has(dedupeKey)) continue;
-
-      seen.add(dedupeKey);
-      seenByPart.set(part, seen);
-
-      const group = byPart.get(part) ?? [];
-      group.push({
-        key: dedupeKey,
-        displayName: trait.displayName,
-        description: trait.description,
-        href: getWizzypediaTraitUrl(trait.displayName),
-      });
-      byPart.set(part, group);
-    }
-
-    const orderedParts = [...traitParts, "other"];
-    return orderedParts
-      .map((part) => ({
-        part,
-        traits: (byPart.get(part) ?? []).sort((a, b) =>
-          a.displayName.localeCompare(b.displayName),
-        ),
-      }))
-      .filter((group) => group.traits.length > 0);
-  }, [traits, traitParts]);
-
-  const traitDescriptionCount = useMemo(
-    () =>
-      traitDescriptionGroups.reduce(
-        (count, group) => count + group.traits.length,
-        0,
-      ),
-    [traitDescriptionGroups],
-  );
-
   // Check once if items are wizards (array is homogeneous)
   const isWizardCollection = items.length > 0 && isWizard(items[0]);
 
   // Generate dropdown options for title, firstName, and origin (wizard-only)
   const titleOptions = useMemo(() => {
     if (!isWizardCollection) return [];
-    const wizards = items as Wizard[];
+    const wizards = getWizardItems(items);
     const titles = new Set<string>();
     for (const wizard of wizards) {
       if (wizard.title && wizard.title.trim()) {
@@ -236,7 +182,7 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
 
   const firstNameOptions = useMemo(() => {
     if (!isWizardCollection) return [];
-    const wizards = items as Wizard[];
+    const wizards = getWizardItems(items);
     const firstNames = new Set<string>();
     for (const wizard of wizards) {
       if (wizard.firstName && wizard.firstName.trim()) {
@@ -248,7 +194,7 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
 
   const originOptions = useMemo(() => {
     if (!isWizardCollection) return [];
-    const wizards = items as Wizard[];
+    const wizards = getWizardItems(items);
     const origins = new Set<string>();
     for (const wizard of wizards) {
       if (wizard.origin && wizard.origin.trim()) {
@@ -275,17 +221,21 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
 
     // Wizard-specific filters (only active when isWizardCollection is true)
     if (selectedTitle && isWizardCollection) {
-      result = result.filter((w) => (w as Wizard).title === selectedTitle);
+      result = result.filter(
+        (item) => isWizard(item) && item.title === selectedTitle,
+      );
     }
 
     if (selectedFirstName && isWizardCollection) {
       result = result.filter(
-        (w) => (w as Wizard).firstName === selectedFirstName,
+        (item) => isWizard(item) && item.firstName === selectedFirstName,
       );
     }
 
     if (selectedOrigin && isWizardCollection) {
-      result = result.filter((w) => (w as Wizard).origin === selectedOrigin);
+      result = result.filter(
+        (item) => isWizard(item) && item.origin === selectedOrigin,
+      );
     }
 
     for (const part of traitParts) {
@@ -480,42 +430,6 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
         partToTraitOptions={partToTraitOptions}
         onSelectTrait={onSelectTrait}
       />
-      {traitDescriptionGroups.length > 0 && (
-        <details className="mb-6 rounded-lg border border-gray-700 bg-[#111015] p-4 text-gray-300">
-          <summary className="cursor-pointer text-sm font-medium text-white">
-            Trait descriptions ({traitDescriptionCount})
-          </summary>
-          <div className="mt-4 space-y-5">
-            {traitDescriptionGroups.map((group) => (
-              <div key={group.part}>
-                <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                  {group.part}
-                </h3>
-                <div className="space-y-3">
-                  {group.traits.map((trait) => (
-                    <div
-                      key={trait.key}
-                      className="rounded-md border border-gray-800 bg-black/20 p-3"
-                    >
-                      <a
-                        href={trait.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium text-blue-300 transition-colors hover:text-blue-200"
-                      >
-                        {trait.displayName}
-                      </a>
-                      <p className="mt-1 text-sm leading-6 text-gray-300">
-                        {trait.description}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </details>
-      )}
       <div className="flex items-center justify-between mb-4 text-gray-300">
         {/* <div>
           {filterMyWizards && (isLoadingBalance || isLoadingTokens) ? (

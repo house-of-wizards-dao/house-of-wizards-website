@@ -8,8 +8,10 @@ import { useWalletClient } from "wagmi";
 import { mainnet } from "viem/chains";
 import { TokenboundClient } from "@tokenbound/sdk";
 import { getCollectionName } from "@/data/traitUtilities";
+import { soulsWithTraitsMap } from "@/data/soulsWithTraitsMap";
 import { warriorsWithTraitsMap } from "@/data/warriorsWithTraitsMap";
 import { wizardsWithTraitsMap } from "@/data/wizardsWithTraitsMap";
+import { soulTraits, type Trait as SoulTrait } from "@/data/soulTraits";
 import {
   warriorTraits,
   type Trait as WarriorTrait,
@@ -67,6 +69,18 @@ const warriorDisplayParts = [
   "companion",
   "rune",
 ] as const;
+const soulDisplayParts = [
+  "head",
+  "body",
+  "prop",
+  "familiar",
+  "rune",
+  "affinity",
+  "undesirable",
+] as const;
+const soulTraitsById = new Map<number, SoulTrait>(
+  soulTraits.map((trait) => [trait.idx, trait]),
+);
 const warriorTraitsById = new Map<number, WarriorTrait>(
   warriorTraits.map((trait) => [trait.idx, trait]),
 );
@@ -90,6 +104,7 @@ const getMarkdownPreview = (content: string) =>
 const getLoreCollectionPath = (collectionName: string) => {
   if (collectionName === "Wizards") return "wizards";
   if (collectionName === "Warriors") return "warriors";
+  if (collectionName === "Souls") return "souls";
   return null;
 };
 
@@ -100,6 +115,10 @@ const getCharacterImageUrl = (collectionName: string, tokenId: string) => {
 
   if (collectionName === "Warriors") {
     return `https://portal.forgottenrunes.com/api/warriors/img/${tokenId}.png`;
+  }
+
+  if (collectionName === "Souls") {
+    return `https://portal.forgottenrunes.com/api/souls/img/${tokenId}`;
   }
 
   return null;
@@ -135,6 +154,25 @@ const getCharacterTraits = (
     return wizardDisplayParts.flatMap((part) => {
       const traitId = wizard[part];
       const trait = wizardTraitsById.get(traitId);
+      if (traitId === emptyTraitId || !trait) return [];
+
+      return [
+        {
+          part: formatTraitPart(part),
+          displayName: trait.displayName,
+          description: trait.description,
+        },
+      ];
+    });
+  }
+
+  if (collectionName === "Souls") {
+    const soul = soulsWithTraitsMap[tokenId];
+    if (!soul) return [];
+
+    return soulDisplayParts.flatMap((part) => {
+      const traitId = soul[part];
+      const trait = soulTraitsById.get(traitId);
       if (traitId === emptyTraitId || !trait) return [];
 
       return [

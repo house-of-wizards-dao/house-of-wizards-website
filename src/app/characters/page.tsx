@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import { frwcAddresses } from "@/config/addresses";
 import { WizardBrowser } from "@/components/browser/WizardBrowser";
 import { WarriorBrowser } from "@/components/browser/WarriorBrowser";
+import { SoulBrowser } from "@/components/browser/SoulBrowser";
 
-type CollectionType = "wizards" | "warriors";
+type CollectionType = "wizards" | "warriors" | "souls";
 
 const collections: { key: CollectionType; name: string; address: string }[] = [
   { key: "wizards", name: "Wizards", address: frwcAddresses.wizards },
   { key: "warriors", name: "Warriors", address: frwcAddresses.warriors },
+  { key: "souls", name: "Souls", address: frwcAddresses.souls },
 ];
 
 export default function CharactersPage() {
@@ -49,10 +51,14 @@ export default function CharactersPage() {
         </div>
       </div>
       <div className="flex flex-col items-center justify-center max-w-4xl mx-auto">
-        {selectedCollection === "wizards" ? (
+        {selectedCollection === "wizards" && (
           <WizardBrowser onClick={handleCharacterClick} />
-        ) : (
+        )}
+        {selectedCollection === "warriors" && (
           <WarriorBrowser onClick={handleCharacterClick} />
+        )}
+        {selectedCollection === "souls" && (
+          <SoulBrowser onClick={handleCharacterClick} />
         )}
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { collectionNames } from "@/config/addresses";
+import { soulsWithTraitsMap } from "./soulsWithTraitsMap";
 import { wizardsWithTraitsMap } from "./wizardsWithTraitsMap";
 import { warriorsWithTraitsMap } from "./warriorsWithTraitsMap";
 
@@ -22,6 +23,9 @@ export const getCharacterName = (
   }
   if (collectionName === "Wizards") {
     return wizardsWithTraitsMap[tokenId].name;
+  }
+  if (collectionName === "Souls") {
+    return soulsWithTraitsMap[tokenId].name;
   }
   return tokenId;
 };
