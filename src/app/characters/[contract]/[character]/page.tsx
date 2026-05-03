@@ -8,8 +8,11 @@ import { useWalletClient } from "wagmi";
 import { mainnet } from "viem/chains";
 import { TokenboundClient } from "@tokenbound/sdk";
 import { getCollectionName } from "@/data/traitUtilities";
+import { soulAffinities } from "@/data/soulAffinity";
 import { soulsWithTraitsMap } from "@/data/soulsWithTraitsMap";
+import { warriorAffinities } from "@/data/warriorAffinity";
 import { warriorsWithTraitsMap } from "@/data/warriorsWithTraitsMap";
+import { wizardAffinities } from "@/data/wizardAffinity";
 import { wizardsWithTraitsMap } from "@/data/wizardsWithTraitsMap";
 import { soulTraits, type Trait as SoulTrait } from "@/data/soulTraits";
 import {
@@ -43,6 +46,16 @@ type CharacterTrait = {
   part: string;
   displayName: string;
   description?: string;
+};
+
+type CharacterAffinity = {
+  affinityName: string;
+  collectionLabel: "wizard" | "warrior" | "soul";
+  traitsInAffinity: number;
+  numberOfTraits: number;
+  attunement: number;
+  maxTraitCount: number;
+  isMaxAffinity: boolean;
 };
 
 type LoreEntry = {
@@ -100,6 +113,8 @@ const getDescriptionPreview = (description: string) =>
 
 const getMarkdownPreview = (content: string) =>
   content.length > 800 ? `${content.slice(0, 800).trimEnd()}...` : content;
+
+const formatAttunement = (attunement: number) => `${attunement}%`;
 
 const getLoreCollectionPath = (collectionName: string) => {
   if (collectionName === "Wizards") return "wizards";
@@ -188,6 +203,78 @@ const getCharacterTraits = (
   return [];
 };
 
+const buildCharacterAffinity = (
+  collectionName: string,
+  tokenId: string,
+): CharacterAffinity | null => {
+  const numericTokenId = Number(tokenId);
+  if (!Number.isInteger(numericTokenId)) return null;
+
+  if (collectionName === "Wizards") {
+    const affinity = wizardAffinities[numericTokenId];
+    if (!affinity) return null;
+
+    const maxTraitCount = 5;
+
+    return {
+      affinityName: affinity.affinity?.name ?? "Unknown",
+      collectionLabel: "wizard",
+      traitsInAffinity: affinity.traitsInAffinity,
+      numberOfTraits: affinity.numberOfTraits,
+      attunement: affinity.attunement,
+      maxTraitCount,
+      isMaxAffinity:
+        affinity.traitsInAffinity === maxTraitCount &&
+        affinity.numberOfTraits === maxTraitCount &&
+        affinity.attunement === 100,
+    };
+  }
+
+  if (collectionName === "Warriors") {
+    const affinity = warriorAffinities[numericTokenId];
+    if (!affinity) return null;
+
+    const maxTraitCount = 6;
+
+    return {
+      affinityName: affinity.affinityName ?? "Unknown",
+      collectionLabel: "warrior",
+      traitsInAffinity: affinity.traitsInAffinity,
+      numberOfTraits: affinity.numberOfTraits,
+      attunement: affinity.attunement,
+      maxTraitCount,
+      isMaxAffinity:
+        affinity.traitsInAffinity === maxTraitCount &&
+        affinity.numberOfTraits === maxTraitCount &&
+        affinity.attunement === 100,
+    };
+  }
+
+  if (collectionName === "Souls") {
+    const affinity = soulAffinities[numericTokenId];
+    const soul = soulsWithTraitsMap[tokenId];
+    if (!affinity || !soul) return null;
+
+    const soulAffinity = soulTraitsById.get(soul.affinity);
+    const maxTraitCount = 5;
+
+    return {
+      affinityName: soulAffinity?.displayName ?? "Unknown",
+      collectionLabel: "soul",
+      traitsInAffinity: affinity.traitsInAffinity,
+      numberOfTraits: affinity.numberOfTraits,
+      attunement: affinity.attunement,
+      maxTraitCount,
+      isMaxAffinity:
+        affinity.traitsInAffinity === maxTraitCount &&
+        affinity.numberOfTraits === maxTraitCount &&
+        affinity.attunement === 100,
+    };
+  }
+
+  return null;
+};
+
 export default function CharacterBackpackPage() {
   const params = useParams();
   const contract = params.contract as string;
@@ -201,6 +288,10 @@ export default function CharacterBackpackPage() {
     : null;
   const characterTraits = useMemo(
     () => getCharacterTraits(collectionName, tokenId),
+    [collectionName, tokenId],
+  );
+  const characterAffinity = useMemo(
+    () => buildCharacterAffinity(collectionName, tokenId),
     [collectionName, tokenId],
   );
 
@@ -300,7 +391,9 @@ export default function CharacterBackpackPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-4">{characterName}</h1>
-      {(characterImageUrl || characterTraits.length > 0) && (
+      {(characterImageUrl ||
+        characterTraits.length > 0 ||
+        characterAffinity) && (
         <div className="mb-8 flex flex-col gap-6 lg:flex-row lg:items-start">
           {characterImageUrl && (
             <div className="w-80 max-w-full shrink-0 overflow-hidden rounded-lg border border-gray-700 bg-gray-900">
@@ -343,6 +436,39 @@ export default function CharacterBackpackPage() {
                     )}
                   </div>
                 ))}
+              </div>
+            </section>
+          )}
+
+          {characterAffinity && (
+            <section className="w-80 max-w-full shrink-0">
+              <h2 className="text-xl font-semibold mb-3">Affinity</h2>
+              <div className="rounded-lg border border-gray-700 bg-gray-900 p-4">
+                <h3 className="text-base font-semibold text-white">
+                  {characterAffinity.affinityName}
+                </h3>
+                <div className="mt-3 space-y-2 text-sm">
+                  <p className="flex items-center justify-between gap-3">
+                    <span className="text-gray-500">Attunement</span>
+                    <span className="font-medium text-gray-200">
+                      {formatAttunement(characterAffinity.attunement)}
+                    </span>
+                  </p>
+                  <p className="flex items-center justify-between gap-3">
+                    <span className="text-gray-500">Traits</span>
+                    <span className="font-medium text-gray-200">
+                      {characterAffinity.traitsInAffinity}/
+                      {characterAffinity.numberOfTraits}
+                    </span>
+                  </p>
+                </div>
+                {characterAffinity.isMaxAffinity && (
+                  <p className="mt-3 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-100">
+                    Max affinity {characterAffinity.collectionLabel}:{" "}
+                    {characterAffinity.maxTraitCount}/
+                    {characterAffinity.maxTraitCount} traits and 100% attuned.
+                  </p>
+                )}
               </div>
             </section>
           )}

@@ -9,6 +9,7 @@
     "start": "next start",
     "lint": "eslint src --ext .ts,.tsx -c .eslintrc.json --fix",
     "type-check": "tsc --noEmit",
+    "generate:wizard-affinity": "tsx scripts/generate-wizard-affinity.ts",
     "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,md}'",
     "format:check": "prettier --check 'src/**/*.{js,jsx,ts,tsx,json,css,md}'",
     "structure:check": "npm run type-check",
