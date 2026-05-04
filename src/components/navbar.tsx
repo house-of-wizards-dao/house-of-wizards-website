@@ -216,7 +216,6 @@ export const Navbar = () => {
   >(null);
   const pathname = usePathname();
   const { hasCMSAccess } = useCMSUser();
-
   const isActiveLink = (href: string) => {
     if (href === "/") return pathname === "/";
     return pathname.startsWith(href);

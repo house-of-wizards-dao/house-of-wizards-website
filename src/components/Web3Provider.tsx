@@ -7,9 +7,13 @@ import {
   RainbowKitSiweNextAuthProvider,
   GetSiweMessageOptions,
 } from "@rainbow-me/rainbowkit-siwe-next-auth";
-import { WagmiProvider } from "wagmi";
-import { SessionProvider } from "next-auth/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useAccount, WagmiProvider } from "wagmi";
+import { SessionProvider, signOut, useSession } from "next-auth/react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import { getClientWeb3Config, getWeb3Config } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
@@ -21,6 +25,38 @@ type Web3ProviderProps = {
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
   statement: "Put thy rune on the door to Sign in",
 });
+
+const normalizeAddress = (address?: string | null) =>
+  address?.toLowerCase() ?? null;
+
+const WalletSessionSync = () => {
+  const { address: walletAddress, status: walletStatus } = useAccount();
+  const { data: session, status: sessionStatus } = useSession();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (sessionStatus !== "authenticated") return;
+
+    const sessionAddress = normalizeAddress(session.address);
+    const connectedAddress = normalizeAddress(walletAddress);
+    const isDisconnected = walletStatus === "disconnected";
+    const isMismatchedWallet =
+      walletStatus === "connected" && sessionAddress !== connectedAddress;
+
+    if (!isDisconnected && !isMismatchedWallet) return;
+
+    queryClient.removeQueries({ queryKey: ["cms-user"] });
+    void signOut({ redirect: false });
+  }, [
+    queryClient,
+    session?.address,
+    sessionStatus,
+    walletAddress,
+    walletStatus,
+  ]);
+
+  return null;
+};
 
 export const Web3Provider = ({ children }: Web3ProviderProps) => {
   const [config, setConfig] = useState(() => getWeb3Config());
@@ -62,6 +98,7 @@ export const Web3Provider = ({ children }: Web3ProviderProps) => {
       >
         <SessionProvider refetchInterval={0}>
           <QueryClientProvider client={queryClient}>
+            <WalletSessionSync />
             <RainbowKitSiweNextAuthProvider
               getSiweMessageOptions={getSiweMessageOptions}
             >

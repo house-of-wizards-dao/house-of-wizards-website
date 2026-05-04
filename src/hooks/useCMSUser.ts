@@ -10,7 +10,7 @@ type CMSUserResponse = {
 };
 
 const fetchCMSUser = async (): Promise<CMSUserResponse> => {
-  const response = await fetch("/api/cms/users/me");
+  const response = await fetch("/api/cms/users/me", { cache: "no-store" });
   if (!response.ok) {
     if (response.status === 401) {
       throw new Error("Not authenticated");

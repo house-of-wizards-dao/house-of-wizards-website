@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { defaultUrlTransform } from "react-markdown";
+import type { Components, UrlTransform } from "react-markdown";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { useWalletClient } from "wagmi";
@@ -88,7 +89,6 @@ const soulDisplayParts = [
   "prop",
   "familiar",
   "rune",
-  "affinity",
   "undesirable",
 ] as const;
 const soulTraitsById = new Map<number, SoulTrait>(
@@ -115,6 +115,47 @@ const getMarkdownPreview = (content: string) =>
   content.length > 800 ? `${content.slice(0, 800).trimEnd()}...` : content;
 
 const formatAttunement = (attunement: number) => `${attunement}%`;
+const ipfsGatewayUrl = "https://nfts.forgottenrunes.com/ipfs/";
+
+const getLoreImageUrl = (
+  src: string | undefined,
+  loreAssetBaseUrl: string | null,
+) => {
+  if (!src) return null;
+
+  const trimmedSrc = src.trim();
+  if (!trimmedSrc) return null;
+
+  if (trimmedSrc.startsWith("ipfs://")) {
+    const ipfsPath = trimmedSrc.slice("ipfs://".length).replace(/^ipfs\//, "");
+
+    return `${ipfsGatewayUrl}${ipfsPath}`;
+  }
+
+  if (trimmedSrc.startsWith("ipfs/")) {
+    return `${ipfsGatewayUrl}${trimmedSrc.slice("ipfs/".length)}`;
+  }
+
+  if (/^https?:\/\//i.test(trimmedSrc) || trimmedSrc.startsWith("/")) {
+    return trimmedSrc;
+  }
+
+  if (/^[a-z][a-z\d+.-]*:/i.test(trimmedSrc) || !loreAssetBaseUrl) {
+    return null;
+  }
+
+  return new URL(trimmedSrc, loreAssetBaseUrl).toString();
+};
+
+const getLoreMarkdownUrlTransform =
+  (loreAssetBaseUrl: string | null): UrlTransform =>
+  (url, key) => {
+    if (key === "src") {
+      return getLoreImageUrl(url, loreAssetBaseUrl);
+    }
+
+    return defaultUrlTransform(url);
+  };
 
 const getLoreCollectionPath = (collectionName: string) => {
   if (collectionName === "Wizards") return "wizards";
@@ -252,14 +293,12 @@ const buildCharacterAffinity = (
 
   if (collectionName === "Souls") {
     const affinity = soulAffinities[numericTokenId];
-    const soul = soulsWithTraitsMap[tokenId];
-    if (!affinity || !soul) return null;
+    if (!affinity) return null;
 
-    const soulAffinity = soulTraitsById.get(soul.affinity);
     const maxTraitCount = 5;
 
     return {
-      affinityName: soulAffinity?.displayName ?? "Unknown",
+      affinityName: affinity.affinityName ?? "Soul Affinity",
       collectionLabel: "soul",
       traitsInAffinity: affinity.traitsInAffinity,
       numberOfTraits: affinity.numberOfTraits,
@@ -286,6 +325,9 @@ export default function CharacterBackpackPage() {
   const loreUrl = loreCollectionPath
     ? `https://forgottenrunes.com/lore/${loreCollectionPath}/${tokenId}`
     : null;
+  const loreAssetBaseUrl = loreCollectionPath
+    ? `https://www.forgottenrunes.com/lore/${loreCollectionPath}/${tokenId}/0/`
+    : null;
   const characterTraits = useMemo(
     () => getCharacterTraits(collectionName, tokenId),
     [collectionName, tokenId],
@@ -293,6 +335,31 @@ export default function CharacterBackpackPage() {
   const characterAffinity = useMemo(
     () => buildCharacterAffinity(collectionName, tokenId),
     [collectionName, tokenId],
+  );
+  const loreMarkdownComponents = useMemo<Components>(
+    () => ({
+      img: ({ src, alt }) => {
+        const imageUrl = getLoreImageUrl(src, loreAssetBaseUrl);
+        if (!imageUrl) return null;
+
+        return (
+          <Image
+            src={imageUrl}
+            alt={alt ?? ""}
+            width={560}
+            height={560}
+            sizes="(min-width: 768px) 560px, calc(100vw - 4rem)"
+            className="mx-auto my-4 h-auto w-full max-w-xl rounded-md"
+            unoptimized
+          />
+        );
+      },
+    }),
+    [loreAssetBaseUrl],
+  );
+  const loreMarkdownUrlTransform = useMemo(
+    () => getLoreMarkdownUrlTransform(loreAssetBaseUrl),
+    [loreAssetBaseUrl],
   );
 
   const { data: walletClient } = useWalletClient();
@@ -486,7 +553,10 @@ export default function CharacterBackpackPage() {
           )}
           {!isLoadingLore && !loreError && loreEntries.length > 0 && (
             <div className="rounded-md border border-gray-700 bg-gray-800 p-4 text-sm text-gray-300">
-              <ReactMarkdown>
+              <ReactMarkdown
+                components={loreMarkdownComponents}
+                urlTransform={loreMarkdownUrlTransform}
+              >
                 {getMarkdownPreview(loreEntries[0]?.content ?? "")}
               </ReactMarkdown>
             </div>

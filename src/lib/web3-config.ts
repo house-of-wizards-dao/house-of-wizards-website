@@ -7,7 +7,7 @@ import { injected } from "wagmi/connectors";
 const chains = [mainnet, base, baseSepolia] as const;
 
 const transports = {
-  [mainnet.id]: http(),
+  [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL),
   [base.id]: http(),
   [baseSepolia.id]: http(),
 } as const;
@@ -47,5 +47,6 @@ export const getClientWeb3Config = async (): Promise<Config> => {
     projectId: getWalletConnectProjectId(),
     chains,
     ssr: false,
+    transports,
   });
 };
