@@ -11,6 +11,26 @@ type MarketplaceItemCardProps = {
   selected?: boolean;
   isBuyLoading?: boolean;
   size?: "default" | "compact";
+  /** True if the NFTX listing for this item is currently in the cart */
+  inCart?: boolean;
+  /** Click handler for the + button (add to cart). Receives the item. */
+  onAddToCart?: (item: MarketplaceItem) => void;
+  /** Click handler for the - button (remove from cart). Receives the item. */
+  onRemoveFromCart?: (item: MarketplaceItem) => void;
+  /**
+   * When provided and the item is NOT in the cart, overrides the displayed
+   * NFTX listing price with the live marginal "next-buy" price. Used so
+   * unselected NFTX cards reflect the cost of adding one more NFT to the
+   * current batch as the cart grows.
+   */
+  marginalNftxPriceEth?: string;
+  /**
+   * When provided and the item IS in the cart (NFTX), overrides the
+   * displayed price with the shared per-item cost of the current batch
+   * (i.e. `totalEth / count`). All in-cart NFTX cards display the same
+   * value so the price reflects the actual atomic-batch economics.
+   */
+  nftxBatchPerItemPriceEth?: string;
 };
 
 const formatCompactEth = (price: string | undefined) => {
@@ -20,6 +40,12 @@ const formatCompactEth = (price: string | undefined) => {
   return value.toFixed(value < 1 ? 3 : 2);
 };
 
+const formatEthForDisplay = (eth: string): string => {
+  const value = parseFloat(eth);
+  if (!Number.isFinite(value) || value <= 0) return eth;
+  return value.toFixed(value < 1 ? 4 : 3);
+};
+
 export const MarketplaceItemCard = ({
   item,
   onClick,
@@ -27,6 +53,11 @@ export const MarketplaceItemCard = ({
   selected = false,
   isBuyLoading = false,
   size = "default",
+  inCart = false,
+  onAddToCart,
+  onRemoveFromCart,
+  marginalNftxPriceEth,
+  nftxBatchPerItemPriceEth,
 }: MarketplaceItemCardProps) => {
   const { nft, bestListing, nftxListing } = item;
 
@@ -38,7 +69,17 @@ export const MarketplaceItemCard = ({
     listingPrice = formatEthFromWei(bestListing.price.amount);
     priceSource = "opensea";
   } else if (nftxListing) {
-    listingPrice = nftxListing.priceEth;
+    // For NFTX, the displayed price varies with cart state:
+    // - In cart: shared per-item cost of the current batch (totalEth/count)
+    // - Out of cart, with a live quote: marginal cost to add one more
+    // - Otherwise: the static per-1-item listing price
+    if (inCart && nftxBatchPerItemPriceEth) {
+      listingPrice = formatEthForDisplay(nftxBatchPerItemPriceEth);
+    } else if (!inCart && marginalNftxPriceEth) {
+      listingPrice = formatEthForDisplay(marginalNftxPriceEth);
+    } else {
+      listingPrice = nftxListing.priceEth;
+    }
     priceSource = "nftx";
   }
 
@@ -59,6 +100,11 @@ export const MarketplaceItemCard = ({
       onBuy={onBuy ? () => onBuy(item) : undefined}
       isBuyLoading={isBuyLoading}
       size={size}
+      inCart={inCart}
+      onAddToCart={onAddToCart ? () => onAddToCart(item) : undefined}
+      onRemoveFromCart={
+        onRemoveFromCart ? () => onRemoveFromCart(item) : undefined
+      }
     />
   );
 };

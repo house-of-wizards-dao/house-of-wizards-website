@@ -40,15 +40,6 @@ describe("CMS Auth Permission Functions", () => {
     updated_at: "2024-01-01T00:00:00Z",
   };
 
-  const anotherEditorUser: User = {
-    id: "editor-789",
-    eth_address: "0xanother",
-    twitter_handle: "@another",
-    role: "editor",
-    created_at: "2024-01-01T00:00:00Z",
-    updated_at: "2024-01-01T00:00:00Z",
-  };
-
   const newsItemByEditor: NewsItem = {
     id: 1,
     text: "Test news content",

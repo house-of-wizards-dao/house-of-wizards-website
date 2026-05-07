@@ -2,9 +2,9 @@
 
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 import type { WalletNFTsByCollection } from "@/hooks/useWalletNFTs";
-import { NFTCard } from "./NFTCard";
 import { useGallery } from "@/contexts/GalleryContext";
 import { frwcAddresses } from "@/config/addresses";
+import { NFTCard } from "./NFTCard";
 
 type NFTGridProps = {
   nfts: WalletNFTsByCollection | null;

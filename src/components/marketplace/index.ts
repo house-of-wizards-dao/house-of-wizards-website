@@ -4,3 +4,4 @@ export {
   MarketplaceItemSkeleton,
 } from "./MarketplaceItemCard";
 export { ItemDetailOverlay } from "./ItemDetailOverlay";
+export { CartSidebar } from "./CartSidebar";

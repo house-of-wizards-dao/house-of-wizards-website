@@ -18,6 +18,12 @@ export type NFTCardProps = {
   onBuy?: (e: React.MouseEvent) => void;
   isBuyLoading?: boolean;
   size?: "default" | "compact";
+  /** When true, the card shows a "selected for cart" highlight */
+  inCart?: boolean;
+  /** Click handler for the + (add to cart) button */
+  onAddToCart?: (e: React.MouseEvent) => void;
+  /** Click handler for the - (remove from cart) button */
+  onRemoveFromCart?: (e: React.MouseEvent) => void;
 };
 
 /**
@@ -36,14 +42,28 @@ export const NFTCard = ({
   onBuy,
   isBuyLoading = false,
   size = "default",
+  inCart = false,
+  onAddToCart,
+  onRemoveFromCart,
 }: NFTCardProps) => {
   const [imageError, setImageError] = useState(false);
   const hasImage = imageUrl && !imageError;
   const isCompact = size === "compact";
+  const showCartToggle = !!onAddToCart || !!onRemoveFromCart;
 
   const handleBuyClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     onBuy?.(e);
+  };
+
+  const handleCartToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (inCart) {
+      onRemoveFromCart?.(e);
+    } else {
+      onAddToCart?.(e);
+    }
   };
 
   return (
@@ -51,6 +71,8 @@ export const NFTCard = ({
       className={cn(
         "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden transition-all hover:border-gray-600 hover:shadow-lg text-left",
         selected && "border-brand-500 ring-2 ring-brand-500/50",
+        inCart &&
+          "border-emerald-500 ring-2 ring-emerald-500/60 shadow-emerald-500/20",
         disabled && "opacity-50 cursor-not-allowed",
         onClick && !disabled && "cursor-pointer",
       )}
@@ -81,6 +103,34 @@ export const NFTCard = ({
         ) : (
           <div className="w-full h-full flex items-center justify-center">
             <span className="text-4xl font-bold text-gray-600">#{tokenId}</span>
+          </div>
+        )}
+        {/* Cart toggle button (top-left) */}
+        {showCartToggle && (
+          <button
+            type="button"
+            onClick={handleCartToggle}
+            aria-label={inCart ? "Remove from cart" : "Add to cart"}
+            title={inCart ? "Remove from cart" : "Add to cart"}
+            className={cn(
+              "absolute z-10 flex items-center justify-center rounded-full shadow-md transition-all",
+              isCompact ? "top-1.5 left-1.5 w-6 h-6" : "top-2 left-2 w-8 h-8",
+              inCart
+                ? "bg-emerald-500 text-white hover:bg-emerald-400"
+                : "bg-black/70 text-white hover:bg-black/90 border border-white/30",
+            )}
+          >
+            {inCart ? (
+              <MinusIcon className={isCompact ? "w-3 h-3" : "w-4 h-4"} />
+            ) : (
+              <PlusIcon className={isCompact ? "w-3 h-3" : "w-4 h-4"} />
+            )}
+          </button>
+        )}
+        {/* "In cart" chip (corner badge under cart toggle for clarity) */}
+        {inCart && !isCompact && (
+          <div className="absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500 text-white">
+            In cart
           </div>
         )}
         {/* Source badge */}
@@ -149,6 +199,35 @@ export const NFTCard = ({
     </div>
   );
 };
+
+const PlusIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <line x1="8" y1="3" x2="8" y2="13" />
+    <line x1="3" y1="8" x2="13" y2="8" />
+  </svg>
+);
+
+const MinusIcon = ({ className }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 16 16"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    aria-hidden
+  >
+    <line x1="3" y1="8" x2="13" y2="8" />
+  </svg>
+);
 
 /**
  * Loading skeleton for NFT cards

@@ -30,11 +30,17 @@ import {
 } from "@/data/warriorTraits";
 import { warriorsWithTraits } from "@/data/warriorsWithTraits";
 import { TraitFilters } from "@/components/browser/TraitFilters";
+import { useCart } from "@/hooks/useCart";
+import { useNFTXBatchQuote } from "@/hooks/useNFTXBatchQuote";
+import type { CartItem } from "@/types/cart";
+import { cartItemKey } from "@/types/cart";
+import { collections } from "@/lib/marketplace";
+import { CartSidebar } from "./CartSidebar";
+import { ItemDetailOverlay } from "./ItemDetailOverlay";
 import {
   MarketplaceItemCard,
   MarketplaceItemSkeleton,
 } from "./MarketplaceItemCard";
-import { ItemDetailOverlay } from "./ItemDetailOverlay";
 
 type MarketplaceBrowserProps = {
   initialCollection?: CollectionKey;
@@ -207,6 +213,36 @@ export const MarketplaceBrowser = ({
   // Marketplace actions (buy, etc.)
   const { buyNFT, isConnected } = useMarketplaceActions();
   const { buyFromPool } = useNFTXBuy();
+
+  // Shopping cart
+  const cart = useCart();
+  const inCartKeys = useMemo(
+    () => new Set(cart.items.map((item) => cartItemKey(item))),
+    [cart.items],
+  );
+  const { quote: nftxBatchQuote } = useNFTXBatchQuote(
+    cart.collectionKey,
+    cart.nftxCount,
+    {
+      enabled: cart.collectionKey === selectedCollection && cart.nftxCount >= 0,
+    },
+  );
+
+  // Shared per-item NFTX cost = totalEth / count. All NFTX items in the cart
+  // display this same value (both on the marketplace cards and in the cart
+  // sidebar), since AMM batch buys are effectively a single atomic purchase
+  // and individual "per-NFT" pricing is meaningless.
+  const sharedNftxPerItemEth = useMemo(() => {
+    if (!nftxBatchQuote || nftxBatchQuote.count <= 0) return undefined;
+    const totalEth = parseFloat(nftxBatchQuote.totalEth);
+    if (!Number.isFinite(totalEth) || totalEth <= 0) return undefined;
+    return (totalEth / nftxBatchQuote.count).toString();
+  }, [nftxBatchQuote]);
+
+  // Pending collection switch confirmation (when cart is non-empty and the
+  // user clicks a different collection tab)
+  const [pendingCollection, setPendingCollection] =
+    useState<CollectionKey | null>(null);
 
   // Combined items based on selected source
   const items = useMemo(() => {
@@ -406,23 +442,45 @@ export const MarketplaceBrowser = ({
     selectedWarriorTraits,
   ]);
 
-  // Handle collection change
-  const handleCollectionChange = useCallback(
+  // Apply a collection change (without cart confirmation)
+  const applyCollectionChange = useCallback(
     (key: CollectionKey) => {
       setSelectedCollection(key);
       setNameQuery("");
       setIdQuery("");
-      // Reset trait filters when switching collections
       setSelectedWizardTraits({});
       setSelectedWarriorTraits({});
-      // Keep "all" or "opensea" when switching, but if "nftx" only, fall back to "all"
-      // since not all collections have NFTX vaults
       if (marketplaceSource === "nftx") {
         setMarketplaceSource("all");
       }
     },
     [marketplaceSource],
   );
+
+  // Handle collection change with cart guard. If the cart is locked to a
+  // different collection, defer the switch until the user confirms.
+  const handleCollectionChange = useCallback(
+    (key: CollectionKey) => {
+      if (key === selectedCollection) return;
+      if (cart.count > 0 && cart.collectionKey && cart.collectionKey !== key) {
+        setPendingCollection(key);
+        return;
+      }
+      applyCollectionChange(key);
+    },
+    [applyCollectionChange, cart.collectionKey, cart.count, selectedCollection],
+  );
+
+  const confirmCollectionSwitch = useCallback(() => {
+    if (!pendingCollection) return;
+    cart.clear();
+    applyCollectionChange(pendingCollection);
+    setPendingCollection(null);
+  }, [applyCollectionChange, cart, pendingCollection]);
+
+  const cancelCollectionSwitch = useCallback(() => {
+    setPendingCollection(null);
+  }, []);
 
   // Handle marketplace source change
   const handleSourceChange = useCallback((source: MarketplaceSource) => {
@@ -552,6 +610,74 @@ export const MarketplaceBrowser = ({
       refresh,
       marketplaceSource,
     ],
+  );
+
+  // Resolve the cart entry (snapshot/orderHash) for a marketplace item.
+  // Prefers NFTX when both sources exist, mirroring batch UX.
+  const buildCartItem = useCallback(
+    (item: MarketplaceItem): CartItem | null => {
+      const collectionKey = item.collection.key;
+      if (item.nftxListing) {
+        const eth = item.nftxListing.priceEth;
+        return {
+          source: "nftx",
+          collectionKey,
+          tokenId: item.nft.identifier,
+          name:
+            item.nft.name || `${item.collection.name} #${item.nft.identifier}`,
+          imageUrl: item.nft.image_url,
+          snapshotPriceWei: item.nftxListing.priceWei,
+          snapshotPriceEth: eth,
+          vaultAddress: item.nftxListing.vaultAddress,
+        };
+      }
+      if (item.bestListing) {
+        const eth = (
+          parseFloat(item.bestListing.price.amount) / 1e18
+        ).toString();
+        return {
+          source: "opensea",
+          collectionKey,
+          tokenId: item.nft.identifier,
+          name:
+            item.nft.name || `${item.collection.name} #${item.nft.identifier}`,
+          imageUrl: item.nft.image_url,
+          snapshotPriceWei: item.bestListing.price.amount,
+          snapshotPriceEth: eth,
+          orderHash: item.bestListing.orderHash,
+        };
+      }
+      return null;
+    },
+    [],
+  );
+
+  const handleAddToCart = useCallback(
+    (item: MarketplaceItem) => {
+      const cartItem = buildCartItem(item);
+      if (!cartItem) return;
+      const result = cart.add(cartItem);
+      if (!result.ok && result.reason === "collection-mismatch") {
+        const ok = window.confirm(
+          "Your cart is from a different collection. Clear it and start a new cart with this item?",
+        );
+        if (ok) {
+          cart.add(cartItem, { replaceCollection: true });
+        }
+      }
+    },
+    [buildCartItem, cart],
+  );
+
+  const handleRemoveFromCart = useCallback(
+    (item: MarketplaceItem) => {
+      // We don't know which source from the card alone, so remove both
+      // possible matches if present. Cart only supports a single source per
+      // tokenId in practice, so this is safe.
+      cart.remove({ source: "nftx", tokenId: item.nft.identifier });
+      cart.remove({ source: "opensea", tokenId: item.nft.identifier });
+    },
+    [cart],
   );
 
   return (
@@ -789,16 +915,41 @@ export const MarketplaceBrowser = ({
             Array.from({ length: 12 }).map((_, i) => (
               <MarketplaceItemSkeleton key={i} />
             ))
-          : filteredItems.map((item) => (
-              <MarketplaceItemCard
-                key={`${item.collection.key}-${item.nft.identifier}`}
-                item={item}
-                onClick={handleItemClick}
-                onBuy={isConnected ? handleBuy : undefined}
-                isBuyLoading={buyingTokenId === item.nft.identifier}
-                size={cardSize}
-              />
-            ))}
+          : filteredItems.map((item) => {
+              const cartCandidate = buildCartItem(item);
+              const isInCart =
+                !!cartCandidate && inCartKeys.has(cartItemKey(cartCandidate));
+              const showMarginal =
+                !!item.nftxListing &&
+                cart.collectionKey === item.collection.key &&
+                cart.nftxCount > 0 &&
+                !!nftxBatchQuote;
+              return (
+                <MarketplaceItemCard
+                  key={`${item.collection.key}-${item.nft.identifier}`}
+                  item={item}
+                  onClick={handleItemClick}
+                  onBuy={isConnected ? handleBuy : undefined}
+                  isBuyLoading={buyingTokenId === item.nft.identifier}
+                  size={cardSize}
+                  inCart={isInCart}
+                  onAddToCart={cartCandidate ? handleAddToCart : undefined}
+                  onRemoveFromCart={
+                    cartCandidate ? handleRemoveFromCart : undefined
+                  }
+                  marginalNftxPriceEth={
+                    showMarginal && nftxBatchQuote
+                      ? nftxBatchQuote.marginalNextEth
+                      : undefined
+                  }
+                  nftxBatchPerItemPriceEth={
+                    isInCart && !!item.nftxListing
+                      ? sharedNftxPerItemEth
+                      : undefined
+                  }
+                />
+              );
+            })}
       </div>
 
       {/* Load More (OpenSea only - NFTX loads all at once) */}
@@ -840,6 +991,51 @@ export const MarketplaceBrowser = ({
           onClose={handleCloseOverlay}
           onActionComplete={handleActionComplete}
         />
+      )}
+
+      {/* Cart sidebar */}
+      <CartSidebar />
+
+      {/* Collection switch confirmation */}
+      {pendingCollection && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          role="dialog"
+          aria-modal
+        >
+          <div className="bg-[#0C0B10] border border-gray-800 rounded-lg p-5 max-w-sm w-full space-y-4">
+            <h3 className="text-white font-bold text-lg">Switch collection?</h3>
+            <p className="text-sm text-gray-300">
+              Your cart contains items from{" "}
+              <span className="text-violet-400">
+                {cart.collectionKey
+                  ? collections[cart.collectionKey].name
+                  : "another collection"}
+              </span>
+              . Switching to{" "}
+              <span className="text-violet-400">
+                {collections[pendingCollection].name}
+              </span>{" "}
+              will clear your current cart.
+            </p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                onClick={cancelCollectionSwitch}
+                className="px-4 py-2 rounded-md text-sm text-gray-300 hover:bg-gray-800"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmCollectionSwitch}
+                className="px-4 py-2 rounded-md text-sm bg-red-600 hover:bg-red-500 text-white font-semibold"
+              >
+                Clear cart and switch
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

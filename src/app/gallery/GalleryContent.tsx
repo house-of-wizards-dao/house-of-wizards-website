@@ -1,15 +1,15 @@
 "use client";
 
-import { useGallery } from "@/contexts/GalleryContext";
-import { useWalletNFTs } from "@/hooks/useWalletNFTs";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useMemo } from "react";
 import { PropsWithChildren } from "react";
+import Image from "next/image";
+import { useGallery } from "@/contexts/GalleryContext";
+import { useWalletNFTs } from "@/hooks/useWalletNFTs";
 import { PageTitle } from "@/components/PageTitle";
 import { GallerySettings } from "@/components/gallery/GallerySettings";
 import { NFTGrid } from "@/components/gallery/NFTGrid";
-import Image from "next/image";
 
 export function GalleryContent() {
   const router = useRouter();

@@ -22,7 +22,7 @@ export const ItemDetailOverlay = ({
   onClose,
   onActionComplete,
 }: ItemDetailOverlayProps) => {
-  const { isConnected, address } = useAccount();
+  const { isConnected } = useAccount();
   const { isOwner } = useNFTOwnership(item.collection.key, item.nft.identifier);
   const { buyNFT, acceptOffer, isProcessing, error } = useMarketplaceActions();
   const [activeTab, setActiveTab] = useState<"details" | "offers">("details");
@@ -33,7 +33,7 @@ export const ItemDetailOverlay = ({
 
   if (!isOpen) return null;
 
-  const { nft, collection, listings, offers, bestListing, bestOffer } = item;
+  const { nft, collection, offers, bestListing, bestOffer } = item;
 
   const handleBuy = async () => {
     if (!bestListing) return;

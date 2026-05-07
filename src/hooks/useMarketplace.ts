@@ -572,6 +572,71 @@ export const useNFTXBuy = () => {
     [isConnected, address, walletClient],
   );
 
+  /**
+   * Buy a batch of NFTs from the NFTX pool atomically.
+   * Caller must supply the authoritative batch `priceWei` (e.g. from
+   * useNFTXBatchQuote) so that msg.value matches getAmountsIn for the batch.
+   */
+  const buyBatchFromPool = useCallback(
+    async (
+      collection: CollectionKey,
+      tokenIds: string[],
+      priceWei: string,
+    ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+      if (!isConnected || !address || !walletClient) {
+        return { success: false, error: "Wallet not connected" };
+      }
+      if (tokenIds.length === 0) {
+        return { success: false, error: "No tokens to buy" };
+      }
+
+      setIsProcessing(true);
+      setError(null);
+
+      try {
+        const response = await fetch("/api/marketplace/nftx", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            collection,
+            tokenIds,
+            action: "buy",
+            buyerAddress: address,
+            priceWei,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to get NFTX batch transaction");
+        }
+
+        const { transaction } = data;
+        if (!transaction?.to || !transaction?.data) {
+          throw new Error("Invalid transaction data received");
+        }
+
+        const txHash = await walletClient.sendTransaction({
+          to: transaction.to as `0x${string}`,
+          data: transaction.data as `0x${string}`,
+          value: BigInt(transaction.value || "0"),
+        });
+
+        setLastTxHash(txHash);
+        return { success: true, txHash };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Transaction failed";
+        setError(message);
+        console.error("Error batch-buying from NFTX:", err);
+        return { success: false, error: message };
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [isConnected, address, walletClient],
+  );
+
   return {
     isConnected,
     address,
@@ -579,5 +644,98 @@ export const useNFTXBuy = () => {
     error,
     lastTxHash,
     buyFromPool,
+    buyBatchFromPool,
+  };
+};
+
+export type BatchOpenSeaOrder = {
+  orderHash: string;
+  tokenId: string;
+};
+
+/**
+ * Hook for atomic batch fulfillment of multiple OpenSea listings via Seaport.
+ *
+ * The server fetches a fully signed `OrderWithCounter` for each cart item
+ * via OpenSea's `generateFulfillmentData` (which always includes the
+ * canonical signature), feeds them to seaport-js's `fulfillOrders`, and
+ * returns a single `fulfillAvailableAdvancedOrders` calldata. The client
+ * submits exactly one transaction — the user signs once.
+ *
+ * Per Seaport semantics, individual orders that are no longer fulfillable
+ * (e.g. already sold) are skipped without reverting the whole tx, so the
+ * buyer receives the orders that are still available.
+ */
+export const useBatchOpenSeaBuy = () => {
+  const { address, isConnected } = useAccount();
+  const { data: walletClient } = useWalletClient();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lastTxHash, setLastTxHash] = useState<string | null>(null);
+
+  const buyBatch = useCallback(
+    async (
+      collection: CollectionKey,
+      orders: BatchOpenSeaOrder[],
+    ): Promise<{ success: boolean; txHash?: string; error?: string }> => {
+      if (!isConnected || !address || !walletClient) {
+        return { success: false, error: "Wallet not connected" };
+      }
+      if (orders.length === 0) {
+        return { success: false, error: "No orders to fulfill" };
+      }
+
+      setIsProcessing(true);
+      setError(null);
+
+      try {
+        const response = await fetch("/api/marketplace/fulfill-batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            collection,
+            orders,
+            accountAddress: address,
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.error || "Failed to get batch fulfillment data");
+        }
+
+        const { transaction } = data;
+        if (!transaction?.to || !transaction?.data) {
+          throw new Error("Invalid transaction data received");
+        }
+
+        const txHash = await walletClient.sendTransaction({
+          to: transaction.to as `0x${string}`,
+          data: transaction.data as `0x${string}`,
+          value: BigInt(transaction.value || "0"),
+        });
+
+        setLastTxHash(txHash);
+        return { success: true, txHash };
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Transaction failed";
+        setError(message);
+        console.error("Error batch-buying from OpenSea:", err);
+        return { success: false, error: message };
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    [isConnected, address, walletClient],
+  );
+
+  return {
+    isConnected,
+    address,
+    isProcessing,
+    error,
+    lastTxHash,
+    buyBatch,
   };
 };

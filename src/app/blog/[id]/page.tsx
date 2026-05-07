@@ -2,8 +2,8 @@ import Link from "next/link";
 import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import rehypeUnwrapImages from "rehype-unwrap-images";
-import { getAllPostIds, getPostData } from "@/lib/posts";
 import { notFound } from "next/navigation";
+import { getAllPostIds, getPostData } from "@/lib/posts";
 
 export async function generateStaticParams() {
   const posts = getAllPostIds();

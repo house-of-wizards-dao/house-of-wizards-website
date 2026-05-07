@@ -1,6 +1,5 @@
 "use client";
 
-import { frwcAddresses } from "@/config/addresses";
 import { useSearchParams } from "next/navigation";
 import {
   createContext,
@@ -9,6 +8,7 @@ import {
   PropsWithChildren,
   useMemo,
 } from "react";
+import { frwcAddresses } from "@/config/addresses";
 
 export type ViewMode = "flat" | "grouped";
 

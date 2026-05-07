@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useForgedWarriors } from "@/hooks/useForgedWarriors";
 import { ForgedWarriorsListView } from "@/components/warriors/ForgedWarriorsListView";
 import { ForgedWithFilter } from "@/components/warriors/ForgedWithFilter";
 import { PageTitle } from "@/components/PageTitle";
-import Image from "next/image";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 
 export default function WarriorsPage() {

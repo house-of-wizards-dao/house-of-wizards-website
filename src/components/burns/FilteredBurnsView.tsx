@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { TraitFilter } from "@/components/burns/TraitFilter";
 import { BurnsListView } from "@/components/burns/BurnsListView";
 import type { StatsData, Burn } from "@/lib/burn-stats";

@@ -1,14 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import { useBurnStats } from "@/hooks/useBurnStats";
 import { ViewSelector, type BurnView } from "@/components/burns/ViewSelector";
 import { WizardsView } from "@/components/burns/WizardsView";
 import { SoulsView } from "@/components/burns/SoulsView";
 import { TraitsView } from "@/components/burns/TraitsView";
 import { PageTitle } from "@/components/PageTitle";
-import Image from "next/image";
 
 export default function BurnsPage() {
   const { data, loading, error } = useBurnStats();

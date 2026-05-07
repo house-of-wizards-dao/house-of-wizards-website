@@ -19,7 +19,7 @@ import type {
   Trait as OpenSeaTrait,
 } from "opensea-js/lib/api/types";
 // @ts-ignore - ethers is a dependency of opensea-js
-import { JsonRpcProvider } from "ethers";
+import { JsonRpcProvider, VoidSigner } from "ethers";
 import { unstable_cache } from "next/cache";
 import { frwcAddresses } from "@/config/addresses";
 import type {
@@ -117,6 +117,33 @@ export const getCollection = (key: CollectionKey): CollectionInfo => {
 };
 
 /**
+ * Race a promise against a timeout. If the timeout fires first, rejects
+ * with a `TimeoutError`. Used for SSR-time fetches where we want to bail
+ * to a client-side fallback quickly rather than letting ethers'
+ * `FetchRequest` default 5-minute timeout block the render.
+ */
+export class TimeoutError extends Error {
+  constructor(label: string, ms: number) {
+    super(`${label} timed out after ${ms}ms`);
+    this.name = "TimeoutError";
+  }
+}
+
+export const withTimeout = <T>(
+  promise: Promise<T>,
+  ms: number,
+  label = "request",
+): Promise<T> => {
+  let timeoutHandle: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeoutHandle = setTimeout(() => reject(new TimeoutError(label, ms)), ms);
+  });
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutHandle) clearTimeout(timeoutHandle);
+  }) as Promise<T>;
+};
+
+/**
  * Get collection key from contract address
  */
 export const getCollectionKeyByAddress = (
@@ -132,13 +159,46 @@ export const getCollectionKeyByAddress = (
 };
 
 /**
- * Initialize OpenSea SDK for mainnet
+ * Mainnet RPC URL used by server-side OpenSea SDK calls.
+ *
+ * Order of preference:
+ *   1. `OPENSEA_RPC_URL` (server-only override)
+ *   2. `NEXT_PUBLIC_ALCHEMY_API_KEY` (Alchemy mainnet endpoint)
+ *   3. Fallback public RPC (rate-limited; only used if no key is set)
  */
-export const getOpenSeaSDK = () => {
+const getMainnetRpcUrl = (): string => {
+  if (process.env.OPENSEA_RPC_URL) return process.env.OPENSEA_RPC_URL;
+  const alchemyKey = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY;
+  if (alchemyKey) {
+    return `https://eth-mainnet.g.alchemy.com/v2/${alchemyKey}`;
+  }
+  return "https://eth.llamarpc.com";
+};
+
+/**
+ * Initialize OpenSea SDK for mainnet.
+ *
+ * @param accountAddress - Optional buyer/seller address. When provided, the
+ *   SDK is constructed with a {@link VoidSigner} bound to that address. This
+ *   is required for any code path that ends up calling `seaport.fulfillOrders`
+ *   (or other write paths) on the server: passing a raw {@link JsonRpcProvider}
+ *   makes seaport-js fall back to `provider.getSigner(addr)`, which calls
+ *   `eth_accounts` against the RPC. Public/Alchemy nodes either rate-limit
+ *   that method or return `[]`, breaking transaction building. A
+ *   {@link VoidSigner} short-circuits seaport-js's `_getSigner` so the SDK
+ *   only uses the signer to populate calldata — it never actually signs or
+ *   sends, which is exactly what we want for a server-side calldata builder.
+ *
+ * Read-only paths (listings, NFT metadata, etc.) can omit `accountAddress`.
+ */
+export const getOpenSeaSDK = (accountAddress?: string) => {
   const apiKey = process.env.OPENSEA_API_KEY;
-  const provider = new JsonRpcProvider("https://eth.llamarpc.com");
+  const provider = new JsonRpcProvider(getMainnetRpcUrl());
+  const signerOrProvider = accountAddress
+    ? new VoidSigner(accountAddress, provider)
+    : provider;
   return new OpenSeaSDK(
-    provider,
+    signerOrProvider,
     {
       apiKey: apiKey || undefined,
       chain: Chain.Mainnet,

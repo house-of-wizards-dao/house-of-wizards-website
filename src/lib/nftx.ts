@@ -426,6 +426,76 @@ export const calculateNFTXPrice = (
 };
 
 /**
+ * Quote the WETH cost (in wei and ETH) to atomically buy `count` NFTs from
+ * the NFTX pool, plus the marginal cost of adding one more to that batch.
+ *
+ * Because NFTX swaps WETH -> vToken on SushiSwap (constant-product AMM),
+ * atomic batch quotes incorporate slippage and are not equal to N times the
+ * single-item quote. This function returns:
+ *
+ * - `totalWei`: exact `getAmountsIn` for `count` items
+ * - `marginalNextWei`: incremental WETH needed to add one more NFT to the
+ *   batch (i.e. quote(count+1) - quote(count))
+ *
+ * Both values are also returned as decimal ETH strings for display.
+ *
+ * Returns null if the vault doesn't exist or the SushiSwap quote fails.
+ */
+export type NFTXBatchQuote = {
+  count: number;
+  totalWei: string;
+  totalEth: string;
+  marginalNextWei: string;
+  marginalNextEth: string;
+  perNftVTokenWei: string;
+};
+
+export const quoteNFTXBatch = async (
+  collectionKey: CollectionKey,
+  count: number,
+): Promise<NFTXBatchQuote | null> => {
+  const vaultConfig = getNFTXVault(collectionKey);
+  if (!vaultConfig) {
+    return null;
+  }
+
+  const vaultData = await fetchVaultHoldings(vaultConfig);
+  if (!vaultData) {
+    return null;
+  }
+
+  const redeemFeeWei = BigInt(vaultData.fees.targetRedeemFee);
+  const perNftVTokenWei = 1000000000000000000n + redeemFeeWei;
+
+  const safeCount = Math.max(0, Math.floor(count));
+  const path: [string, string] = [WETH_ADDRESS, vaultConfig.vTokenAddress];
+
+  const [batchN, batchNext] = await Promise.all([
+    safeCount > 0
+      ? getAmountsIn(perNftVTokenWei * BigInt(safeCount), path)
+      : Promise.resolve(null),
+    getAmountsIn(perNftVTokenWei * BigInt(safeCount + 1), path),
+  ]);
+
+  if (!batchNext || batchNext.length < 2) {
+    return null;
+  }
+
+  const totalWei = batchN ? batchN[0] : 0n;
+  const nextTotalWei = batchNext[0];
+  const marginalNextWei = nextTotalWei - totalWei;
+
+  return {
+    count: safeCount,
+    totalWei: totalWei.toString(),
+    totalEth: weiToEthString(totalWei),
+    marginalNextWei: marginalNextWei.toString(),
+    marginalNextEth: weiToEthString(marginalNextWei),
+    perNftVTokenWei: perNftVTokenWei.toString(),
+  };
+};
+
+/**
  * Fetch NFTX listings for a collection
  * Returns MarketplaceItems with NFTX listing data
  */

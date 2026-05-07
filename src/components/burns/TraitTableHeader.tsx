@@ -1,7 +1,7 @@
 "use client";
 
-import { SortArrow } from "./SortArrow";
 import type { SortField, SortDirection } from "@/hooks/useTraitSorting";
+import { SortArrow } from "./SortArrow";
 
 type TraitTableHeaderProps = {
   sortField: SortField;

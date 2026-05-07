@@ -1,7 +1,13 @@
 import { Metadata } from "next";
 import { MarketplaceBrowser } from "@/components/marketplace";
 import { PageTitle } from "@/components/PageTitle";
-import { fetchCollectionListings, getCollection } from "@/lib/marketplace";
+import {
+  fetchCollectionListings,
+  getCollection,
+  withTimeout,
+  TimeoutError,
+} from "@/lib/marketplace";
+import { CartProvider } from "@/contexts/CartContext";
 
 export const metadata: Metadata = {
   title: "Marketplace | House of Wizards",
@@ -23,13 +29,27 @@ export default async function MarketplacePage() {
   let initialListings;
   let initialCollectionInfo;
 
+  // Cap SSR fetch latency. ethers' FetchRequest (used inside opensea-js)
+  // defaults to a 5-minute timeout, which would block this render when
+  // OpenSea is slow. If we don't get listings in time, we fall through to
+  // the client-side fetch path so the page renders quickly with a spinner.
+  const SSR_FETCH_TIMEOUT_MS = 12_000;
   try {
-    const result = await fetchCollectionListings("wizards", 50);
+    const result = await withTimeout(
+      fetchCollectionListings("wizards", 50),
+      SSR_FETCH_TIMEOUT_MS,
+      "fetchCollectionListings(wizards)",
+    );
     initialListings = result.listings;
     initialCollectionInfo = getCollection("wizards");
   } catch (error) {
-    console.error("Failed to prefetch listings:", error);
-    // Fall back to client-side fetching if server fetch fails
+    if (error instanceof TimeoutError) {
+      console.warn(
+        "Marketplace SSR prefetch timed out; falling back to client fetch.",
+      );
+    } else {
+      console.error("Failed to prefetch listings:", error);
+    }
     initialListings = undefined;
     initialCollectionInfo = undefined;
   }
@@ -42,11 +62,13 @@ export default async function MarketplacePage() {
       />
 
       <div className="mt-8">
-        <MarketplaceBrowser
-          initialCollection="wizards"
-          initialListings={initialListings}
-          initialCollectionInfo={initialCollectionInfo}
-        />
+        <CartProvider>
+          <MarketplaceBrowser
+            initialCollection="wizards"
+            initialListings={initialListings}
+            initialCollectionInfo={initialCollectionInfo}
+          />
+        </CartProvider>
       </div>
     </div>
   );

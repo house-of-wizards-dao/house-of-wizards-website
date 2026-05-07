@@ -3,8 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
-import { LazyImage } from "../ui/LazyImage";
 import { addresses } from "@/config/addresses";
+import { LazyImage } from "../ui/LazyImage";
 
 type ForgedWarriorsListViewProps = {
   warriors: WarriorGraphQLResponse[];

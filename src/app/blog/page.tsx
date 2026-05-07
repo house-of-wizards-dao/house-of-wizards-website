@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Card } from "@nextui-org/card";
-import { getSortedPostsData, type Post } from "@/lib/posts";
+import { getSortedPostsData } from "@/lib/posts";
 import { PageTitle } from "@/components/PageTitle";
 
 export const metadata: Metadata = {
