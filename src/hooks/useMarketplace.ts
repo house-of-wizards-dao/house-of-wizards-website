@@ -15,6 +15,7 @@ import type {
   Offer,
   NFTXListing,
 } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 // ============================================================================
 // API Fetcher Functions
@@ -308,7 +309,7 @@ export const useMarketplaceActions = () => {
         const message =
           err instanceof Error ? err.message : "Transaction failed";
         setError(message);
-        console.error("Error buying NFT:", err);
+        logger.error("Error buying NFT", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);
@@ -373,7 +374,7 @@ export const useMarketplaceActions = () => {
         const message =
           err instanceof Error ? err.message : "Transaction failed";
         setError(message);
-        console.error("Error accepting offer:", err);
+        logger.error("Error accepting offer", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);
@@ -419,7 +420,7 @@ export const useMarketplaceActions = () => {
       } catch (err) {
         const message = err instanceof Error ? err.message : "Listing failed";
         setError(message);
-        console.error("Error creating listing:", err);
+        logger.error("Error creating listing", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);
@@ -563,7 +564,7 @@ export const useNFTXBuy = () => {
         const message =
           err instanceof Error ? err.message : "Transaction failed";
         setError(message);
-        console.error("Error buying from NFTX:", err);
+        logger.error("Error buying from NFTX", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);
@@ -628,7 +629,7 @@ export const useNFTXBuy = () => {
         const message =
           err instanceof Error ? err.message : "Transaction failed";
         setError(message);
-        console.error("Error batch-buying from NFTX:", err);
+        logger.error("Error batch-buying from NFTX", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);
@@ -721,7 +722,7 @@ export const useBatchOpenSeaBuy = () => {
         const message =
           err instanceof Error ? err.message : "Transaction failed";
         setError(message);
-        console.error("Error batch-buying from OpenSea:", err);
+        logger.error("Error batch-buying from OpenSea", err);
         return { success: false, error: message };
       } finally {
         setIsProcessing(false);

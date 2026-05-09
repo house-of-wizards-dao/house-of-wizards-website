@@ -3,6 +3,7 @@ import { fetchNFTsForWallets, type OpenSeaNFT } from "@/lib/opensea-nfts";
 import { resolveAddressesOrENS } from "@/lib/ens";
 import { frwcAddresses } from "@/config/addresses";
 import { getCollectionName } from "@/data/traitUtilities";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     if (unresolved.length > 0) {
-      console.warn(`Failed to resolve some inputs: ${unresolved.join(", ")}`);
+      logger.warn(`Failed to resolve some inputs: ${unresolved.join(", ")}`);
     }
 
     // Parse limit if provided (for pagination page size, not total limit)
@@ -116,7 +117,7 @@ export const GET = async (request: NextRequest) => {
       },
     });
   } catch (error) {
-    console.error("Error in /api/nfts/wallets:", error);
+    logger.error("Error in /api/nfts/wallets", error);
     return NextResponse.json(
       {
         error: "Failed to fetch NFTs",

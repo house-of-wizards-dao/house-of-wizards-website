@@ -42,7 +42,6 @@ const formatCompactEth = (price: string | undefined) => {
 
 const formatEthForDisplay = (eth: string): string => {
   const value = parseFloat(eth);
-  if (!Number.isFinite(value) || value <= 0) return eth;
   return value.toFixed(value < 1 ? 4 : 3);
 };
 
@@ -78,7 +77,7 @@ export const MarketplaceItemCard = ({
     } else if (!inCart && marginalNftxPriceEth) {
       listingPrice = formatEthForDisplay(marginalNftxPriceEth);
     } else {
-      listingPrice = nftxListing.priceEth;
+      listingPrice = formatEthForDisplay(nftxListing.priceEth);
     }
     priceSource = "nftx";
   }

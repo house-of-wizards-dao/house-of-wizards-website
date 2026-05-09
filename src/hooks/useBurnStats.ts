@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { StatsData } from "@/lib/burn-stats";
+import { logger } from "@/lib/logger";
 
 export const useBurnStats = () => {
   const [data, setData] = useState<StatsData | null>(null);
@@ -22,7 +23,7 @@ export const useBurnStats = () => {
       } catch (err) {
         const error = err instanceof Error ? err : new Error("Unknown error");
         setError(error);
-        console.error("Error fetching burn stats:", error);
+        logger.error("Error fetching burn stats", error);
       } finally {
         setLoading(false);
       }

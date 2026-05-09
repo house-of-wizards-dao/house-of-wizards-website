@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSupabaseClient } from "@/lib/supabase";
 import { requireCMSUser, isAuthError } from "@/lib/cms-auth";
+import { logger } from "@/lib/logger";
 
 const BUCKET_NAME = "cult-content-chronicle";
 
@@ -133,7 +134,7 @@ export const POST = async (request: NextRequest) => {
       });
 
     if (error) {
-      console.error("Supabase upload error:", error);
+      logger.error("Supabase upload error", error);
       return NextResponse.json(
         { error: "Failed to upload file" },
         { status: 500 },
@@ -171,7 +172,7 @@ export const POST = async (request: NextRequest) => {
       fileSize: file.size,
     });
   } catch (error) {
-    console.error("Upload error:", error);
+    logger.error("Upload error", error);
     return NextResponse.json(
       { error: "Failed to process upload" },
       { status: 500 },

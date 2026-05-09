@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getStats, isCacheValid } from "@/lib/burn-stats";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export const GET = async (_request: Request) => {
       },
     });
   } catch (error) {
-    console.error("Error in API route:", error);
+    logger.error("Error in /api/burn-stats", error);
     return NextResponse.json(
       { error: "Failed to fetch stats" },
       { status: 500 },

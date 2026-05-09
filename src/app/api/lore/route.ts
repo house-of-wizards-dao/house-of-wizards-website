@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
 
 export type LoreEntry = {
   previewText: string;
@@ -64,7 +65,7 @@ export const GET = async () => {
 
     return NextResponse.json(result.data.PaginatedLore);
   } catch (error) {
-    console.error("Error fetching lore:", error);
+    logger.error("Error fetching lore", error);
     return NextResponse.json(
       { error: "Failed to fetch lore entries" },
       { status: 500 },

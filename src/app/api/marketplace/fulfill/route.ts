@@ -3,6 +3,7 @@ import { OrderSide } from "opensea-js";
 import { getOpenSeaSDK, collections } from "@/lib/marketplace";
 import { SEAPORT_ADDRESS, encodeSeaportCall } from "@/lib/seaport-encode";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -76,10 +77,9 @@ export const POST = async (request: NextRequest) => {
     // The response structure is: { protocol, fulfillment_data: { transaction, orders } }
     const fulfillmentData = fulfillmentResponse.fulfillment_data;
     if (!fulfillmentData?.transaction) {
-      console.error(
-        "Unexpected fulfillment response structure:",
-        JSON.stringify(fulfillmentResponse, null, 2),
-      );
+      logger.error("Unexpected fulfillment response structure", {
+        fulfillmentResponse,
+      });
       return NextResponse.json(
         { error: "Invalid fulfillment response from OpenSea" },
         { status: 500 },
@@ -106,7 +106,7 @@ export const POST = async (request: NextRequest) => {
       message: "Transaction data ready for signing",
     });
   } catch (error) {
-    console.error("Error in /api/marketplace/fulfill:", error);
+    logger.error("Error in /api/marketplace/fulfill", error);
     return NextResponse.json(
       {
         error: "Failed to get fulfillment data",

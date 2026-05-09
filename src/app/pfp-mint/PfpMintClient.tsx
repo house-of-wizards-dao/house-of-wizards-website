@@ -15,6 +15,7 @@ import Snowfall from "react-snowfall";
 import { addresses } from "@/config/addresses";
 import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
 import { WizardBrowser } from "@/components/browser/WizardBrowser";
+import { logger } from "@/lib/logger";
 
 const getWizardImage = (idx: number): string => {
   return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${idx}.png`;
@@ -103,7 +104,7 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
           });
           await response.json();
         } catch (error) {
-          console.error("@@@ Failed to verify mint:", error);
+          logger.error("Failed to verify mint", error);
         } finally {
           setIsVerifying(false);
           setShowMintOverlay(true);
@@ -114,7 +115,7 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
               setMintedTokenIds(mintedData.ids || []);
             }
           } catch (error) {
-            console.error("Failed to refresh minted tokens:", error);
+            logger.error("Failed to refresh minted tokens", error);
           }
         }
       };
@@ -482,7 +483,7 @@ const MintedImage = ({ tokenId }: { tokenId: number }) => {
         const data = await response.json();
         setImageUri(data.image);
       } catch (err) {
-        console.error("Failed to load image:", err);
+        logger.error("Failed to load image", err);
         setError(err instanceof Error ? err.message : "Failed to load image");
         setImageUri(getWizardImage(tokenId));
       } finally {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchCollectionListings, collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 // Revalidate listings every 60 seconds (dynamic data)
 export const revalidate = 60;
@@ -64,7 +65,7 @@ export const GET = async (request: NextRequest) => {
       },
     );
   } catch (error) {
-    console.error("Error in /api/marketplace/listings:", error);
+    logger.error("Error in /api/marketplace/listings", error);
     return NextResponse.json(
       {
         error: "Failed to fetch listings",

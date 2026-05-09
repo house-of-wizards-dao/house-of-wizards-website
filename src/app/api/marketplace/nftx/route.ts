@@ -6,6 +6,7 @@ import {
 } from "@/lib/nftx";
 import { collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 // Revalidate every 2 minutes (NFTX pool changes less frequently)
 export const revalidate = 120;
@@ -75,7 +76,7 @@ export const GET = async (request: NextRequest) => {
       },
     );
   } catch (error) {
-    console.error("Error in /api/marketplace/nftx:", error);
+    logger.error("Error in /api/marketplace/nftx", error);
     return NextResponse.json(
       {
         error: "Failed to fetch NFTX listings",
@@ -169,7 +170,7 @@ export const POST = async (request: NextRequest) => {
       transaction,
     });
   } catch (error) {
-    console.error("Error in POST /api/marketplace/nftx:", error);
+    logger.error("Error in POST /api/marketplace/nftx", error);
     return NextResponse.json(
       {
         error: "Failed to process NFTX request",

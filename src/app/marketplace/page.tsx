@@ -8,6 +8,7 @@ import {
   TimeoutError,
 } from "@/lib/marketplace";
 import { CartProvider } from "@/contexts/CartContext";
+import { logger } from "@/lib/logger";
 
 export const metadata: Metadata = {
   title: "Marketplace | House of Wizards",
@@ -44,11 +45,11 @@ export default async function MarketplacePage() {
     initialCollectionInfo = getCollection("wizards");
   } catch (error) {
     if (error instanceof TimeoutError) {
-      console.warn(
+      logger.warn(
         "Marketplace SSR prefetch timed out; falling back to client fetch.",
       );
     } else {
-      console.error("Failed to prefetch listings:", error);
+      logger.error("Failed to prefetch listings", error);
     }
     initialListings = undefined;
     initialCollectionInfo = undefined;
@@ -60,6 +61,11 @@ export default async function MarketplacePage() {
         title="Marketplace"
         subtitle="Browse and trade Forgotten Runes characters and items"
       />
+
+      <p className="mt-4 text-sm text-gray-400">
+        Using this marketplace is your responsibility; always verify each trade
+        by checking what you sign in your wallet.
+      </p>
 
       <div className="mt-8">
         <CartProvider>

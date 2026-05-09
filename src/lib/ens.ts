@@ -1,5 +1,6 @@
 import { createPublicClient, http } from "viem";
 import { mainnet } from "viem/chains";
+import { logger } from "@/lib/logger";
 
 const publicClient = createPublicClient({
   chain: mainnet,
@@ -37,7 +38,7 @@ export const resolveENS = async (name: string): Promise<string | null> => {
     });
     return address || null;
   } catch (error) {
-    console.error(`Error resolving ENS name ${name}:`, error);
+    logger.error(`Error resolving ENS name ${name}`, error);
     return null;
   }
 };

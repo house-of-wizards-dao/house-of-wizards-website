@@ -16,6 +16,7 @@ import {
   canDeleteNews,
 } from "@/lib/cms-auth";
 import { UpdateNewsInput, NewsItem } from "@/types/cms";
+import { logger } from "@/lib/logger";
 
 type RouteParams = {
   params: Promise<{ id: string }>;
@@ -130,7 +131,7 @@ export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
     .single();
 
   if (error) {
-    console.error("Error updating news:", error);
+    logger.error("Error updating news", error);
     return NextResponse.json(
       { error: "Failed to update news" },
       { status: 500 },
@@ -184,7 +185,7 @@ export const DELETE = async (
     .eq("id", newsId);
 
   if (error) {
-    console.error("Error deleting news:", error);
+    logger.error("Error deleting news", error);
     return NextResponse.json(
       { error: "Failed to delete news" },
       { status: 500 },

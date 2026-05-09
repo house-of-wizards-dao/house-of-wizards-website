@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { fetchWarriorsWithForgedWeapon } from "@/lib/frwc-graphql";
+import { logger } from "@/lib/logger";
 
 export const GET = async () => {
   try {
     const data = await fetchWarriorsWithForgedWeapon();
     return NextResponse.json(data);
   } catch (error) {
-    console.error("Error fetching warriors:", error);
+    logger.error("Error fetching warriors", error);
     return NextResponse.json(
       {
         error: "Failed to fetch warriors",

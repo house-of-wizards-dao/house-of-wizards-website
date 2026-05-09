@@ -5,6 +5,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { SiweMessage } from "siwe";
+import { logger } from "@/lib/logger";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -30,8 +31,10 @@ export const authOptions: NextAuthOptions = {
             process.env.NEXTAUTH_URL || "http://localhost:3000",
           );
 
-          console.log("SIWE verify - message domain:", siwe.domain);
-          console.log("SIWE verify - expected domain:", nextAuthUrl.host);
+          logger.debug("SIWE verify domain check", {
+            messageDomain: siwe.domain,
+            expectedDomain: nextAuthUrl.host,
+          });
 
           const result = await siwe.verify({
             signature: credentials?.signature || "",
@@ -39,15 +42,17 @@ export const authOptions: NextAuthOptions = {
           });
 
           if (result.success) {
-            console.log("SIWE verification successful for:", siwe.address);
+            logger.info("SIWE verification successful", {
+              address: siwe.address,
+            });
             return {
               id: siwe.address,
             };
           }
-          console.error("SIWE verification failed - result:", result);
+          logger.error("SIWE verification failed", { result });
           return null;
         } catch (e) {
-          console.error("SIWE verification exception:", e);
+          logger.error("SIWE verification exception", e);
           return null;
         }
       },

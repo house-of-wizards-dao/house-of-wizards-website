@@ -181,7 +181,7 @@ export const NFTCard = ({
                   ? "Buying..."
                   : isCompact
                     ? `${price} ${priceCurrency}`
-                    : `Buy for ${price} ${priceCurrency}`}
+                    : `${price} ${priceCurrency}`}
               </button>
             ) : (
               <div

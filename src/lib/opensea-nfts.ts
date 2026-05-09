@@ -6,6 +6,7 @@ import { OpenSeaSDK, Chain } from "opensea-js";
 // @ts-ignore - ethers is a dependency of opensea-js
 import { JsonRpcProvider } from "ethers";
 import { frwcAddresses } from "@/config/addresses";
+import { logger } from "@/lib/logger";
 
 export type OpenSeaNFT = {
   identifier: string; // tokenId
@@ -41,7 +42,7 @@ const getOpenSeaSDK = () => {
     },
     (arg: string) => {
       if (process.env.NODE_ENV === "development") {
-        console.debug("OpenSea API", { message: arg });
+        logger.debug("OpenSea API", { message: arg });
       }
     },
   );
@@ -76,10 +77,7 @@ export const fetchNFTsByContract = async (
       next: data.next || null,
     };
   } catch (error) {
-    console.error(
-      `Error fetching NFTs for contract ${contractAddress}:`,
-      error,
-    );
+    logger.error(`Error fetching NFTs for contract ${contractAddress}`, error);
     throw error;
   }
 };
@@ -137,7 +135,7 @@ export const fetchNFTsForAllContracts = async (
       }
     });
   } catch (error) {
-    console.error(`Failed to fetch NFTs for wallet ${walletAddress}:`, error);
+    logger.error(`Failed to fetch NFTs for wallet ${walletAddress}`, error);
   }
 
   return contractMap;
@@ -159,7 +157,7 @@ export const fetchNFTsForWallets = async (
       const contractMap = await fetchNFTsForAllContracts(walletAddress, limit);
       return { walletAddress, contractMap };
     } catch (error) {
-      console.error(`Failed to fetch NFTs for wallet ${walletAddress}:`, error);
+      logger.error(`Failed to fetch NFTs for wallet ${walletAddress}`, error);
       return { walletAddress, contractMap: new Map<string, OpenSeaNFT[]>() };
     }
   });

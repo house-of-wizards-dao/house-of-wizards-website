@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { quoteNFTXBatch } from "@/lib/nftx";
 import { collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export const POST = async (request: NextRequest) => {
 
     return NextResponse.json({ success: true, quote });
   } catch (error) {
-    console.error("Error in POST /api/marketplace/nftx/quote:", error);
+    logger.error("Error in POST /api/marketplace/nftx/quote", error);
     return NextResponse.json(
       {
         error: "Failed to compute NFTX batch quote",

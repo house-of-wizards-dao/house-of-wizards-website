@@ -157,9 +157,11 @@ export class AlertManager {
     // In production, integrate with notification services
     // For now, just log critical alerts prominently
     if (alert.severity === "critical") {
-      console.error("🚨 CRITICAL ALERT:", alert.title);
-      console.error("📋 Description:", alert.description);
-      console.error("🕐 Time:", alert.timestamp.toISOString());
+      logger.error(`CRITICAL ALERT: ${alert.title}`, {
+        description: alert.description,
+        timestamp: alert.timestamp.toISOString(),
+        alertId: alert.id,
+      });
 
       // TODO: Integrate with:
       // - Discord webhook for team notifications
@@ -168,20 +170,11 @@ export class AlertManager {
       // - PagerDuty or similar service
     }
 
-    // For development, log all alerts to console
     if (env.NODE_ENV === "development") {
-      const emoji = {
-        critical: "🚨",
-        high: "⚠️",
-        medium: "⚡",
-        low: "ℹ️",
-      }[alert.severity];
-
-      console.log(
-        `${emoji} ${alert.severity.toUpperCase()} ALERT: ${alert.title}`,
-      );
-      console.log(`Description: ${alert.description}`);
-      console.log("Context:", alert.context);
+      logger.info(`${alert.severity.toUpperCase()} ALERT: ${alert.title}`, {
+        description: alert.description,
+        alertContext: alert.context,
+      });
     }
   }
 

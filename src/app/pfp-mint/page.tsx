@@ -1,5 +1,6 @@
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
+import { logger } from "@/lib/logger";
 import { PfpMintClient } from "./PfpMintClient";
 
 async function getMintedTokenIds(): Promise<number[]> {
@@ -11,13 +12,13 @@ async function getMintedTokenIds(): Promise<number[]> {
       .eq("minted", true);
 
     if (error) {
-      console.error("Failed to fetch minted tokens:", error);
+      logger.error("Failed to fetch minted tokens", error);
       return [];
     }
 
     return data?.map((row) => row.id) || [];
   } catch (error) {
-    console.error("Error fetching minted tokens:", error);
+    logger.error("Error fetching minted tokens", error);
     return [];
   }
 }

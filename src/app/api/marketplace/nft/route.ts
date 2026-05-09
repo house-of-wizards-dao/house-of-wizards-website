@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchNFTDetails, collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 // Revalidate every 30 seconds - balances freshness with caching
 // NFT metadata is cached separately (1 hour), only listings/offers need frequent updates
@@ -61,7 +62,7 @@ export const GET = async (request: NextRequest) => {
       },
     );
   } catch (error) {
-    console.error("Error in /api/marketplace/nft:", error);
+    logger.error("Error in /api/marketplace/nft", error);
     return NextResponse.json(
       {
         error: "Failed to fetch NFT details",

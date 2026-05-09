@@ -9,6 +9,7 @@ import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { requireAdmin, isAuthError } from "@/lib/cms-auth";
 import { CreateUserInput, User } from "@/types/cms";
+import { logger } from "@/lib/logger";
 
 export const GET = async () => {
   const authResult = await requireAdmin();
@@ -26,7 +27,7 @@ export const GET = async () => {
     .order("created_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching users:", error);
+    logger.error("Error fetching users", error);
     return NextResponse.json(
       { error: "Failed to fetch users" },
       { status: 500 },
@@ -71,7 +72,7 @@ export const POST = async (request: NextRequest) => {
     .single();
 
   if (error) {
-    console.error("Error creating user:", error);
+    logger.error("Error creating user", error);
     if (error.code === "23505") {
       return NextResponse.json(
         { error: "User with this address already exists" },

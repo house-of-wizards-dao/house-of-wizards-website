@@ -4,6 +4,7 @@ import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { fetchCultContent } from "@/lib/cult-content";
 import { isAuthError, requireAdmin } from "@/lib/cms-auth";
+import { logger } from "@/lib/logger";
 
 export const POST = async () => {
   const authResult = await requireAdmin();
@@ -34,7 +35,7 @@ export const POST = async () => {
       .select();
 
     if (error) {
-      console.error("Supabase insert error:", error);
+      logger.error("Supabase insert error", error);
       return NextResponse.json(
         {
           error: "Failed to insert items into database",
@@ -54,7 +55,7 @@ export const POST = async () => {
       date: items[0]?.date,
     });
   } catch (error: unknown) {
-    console.error("Sync error:", error);
+    logger.error("Sync error", error);
 
     const message =
       error instanceof Error ? error.message : "Unknown error occurred";

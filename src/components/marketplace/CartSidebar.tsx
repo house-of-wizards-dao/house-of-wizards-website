@@ -225,22 +225,15 @@ export const CartSidebar = () => {
         </button>
       )}
 
-      {/* Backdrop */}
-      <div
-        className={cn(
-          "fixed inset-0 z-30 bg-black/50 transition-opacity",
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none",
-        )}
-        onClick={() => setOpen(false)}
-        aria-hidden
-      />
-
       {/* Panel */}
       <aside
         className={cn(
-          "fixed top-0 right-0 z-40 h-screen w-full sm:w-[400px] bg-[#0C0B10] border-l border-gray-800",
-          "shadow-2xl flex flex-col transition-transform duration-300",
-          isOpen ? "translate-x-0" : "translate-x-full",
+          "bg-[#0C0B10] border border-gray-800 lg:border-l",
+          "shadow-2xl flex flex-col overflow-hidden transition-all duration-300",
+          "lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:flex-shrink-0",
+          isOpen
+            ? "h-[80vh] w-full lg:w-[400px] opacity-100"
+            : "h-0 w-0 border-transparent opacity-0 pointer-events-none",
         )}
         aria-hidden={!isOpen}
         aria-label="Marketplace cart"
@@ -432,8 +425,8 @@ export const CartSidebar = () => {
               disabled={!isConnected || isProcessing || phase === "done"}
               className={cn(
                 "mt-2 w-full px-4 py-3 rounded-lg font-bold transition-all",
-                "bg-violet-600 hover:bg-violet-500 text-white",
-                "shadow-lg shadow-violet-700/30",
+                "bg-brand-700 hover:bg-brand-600 text-white",
+                "shadow-lg shadow-brand-700/25 hover:shadow-brand-600/40",
                 (!isConnected || isProcessing || phase === "done") &&
                   "opacity-50 cursor-not-allowed shadow-none",
               )}

@@ -10,6 +10,7 @@ import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { requireCMSUser, isAuthError } from "@/lib/cms-auth";
 import { CreateNewsInput, NewsItem } from "@/types/cms";
+import { logger } from "@/lib/logger";
 
 export const GET = async () => {
   const authResult = await requireCMSUser();
@@ -37,7 +38,7 @@ export const GET = async () => {
   const { data, error } = await query;
 
   if (error) {
-    console.error("Error fetching news:", error);
+    logger.error("Error fetching news", error);
     return NextResponse.json(
       { error: "Failed to fetch news" },
       { status: 500 },
@@ -100,7 +101,7 @@ export const POST = async (request: NextRequest) => {
     .single();
 
   if (error) {
-    console.error("Error creating news:", error);
+    logger.error("Error creating news", error);
     return NextResponse.json(
       { error: "Failed to create news" },
       { status: 500 },

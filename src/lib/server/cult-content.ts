@@ -7,6 +7,7 @@ import { unstable_cache } from "next/cache";
 
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
+import { logger } from "@/lib/logger";
 
 export type CultContentDbItem = {
   id: number;
@@ -40,7 +41,7 @@ const fetchChronicleFromDb = async (
     .limit(limit);
 
   if (error) {
-    console.error("Error fetching cult content chronicle:", error);
+    logger.error("Error fetching cult content chronicle", error);
     throw new Error(`Failed to fetch cult content: ${error.message}`);
   }
 
@@ -91,7 +92,7 @@ const fetchItemFromDb = async (
     if (error.code === "PGRST116") {
       return null;
     }
-    console.error("Error fetching cult content item:", error);
+    logger.error("Error fetching cult content item", error);
     throw new Error(`Failed to fetch cult content item: ${error.message}`);
   }
 

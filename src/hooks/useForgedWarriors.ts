@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
+import { logger } from "@/lib/logger";
 
 export const useForgedWarriors = () => {
   const [data, setData] = useState<WarriorGraphQLResponse[]>([]);
@@ -22,7 +23,7 @@ export const useForgedWarriors = () => {
       } catch (err) {
         const error = err instanceof Error ? err : new Error("Unknown error");
         setError(error);
-        console.error("Error fetching warriors:", error);
+        logger.error("Error fetching warriors", error);
       } finally {
         setLoading(false);
       }

@@ -16,6 +16,7 @@ import type {
   MarketplaceItem,
   CollectionKey,
 } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 import { collections } from "./marketplace";
 
 /**
@@ -184,7 +185,7 @@ const fetchVaultTokenIds = async (
       );
 
       if (!response.ok) {
-        console.error(
+        logger.error(
           `OpenSea API error: ${response.status} ${response.statusText}`,
         );
         break;
@@ -206,8 +207,8 @@ const fetchVaultTokenIds = async (
       next = data.next;
     }
   } catch (error) {
-    console.error(
-      `Error fetching vault token IDs via OpenSea for ${vaultAddress}:`,
+    logger.error(
+      `Error fetching vault token IDs via OpenSea for ${vaultAddress}`,
       error,
     );
   }
@@ -223,7 +224,7 @@ export const fetchVaultHoldings = unstable_cache(
     try {
       const collection = collections[vaultConfig.collectionKey];
       if (!collection) {
-        console.warn(`Collection not found for ${vaultConfig.collectionKey}`);
+        logger.warn(`Collection not found for ${vaultConfig.collectionKey}`);
         return null;
       }
 
@@ -235,7 +236,7 @@ export const fetchVaultHoldings = unstable_cache(
       );
 
       if (tokenIds.length === 0) {
-        console.warn(`No tokens found in NFTX vault ${vaultConfig.symbol}`);
+        logger.warn(`No tokens found in NFTX vault ${vaultConfig.symbol}`);
         return null;
       }
 
@@ -268,8 +269,8 @@ export const fetchVaultHoldings = unstable_cache(
         usesFactoryFees: true,
       };
     } catch (error) {
-      console.error(
-        `Error fetching NFTX vault holdings for ${vaultConfig.symbol}:`,
+      logger.error(
+        `Error fetching NFTX vault holdings for ${vaultConfig.symbol}`,
         error,
       );
       return null;
@@ -327,7 +328,7 @@ const getAmountsOut = async (
     });
     return [...amounts];
   } catch (error) {
-    console.error("getAmountsOut failed:", error);
+    logger.error("getAmountsOut failed", error);
     return null;
   }
 };
@@ -349,7 +350,7 @@ const getAmountsIn = async (
     });
     return [...amounts];
   } catch (error) {
-    console.error("getAmountsIn failed:", error);
+    logger.error("getAmountsIn failed", error);
     return null;
   }
 };
@@ -380,7 +381,7 @@ export const fetchVTokenPrice = unstable_cache(
       ]);
 
       if (!amounts || amounts.length < 2) {
-        console.warn(`Could not get SushiSwap price for ${vTokenAddress}`);
+        logger.warn(`Could not get SushiSwap price for ${vTokenAddress}`);
         return null;
       }
 
@@ -391,7 +392,7 @@ export const fetchVTokenPrice = unstable_cache(
 
       return ethPrice.toFixed(6);
     } catch (error) {
-      console.error(`Error fetching vToken price for ${vTokenAddress}:`, error);
+      logger.error(`Error fetching vToken price for ${vTokenAddress}`, error);
       return null;
     }
   },

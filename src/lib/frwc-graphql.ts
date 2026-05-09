@@ -3,6 +3,7 @@
  */
 
 import { ApolloClient, InMemoryCache, gql, HttpLink } from "@apollo/client";
+import { logger } from "@/lib/logger";
 
 export type WizardGraphQLResponse = {
   name: string;
@@ -183,7 +184,7 @@ export const fetchAllSoulsWithTransmutedWizard =
 
       throw new Error("Invalid GraphQL response structure");
     } catch (error) {
-      console.error("Error fetching wizards and souls from GraphQL:", error);
+      logger.error("Error fetching wizards and souls from GraphQL", error);
       throw error;
     }
   };
@@ -205,8 +206,8 @@ export const fetchWarriorsWithForgedWeapon =
 
       throw new Error("Invalid GraphQL response structure");
     } catch (error) {
-      console.error(
-        "Error fetching warriors with forged weapons from GraphQL:",
+      logger.error(
+        "Error fetching warriors with forged weapons from GraphQL",
         error,
       );
       throw error;
@@ -228,7 +229,7 @@ export const fetchPonies = async (): Promise<PoniesResponse> => {
 
     throw new Error("Invalid GraphQL response structure");
   } catch (error) {
-    console.error("Error fetching ponies from GraphQL:", error);
+    logger.error("Error fetching ponies from GraphQL", error);
     throw error;
   }
 };

@@ -1,6 +1,7 @@
 import { getWizards, type WizardData } from "./wizards";
 import { fetchAllSoulsWithTransmutedWizard } from "./frwc-graphql";
 import { TRAITS } from "./traits";
+import { logger } from "./logger";
 
 // In-memory cache for stats
 let cachedStats: StatsData | null = null;
@@ -70,9 +71,9 @@ export const getStats = async (
     });
 
     // Fetch both wizards and souls from GraphQL endpoint in a single query
-    console.log(`Fetching wizards and souls from GraphQL endpoint`);
+    logger.info("Fetching wizards and souls from GraphQL endpoint");
     const { Soul: allSouls } = await fetchAllSoulsWithTransmutedWizard();
-    console.log(
+    logger.info(
       `Total fetched ${allSouls.length} souls (with nested wizard data) from GraphQL`,
     );
 
@@ -86,24 +87,22 @@ export const getStats = async (
     for (const soul of allSouls) {
       const wizard = soul.transmutedFromToken?.wizard;
       if (!wizard) {
-        console.warn(
-          `Warning: Soul ${soul.name} has no associated wizard data`,
-        );
+        logger.warn(`Soul ${soul.name} has no associated wizard data`);
         continue;
       }
 
       // Extract tokenId from wizard
       const tokenId = String(wizard.token?.tokenId || "");
       if (!tokenId || tokenId === "undefined" || tokenId === "null") {
-        console.warn(
-          `Warning: Wizard for soul ${soul.name} has no tokenId in token object`,
+        logger.warn(
+          `Wizard for soul ${soul.name} has no tokenId in token object`,
         );
         continue;
       }
 
       // Validate burnIndex
       if (soul.burnIndex === undefined || soul.burnIndex === null) {
-        console.warn(`Warning: Soul ${soul.name} has no burnIndex`);
+        logger.warn(`Soul ${soul.name} has no burnIndex`);
         continue;
       }
 
@@ -181,7 +180,7 @@ export const getStats = async (
     burns.sort((a, b) => b.burnIndex - a.burnIndex);
 
     const burned = burns.length;
-    console.log(`Processed ${burned} burns from GraphQL`);
+    logger.info(`Processed ${burned} burns from GraphQL`);
 
     // Get original trait counts from all wizards (local data)
     const localWizzies = getWizards();
@@ -263,10 +262,10 @@ export const getStats = async (
     cachedStats = stats;
     lastUpdateTime = Date.now();
 
-    console.log("success");
+    logger.info("Burn stats computed successfully");
     return stats;
   } catch (error) {
-    console.error("Error in getStats:", error);
+    logger.error("Error in getStats", error);
     throw error;
   }
 };

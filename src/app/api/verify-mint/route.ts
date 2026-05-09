@@ -5,6 +5,7 @@ import { addresses } from "@/config/addresses";
 import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { wizzyPfpAbi } from "@/config/wizzyPfpAbi";
+import { logger } from "@/lib/logger";
 
 const NULL_ADDRESS = "0x0000000000000000000000000000000000000000" as Address;
 
@@ -100,7 +101,7 @@ export const POST = async (request: NextRequest) => {
             };
           }
 
-          console.error(`Error checking token ${tokenId}:`, error);
+          logger.error(`Error checking token ${tokenId}`, error);
           return {
             tokenId,
             exists: false,
@@ -125,7 +126,7 @@ export const POST = async (request: NextRequest) => {
         .in("id", existingTokenIds);
 
       if (updateError) {
-        console.error("Supabase batch update error:", updateError);
+        logger.error("Supabase batch update error", updateError);
         batchUpdateError = updateError;
       }
     }
@@ -173,7 +174,7 @@ export const POST = async (request: NextRequest) => {
       results: results,
     });
   } catch (error: any) {
-    console.error("API error:", error);
+    logger.error("API error", error);
 
     return NextResponse.json(
       {

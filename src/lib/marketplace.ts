@@ -22,6 +22,7 @@ import type {
 import { JsonRpcProvider, VoidSigner } from "ethers";
 import { unstable_cache } from "next/cache";
 import { frwcAddresses } from "@/config/addresses";
+import { logger } from "@/lib/logger";
 import type {
   CollectionKey,
   CollectionInfo,
@@ -205,7 +206,7 @@ export const getOpenSeaSDK = (accountAddress?: string) => {
     },
     (arg: string) => {
       if (process.env.NODE_ENV === "development") {
-        console.debug("OpenSea API", { message: arg });
+        logger.debug("OpenSea API", { message: arg });
       }
     },
   );
@@ -495,7 +496,7 @@ export const fetchCollectionListings = async (
       next: response.next || undefined,
     };
   } catch (error) {
-    console.error(`Error fetching listings for ${collectionKey}:`, error);
+    logger.error(`Error fetching listings for ${collectionKey}`, error);
     throw error;
   }
 };
@@ -541,7 +542,7 @@ export const fetchCollectionNFTs = async (
       next: response.next || undefined,
     };
   } catch (error) {
-    console.error(`Error fetching NFTs for ${collectionKey}:`, error);
+    logger.error(`Error fetching NFTs for ${collectionKey}`, error);
     throw error;
   }
 };
@@ -669,8 +670,8 @@ export const fetchNFTDetails = async (
       bestOffer,
     };
   } catch (error) {
-    console.error(
-      `Error fetching NFT details for ${collectionKey} #${tokenId}:`,
+    logger.error(
+      `Error fetching NFT details for ${collectionKey} #${tokenId}`,
       error,
     );
     throw error;

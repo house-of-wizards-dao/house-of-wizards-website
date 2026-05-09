@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
+import { logger } from "@/lib/logger";
 
 type Props = {
   children: ReactNode;
@@ -29,7 +30,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to our logging system
-    console.error("React Error Boundary caught an error", {
+    logger.error("React Error Boundary caught an error", {
       error,
       errorMessage: error.message,
       stack: error.stack,
@@ -83,7 +84,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       navigator.clipboard
         .writeText(JSON.stringify(errorReport, null, 2))
         .then(() => alert("Error report copied to clipboard"))
-        .catch(() => console.log("Error report:", errorReport));
+        .catch(() => logger.error("Error report", { errorReport }));
     }
   };
 

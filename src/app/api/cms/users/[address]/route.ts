@@ -10,6 +10,7 @@ import { getSupabaseClient } from "@/lib/supabase";
 import { tableNames } from "@/config/supabase";
 import { requireAdmin, isAuthError } from "@/lib/cms-auth";
 import { UpdateUserInput, User } from "@/types/cms";
+import { logger } from "@/lib/logger";
 
 type RouteParams = {
   params: Promise<{ address: string }>;
@@ -83,7 +84,7 @@ export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
     .single();
 
   if (error) {
-    console.error("Error updating user:", error);
+    logger.error("Error updating user", error);
     return NextResponse.json(
       { error: "Failed to update user" },
       { status: 500 },
@@ -126,7 +127,7 @@ export const DELETE = async (
     .eq("eth_address", address.toLowerCase());
 
   if (error) {
-    console.error("Error deleting user:", error);
+    logger.error("Error deleting user", error);
     return NextResponse.json(
       { error: "Failed to delete user" },
       { status: 500 },

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { logger } from "@/lib/logger";
 
 /**
  * Utility function to merge Tailwind CSS classes with proper precedence
@@ -90,7 +91,7 @@ export const copyToClipboard = async (text: string): Promise<boolean> => {
     await navigator.clipboard.writeText(text);
     return true;
   } catch (error) {
-    console.error("Failed to copy to clipboard:", error);
+    logger.error("Failed to copy to clipboard", error);
     return false;
   }
 };

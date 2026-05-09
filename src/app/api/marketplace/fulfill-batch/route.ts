@@ -3,6 +3,7 @@ import { OrderSide } from "opensea-js";
 import { getOpenSeaSDK, collections } from "@/lib/marketplace";
 import { SEAPORT_ADDRESS, encodeSeaportCall } from "@/lib/seaport-encode";
 import type { CollectionKey } from "@/types/marketplace";
+import { logger } from "@/lib/logger";
 
 export const dynamic = "force-dynamic";
 
@@ -251,7 +252,7 @@ export const POST = async (request: NextRequest) => {
     return NextResponse.json({ success: true, transaction });
   } catch (error) {
     const details = error instanceof Error ? error.message : "Unknown error";
-    console.error("Error in /api/marketplace/fulfill-batch:", error);
+    logger.error("Error in /api/marketplace/fulfill-batch", error);
     return NextResponse.json(
       {
         error: `Failed to build batch fulfillment data: ${details}`,

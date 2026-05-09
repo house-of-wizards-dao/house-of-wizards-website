@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
+import { logger } from "@/lib/logger";
 
 export type WalletNFTsByCollection = {
   [key: string]: OpenSeaNFT[];
@@ -52,7 +53,7 @@ export const useWalletNFTs = (walletInputs: string[]) => {
       } catch (err) {
         const error = err instanceof Error ? err : new Error("Unknown error");
         setError(error);
-        console.error("Error fetching wallet NFTs:", error);
+        logger.error("Error fetching wallet NFTs", error);
       } finally {
         setLoading(false);
       }
