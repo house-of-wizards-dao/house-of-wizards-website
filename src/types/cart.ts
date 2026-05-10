@@ -7,18 +7,19 @@
 
 import type { CollectionKey } from "./marketplace";
 
-export type CartItemSource = "opensea" | "nftx";
+export type CartItemSource = "opensea" | "nftx" | "sell";
+export type CartMode = "buy" | "sell";
 
 /**
- * A single item in the marketplace cart.
+ * A buy item in the marketplace cart.
  *
  * Snapshot prices are captured at the moment of addition so the sidebar can
  * keep showing a stable per-item price even when the live NFTX quote moves.
  * The authoritative total for NFTX checkout is recomputed server-side at
  * checkout time via a fresh batch quote.
  */
-export type CartItem = {
-  source: CartItemSource;
+export type BuyCartItem = {
+  source: "opensea" | "nftx";
   collectionKey: CollectionKey;
   tokenId: string;
   name: string;
@@ -32,6 +33,21 @@ export type CartItem = {
   /** NFTX vault address, kept for reference (NFTX source) */
   vaultAddress?: string;
 };
+
+/**
+ * A sell item queued for OpenSea listing creation.
+ */
+export type SellCartItem = {
+  source: "sell";
+  collectionKey: CollectionKey;
+  tokenId: string;
+  name: string;
+  imageUrl?: string;
+  /** Listing price in ETH, editable in the sidebar */
+  listingPriceEth: string;
+};
+
+export type CartItem = BuyCartItem | SellCartItem;
 
 export type CartState = {
   collectionKey: CollectionKey | null;

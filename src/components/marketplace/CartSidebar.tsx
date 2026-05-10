@@ -6,9 +6,13 @@ import { mainnet } from "wagmi/chains";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/hooks/useCart";
 import { useNFTXBatchQuote } from "@/hooks/useNFTXBatchQuote";
-import { useBatchOpenSeaBuy, useNFTXBuy } from "@/hooks/useMarketplace";
+import {
+  useBatchOpenSeaBuy,
+  useMarketplaceActions,
+  useNFTXBuy,
+} from "@/hooks/useMarketplace";
 import { collections } from "@/lib/marketplace";
-import type { CartItem } from "@/types/cart";
+import type { BuyCartItem, SellCartItem } from "@/types/cart";
 
 const formatEth = (wei: bigint, decimals: number = 4): string => {
   const value = Number(wei) / 1e18;
@@ -30,7 +34,18 @@ type CheckoutPhase =
   | "opensea-success"
   | "nftx-pending"
   | "nftx-failed"
+  | "listing-pending"
+  | "listing-failed"
   | "done";
+
+/** Shared expiry for all listings in the cart (OpenSea `expirationTime`). */
+const LISTING_EXPIRY_OPTIONS = [
+  { label: "1 day", days: 1 },
+  { label: "3 days", days: 3 },
+  { label: "1 week", days: 7 },
+  { label: "1 month", days: 30 },
+  { label: "3 months", days: 90 },
+] as const;
 
 /**
  * Collapsible cart panel anchored to the right edge of the marketplace.
@@ -45,17 +60,21 @@ export const CartSidebar = () => {
     setOpen,
     toggleOpen,
     remove,
+    updateSellListingPrice,
     clear,
     openSeaItems,
     nftxItems,
+    sellItems,
     openSeaCount,
     nftxCount,
+    sellCount,
     openSeaTotalWei,
     nftxSnapshotTotalWei,
     count,
   } = useCart();
 
   const collectionInfo = collectionKey ? collections[collectionKey] : null;
+  const isSellMode = sellCount > 0;
 
   const { quote: nftxQuote, isFetching: isNftxQuoteFetching } =
     useNFTXBatchQuote(collectionKey, nftxCount, {
@@ -95,11 +114,19 @@ export const CartSidebar = () => {
     isProcessing: isNftxProcessing,
     error: nftxError,
   } = useNFTXBuy();
+  const {
+    createListings,
+    isProcessing: isListingProcessing,
+    error: listingError,
+  } = useMarketplaceActions();
 
   const [phase, setPhase] = useState<CheckoutPhase>("idle");
   const [openSeaTxHash, setOpenSeaTxHash] = useState<string | null>(null);
   const [nftxTxHash, setNftxTxHash] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [includeOptionalCreatorFees, setIncludeOptionalCreatorFees] =
+    useState(false);
+  const [listingExpiryDays, setListingExpiryDays] = useState<number>(30);
 
   useEffect(() => {
     if (count === 0) {
@@ -114,8 +141,10 @@ export const CartSidebar = () => {
     phase === "switching-chain" ||
     phase === "opensea-pending" ||
     phase === "nftx-pending" ||
+    phase === "listing-pending" ||
     isOpenSeaProcessing ||
-    isNftxProcessing;
+    isNftxProcessing ||
+    isListingProcessing;
 
   const ensureMainnet = useCallback(async (): Promise<boolean> => {
     if (isOnMainnet) return true;
@@ -130,7 +159,7 @@ export const CartSidebar = () => {
   }, [isOnMainnet, switchChain]);
 
   const handleCheckout = useCallback(async () => {
-    if (!collectionKey || !isConnected || count === 0) return;
+    if (!collectionKey || !isConnected || count === 0 || isSellMode) return;
     setCheckoutError(null);
 
     const onMainnet = await ensureMainnet();
@@ -201,6 +230,54 @@ export const CartSidebar = () => {
     nftxQuote,
     buyOpenSeaBatch,
     buyBatchFromPool,
+    isSellMode,
+  ]);
+
+  const handleCreateListings = useCallback(async () => {
+    if (!collectionKey || !isConnected || sellItems.length === 0) return;
+    setCheckoutError(null);
+
+    const onMainnet = await ensureMainnet();
+    if (!onMainnet) {
+      setCheckoutError("Please switch to Ethereum Mainnet to continue");
+      setPhase("idle");
+      return;
+    }
+
+    const invalid = sellItems.find((item) => {
+      const price = Number(item.listingPriceEth);
+      return !Number.isFinite(price) || price <= 0;
+    });
+    if (invalid) {
+      setCheckoutError(`Enter a valid listing price for #${invalid.tokenId}`);
+      setPhase("listing-failed");
+      return;
+    }
+
+    setPhase("listing-pending");
+    const result = await createListings(
+      sellItems.map((item) => ({
+        collection: item.collectionKey,
+        tokenId: item.tokenId,
+        priceInEth: item.listingPriceEth,
+      })),
+      includeOptionalCreatorFees,
+      listingExpiryDays,
+    );
+    if (!result.success) {
+      setCheckoutError(result.error || "Failed to create listings");
+      setPhase("listing-failed");
+      return;
+    }
+    setPhase("done");
+  }, [
+    collectionKey,
+    isConnected,
+    sellItems,
+    ensureMainnet,
+    createListings,
+    includeOptionalCreatorFees,
+    listingExpiryDays,
   ]);
 
   return (
@@ -242,7 +319,9 @@ export const CartSidebar = () => {
         <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
           <div className="flex items-center gap-2">
             <CartIcon className="w-5 h-5 text-violet-400" />
-            <h2 className="text-white font-bold text-lg">Cart</h2>
+            <h2 className="text-white font-bold text-lg">
+              {isSellMode ? "Listing Cart" : "Cart"}
+            </h2>
             <span className="text-gray-400 text-sm">({count})</span>
           </div>
           <div className="flex items-center gap-2">
@@ -287,6 +366,25 @@ export const CartSidebar = () => {
             </div>
           ) : (
             <div className="p-3 space-y-4">
+              {sellCount > 0 && (
+                <CartSection
+                  title={`Create Listings (${sellCount})`}
+                  accent="bg-emerald-500"
+                >
+                  {sellItems.map((item) => (
+                    <SellCartRow
+                      key={`sell-${item.tokenId}`}
+                      item={item}
+                      onRemove={() => remove(item)}
+                      onPriceChange={(price) =>
+                        updateSellListingPrice(item.tokenId, price)
+                      }
+                      disabled={isProcessing}
+                    />
+                  ))}
+                </CartSection>
+              )}
+
               {openSeaCount > 0 && (
                 <CartSection
                   title={`OpenSea (${openSeaCount})`}
@@ -333,7 +431,52 @@ export const CartSidebar = () => {
         {/* Footer / totals */}
         {count > 0 && (
           <div className="border-t border-gray-800 px-4 py-3 space-y-2 bg-[#0a0810]">
-            {openSeaCount > 0 && (
+            {isSellMode ? (
+              <div className="space-y-3">
+                <div>
+                  <p className="text-xs font-medium text-gray-400 mb-2">
+                    Listing duration (all items)
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {LISTING_EXPIRY_OPTIONS.map((opt) => {
+                      const selected = listingExpiryDays === opt.days;
+                      return (
+                        <button
+                          key={opt.days}
+                          type="button"
+                          disabled={isProcessing}
+                          onClick={() => setListingExpiryDays(opt.days)}
+                          className={cn(
+                            "px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+                            "border disabled:opacity-50",
+                            selected
+                              ? "bg-emerald-600/25 border-emerald-500 text-emerald-200"
+                              : "bg-[#15131c] border-gray-700 text-gray-300 hover:border-gray-500",
+                          )}
+                        >
+                          {opt.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <label className="flex items-start gap-2 text-sm text-gray-300">
+                  <input
+                    type="checkbox"
+                    checked={includeOptionalCreatorFees}
+                    onChange={(event) =>
+                      setIncludeOptionalCreatorFees(event.target.checked)
+                    }
+                    className="mt-1 accent-violet-600"
+                    disabled={isProcessing}
+                  />
+                  <span>
+                    Apply optional royalties when creating OpenSea listings.
+                  </span>
+                </label>
+              </div>
+            ) : null}
+            {!isSellMode && openSeaCount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">OpenSea subtotal</span>
                 <span className="text-white">
@@ -341,7 +484,7 @@ export const CartSidebar = () => {
                 </span>
               </div>
             )}
-            {nftxCount > 0 && (
+            {!isSellMode && nftxCount > 0 && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400 flex items-center gap-1">
                   NFTX subtotal
@@ -355,13 +498,17 @@ export const CartSidebar = () => {
                 </span>
               </div>
             )}
-            <div className="h-px bg-gray-800 my-1" />
-            <div className="flex justify-between items-baseline">
-              <span className="text-white font-bold">Total</span>
-              <span className="text-white font-bold text-lg">
-                {formatEth(grandTotalWei)} ETH
-              </span>
-            </div>
+            {!isSellMode && (
+              <>
+                <div className="h-px bg-gray-800 my-1" />
+                <div className="flex justify-between items-baseline">
+                  <span className="text-white font-bold">Total</span>
+                  <span className="text-white font-bold text-lg">
+                    {formatEth(grandTotalWei)} ETH
+                  </span>
+                </div>
+              </>
+            )}
 
             {/* Phase / errors */}
             {phase === "switching-chain" && (
@@ -386,9 +533,19 @@ export const CartSidebar = () => {
                 transaction...
               </p>
             )}
+            {phase === "listing-pending" && (
+              <p className="text-xs text-emerald-300 flex items-center gap-2">
+                <Spinner className="w-3 h-3" /> Creating OpenSea listing
+                {sellCount === 1 ? "" : "s"}...
+              </p>
+            )}
             {phase === "done" && (
               <div className="text-xs text-emerald-400 space-y-1">
-                <p>All transactions submitted.</p>
+                <p>
+                  {isSellMode
+                    ? "Listings created."
+                    : "All transactions submitted."}
+                </p>
                 {openSeaTxHash && (
                   <a
                     href={`https://etherscan.io/tx/${openSeaTxHash}`}
@@ -411,17 +568,17 @@ export const CartSidebar = () => {
                 )}
               </div>
             )}
-            {(checkoutError || openSeaError || nftxError) &&
+            {(checkoutError || openSeaError || nftxError || listingError) &&
               phase !== "done" &&
               phase !== "opensea-success" && (
                 <p className="text-xs text-red-400">
-                  {checkoutError || openSeaError || nftxError}
+                  {checkoutError || openSeaError || nftxError || listingError}
                 </p>
               )}
 
             <button
               type="button"
-              onClick={handleCheckout}
+              onClick={isSellMode ? handleCreateListings : handleCheckout}
               disabled={!isConnected || isProcessing || phase === "done"}
               className={cn(
                 "mt-2 w-full px-4 py-3 rounded-lg font-bold transition-all",
@@ -432,12 +589,16 @@ export const CartSidebar = () => {
               )}
             >
               {!isConnected
-                ? "Connect wallet to buy"
+                ? isSellMode
+                  ? "Connect wallet to list"
+                  : "Connect wallet to buy"
                 : phase === "done"
                   ? "Done"
                   : isProcessing
                     ? "Processing..."
-                    : "Buy All"}
+                    : isSellMode
+                      ? "Create listing(s)"
+                      : "Buy All"}
             </button>
             {!isOnMainnet && isConnected && (
               <p className="text-[11px] text-amber-300 text-center">
@@ -482,7 +643,7 @@ const CartRow = ({
   disabled,
   displayPriceEth,
 }: {
-  item: CartItem;
+  item: BuyCartItem;
   onRemove: () => void;
   disabled?: boolean;
   /**
@@ -532,6 +693,64 @@ const CartRow = ({
     </div>
   );
 };
+
+const SellCartRow = ({
+  item,
+  onRemove,
+  onPriceChange,
+  disabled,
+}: {
+  item: SellCartItem;
+  onRemove: () => void;
+  onPriceChange: (price: string) => void;
+  disabled?: boolean;
+}) => (
+  <div className="flex items-center gap-3 p-2 rounded-md bg-[#15131c] border border-gray-800">
+    <div className="w-12 h-12 rounded overflow-hidden bg-gray-800 flex-shrink-0">
+      {item.imageUrl ? (
+        /* eslint-disable-next-line @next/next/no-img-element */
+        <img
+          src={item.imageUrl}
+          alt={item.name}
+          className="w-full h-full object-cover"
+          loading="lazy"
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-xs text-gray-600">
+          #{item.tokenId}
+        </div>
+      )}
+    </div>
+    <div className="flex-1 min-w-0">
+      <div className="text-sm text-white truncate" title={item.name}>
+        {item.name}
+      </div>
+      <label className="mt-1 flex items-center gap-2 text-xs text-gray-400">
+        Price
+        <input
+          value={item.listingPriceEth}
+          onChange={(event) => onPriceChange(event.target.value)}
+          inputMode="decimal"
+          disabled={disabled}
+          className="min-w-0 flex-1 rounded bg-[#0C0B10] border border-gray-700 px-2 py-1 text-white disabled:opacity-50"
+          placeholder="ETH"
+        />
+        ETH
+      </label>
+    </div>
+    <button
+      type="button"
+      onClick={onRemove}
+      disabled={disabled}
+      aria-label={`Remove ${item.name}`}
+      className={cn(
+        "text-gray-400 hover:text-red-400 transition-colors p-1 disabled:opacity-50",
+      )}
+    >
+      <TrashIcon className="w-4 h-4" />
+    </button>
+  </div>
+);
 
 const Spinner = ({ className }: { className?: string }) => (
   <svg

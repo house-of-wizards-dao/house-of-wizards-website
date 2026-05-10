@@ -6,8 +6,8 @@ import { mainnet } from "wagmi/chains";
 import { cn } from "@/lib/utils";
 import {
   useMarketplaceListings,
-  useNFTDetails,
   useMarketplaceActions,
+  useMarketplaceSellItems,
   useNFTXListings,
   useNFTXBuy,
 } from "@/hooks/useMarketplace";
@@ -40,6 +40,7 @@ import { ItemDetailOverlay } from "./ItemDetailOverlay";
 import {
   MarketplaceItemCard,
   MarketplaceItemSkeleton,
+  getMarketplaceItemBuyPresentation,
 } from "./MarketplaceItemCard";
 
 type MarketplaceBrowserProps = {
@@ -51,6 +52,7 @@ type MarketplaceBrowserProps = {
 };
 
 type MarketplaceCardSize = "default" | "compact";
+type MarketplaceMode = "buy" | "sell";
 
 /**
  * Collection tabs for switching between collections
@@ -77,6 +79,36 @@ const parseEthPrice = (price: string | undefined): number | null => {
   if (!price) return null;
   const value = parseFloat(price);
   return Number.isFinite(value) ? value : null;
+};
+
+const formatBaseUnits = (amount: string, decimals: number): string => {
+  try {
+    const value = BigInt(amount || "0");
+    const divisor = 10n ** BigInt(decimals);
+    const whole = value / divisor;
+    const fraction = value % divisor;
+    const fractionText = fraction.toString().padStart(decimals, "0");
+    const trimmedFraction = fractionText.slice(0, 4).replace(/0+$/, "");
+    return trimmedFraction
+      ? `${whole.toString()}.${trimmedFraction}`
+      : whole.toString();
+  } catch {
+    return "0";
+  }
+};
+
+const getOfferDisplayAmount = (item: MarketplaceItem): string | undefined => {
+  if (!item.bestOffer) return undefined;
+  return formatBaseUnits(
+    item.bestOffer.price.amount,
+    item.bestOffer.price.decimals,
+  );
+};
+
+const getOfferDisplayValue = (item: MarketplaceItem): number | null => {
+  const amount = getOfferDisplayAmount(item);
+  if (!amount) return null;
+  return parseEthPrice(amount);
 };
 
 // Pre-compute trait lookups for wizards and warriors
@@ -158,8 +190,11 @@ export const MarketplaceBrowser = ({
   const [nameQuery, setNameQuery] = useState("");
   const [idQuery, setIdQuery] = useState("");
   const [buyingTokenId, setBuyingTokenId] = useState<string | null>(null);
+  const [sellingTokenId, setSellingTokenId] = useState<string | null>(null);
   const [marketplaceSource, setMarketplaceSource] =
     useState<MarketplaceSource>("all");
+  const [marketplaceMode, setMarketplaceMode] =
+    useState<MarketplaceMode>("buy");
   const [cardSize, setCardSize] = useState<MarketplaceCardSize>("default");
 
   // Trait filters for wizards and warriors
@@ -171,7 +206,7 @@ export const MarketplaceBrowser = ({
   >({});
 
   // Chain management - marketplace only works on Ethereum mainnet
-  const { chainId, isConnected: isWalletConnected } = useAccount();
+  const { address, chainId, isConnected: isWalletConnected } = useAccount();
   const { switchChain } = useSwitchChain();
   const isOnMainnet = chainId === mainnet.id;
 
@@ -194,7 +229,9 @@ export const MarketplaceBrowser = ({
     refresh: refreshOpensea,
   } = useMarketplaceListings(selectedCollection, {
     limit: 50,
-    autoFetch: marketplaceSource === "opensea" || marketplaceSource === "all",
+    autoFetch:
+      marketplaceMode === "buy" &&
+      (marketplaceSource === "opensea" || marketplaceSource === "all"),
     // Only use initial data for the initial collection
     initialItems:
       selectedCollection === initialCollection ? initialListings : undefined,
@@ -202,6 +239,16 @@ export const MarketplaceBrowser = ({
       selectedCollection === initialCollection
         ? initialCollectionInfo
         : undefined,
+  });
+
+  const {
+    items: sellItems,
+    isLoading: sellItemsLoading,
+    error: sellItemsError,
+    collectionInfo: sellCollectionInfo,
+    refresh: refreshSellItems,
+  } = useMarketplaceSellItems(selectedCollection, address, {
+    autoFetch: marketplaceMode === "sell" && isWalletConnected,
   });
 
   // Fetch NFTX pool listings
@@ -217,7 +264,7 @@ export const MarketplaceBrowser = ({
   });
 
   // Marketplace actions (buy, etc.)
-  const { buyNFT, isConnected } = useMarketplaceActions();
+  const { buyNFT, acceptOffer, isConnected } = useMarketplaceActions();
   const { buyFromPool } = useNFTXBuy();
 
   // Shopping cart
@@ -230,7 +277,10 @@ export const MarketplaceBrowser = ({
     cart.collectionKey,
     cart.nftxCount,
     {
-      enabled: cart.collectionKey === selectedCollection && cart.nftxCount >= 0,
+      enabled:
+        marketplaceMode === "buy" &&
+        cart.collectionKey === selectedCollection &&
+        cart.nftxCount > 0,
     },
   );
 
@@ -252,6 +302,7 @@ export const MarketplaceBrowser = ({
 
   // Combined items based on selected source
   const items = useMemo(() => {
+    if (marketplaceMode === "sell") return sellItems;
     if (marketplaceSource === "opensea") return openseaItems;
     if (marketplaceSource === "nftx") return nftxItems;
 
@@ -287,23 +338,33 @@ export const MarketplaceBrowser = ({
     }
 
     return merged;
-  }, [marketplaceSource, openseaItems, nftxItems]);
+  }, [marketplaceMode, marketplaceSource, openseaItems, nftxItems, sellItems]);
 
   const isLoading =
-    marketplaceSource === "all"
-      ? openseaLoading || nftxLoading
-      : marketplaceSource === "nftx"
-        ? nftxLoading
-        : openseaLoading;
+    marketplaceMode === "sell"
+      ? sellItemsLoading
+      : marketplaceSource === "all"
+        ? openseaLoading || nftxLoading
+        : marketplaceSource === "nftx"
+          ? nftxLoading
+          : openseaLoading;
   const error =
-    marketplaceSource === "all"
-      ? openseaError || nftxError
-      : marketplaceSource === "nftx"
-        ? nftxError
-        : openseaError;
+    marketplaceMode === "sell"
+      ? sellItemsError
+      : marketplaceSource === "all"
+        ? openseaError || nftxError
+        : marketplaceSource === "nftx"
+          ? nftxError
+          : openseaError;
+  const activeCollectionInfo =
+    marketplaceMode === "sell" ? sellCollectionInfo : collectionInfo;
 
   // Refresh function for current source
   const refresh = useCallback(() => {
+    if (marketplaceMode === "sell") {
+      refreshSellItems();
+      return;
+    }
     if (marketplaceSource === "all") {
       refreshOpensea();
       refreshNftx();
@@ -312,17 +373,21 @@ export const MarketplaceBrowser = ({
     } else {
       refreshOpensea();
     }
-  }, [marketplaceSource, refreshNftx, refreshOpensea]);
-
-  // Fetch detailed info when an item is selected
-  const { item: detailedItem } = useNFTDetails(
-    selectedItem?.collection.key || null,
-    selectedItem?.nft.identifier || null,
-  );
+  }, [
+    marketplaceMode,
+    marketplaceSource,
+    refreshNftx,
+    refreshOpensea,
+    refreshSellItems,
+  ]);
 
   // Helper to get the currently displayed item price in ETH.
   const getDisplayedItemPriceEth = useCallback(
     (item: MarketplaceItem): number | null => {
+      if (marketplaceMode === "sell") {
+        return getOfferDisplayValue(item);
+      }
+
       if (item.bestListing) {
         return parseEthPrice(
           (parseFloat(item.bestListing.price.amount) / 1e18).toString(),
@@ -357,6 +422,7 @@ export const MarketplaceBrowser = ({
       inCartKeys,
       nftxBatchQuote,
       sharedNftxPerItemEth,
+      marketplaceMode,
     ],
   );
 
@@ -441,6 +507,13 @@ export const MarketplaceBrowser = ({
 
     // Sort
     result.sort((a, b) => {
+      if (marketplaceMode === "sell") {
+        const priceA = getDisplayedItemPriceEth(a) ?? 0;
+        const priceB = getDisplayedItemPriceEth(b) ?? 0;
+        if (priceA !== priceB) return priceB - priceA;
+        return parseInt(a.nft.identifier, 10) - parseInt(b.nft.identifier, 10);
+      }
+
       switch (sortBy) {
         case "price_asc": {
           const priceA = getDisplayedItemPriceEth(a) ?? Infinity;
@@ -472,6 +545,7 @@ export const MarketplaceBrowser = ({
     selectedCollection,
     selectedWizardTraits,
     selectedWarriorTraits,
+    marketplaceMode,
   ]);
 
   // Apply a collection change (without cart confirmation)
@@ -518,6 +592,22 @@ export const MarketplaceBrowser = ({
   const handleSourceChange = useCallback((source: MarketplaceSource) => {
     setMarketplaceSource(source);
   }, []);
+
+  const handleModeChange = useCallback(
+    (mode: MarketplaceMode) => {
+      if (mode === marketplaceMode) return;
+      if (cart.count > 0) {
+        const ok = window.confirm(
+          "Switching between buy and sell mode will clear the current cart. Continue?",
+        );
+        if (!ok) return;
+        cart.clear();
+      }
+      setSelectedItem(null);
+      setMarketplaceMode(mode);
+    },
+    [cart, marketplaceMode],
+  );
 
   // Handle wizard trait selection
   const onSelectWizardTrait =
@@ -644,11 +734,54 @@ export const MarketplaceBrowser = ({
     ],
   );
 
+  const handleSellIntoOffer = useCallback(
+    async (item: MarketplaceItem) => {
+      if (!item.bestOffer || !isConnected) return;
+      if (!isOnMainnet) {
+        if (switchChain) {
+          try {
+            await switchChain({ chainId: mainnet.id });
+          } catch {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+
+      setSellingTokenId(item.nft.identifier);
+      try {
+        const result = await acceptOffer(
+          item.collection.key,
+          item.nft.identifier,
+          item.bestOffer,
+        );
+        if (result.success) {
+          refreshSellItems();
+        }
+      } finally {
+        setSellingTokenId(null);
+      }
+    },
+    [acceptOffer, isConnected, isOnMainnet, refreshSellItems, switchChain],
+  );
+
   // Resolve the cart entry (snapshot/orderHash) for a marketplace item.
   // Prefers NFTX when both sources exist, mirroring batch UX.
   const buildCartItem = useCallback(
     (item: MarketplaceItem): CartItem | null => {
       const collectionKey = item.collection.key;
+      if (marketplaceMode === "sell") {
+        return {
+          source: "sell",
+          collectionKey,
+          tokenId: item.nft.identifier,
+          name:
+            item.nft.name || `${item.collection.name} #${item.nft.identifier}`,
+          imageUrl: item.nft.image_url,
+          listingPriceEth: "",
+        };
+      }
       if (item.nftxListing) {
         const eth = item.nftxListing.priceEth;
         return {
@@ -681,7 +814,7 @@ export const MarketplaceBrowser = ({
       }
       return null;
     },
-    [],
+    [marketplaceMode],
   );
 
   const handleAddToCart = useCallback(
@@ -695,7 +828,18 @@ export const MarketplaceBrowser = ({
         );
         if (ok) {
           cart.add(cartItem, { replaceCollection: true });
+          cart.setOpen(true);
         }
+      } else if (!result.ok && result.reason === "mode-mismatch") {
+        const ok = window.confirm(
+          "Your cart is in a different mode. Clear it and start a new cart with this item?",
+        );
+        if (ok) {
+          cart.add(cartItem, { replaceCollection: true });
+          cart.setOpen(true);
+        }
+      } else {
+        cart.setOpen(true);
       }
     },
     [buildCartItem, cart],
@@ -708,9 +852,44 @@ export const MarketplaceBrowser = ({
       // tokenId in practice, so this is safe.
       cart.remove({ source: "nftx", tokenId: item.nft.identifier });
       cart.remove({ source: "opensea", tokenId: item.nft.identifier });
+      cart.remove({ source: "sell", tokenId: item.nft.identifier });
     },
     [cart],
   );
+
+  /** Grid card–matched price + source for the detail overlay buy CTA. */
+  const selectedItemBuyPresentation = useMemo(() => {
+    if (!selectedItem || marketplaceMode !== "buy") return null;
+    const cartCandidate = buildCartItem(selectedItem);
+    const isInCart =
+      !!cartCandidate && inCartKeys.has(cartItemKey(cartCandidate));
+    const showMarginal =
+      !!selectedItem.nftxListing &&
+      cart.collectionKey === selectedItem.collection.key &&
+      cart.nftxCount > 0 &&
+      !!nftxBatchQuote;
+
+    return getMarketplaceItemBuyPresentation(selectedItem, {
+      inCart: isInCart,
+      marginalNftxPriceEth:
+        showMarginal && nftxBatchQuote
+          ? nftxBatchQuote.marginalNextEth
+          : undefined,
+      nftxBatchPerItemPriceEth:
+        isInCart && !!selectedItem.nftxListing
+          ? sharedNftxPerItemEth
+          : undefined,
+    });
+  }, [
+    selectedItem,
+    marketplaceMode,
+    buildCartItem,
+    inCartKeys,
+    cart.collectionKey,
+    cart.nftxCount,
+    nftxBatchQuote,
+    sharedNftxPerItemEth,
+  ]);
 
   return (
     <>
@@ -735,27 +914,31 @@ export const MarketplaceBrowser = ({
           </div>
 
           {/* Marketplace Source Toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <span className="text-gray-400 text-sm">Source:</span>
             <div className="flex gap-2">
               <button
                 onClick={() => handleSourceChange("all")}
+                disabled={marketplaceMode === "sell"}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors",
                   marketplaceSource === "all"
                     ? "bg-violet-600 text-white"
                     : "bg-gray-800 text-gray-300 hover:bg-gray-700",
+                  marketplaceMode === "sell" && "opacity-50 cursor-not-allowed",
                 )}
               >
                 All
               </button>
               <button
                 onClick={() => handleSourceChange("opensea")}
+                disabled={marketplaceMode === "sell"}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
                   marketplaceSource === "opensea"
                     ? "bg-blue-600 text-white"
                     : "bg-gray-800 text-gray-300 hover:bg-gray-700",
+                  marketplaceMode === "sell" && "opacity-50 cursor-not-allowed",
                 )}
               >
                 <svg
@@ -769,11 +952,13 @@ export const MarketplaceBrowser = ({
               </button>
               <button
                 onClick={() => handleSourceChange("nftx")}
+                disabled={marketplaceMode === "sell"}
                 className={cn(
                   "px-3 py-1.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2",
                   marketplaceSource === "nftx"
                     ? "bg-pink-600 text-white"
                     : "bg-gray-800 text-gray-300 hover:bg-gray-700",
+                  marketplaceMode === "sell" && "opacity-50 cursor-not-allowed",
                 )}
               >
                 <span className="font-bold text-xs">NFTX</span>
@@ -805,6 +990,35 @@ export const MarketplaceBrowser = ({
                 )}
               </button>
             </div>
+            <span className="text-gray-400 text-sm">Mode:</span>
+            <div className="flex rounded-lg bg-gray-900 p-1">
+              <button
+                type="button"
+                onClick={() => handleModeChange("buy")}
+                aria-pressed={marketplaceMode === "buy"}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all border",
+                  marketplaceMode === "buy"
+                    ? "bg-violet-600 border-violet-300 text-white shadow-sm shadow-violet-600/40 ring-1 ring-violet-300/60"
+                    : "border-transparent text-gray-300 hover:bg-gray-800 hover:text-white",
+                )}
+              >
+                Buy
+              </button>
+              <button
+                type="button"
+                onClick={() => handleModeChange("sell")}
+                aria-pressed={marketplaceMode === "sell"}
+                className={cn(
+                  "px-3 py-1.5 rounded-md text-sm font-medium transition-all border",
+                  marketplaceMode === "sell"
+                    ? "bg-emerald-600 border-emerald-300 text-white shadow-sm shadow-emerald-600/40 ring-1 ring-emerald-300/60"
+                    : "border-transparent text-gray-300 hover:bg-gray-800 hover:text-white",
+                )}
+              >
+                Sell
+              </button>
+            </div>
           </div>
 
           {/* Filters */}
@@ -834,7 +1048,9 @@ export const MarketplaceBrowser = ({
               }
               className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
             >
-              <option value="all">All Prices</option>
+              <option value="all">
+                {marketplaceMode === "sell" ? "All Offers" : "All Prices"}
+              </option>
               <option value="low">&lt; 0.5 ETH</option>
               <option value="mid">0.5 - 2 ETH</option>
               <option value="high">&gt; 2 ETH</option>
@@ -844,9 +1060,14 @@ export const MarketplaceBrowser = ({
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              disabled={marketplaceMode === "sell"}
               className="rounded-md bg-[#111015] text-white px-3 py-2 border border-gray-700"
             >
-              <option value="price_asc">Price: Low to High</option>
+              <option value="price_asc">
+                {marketplaceMode === "sell"
+                  ? "Highest Offer First"
+                  : "Price: Low to High"}
+              </option>
               <option value="price_desc">Price: High to Low</option>
               <option value="token_id">Token ID</option>
             </select>
@@ -912,7 +1133,10 @@ export const MarketplaceBrowser = ({
           {/* Wrong chain warning */}
           {isWalletConnected && !isOnMainnet && (
             <div className="bg-amber-900/50 text-amber-300 px-4 py-3 rounded-lg flex items-center justify-between">
-              <span>Please switch to Ethereum Mainnet to buy NFTs.</span>
+              <span>
+                Please switch to Ethereum Mainnet to{" "}
+                {marketplaceMode === "sell" ? "sell or list NFTs" : "buy NFTs"}.
+              </span>
               <button
                 onClick={() => switchChain?.({ chainId: mainnet.id })}
                 className="px-4 py-1 bg-amber-700 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition-colors"
@@ -929,8 +1153,8 @@ export const MarketplaceBrowser = ({
             ) : (
               <>
                 Showing {filteredItems.length} of {items.length} items
-                {collectionInfo && (
-                  <span className="ml-2">in {collectionInfo.name}</span>
+                {activeCollectionInfo && (
+                  <span className="ml-2">in {activeCollectionInfo.name}</span>
                 )}
               </>
             )}
@@ -971,9 +1195,23 @@ export const MarketplaceBrowser = ({
                     <MarketplaceItemCard
                       key={`${item.collection.key}-${item.nft.identifier}`}
                       item={item}
-                      onClick={handleItemClick}
-                      onBuy={isConnected ? handleBuy : undefined}
-                      isBuyLoading={buyingTokenId === item.nft.identifier}
+                      onClick={
+                        marketplaceMode === "sell" ? undefined : handleItemClick
+                      }
+                      onBuy={
+                        isConnected
+                          ? marketplaceMode === "sell"
+                            ? item.bestOffer
+                              ? handleSellIntoOffer
+                              : undefined
+                            : handleBuy
+                          : undefined
+                      }
+                      isBuyLoading={
+                        marketplaceMode === "sell"
+                          ? sellingTokenId === item.nft.identifier
+                          : buyingTokenId === item.nft.identifier
+                      }
                       size={cardSize}
                       inCart={isInCart}
                       onAddToCart={cartCandidate ? handleAddToCart : undefined}
@@ -990,6 +1228,29 @@ export const MarketplaceBrowser = ({
                           ? sharedNftxPerItemEth
                           : undefined
                       }
+                      priceEthOverride={
+                        marketplaceMode === "sell" && item.bestOffer
+                          ? getOfferDisplayAmount(item)
+                          : undefined
+                      }
+                      priceCurrencyOverride={
+                        marketplaceMode === "sell" && item.bestOffer
+                          ? item.bestOffer.price.currency
+                          : undefined
+                      }
+                      priceLabelOverride={
+                        marketplaceMode === "sell" && item.bestOffer
+                          ? "Offer"
+                          : undefined
+                      }
+                      hoverActionLabel={
+                        marketplaceMode === "sell" && item.bestOffer
+                          ? "Accept"
+                          : undefined
+                      }
+                      actionLoadingLabel={
+                        marketplaceMode === "sell" ? "Selling..." : undefined
+                      }
                     />
                   );
                 })}
@@ -998,6 +1259,7 @@ export const MarketplaceBrowser = ({
           {/* Load More (OpenSea only - NFTX loads all at once) */}
           {hasMore &&
             !isLoading &&
+            marketplaceMode === "buy" &&
             (marketplaceSource === "opensea" ||
               marketplaceSource === "all") && (
               <div className="flex justify-center pt-6">
@@ -1020,9 +1282,15 @@ export const MarketplaceBrowser = ({
           {/* Empty state */}
           {!isLoading && filteredItems.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No items found</p>
+              <p className="text-gray-400 text-lg">
+                {marketplaceMode === "sell" && !isWalletConnected
+                  ? "Connect a wallet to view items you can sell"
+                  : "No items found"}
+              </p>
               <p className="text-gray-500 text-sm mt-2">
-                Try adjusting your filters or selecting a different collection
+                {marketplaceMode === "sell"
+                  ? "Owned items appear here ordered by their highest active offer."
+                  : "Try adjusting your filters or selecting a different collection"}
               </p>
             </div>
           )}
@@ -1035,10 +1303,23 @@ export const MarketplaceBrowser = ({
       {/* Item Detail Overlay */}
       {selectedItem && (
         <ItemDetailOverlay
-          item={detailedItem || selectedItem}
+          item={selectedItem}
           isOpen={!!selectedItem}
           onClose={handleCloseOverlay}
           onActionComplete={handleActionComplete}
+          marketplaceBuy={
+            marketplaceMode === "buy" &&
+            isConnected &&
+            selectedItemBuyPresentation?.listingPrice &&
+            selectedItemBuyPresentation.priceSource
+              ? {
+                  onBuy: () => handleBuy(selectedItem),
+                  priceEth: selectedItemBuyPresentation.listingPrice,
+                  priceSource: selectedItemBuyPresentation.priceSource,
+                  isLoading: buyingTokenId === selectedItem.nft.identifier,
+                }
+              : undefined
+          }
         />
       )}
 

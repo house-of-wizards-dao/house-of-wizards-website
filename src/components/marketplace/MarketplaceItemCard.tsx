@@ -31,6 +31,13 @@ type MarketplaceItemCardProps = {
    * value so the price reflects the actual atomic-batch economics.
    */
   nftxBatchPerItemPriceEth?: string;
+  /** Override displayed ETH price, used by sell mode for best offers. */
+  priceEthOverride?: string;
+  priceCurrencyOverride?: string;
+  priceLabelOverride?: string;
+  actionLabel?: string;
+  hoverActionLabel?: string;
+  actionLoadingLabel?: string;
 };
 
 const formatCompactEth = (price: string | undefined) => {
@@ -45,6 +52,52 @@ const formatEthForDisplay = (eth: string): string => {
   return value.toFixed(value < 1 ? 4 : 3);
 };
 
+/** Matches grid card price + source (OpenSea wins when both exist, same as the card body). */
+export type MarketplaceItemBuyPresentation = {
+  listingPrice: string | undefined;
+  priceSource: "opensea" | "nftx" | undefined;
+};
+
+export const getMarketplaceItemBuyPresentation = (
+  item: MarketplaceItem,
+  options?: {
+    inCart?: boolean;
+    marginalNftxPriceEth?: string;
+    nftxBatchPerItemPriceEth?: string;
+    priceEthOverride?: string;
+  },
+): MarketplaceItemBuyPresentation => {
+  const {
+    inCart = false,
+    marginalNftxPriceEth,
+    nftxBatchPerItemPriceEth,
+    priceEthOverride,
+  } = options || {};
+  const { bestListing, nftxListing } = item;
+
+  let listingPrice: string | undefined;
+  let priceSource: "opensea" | "nftx" | undefined;
+
+  if (priceEthOverride) {
+    listingPrice = formatEthForDisplay(priceEthOverride);
+    priceSource = undefined;
+  } else if (bestListing) {
+    listingPrice = formatEthFromWei(bestListing.price.amount);
+    priceSource = "opensea";
+  } else if (nftxListing) {
+    if (inCart && nftxBatchPerItemPriceEth) {
+      listingPrice = formatEthForDisplay(nftxBatchPerItemPriceEth);
+    } else if (!inCart && marginalNftxPriceEth) {
+      listingPrice = formatEthForDisplay(marginalNftxPriceEth);
+    } else {
+      listingPrice = formatEthForDisplay(nftxListing.priceEth);
+    }
+    priceSource = "nftx";
+  }
+
+  return { listingPrice, priceSource };
+};
+
 export const MarketplaceItemCard = ({
   item,
   onClick,
@@ -57,30 +110,24 @@ export const MarketplaceItemCard = ({
   onRemoveFromCart,
   marginalNftxPriceEth,
   nftxBatchPerItemPriceEth,
+  priceEthOverride,
+  priceCurrencyOverride,
+  priceLabelOverride,
+  actionLabel,
+  hoverActionLabel,
+  actionLoadingLabel,
 }: MarketplaceItemCardProps) => {
-  const { nft, bestListing, nftxListing } = item;
+  const { nft } = item;
 
-  // Format the listing price - prioritize OpenSea listing, fall back to NFTX
-  let listingPrice: string | undefined;
-  let priceSource: "opensea" | "nftx" | undefined;
+  const { listingPrice: rawListingPrice, priceSource } =
+    getMarketplaceItemBuyPresentation(item, {
+      inCart,
+      marginalNftxPriceEth,
+      nftxBatchPerItemPriceEth,
+      priceEthOverride,
+    });
 
-  if (bestListing) {
-    listingPrice = formatEthFromWei(bestListing.price.amount);
-    priceSource = "opensea";
-  } else if (nftxListing) {
-    // For NFTX, the displayed price varies with cart state:
-    // - In cart: shared per-item cost of the current batch (totalEth/count)
-    // - Out of cart, with a live quote: marginal cost to add one more
-    // - Otherwise: the static per-1-item listing price
-    if (inCart && nftxBatchPerItemPriceEth) {
-      listingPrice = formatEthForDisplay(nftxBatchPerItemPriceEth);
-    } else if (!inCart && marginalNftxPriceEth) {
-      listingPrice = formatEthForDisplay(marginalNftxPriceEth);
-    } else {
-      listingPrice = formatEthForDisplay(nftxListing.priceEth);
-    }
-    priceSource = "nftx";
-  }
+  let listingPrice = rawListingPrice;
 
   if (size === "compact") {
     listingPrice = formatCompactEth(listingPrice);
@@ -94,10 +141,15 @@ export const MarketplaceItemCard = ({
       onClick={() => onClick?.(item)}
       selected={selected}
       price={listingPrice}
-      priceCurrency="ETH"
-      priceLabel={priceSource === "nftx" ? "NFTX" : undefined}
+      priceCurrency={priceCurrencyOverride || "ETH"}
+      priceLabel={
+        priceLabelOverride || (priceSource === "nftx" ? "NFTX" : undefined)
+      }
       onBuy={onBuy ? () => onBuy(item) : undefined}
       isBuyLoading={isBuyLoading}
+      actionLabel={actionLabel}
+      hoverActionLabel={hoverActionLabel}
+      actionLoadingLabel={actionLoadingLabel}
       size={size}
       inCart={inCart}
       onAddToCart={onAddToCart ? () => onAddToCart(item) : undefined}

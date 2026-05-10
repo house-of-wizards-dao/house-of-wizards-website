@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn, formatTimeRemaining } from "@/lib/utils";
@@ -8,12 +8,28 @@ import { marketplaceConfig } from "@/lib/marketplace";
 import type { MarketplaceItem, Offer } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 import { useMarketplaceActions, useNFTOwnership } from "@/hooks/useMarketplace";
+import {
+  asLocalNftCollection,
+  getLocalNftAffinity,
+  getLocalNftTraits,
+  type LocalNftAffinity,
+  type LocalNftTrait,
+} from "@/data/localNftPreview";
+
+/** Unified buy (OpenSea + NFTX) from marketplace browser — matches grid `handleBuy` and card price. */
+export type ItemDetailMarketplaceBuy = {
+  onBuy: () => void | Promise<void>;
+  priceEth: string;
+  priceSource: "opensea" | "nftx";
+  isLoading: boolean;
+};
 
 type ItemDetailOverlayProps = {
   item: MarketplaceItem;
   isOpen: boolean;
   onClose: () => void;
   onActionComplete?: () => void;
+  marketplaceBuy?: ItemDetailMarketplaceBuy;
 };
 
 export const ItemDetailOverlay = ({
@@ -21,9 +37,10 @@ export const ItemDetailOverlay = ({
   isOpen,
   onClose,
   onActionComplete,
+  marketplaceBuy,
 }: ItemDetailOverlayProps) => {
   const { isConnected } = useAccount();
-  const { isOwner } = useNFTOwnership(item.collection.key, item.nft.identifier);
+  const { isOwner } = useNFTOwnership(item.nft.owner);
   const { buyNFT, acceptOffer, isProcessing, error } = useMarketplaceActions();
   const [activeTab, setActiveTab] = useState<"details" | "offers">("details");
   const [actionResult, setActionResult] = useState<{
@@ -31,11 +48,28 @@ export const ItemDetailOverlay = ({
     message: string;
   } | null>(null);
 
+  const localCollection = asLocalNftCollection(item.collection.key);
+
+  // For NFTX listings of wizards/warriors, derive traits + affinity from
+  // local trait/affinity maps since the NFTX subgraph and pool do not
+  // surface that metadata themselves.
+  const isNftxPreview = !!item.nftxListing && !!localCollection;
+
+  const localTraits = useMemo<LocalNftTrait[]>(() => {
+    if (!isNftxPreview || !localCollection) return [];
+    return getLocalNftTraits(localCollection, item.nft.identifier);
+  }, [isNftxPreview, localCollection, item.nft.identifier]);
+
+  const localAffinity = useMemo<LocalNftAffinity | null>(() => {
+    if (!isNftxPreview || !localCollection) return null;
+    return getLocalNftAffinity(localCollection, item.nft.identifier);
+  }, [isNftxPreview, localCollection, item.nft.identifier]);
+
   if (!isOpen) return null;
 
   const { nft, collection, offers, bestListing, bestOffer } = item;
 
-  const handleBuy = async () => {
+  const handleBuyOpenSeaOnly = async () => {
     if (!bestListing) return;
 
     setActionResult(null);
@@ -53,6 +87,12 @@ export const ItemDetailOverlay = ({
         message: result.error || "Purchase failed",
       });
     }
+  };
+
+  const handleMarketplaceBuy = async () => {
+    if (!marketplaceBuy) return;
+    setActionResult(null);
+    await marketplaceBuy.onBuy();
   };
 
   const handleAcceptOffer = async (offer: Offer) => {
@@ -215,37 +255,110 @@ export const ItemDetailOverlay = ({
                   )}
 
                   {/* Traits */}
-                  {nft.traits && nft.traits.length > 0 && (
+                  {isNftxPreview && localTraits.length > 0 ? (
                     <div>
                       <span className="text-gray-400 text-sm block mb-2">
                         Traits
                       </span>
                       <div className="grid grid-cols-2 gap-2">
-                        {nft.traits.map((trait, i) => (
+                        {localTraits.map((trait) => (
                           <div
-                            key={i}
+                            key={`${trait.part}-${trait.displayName}`}
                             className="bg-gray-800/50 rounded-lg px-3 py-2"
+                            title={trait.description}
                           >
                             <span className="text-gray-400 text-xs block">
-                              {trait.trait_type}
+                              {trait.part}
                             </span>
                             <span className="text-white text-sm">
-                              {String(trait.value)}
+                              {trait.displayName}
                             </span>
                           </div>
                         ))}
                       </div>
                     </div>
+                  ) : (
+                    nft.traits &&
+                    nft.traits.length > 0 && (
+                      <div>
+                        <span className="text-gray-400 text-sm block mb-2">
+                          Traits
+                        </span>
+                        <div className="grid grid-cols-2 gap-2">
+                          {nft.traits.map((trait, i) => (
+                            <div
+                              key={i}
+                              className="bg-gray-800/50 rounded-lg px-3 py-2"
+                            >
+                              <span className="text-gray-400 text-xs block">
+                                {trait.trait_type}
+                              </span>
+                              <span className="text-white text-sm">
+                                {String(trait.value)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )
                   )}
 
-                  {/* Current Listing */}
-                  {bestListing && (
-                    <div className="bg-gray-800/50 rounded-lg p-4">
-                      <span className="text-gray-400 text-sm">
-                        Current Price
+                  {/* Affinity (NFTX wizards/warriors only — derived from
+                      local affinity data) */}
+                  {isNftxPreview && localAffinity && (
+                    <div>
+                      <span className="text-gray-400 text-sm block mb-2">
+                        Affinity
                       </span>
+                      <div className="rounded-lg border border-gray-700 bg-gray-800/50 p-3">
+                        <h3 className="text-base font-semibold text-white">
+                          {localAffinity.affinityName}
+                        </h3>
+                        <div className="mt-2 space-y-1 text-sm">
+                          <p className="flex items-center justify-between gap-3">
+                            <span className="text-gray-400">Attunement</span>
+                            <span className="font-medium text-gray-200">
+                              {localAffinity.attunement}%
+                            </span>
+                          </p>
+                          <p className="flex items-center justify-between gap-3">
+                            <span className="text-gray-400">Traits</span>
+                            <span className="font-medium text-gray-200">
+                              {localAffinity.traitsInAffinity}/
+                              {localAffinity.numberOfTraits}
+                            </span>
+                          </p>
+                        </div>
+                        {localAffinity.isMaxAffinity && (
+                          <p className="mt-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs font-medium text-amber-100">
+                            Max affinity{" "}
+                            {localAffinity.collectionLabel.slice(0, -1)}:{" "}
+                            {localAffinity.maxTraitCount}/
+                            {localAffinity.maxTraitCount} traits and 100%
+                            attuned.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Current listing price (same source + formatting as grid card) */}
+                  {(marketplaceBuy || bestListing) && (
+                    <div className="bg-gray-800/50 rounded-lg p-4">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-gray-400 text-sm">
+                          Current Price
+                        </span>
+                        {marketplaceBuy?.priceSource === "nftx" && (
+                          <span className="rounded bg-pink-600 px-2 py-0.5 text-[10px] font-bold text-white">
+                            NFTX
+                          </span>
+                        )}
+                      </div>
                       <p className="text-2xl font-bold text-white">
-                        {formatEthFromWei(bestListing.price.amount)} ETH
+                        {marketplaceBuy
+                          ? `${marketplaceBuy.priceEth} ETH`
+                          : `${formatEthFromWei(bestListing!.price.amount)} ETH`}
                       </p>
                     </div>
                   )}
@@ -308,18 +421,37 @@ export const ItemDetailOverlay = ({
             </div>
           ) : (
             <div className="flex gap-3">
-              {/* Buy Button - for non-owners when listed */}
-              {!isOwner && bestListing && (
+              {/* Buy — unified path (OpenSea + NFTX) when parent provides marketplaceBuy */}
+              {!isOwner && marketplaceBuy && (
                 <button
-                  onClick={handleBuy}
+                  type="button"
+                  onClick={() => void handleMarketplaceBuy()}
+                  disabled={marketplaceBuy.isLoading || isProcessing}
+                  className={cn(
+                    "flex-1 rounded-lg bg-brand-700 py-3 px-6 font-bold text-white shadow-lg shadow-brand-700/25 transition-colors hover:bg-brand-600 hover:shadow-brand-600/40",
+                    (marketplaceBuy.isLoading || isProcessing) &&
+                      "cursor-not-allowed opacity-50 shadow-none",
+                  )}
+                >
+                  {marketplaceBuy.isLoading || isProcessing
+                    ? "Buying..."
+                    : `Buy for ${marketplaceBuy.priceEth} ETH`}
+                </button>
+              )}
+
+              {/* Fallback: OpenSea-only when overlay is used without marketplaceBuy */}
+              {!isOwner && !marketplaceBuy && bestListing && (
+                <button
+                  type="button"
+                  onClick={() => void handleBuyOpenSeaOnly()}
                   disabled={isProcessing}
                   className={cn(
-                    "flex-1 bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors",
-                    isProcessing && "opacity-50 cursor-not-allowed",
+                    "flex-1 rounded-lg bg-brand-700 py-3 px-6 font-bold text-white shadow-lg shadow-brand-700/25 transition-colors hover:bg-brand-600 hover:shadow-brand-600/40",
+                    isProcessing && "cursor-not-allowed opacity-50 shadow-none",
                   )}
                 >
                   {isProcessing
-                    ? "Processing..."
+                    ? "Buying..."
                     : `Buy for ${formatEthFromWei(bestListing.price.amount)} ETH`}
                 </button>
               )}
@@ -337,16 +469,30 @@ export const ItemDetailOverlay = ({
               {/* Accept Best Offer Button - for owners with offers */}
               {marketplaceConfig.offersEnabled && isOwner && bestOffer && (
                 <button
+                  type="button"
                   onClick={() => handleAcceptOffer(bestOffer)}
                   disabled={isProcessing}
+                  aria-label={`Accept best offer, ${formatEthFromWei(bestOffer.price.amount)} ${bestOffer.price.currency}`}
                   className={cn(
-                    "flex-1 bg-violet-600 hover:bg-violet-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors",
-                    isProcessing && "opacity-50 cursor-not-allowed",
+                    "group grid flex-1 place-content-center rounded-lg bg-violet-600 py-3 px-6 font-semibold text-white transition-colors hover:bg-violet-500",
+                    isProcessing && "cursor-not-allowed opacity-50",
                   )}
                 >
-                  {isProcessing
-                    ? "Processing..."
-                    : `Accept Best Offer (${formatEthFromWei(bestOffer.price.amount)} ${bestOffer.price.currency})`}
+                  {isProcessing ? (
+                    "Processing..."
+                  ) : (
+                    <>
+                      <span className="col-start-1 row-start-1 w-full text-center transition-opacity duration-150 group-hover:invisible group-focus-visible:invisible group-hover:opacity-0 group-focus-visible:opacity-0">
+                        {`${formatEthFromWei(bestOffer.price.amount)} ${bestOffer.price.currency}`}
+                      </span>
+                      <span
+                        className="col-start-1 row-start-1 z-[1] w-full text-center opacity-0 invisible transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+                        aria-hidden
+                      >
+                        Accept
+                      </span>
+                    </>
+                  )}
                 </button>
               )}
             </div>
@@ -379,22 +525,12 @@ const OfferRow = ({
   if (isExpired) return null;
 
   return (
-    <div
-      className={cn(
-        "flex items-center justify-between bg-gray-800/50 rounded-lg px-4 py-3",
-        offer.isCollectionOffer && "border border-violet-500/30",
-      )}
-    >
+    <div className="flex items-center justify-between bg-gray-800/50 rounded-lg px-4 py-3">
       <div>
         <div className="flex items-center gap-2">
           <p className="text-white font-medium">
             {price} {offer.price.currency}
           </p>
-          {offer.isCollectionOffer && (
-            <span className="text-xs bg-violet-600/30 text-violet-300 px-2 py-0.5 rounded">
-              Collection Offer
-            </span>
-          )}
         </div>
         <p className="text-gray-400 text-xs">
           From:{" "}
@@ -407,14 +543,30 @@ const OfferRow = ({
 
       {isOwner && (
         <button
+          type="button"
           onClick={onAccept}
           disabled={isProcessing}
+          aria-label={`Accept offer, ${price} ${offer.price.currency}`}
           className={cn(
-            "bg-violet-600 hover:bg-violet-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors",
-            isProcessing && "opacity-50 cursor-not-allowed",
+            "group grid min-w-[5.5rem] place-content-center rounded-lg bg-violet-600 py-2 px-4 text-sm font-medium text-white transition-colors hover:bg-violet-500",
+            isProcessing && "cursor-not-allowed opacity-50",
           )}
         >
-          Accept
+          {isProcessing ? (
+            `${price} ${offer.price.currency}`
+          ) : (
+            <>
+              <span className="col-start-1 row-start-1 w-full text-center transition-opacity duration-150 group-hover:invisible group-focus-visible:invisible group-hover:opacity-0 group-focus-visible:opacity-0">
+                {`${price} ${offer.price.currency}`}
+              </span>
+              <span
+                className="col-start-1 row-start-1 z-[1] w-full text-center opacity-0 invisible transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+                aria-hidden
+              >
+                Accept
+              </span>
+            </>
+          )}
         </button>
       )}
     </div>

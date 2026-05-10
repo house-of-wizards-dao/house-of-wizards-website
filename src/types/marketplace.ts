@@ -151,8 +151,14 @@ export type Offer = {
   startTime: string;
   expirationTime: string;
   maker: string; // Bidder address
+  status?: string;
   protocolData?: unknown;
   isCollectionOffer?: boolean; // True if this is a collection-wide offer (floor bid)
+  /**
+   * When `price.amount` is adjusted to approximate seller proceeds (after fees),
+   * this holds the original bid total in wei for the same decimals/currency.
+   */
+  grossBidAmount?: string;
 };
 
 /**

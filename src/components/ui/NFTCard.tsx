@@ -17,6 +17,10 @@ export type NFTCardProps = {
   priceLabel?: string;
   onBuy?: (e: React.MouseEvent) => void;
   isBuyLoading?: boolean;
+  actionLabel?: string;
+  /** When set with `onBuy`, the button shows price by default and this label on hover/focus. */
+  hoverActionLabel?: string;
+  actionLoadingLabel?: string;
   size?: "default" | "compact";
   /** When true, the card shows a "selected for cart" highlight */
   inCart?: boolean;
@@ -41,6 +45,9 @@ export const NFTCard = ({
   priceLabel,
   onBuy,
   isBuyLoading = false,
+  actionLabel,
+  hoverActionLabel,
+  actionLoadingLabel,
   size = "default",
   inCart = false,
   onAddToCart,
@@ -67,6 +74,7 @@ export const NFTCard = ({
   };
 
   return (
+    /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
     <div
       className={cn(
         "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden transition-all hover:border-gray-600 hover:shadow-lg text-left",
@@ -89,7 +97,7 @@ export const NFTCard = ({
       {/* Image */}
       <div className="relative w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">
         {hasImage ? (
-          /* eslint-disable-next-line @next/next/no-img-element */
+          /* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/no-noninteractive-element-interactions */
           <img
             src={imageUrl}
             alt={name || `#${tokenId}`}
@@ -166,10 +174,21 @@ export const NFTCard = ({
           <div className={cn(isCompact ? "mt-1.5" : "mt-2")}>
             {onBuy ? (
               <button
+                type="button"
                 onClick={handleBuyClick}
                 disabled={isBuyLoading || disabled}
+                aria-label={
+                  hoverActionLabel
+                    ? `${hoverActionLabel}, ${price} ${priceCurrency}`
+                    : actionLabel
+                      ? actionLabel
+                      : `Buy for ${price} ${priceCurrency}`
+                }
                 className={cn(
-                  "w-full font-bold rounded-lg transition-all whitespace-nowrap",
+                  "w-full font-bold rounded-lg transition-colors whitespace-nowrap",
+                  hoverActionLabel && !isBuyLoading
+                    ? "group grid place-content-center"
+                    : "flex items-center justify-center",
                   isCompact ? "px-2 py-1.5 text-xs" : "px-4 py-2 text-sm",
                   "bg-brand-700 hover:bg-brand-600 text-white",
                   "shadow-lg shadow-brand-700/25 hover:shadow-brand-600/40",
@@ -177,11 +196,23 @@ export const NFTCard = ({
                     "opacity-50 cursor-not-allowed shadow-none",
                 )}
               >
-                {isBuyLoading
-                  ? "Buying..."
-                  : isCompact
-                    ? `${price} ${priceCurrency}`
-                    : `${price} ${priceCurrency}`}
+                {isBuyLoading ? (
+                  actionLoadingLabel || "Buying..."
+                ) : hoverActionLabel ? (
+                  <>
+                    <span className="col-start-1 row-start-1 w-full text-center transition-opacity duration-150 group-hover:invisible group-focus-visible:invisible group-hover:opacity-0 group-focus-visible:opacity-0">
+                      {`${price} ${priceCurrency}`}
+                    </span>
+                    <span
+                      className="col-start-1 row-start-1 z-[1] w-full text-center text-white opacity-0 invisible transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
+                      aria-hidden
+                    >
+                      {hoverActionLabel}
+                    </span>
+                  </>
+                ) : (
+                  actionLabel || `${price} ${priceCurrency}`
+                )}
               </button>
             ) : (
               <div

@@ -6,7 +6,8 @@ import {
   useInfiniteQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { useAccount, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { OpenSeaSDK, Chain } from "@opensea/sdk/viem";
 import type {
   CollectionKey,
   MarketplaceItem,
@@ -15,6 +16,7 @@ import type {
   Offer,
   NFTXListing,
 } from "@/types/marketplace";
+import { frwcAddresses } from "@/config/addresses";
 import { logger } from "@/lib/logger";
 
 // ============================================================================
@@ -52,21 +54,30 @@ const fetchMarketplaceListings = async (
 };
 
 /**
- * Fetch NFT details with offers
+ * Fetch connected-wallet items for sell mode, including active offers.
  */
-const fetchNFTDetails = async (
+const fetchSellItems = async (
   collection: CollectionKey,
-  tokenId: string,
-): Promise<MarketplaceItem> => {
-  const params = new URLSearchParams({ collection, tokenId });
-  const response = await fetch(`/api/marketplace/nft?${params}`);
+  owner: string,
+  limit: number,
+): Promise<{
+  items: MarketplaceItem[];
+  collection: CollectionInfo;
+  count: number;
+}> => {
+  const params = new URLSearchParams({
+    collection,
+    owner,
+    limit: String(limit),
+  });
+  const response = await fetch(`/api/marketplace/sell-items?${params}`);
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.error || "Failed to fetch NFT details");
+    throw new Error(data.error || "Failed to fetch wallet items");
   }
 
-  return data.item;
+  return data;
 };
 
 /**
@@ -207,40 +218,46 @@ export const useMarketplaceListings = (
 };
 
 /**
- * Hook to fetch NFT details with offers
- * Uses React Query for caching
+ * Hook to fetch wallet-owned collection items for sell mode.
  */
-export const useNFTDetails = (
+export const useMarketplaceSellItems = (
   collection: CollectionKey | null,
-  tokenId: string | null,
+  owner: string | undefined,
+  options?: {
+    limit?: number;
+    autoFetch?: boolean;
+  },
 ) => {
+  const { limit = 100, autoFetch = true } = options || {};
   const queryClient = useQueryClient();
 
-  const {
-    data: item,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
-    queryKey: ["marketplace", "nft", collection, tokenId],
-    queryFn: () => fetchNFTDetails(collection!, tokenId!),
-    enabled: !!collection && !!tokenId,
-    staleTime: 30_000, // Consider data fresh for 30 seconds
+  const { data, isLoading, error, refetch, isFetching } = useQuery({
+    queryKey: ["marketplace", "sell-items", collection, owner, limit],
+    queryFn: () => fetchSellItems(collection!, owner!, limit),
+    enabled: autoFetch && !!collection && !!owner,
+    staleTime: 15_000,
   });
 
   const refresh = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ["marketplace", "nft", collection, tokenId],
+      queryKey: ["marketplace", "sell-items", collection, owner],
     });
     refetch();
-  }, [queryClient, collection, tokenId, refetch]);
+  }, [queryClient, collection, owner, refetch]);
 
   return {
-    item: item || null,
-    isLoading,
+    items: data?.items || [],
+    collectionInfo: data?.collection || null,
+    isLoading: isLoading || isFetching,
     error: error?.message || null,
     refresh,
   };
+};
+
+type ListingInput = {
+  collection: CollectionKey;
+  tokenId: string;
+  priceInEth: string;
 };
 
 /**
@@ -248,7 +265,10 @@ export const useNFTDetails = (
  */
 export const useMarketplaceActions = () => {
   const { address, isConnected } = useAccount();
-  const { data: walletClient } = useWalletClient();
+  const publicClient = usePublicClient();
+  const { data: walletClient } = useWalletClient({
+    account: address ? (address as `0x${string}`) : undefined,
+  });
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lastTxHash, setLastTxHash] = useState<string | null>(null);
@@ -387,36 +407,77 @@ export const useMarketplaceActions = () => {
    * Create a listing for your NFT
    * Note: This requires approval of the NFT to OpenSea's contract first
    */
-  const createListing = useCallback(
+  const createListings = useCallback(
     async (
-      _collection: CollectionKey,
-      _tokenId: string,
-      _priceInEth: string,
-      _expirationDays: number = 30,
+      listings: ListingInput[],
+      includeOptionalCreatorFees: boolean,
+      expirationDays: number = 30,
     ): Promise<{ success: boolean; error?: string }> => {
-      if (!isConnected || !address || !walletClient) {
+      if (!isConnected || !address || !walletClient || !publicClient) {
         return { success: false, error: "Wallet not connected" };
+      }
+      if (listings.length === 0) {
+        return { success: false, error: "No listings to create" };
+      }
+      const invalidListing = listings.find((listing) => {
+        const price = Number(listing.priceInEth);
+        return !Number.isFinite(price) || price <= 0;
+      });
+      if (invalidListing) {
+        return {
+          success: false,
+          error: `Enter a valid listing price for token #${invalidListing.tokenId}`,
+        };
+      }
+
+      const openSeaApiKey = process.env.NEXT_PUBLIC_OPENSEA_API_KEY?.trim();
+      if (!openSeaApiKey) {
+        return {
+          success: false,
+          error:
+            "OpenSea API key is not configured. Set NEXT_PUBLIC_OPENSEA_API_KEY (same value as OPENSEA_API_KEY is fine) and restart the dev server.",
+        };
       }
 
       setIsProcessing(true);
       setError(null);
 
       try {
-        // Creating listings requires the OpenSea SDK on the client
-        // This is more complex as it needs wallet signing for Seaport orders
-        // For now, we'll redirect to OpenSea for listing
+        const sdk = new OpenSeaSDK(
+          { publicClient, walletClient },
+          { chain: Chain.Mainnet, apiKey: openSeaApiKey },
+        );
+        const expirationTime =
+          Math.floor(Date.now() / 1000) + expirationDays * 24 * 60 * 60;
 
-        // In a full implementation, you would:
-        // 1. Check if NFT is approved for OpenSea Seaport
-        // 2. If not, prompt approval transaction
-        // 3. Create a Seaport order and sign it
-        // 4. Submit the signed order to OpenSea
+        if (listings.length === 1) {
+          const listing = listings[0];
+          await sdk.createListing({
+            accountAddress: address,
+            asset: {
+              tokenAddress: frwcAddresses[listing.collection],
+              tokenId: listing.tokenId,
+            },
+            amount: listing.priceInEth,
+            expirationTime,
+            includeOptionalCreatorFees,
+          });
+        } else {
+          await sdk.createBulkListings({
+            accountAddress: address,
+            listings: listings.map((listing) => ({
+              asset: {
+                tokenAddress: frwcAddresses[listing.collection],
+                tokenId: listing.tokenId,
+              },
+              amount: listing.priceInEth,
+              expirationTime,
+              includeOptionalCreatorFees,
+            })),
+          });
+        }
 
-        return {
-          success: false,
-          error:
-            "Direct listing not yet implemented. Please use OpenSea to list your NFT.",
-        };
+        return { success: true };
       } catch (err) {
         const message = err instanceof Error ? err.message : "Listing failed";
         setError(message);
@@ -426,7 +487,23 @@ export const useMarketplaceActions = () => {
         setIsProcessing(false);
       }
     },
-    [isConnected, address, walletClient],
+    [isConnected, address, walletClient, publicClient],
+  );
+
+  const createListing = useCallback(
+    async (
+      collection: CollectionKey,
+      tokenId: string,
+      priceInEth: string,
+      expirationDays: number = 30,
+    ): Promise<{ success: boolean; error?: string }> => {
+      return createListings(
+        [{ collection, tokenId, priceInEth }],
+        false,
+        expirationDays,
+      );
+    },
+    [createListings],
   );
 
   return {
@@ -438,27 +515,25 @@ export const useMarketplaceActions = () => {
     buyNFT,
     acceptOffer,
     createListing,
+    createListings,
   };
 };
 
 /**
- * Hook to check if connected wallet owns a specific NFT
+ * Hook to check if connected wallet owns a specific NFT.
+ * Pass the on-chain owner from the current marketplace item (e.g. OpenSea metadata).
  */
-export const useNFTOwnership = (
-  collection: CollectionKey | null,
-  tokenId: string | null,
-) => {
+export const useNFTOwnership = (ownerAddress?: string | null) => {
   const { address, isConnected } = useAccount();
-  const { item } = useNFTDetails(collection, tokenId);
 
   const isOwner = useMemo(() => {
-    if (!isConnected || !address || !item?.nft.owner) {
+    if (!isConnected || !address || !ownerAddress) {
       return false;
     }
-    return item.nft.owner.toLowerCase() === address.toLowerCase();
-  }, [isConnected, address, item]);
+    return ownerAddress.toLowerCase() === address.toLowerCase();
+  }, [isConnected, address, ownerAddress]);
 
-  return { isOwner, ownerAddress: item?.nft.owner };
+  return { isOwner, ownerAddress: ownerAddress ?? undefined };
 };
 
 /**

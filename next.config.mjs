@@ -1,3 +1,7 @@
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
@@ -18,7 +22,7 @@ const nextConfig = {
       },
     ];
   },
-  webpack: (config, { isServer }) => {
+  webpack: (config, { isServer, webpack: webpackInstance }) => {
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -26,6 +30,13 @@ const nextConfig = {
         net: false,
         tls: false,
       };
+      // @opensea/sdk pulls `node:events`; webpack treats `node:` as an unhandled URI scheme before `resolve.alias` runs.
+      config.plugins.push(
+        new webpackInstance.NormalModuleReplacementPlugin(
+          /^node:events$/,
+          require.resolve("events"),
+        ),
+      );
     }
     config.resolve.alias = {
       ...config.resolve.alias,

@@ -17,6 +17,7 @@ import type {
   Offer as OpenSeaOffer,
   CollectionOffer as OpenSeaCollectionOffer,
   Trait as OpenSeaTrait,
+  GetOffersResponse,
 } from "opensea-js/lib/api/types";
 // @ts-ignore - ethers is a dependency of opensea-js
 import { JsonRpcProvider, VoidSigner } from "ethers";
@@ -213,6 +214,44 @@ export const getOpenSeaSDK = (accountAddress?: string) => {
 };
 
 /**
+ * Item offers for a single NFT. OpenSea no longer allows GET on
+ * `/api/v2/orders/{chain}/seaport/offers` (405); opensea-js `getNFTOffers` still
+ * calls that path, so we use the collection NFT offers route instead.
+ */
+const fetchOffersForCollectionNft = async (
+  collectionSlug: string,
+  tokenId: string,
+  limit: number,
+): Promise<GetOffersResponse> => {
+  const capped = Math.min(Math.max(limit, 1), 100);
+  const url = new URL(
+    `https://api.opensea.io/api/v2/offers/collection/${encodeURIComponent(collectionSlug)}/nfts/${encodeURIComponent(String(tokenId))}`,
+  );
+  url.searchParams.set("limit", String(capped));
+
+  const headers = new Headers({ Accept: "application/json" });
+  const apiKey = process.env.OPENSEA_API_KEY;
+  if (apiKey) headers.set("X-API-KEY", apiKey);
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(
+      `OpenSea NFT offers HTTP ${res.status}: ${body.slice(0, 240)}`,
+    );
+  }
+  const data: unknown = await res.json();
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !Array.isArray((data as { offers?: unknown }).offers)
+  ) {
+    throw new Error("OpenSea NFT offers: unexpected response shape");
+  }
+  return data as GetOffersResponse;
+};
+
+/**
  * Cached NFT metadata fetcher
  * NFT metadata (name, image, traits) rarely changes, so we cache for 1 hour
  * This dramatically reduces API calls when fetching collection listings
@@ -307,27 +346,25 @@ const orderToListing = (order: OpenSeaListing): Listing => {
  * Convert OpenSea order to our Offer type
  * Handles both token-specific offers and collection offers which have different structures
  */
-const orderToOffer = (order: OpenSeaOffer | OpenSeaCollectionOffer): Offer => {
+export const orderToOffer = (
+  order: OpenSeaOffer | OpenSeaCollectionOffer,
+): Offer => {
   const priceData = order.price;
   const params = order.protocol_data?.parameters;
+  const offerItem = params?.offer?.[0];
 
-  // For offers, price.value contains the WETH amount
-  // If not available, try to get it from protocol_data offer array
-  let amount = priceData?.value || "0";
+  // Prefer the Seaport offer item because it is the exact ERC20 amount that
+  // the bidder is offering. The API price object is display metadata.
+  let amount = offerItem?.startAmount || priceData?.value || "0";
   let currency = priceData?.currency || "WETH";
   let decimals = priceData?.decimals || 18;
 
-  // Fallback: try to get amount from protocol_data (collection offers)
-  if (amount === "0" && params?.offer?.[0]) {
-    const offerItem = params.offer[0];
-    amount = offerItem.startAmount || "0";
-    // WETH token address
-    if (
-      offerItem.token?.toLowerCase() ===
-      "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
-    ) {
-      currency = "WETH";
-    }
+  if (
+    offerItem?.token?.toLowerCase() ===
+    "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+  ) {
+    currency = "WETH";
+    decimals = 18;
   }
 
   return {
@@ -342,9 +379,187 @@ const orderToOffer = (order: OpenSeaOffer | OpenSeaCollectionOffer): Offer => {
     startTime: toISOTimestamp(params?.startTime),
     expirationTime: toISOTimestamp(params?.endTime, true),
     maker: params?.offerer || "",
+    status: order.status,
     protocolData: order.protocol_data,
   };
 };
+
+const isActiveOffer = (offer: Offer, now = new Date()): boolean => {
+  if (offer.status && offer.status.toLowerCase() !== "active") return false;
+  const expiration = new Date(offer.expirationTime);
+  if (Number.isNaN(expiration.getTime())) return false;
+  return expiration > now;
+};
+
+const getOfferAmount = (offer: Offer): bigint => {
+  try {
+    return BigInt(offer.price.amount || "0");
+  } catch {
+    return 0n;
+  }
+};
+
+/** Mainnet WETH — Seaport ERC20 bids use this token for ETH-denominated offers */
+const WETH_MAINNET = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+
+/** Seaport item types — we only need ERC20 for bid/fees breakdown */
+const SEAPORT_ITEM_TYPE_ERC20 = 1;
+
+type SeaportOfferLike = {
+  itemType?: number;
+  token?: string;
+  startAmount?: string;
+  endAmount?: string;
+  recipient?: string;
+};
+
+type SeaportParametersLike = {
+  offer?: SeaportOfferLike[];
+  consideration?: SeaportOfferLike[];
+};
+
+/**
+ * Estimate WETH wei the seller receives when fulfilling an offer (bid) order:
+ * gross WETH on the offer side minus WETH consideration paid to third parties
+ * (platform, royalties). Matches wallet previews better than raw bid size.
+ */
+export const estimateSellerNetWeiFromBidOrder = (
+  protocolData: unknown,
+  sellerAddress: string,
+): bigint | null => {
+  const seller = sellerAddress.trim().toLowerCase();
+  if (!seller) return null;
+
+  const params = protocolData as SeaportParametersLike | undefined;
+  const offerItems = params?.offer;
+  if (!Array.isArray(offerItems) || offerItems.length === 0) return null;
+
+  let grossWeth = 0n;
+  for (const item of offerItems) {
+    if (item.itemType !== SEAPORT_ITEM_TYPE_ERC20) continue;
+    if ((item.token || "").toLowerCase() !== WETH_MAINNET) continue;
+    try {
+      grossWeth += BigInt(item.startAmount ?? item.endAmount ?? "0");
+    } catch {
+      return null;
+    }
+  }
+  if (grossWeth === 0n) return null;
+
+  let explicitToSeller = 0n;
+  let wethFeesAndRoyalties = 0n;
+
+  for (const item of params?.consideration ?? []) {
+    if (item.itemType !== SEAPORT_ITEM_TYPE_ERC20) continue;
+    if ((item.token || "").toLowerCase() !== WETH_MAINNET) continue;
+    let amt: bigint;
+    try {
+      amt = BigInt(item.startAmount ?? item.endAmount ?? "0");
+    } catch {
+      continue;
+    }
+    const recip = (item.recipient || "").toLowerCase();
+    if (recip === seller) explicitToSeller += amt;
+    else wethFeesAndRoyalties += amt;
+  }
+
+  if (explicitToSeller > 0n) return explicitToSeller;
+
+  const net = grossWeth - wethFeesAndRoyalties;
+  return net >= 0n ? net : null;
+};
+
+/**
+ * Replace {@link Offer.price} amount with seller net wei when derivable; keeps
+ * gross total in {@link Offer.grossBidAmount}.
+ */
+export const offerWithSellerNetProceeds = (
+  offer: Offer,
+  sellerAddress: string,
+): Offer => {
+  const netWei = estimateSellerNetWeiFromBidOrder(
+    offer.protocolData,
+    sellerAddress,
+  );
+  if (netWei === null || netWei <= 0n) return offer;
+
+  let grossWei: bigint;
+  try {
+    grossWei = BigInt(offer.price.amount || "0");
+  } catch {
+    grossWei = netWei;
+  }
+
+  const displayWei = netWei > grossWei ? grossWei : netWei;
+  return {
+    ...offer,
+    grossBidAmount: offer.price.amount,
+    price: {
+      ...offer.price,
+      amount: displayWei.toString(),
+    },
+  };
+};
+
+const getBestActiveOffer = (offers: Offer[]): Offer | undefined => {
+  const now = new Date();
+  let best: Offer | undefined;
+  for (const offer of offers) {
+    if (!isActiveOffer(offer, now)) continue;
+    if (!best || getOfferAmount(offer) > getOfferAmount(best)) {
+      best = offer;
+    }
+  }
+  return best;
+};
+
+const isActiveOpenSeaOffer = (
+  order: OpenSeaOffer | OpenSeaCollectionOffer,
+): boolean => {
+  if (order.status && order.status.toLowerCase() !== "active") return false;
+  const endTime = order.protocol_data?.parameters?.endTime;
+  const expiration =
+    typeof endTime === "string" || typeof endTime === "number"
+      ? Number(endTime) * 1000
+      : 0;
+  return Number.isFinite(expiration) && expiration > Date.now();
+};
+
+/** OpenSea offer models use a flat `price`; listings nest `price.current`. */
+const isOpenSeaOfferPayload = (
+  value: unknown,
+): value is OpenSeaOffer | OpenSeaCollectionOffer =>
+  typeof value === "object" &&
+  value !== null &&
+  "order_hash" in value &&
+  typeof (value as { order_hash: unknown }).order_hash === "string" &&
+  (value as { order_hash: string }).order_hash.length > 0 &&
+  "price" in value &&
+  typeof (value as { price: unknown }).price === "object" &&
+  (value as { price: Record<string, unknown> }).price !== null &&
+  !("current" in (value as { price: Record<string, unknown> }).price);
+
+const openSeaNFTToMarketplaceNFT = (
+  nftData: NonNullable<Awaited<ReturnType<typeof getCachedNFT>>>,
+  collection: CollectionInfo,
+  tokenId: string,
+): MarketplaceNFT => ({
+  identifier: nftData.identifier || tokenId,
+  collection: collection.slug,
+  contract: nftData.contract || collection.address,
+  token_standard: nftData.token_standard || "erc721",
+  name: nftData.name || `${collection.name} #${tokenId}`,
+  description: nftData.description || "",
+  image_url: nftData.image_url || "",
+  metadata_url: nftData.metadata_url || "",
+  opensea_url:
+    nftData.opensea_url ||
+    `https://opensea.io/assets/ethereum/${collection.address}/${tokenId}`,
+  updated_at: nftData.updated_at || new Date().toISOString(),
+  is_disabled: nftData.is_disabled || false,
+  is_nsfw: nftData.is_nsfw || false,
+  traits: parseTraits(nftData.traits || []),
+});
 
 /**
  * Convert OpenSea NFT traits to our format
@@ -452,6 +667,7 @@ export const fetchCollectionListings = async (
             is_disabled: nftData?.is_disabled || false,
             is_nsfw: nftData?.is_nsfw || false,
             traits: parseTraits(nftData?.traits || []),
+            owner: nftData?.owners?.[0]?.address,
           };
 
           return {
@@ -548,132 +764,127 @@ export const fetchCollectionNFTs = async (
 };
 
 /**
- * Fetch single NFT details with listings and offers
- * Includes both token-specific offers and collection-wide offers
+ * Fetch NFTs owned by a wallet for a collection, including active offers.
+ * Used by sell mode so owners can either accept the highest current offer or
+ * queue owned items for new OpenSea listings.
  */
-export const fetchNFTDetails = async (
+export const fetchWalletSellItems = async (
   collectionKey: CollectionKey,
-  tokenId: string,
-): Promise<MarketplaceItem | null> => {
+  ownerAddress: string,
+  limit: number = 100,
+): Promise<MarketplaceItem[]> => {
   const sdk = getOpenSeaSDK();
   const collection = getCollection(collectionKey);
+  const ownedTokenIds: string[] = [];
+  let next: string | null = null;
+  let pageCount = 0;
+  const maxPages = 10;
 
   try {
-    // Fetch NFT metadata using cached fetcher (metadata rarely changes)
-    const nftData = await getCachedNFT(collection.address, tokenId);
-
-    if (!nftData) return null;
-
-    const nft: MarketplaceNFT = {
-      identifier: nftData.identifier,
-      collection: collection.slug,
-      contract: nftData.contract || collection.address,
-      token_standard: nftData.token_standard || "erc721",
-      name: nftData.name || `${collection.name} #${tokenId}`,
-      description: nftData.description || "",
-      image_url: nftData.image_url || "",
-      metadata_url: nftData.metadata_url || "",
-      opensea_url:
-        nftData.opensea_url ||
-        `https://opensea.io/assets/ethereum/${collection.address}/${tokenId}`,
-      updated_at: nftData.updated_at || new Date().toISOString(),
-      is_disabled: nftData.is_disabled || false,
-      is_nsfw: nftData.is_nsfw || false,
-      traits: parseTraits(nftData.traits),
-      owner: nftData.owners?.[0]?.address,
-    };
-
-    // Fetch listings for this NFT using getNFTListings
-    const listingsResponse = await sdk.api.getNFTListings(
-      collection.address,
-      tokenId,
-      50, // limit
-      undefined, // next
-      Chain.Mainnet,
-    );
-
-    const listings = (listingsResponse.listings || []).map(orderToListing);
-
-    // Fetch offers only if enabled in config
-    let offers: Offer[] = [];
-    let bestOffer: Offer | undefined;
-
-    if (marketplaceConfig.offersEnabled) {
-      // Fetch token-specific offers and collection-wide offers in parallel
-      const [tokenOffersResponse, collectionOffersResponse] = await Promise.all(
-        [
-          // Token-specific offers (offers for this exact NFT)
-          sdk.api.getNFTOffers(
-            collection.address,
-            tokenId,
-            50, // limit
-            undefined, // next
-            Chain.Mainnet,
-          ),
-          // Collection-wide offers (floor bids that apply to any NFT in the collection)
-          sdk.api.getCollectionOffers(
-            collection.slug,
-            50, // limit
-            undefined, // next
-          ),
-        ],
+    do {
+      const response = await sdk.api.getNFTsByAccount(
+        ownerAddress,
+        200,
+        next || undefined,
+        Chain.Mainnet,
       );
+      for (const nft of response.nfts || []) {
+        if (nft.contract?.toLowerCase() !== collection.address.toLowerCase()) {
+          continue;
+        }
+        ownedTokenIds.push(nft.identifier);
+        if (ownedTokenIds.length >= limit) break;
+      }
+      next = response.next || null;
+      pageCount += 1;
+    } while (next && pageCount < maxPages && ownedTokenIds.length < limit);
 
-      // Convert token-specific offers
-      const tokenOffers = (tokenOffersResponse.offers || []).map(orderToOffer);
+    const items: MarketplaceItem[] = [];
+    const batchSize = 8;
+    for (let i = 0; i < ownedTokenIds.length; i += batchSize) {
+      const batch = ownedTokenIds.slice(i, i + batchSize);
+      const batchItems = await Promise.all(
+        batch.map(async (tokenId) => {
+          const nftData = await getCachedNFT(collection.address, tokenId);
+          if (!nftData) return null;
 
-      // Convert collection offers and mark them as collection offers
-      const collectionOffers = (collectionOffersResponse.offers || []).map(
-        (order) => ({
-          ...orderToOffer(order),
-          isCollectionOffer: true,
+          let bestOffer: Offer | undefined;
+          try {
+            const bestRaw = await sdk.api.getBestOffer(
+              collection.slug,
+              tokenId,
+            );
+            if (
+              isOpenSeaOfferPayload(bestRaw) &&
+              isActiveOpenSeaOffer(bestRaw)
+            ) {
+              const converted: Offer = {
+                ...orderToOffer(bestRaw),
+                isCollectionOffer:
+                  "criteria" in bestRaw && bestRaw.criteria != null,
+              };
+              if (isActiveOffer(converted)) {
+                bestOffer = offerWithSellerNetProceeds(converted, ownerAddress);
+              }
+            }
+          } catch (error) {
+            logger.warn(
+              `getBestOffer failed for ${collectionKey} #${tokenId}`,
+              error,
+            );
+            try {
+              const offersResponse = await fetchOffersForCollectionNft(
+                collection.slug,
+                tokenId,
+                50,
+              );
+              const tokenOnly = (offersResponse.offers || [])
+                .filter(isActiveOpenSeaOffer)
+                .map(orderToOffer)
+                .filter((offer) => isActiveOffer(offer));
+              const fallbackBest = getBestActiveOffer(tokenOnly);
+              if (fallbackBest) {
+                bestOffer = offerWithSellerNetProceeds(
+                  fallbackBest,
+                  ownerAddress,
+                );
+              }
+            } catch (fallbackErr) {
+              logger.warn(
+                `Fallback offers fetch failed for ${collectionKey} #${tokenId}`,
+                fallbackErr,
+              );
+            }
+          }
+
+          const offers = bestOffer ? [bestOffer] : [];
+
+          return {
+            nft: {
+              ...openSeaNFTToMarketplaceNFT(nftData, collection, tokenId),
+              owner: ownerAddress,
+            },
+            collection,
+            listings: [],
+            offers,
+            bestOffer,
+            source: "opensea",
+          } as MarketplaceItem;
         }),
       );
-
-      // Merge offers, deduplicating by orderHash and filtering out expired offers
-      const now = new Date();
-      const offersByHash = new Map<string, Offer>();
-
-      for (const offer of tokenOffers) {
-        // Skip expired offers
-        if (new Date(offer.expirationTime) <= now) continue;
-        offersByHash.set(offer.orderHash, offer);
+      for (const item of batchItems) {
+        if (item) items.push(item);
       }
-      for (const offer of collectionOffers) {
-        // Skip expired offers
-        if (new Date(offer.expirationTime) <= now) continue;
-        // Only add collection offers if not already present as token offer
-        if (!offersByHash.has(offer.orderHash)) {
-          offersByHash.set(offer.orderHash, offer);
-        }
-      }
-      offers = Array.from(offersByHash.values());
-
-      // Sort offers by price descending
-      const sortedOffers = [...offers].sort(
-        (a, b) => parseFloat(b.price.amount) - parseFloat(a.price.amount),
-      );
-      bestOffer = sortedOffers[0];
     }
 
-    // Sort listings by price ascending
-    const sortedListings = [...listings].sort(
-      (a, b) => parseFloat(a.price.amount) - parseFloat(b.price.amount),
-    );
-
-    return {
-      nft,
-      collection,
-      listings: sortedListings,
-      offers,
-      bestListing: sortedListings[0],
-      bestOffer,
-    };
+    return items.sort((a, b) => {
+      const offerA = a.bestOffer ? getOfferAmount(a.bestOffer) : 0n;
+      const offerB = b.bestOffer ? getOfferAmount(b.bestOffer) : 0n;
+      if (offerA !== offerB) return offerA > offerB ? -1 : 1;
+      return parseInt(a.nft.identifier, 10) - parseInt(b.nft.identifier, 10);
+    });
   } catch (error) {
-    logger.error(
-      `Error fetching NFT details for ${collectionKey} #${tokenId}`,
-      error,
-    );
+    logger.error(`Error fetching sell items for ${collectionKey}`, error);
     throw error;
   }
 };

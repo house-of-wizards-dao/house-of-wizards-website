@@ -86,6 +86,9 @@ importers:
       '@nextui-org/theme':
         specifier: 2.4.5
         version: 2.4.5(tailwindcss@3.4.3)
+      '@opensea/sdk':
+        specifier: ^10.4.0
+        version: 10.4.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)(viem@2.38.6(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))
       '@openzeppelin/merkle-tree':
         specifier: ^1.0.8
         version: 1.0.8
@@ -141,8 +144,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(next@15.0.7(@babel/core@7.28.4)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       opensea-js:
-        specifier: ^8.0.11
-        version: 8.0.11(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+        specifier: ^8.1.0
+        version: 8.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       phaser:
         specifier: ^3.90.0
         version: 3.90.0
@@ -2026,6 +2029,10 @@ packages:
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
 
+  '@noble/hashes@2.2.0':
+    resolution: {integrity: sha512-IYqDGiTXab6FniAgnSdZwgWbomxpy9FtYvLKs7wCUs2a8RkITG+DFGO1DM9cr+E3/RgADRpFjrKVaJ1z6sjtEg==}
+    engines: {node: '>= 20.19.0'}
+
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -2042,8 +2049,25 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@opensea/seaport-js@4.0.5':
-    resolution: {integrity: sha512-hyJEHSCFmO7kv2G+ima0kCpt0kvLa6QOSHb1HJuLd8DS3bao0gOa/Q3AhM3xUqO6SZZ8aD9njhu1EDqjC/5pOw==}
+  '@opensea/api-types@0.2.3':
+    resolution: {integrity: sha512-6DNbw+TN2d4+TJkN1hrgxZgna7nytcqjlYgrGSG0+Ss1PxW0lraLtm0Hs6mcy6PmCaqvAixIl3c5mciiwNGkkg==}
+    engines: {node: '>=18.0.0'}
+
+  '@opensea/api-types@0.3.0':
+    resolution: {integrity: sha512-HTrAP7zR5aey4+XztBG8ynsWjjFy36OEauEwiNiBD2h5ZWnw6olGEWovn7DNTYBKGfO7tnzqhwafRY91lwsq4g==}
+    engines: {node: '>=18.0.0'}
+
+  '@opensea/sdk@10.4.0':
+    resolution: {integrity: sha512-Lf3yGj7pIurlUZNl/5B8HmPKBTREkJj585h8ZvMoVjklg7zB0c68fasp8mP91lpNp6y/txWXPGQWpgPePbarHA==}
+    engines: {node: '>=20.0.0'}
+    peerDependencies:
+      viem: ^2.0.0
+    peerDependenciesMeta:
+      viem:
+        optional: true
+
+  '@opensea/seaport-js@4.1.2':
+    resolution: {integrity: sha512-UFJ5f/4gqQEvRjjOJJhammWkOeOaXz8trxhquhzcbcqCNScR4+4MSLiSiBA5G7U89F8wN68B3F6AL5XUQTXYcg==}
     engines: {node: '>=20.0.0'}
 
   '@openzeppelin/merkle-tree@1.0.8':
@@ -6034,8 +6058,8 @@ packages:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
     engines: {node: '>= 8'}
 
-  merkletreejs@0.5.2:
-    resolution: {integrity: sha512-MHqclSWRSQQbYciUMALC3PZmE23NPf5IIYo+Z7qAz5jVcqgCB95L1T9jGcr+FtOj2Pa2/X26uG2Xzxs7FJccUg==}
+  merkletreejs@0.6.0:
+    resolution: {integrity: sha512-cyiratjG7fyHsa4DVfYVPxcoAh3zmUuOPItIfZex8f0pUVptNEmiiTOoeS0JnDDTWy+n3FKnI0K1gCzti7rGMg==}
     engines: {node: '>= 7.6.0'}
 
   metro-babel-transformer@0.83.2:
@@ -6441,9 +6465,10 @@ packages:
   openid-client@5.7.1:
     resolution: {integrity: sha512-jDBPgSVfTnkIh71Hg9pRvtJc6wTwqjRkN88+gCFtYWrlP4Yx2Dsrow8uPi3qLr/aeymPF3o2+dS+wOpglK04ew==}
 
-  opensea-js@8.0.11:
-    resolution: {integrity: sha512-WCF71YciBl0QwDs8lO0nTzFLaNoguHT8qmosZ1x3Z9Qk/f6iZlB4+DJiwOoVn9bHSNRY3bcwDfitevGm8c25hw==}
+  opensea-js@8.1.0:
+    resolution: {integrity: sha512-Ch87GTWqWkdWqPN2Kbk/hSMMAQUhA+q1XgoB3I2+OuW6Zl8/5U8LtVrwx28hgMiaR9t6XYlmt7eYcdCtDndqlw==}
     engines: {node: '>=20.0.0'}
+    deprecated: This package has been renamed to @opensea/sdk. Install @opensea/sdk instead.
 
   optimism@0.18.1:
     resolution: {integrity: sha512-mLXNwWPa9dgFyDqkNi54sjDyNJ9/fTI6WGBLgnXku1vdKY/jovHfZT5r+aiVeFFLOz+foPNOm5YJ4mqgld2GBQ==}
@@ -10670,6 +10695,8 @@ snapshots:
 
   '@noble/hashes@1.8.0': {}
 
+  '@noble/hashes@2.2.0': {}
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -10684,10 +10711,26 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@opensea/seaport-js@4.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
+  '@opensea/api-types@0.2.3': {}
+
+  '@opensea/api-types@0.3.0': {}
+
+  '@opensea/sdk@10.4.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)(viem@2.38.6(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76))':
+    dependencies:
+      '@noble/hashes': 2.2.0
+      '@opensea/api-types': 0.3.0
+      '@opensea/seaport-js': 4.1.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      ethers: 6.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+    optionalDependencies:
+      viem: 2.38.6(bufferutil@4.0.9)(typescript@5.9.2)(utf-8-validate@5.0.10)(zod@3.25.76)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  '@opensea/seaport-js@4.1.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)':
     dependencies:
       ethers: 6.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      merkletreejs: 0.5.2
+      merkletreejs: 0.6.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -16818,7 +16861,7 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  merkletreejs@0.5.2:
+  merkletreejs@0.6.0:
     dependencies:
       buffer-reverse: 1.0.1
       crypto-js: 4.2.0
@@ -17406,9 +17449,10 @@ snapshots:
       object-hash: 2.2.0
       oidc-token-hash: 5.2.0
 
-  opensea-js@8.0.11(bufferutil@4.0.9)(utf-8-validate@5.0.10):
+  opensea-js@8.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10):
     dependencies:
-      '@opensea/seaport-js': 4.0.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+      '@opensea/api-types': 0.2.3
+      '@opensea/seaport-js': 4.1.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       ethers: 6.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
     transitivePeerDependencies:
       - bufferutil
