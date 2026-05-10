@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OrderSide } from "opensea-js";
+import { OrderSide } from "@opensea/sdk";
 import { getOpenSeaSDK, collections } from "@/lib/marketplace";
 import { SEAPORT_ADDRESS, encodeSeaportCall } from "@/lib/seaport-encode";
 import type { CollectionKey } from "@/types/marketplace";

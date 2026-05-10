@@ -11,16 +11,19 @@ export const marketplaceConfig = {
   offersEnabled: false,
 } as const;
 
-import { OpenSeaSDK, Chain } from "opensea-js";
-import type {
-  Listing as OpenSeaListing,
-  Offer as OpenSeaOffer,
-  CollectionOffer as OpenSeaCollectionOffer,
-  Trait as OpenSeaTrait,
-  GetOffersResponse,
-} from "opensea-js/lib/api/types";
-// @ts-ignore - ethers is a dependency of opensea-js
+import {
+  OpenSeaSDK,
+  Chain,
+  type Listing as OpenSeaListing,
+  type Offer as OpenSeaOffer,
+  type CollectionOffer as OpenSeaCollectionOffer,
+  type Trait as OpenSeaTrait,
+  type GetOffersResponse,
+} from "@opensea/sdk";
 import { JsonRpcProvider, VoidSigner } from "ethers";
+
+/** `@opensea/sdk` types ethers via CommonJS entry; app resolves ESM — bridge at runtime is identical. */
+type OpenSeaSignerOrProvider = ConstructorParameters<typeof OpenSeaSDK>[0];
 import { unstable_cache } from "next/cache";
 import { frwcAddresses } from "@/config/addresses";
 import { logger } from "@/lib/logger";
@@ -200,7 +203,7 @@ export const getOpenSeaSDK = (accountAddress?: string) => {
     ? new VoidSigner(accountAddress, provider)
     : provider;
   return new OpenSeaSDK(
-    signerOrProvider,
+    signerOrProvider as unknown as OpenSeaSignerOrProvider,
     {
       apiKey: apiKey || undefined,
       chain: Chain.Mainnet,
@@ -215,7 +218,7 @@ export const getOpenSeaSDK = (accountAddress?: string) => {
 
 /**
  * Item offers for a single NFT. OpenSea no longer allows GET on
- * `/api/v2/orders/{chain}/seaport/offers` (405); opensea-js `getNFTOffers` still
+ * `/api/v2/orders/{chain}/seaport/offers` (405); the SDK's `getNFTOffers` still
  * calls that path, so we use the collection NFT offers route instead.
  */
 const fetchOffersForCollectionNft = async (

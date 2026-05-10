@@ -30,7 +30,7 @@ export default async function MarketplacePage() {
   let initialListings;
   let initialCollectionInfo;
 
-  // Cap SSR fetch latency. ethers' FetchRequest (used inside opensea-js)
+  // Cap SSR fetch latency. ethers' FetchRequest (used inside @opensea/sdk)
   // defaults to a 5-minute timeout, which would block this render when
   // OpenSea is slow. If we don't get listings in time, we fall through to
   // the client-side fetch path so the page renders quickly with a spinner.

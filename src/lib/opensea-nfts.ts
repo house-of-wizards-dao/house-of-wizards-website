@@ -2,9 +2,10 @@
  * OpenSea API utilities for fetching NFTs from all contracts
  */
 
-import { OpenSeaSDK, Chain } from "opensea-js";
-// @ts-ignore - ethers is a dependency of opensea-js
+import { OpenSeaSDK, Chain } from "@opensea/sdk";
 import { JsonRpcProvider } from "ethers";
+
+type OpenSeaSignerOrProvider = ConstructorParameters<typeof OpenSeaSDK>[0];
 import { frwcAddresses } from "@/config/addresses";
 import { logger } from "@/lib/logger";
 
@@ -35,7 +36,7 @@ const getOpenSeaSDK = () => {
   const apiKey = process.env.OPENSEA_API_KEY;
   const provider = new JsonRpcProvider("https://eth.llamarpc.com");
   return new OpenSeaSDK(
-    provider,
+    provider as unknown as OpenSeaSignerOrProvider,
     {
       apiKey: apiKey || undefined,
       chain: Chain.Mainnet,

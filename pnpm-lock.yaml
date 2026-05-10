@@ -119,6 +119,9 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      ethers:
+        specifier: ^6.16.0
+        version: 6.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       formidable:
         specifier: ^3.5.4
         version: 3.5.4
@@ -143,9 +146,6 @@ importers:
       next-themes:
         specifier: ^0.2.1
         version: 0.2.1(next@15.0.7(@babel/core@7.28.4)(babel-plugin-macros@3.1.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      opensea-js:
-        specifier: ^8.1.0
-        version: 8.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
       phaser:
         specifier: ^3.90.0
         version: 3.90.0
@@ -2048,10 +2048,6 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
-
-  '@opensea/api-types@0.2.3':
-    resolution: {integrity: sha512-6DNbw+TN2d4+TJkN1hrgxZgna7nytcqjlYgrGSG0+Ss1PxW0lraLtm0Hs6mcy6PmCaqvAixIl3c5mciiwNGkkg==}
-    engines: {node: '>=18.0.0'}
 
   '@opensea/api-types@0.3.0':
     resolution: {integrity: sha512-HTrAP7zR5aey4+XztBG8ynsWjjFy36OEauEwiNiBD2h5ZWnw6olGEWovn7DNTYBKGfO7tnzqhwafRY91lwsq4g==}
@@ -6465,11 +6461,6 @@ packages:
   openid-client@5.7.1:
     resolution: {integrity: sha512-jDBPgSVfTnkIh71Hg9pRvtJc6wTwqjRkN88+gCFtYWrlP4Yx2Dsrow8uPi3qLr/aeymPF3o2+dS+wOpglK04ew==}
 
-  opensea-js@8.1.0:
-    resolution: {integrity: sha512-Ch87GTWqWkdWqPN2Kbk/hSMMAQUhA+q1XgoB3I2+OuW6Zl8/5U8LtVrwx28hgMiaR9t6XYlmt7eYcdCtDndqlw==}
-    engines: {node: '>=20.0.0'}
-    deprecated: This package has been renamed to @opensea/sdk. Install @opensea/sdk instead.
-
   optimism@0.18.1:
     resolution: {integrity: sha512-mLXNwWPa9dgFyDqkNi54sjDyNJ9/fTI6WGBLgnXku1vdKY/jovHfZT5r+aiVeFFLOz+foPNOm5YJ4mqgld2GBQ==}
 
@@ -10710,8 +10701,6 @@ snapshots:
       fastq: 1.19.1
 
   '@nolyfill/is-core-module@1.0.39': {}
-
-  '@opensea/api-types@0.2.3': {}
 
   '@opensea/api-types@0.3.0': {}
 
@@ -17448,15 +17437,6 @@ snapshots:
       lru-cache: 6.0.0
       object-hash: 2.2.0
       oidc-token-hash: 5.2.0
-
-  opensea-js@8.1.0(bufferutil@4.0.9)(utf-8-validate@5.0.10):
-    dependencies:
-      '@opensea/api-types': 0.2.3
-      '@opensea/seaport-js': 4.1.2(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-      ethers: 6.16.0(bufferutil@4.0.9)(utf-8-validate@5.0.10)
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
 
   optimism@0.18.1:
     dependencies:

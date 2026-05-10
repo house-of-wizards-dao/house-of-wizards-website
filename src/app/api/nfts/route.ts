@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { OpenSeaSDK, Chain } from "opensea-js";
-// @ts-ignore - ethers is a dependency of opensea-js
+import { OpenSeaSDK, Chain } from "@opensea/sdk";
 import { JsonRpcProvider } from "ethers";
+
+type OpenSeaSignerOrProvider = ConstructorParameters<typeof OpenSeaSDK>[0];
 import { logger } from "@/lib/logger";
 
 export const GET = async (request: NextRequest) => {
@@ -50,7 +51,7 @@ export const GET = async (request: NextRequest) => {
     const apiKey = process.env.OPENSEA_API_KEY;
     const provider = new JsonRpcProvider("https://eth.llamarpc.com");
     const sdk = new OpenSeaSDK(
-      provider,
+      provider as unknown as OpenSeaSignerOrProvider,
       {
         apiKey: apiKey || undefined,
         chain: Chain.Base,
