@@ -5,12 +5,9 @@ import { Calendar, AtSign } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { notFound } from "next/navigation";
 
-import {
-  fetchCultContentById,
-  extractTwitterUrls,
-  extractTweetId,
-} from "@/lib/server/cult-content";
-import { EmbeddedTweet } from "@/components/news/EmbeddedTweet";
+import { fetchCultContentById } from "@/lib/server/cult-content";
+import { getTweetIdsFromText } from "@/lib/server/news-tweets";
+import { EmbeddedTweets } from "@/components/news/EmbeddedTweets";
 
 /**
  * Formats the author handle for display
@@ -61,10 +58,7 @@ export default async function NewsDetailPage({
     item.author,
   );
   const formattedDate = formatDate(item.date);
-  const twitterUrls = extractTwitterUrls(item.text);
-  const tweetIds = twitterUrls
-    .map(extractTweetId)
-    .filter((id): id is string => id !== null);
+  const tweetIds = getTweetIdsFromText(item.text, Number.MAX_SAFE_INTEGER);
 
   return (
     <div className="flex flex-col items-center gap-4 max-w-4xl mx-auto min-h-screen py-12 px-4">
@@ -188,9 +182,7 @@ export default async function NewsDetailPage({
         {/* Embedded tweets */}
         {tweetIds.length > 0 && (
           <div className="mt-8 space-y-4">
-            {tweetIds.map((tweetId) => (
-              <EmbeddedTweet key={tweetId} id={tweetId} />
-            ))}
+            <EmbeddedTweets ids={tweetIds} />
           </div>
         )}
       </article>

@@ -1,21 +1,21 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { Calendar, AtSign, ExternalLink } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
-import {
-  CultContentDbItem,
-  extractTwitterUrls,
-  extractTweetId,
-} from "@/lib/server/cult-content";
-import { EmbeddedTweet } from "./EmbeddedTweet";
+import type { CultContentDbItem } from "@/lib/server/cult-content";
+import type { NewsCardVariant } from "@/lib/server/news-tweets";
+import { removeTwitterUrls, truncateText } from "@/lib/news-card";
 
 type NewsCardProps = {
   item: CultContentDbItem;
-  variant?: "highlight" | "large" | "medium" | "small";
+  variant?: NewsCardVariant;
+  embeddedTweets?: ReactNode;
+  hasEmbeddedTweets?: boolean;
 };
 
 /**
@@ -47,64 +47,39 @@ const formatDate = (isoDate: string): string => {
   }
 };
 
-/**
- * Removes Twitter URLs from text to avoid duplication with embeds
- * Removes the URL plus any query params and broken line continuations
- */
-const removeTwitterUrls = (text: string): string => {
-  return (
-    text
-      // Remove Twitter/X URLs + query params + any broken continuation on next line
-      .replace(
-        /https?:\/\/(?:twitter\.com|x\.com)\/\w+\/status\/\d+[^\s]*(?:\s+[a-zA-Z0-9]{1,5}(?=\s|$))?/g,
-        "",
-      )
-      // Clean up whitespace
-      .replace(/\s+/g, " ")
-      .trim()
-  );
-};
-
-/**
- * Truncates text to a certain length
- */
-const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text;
-  return text.slice(0, maxLength).trim() + "...";
-};
-
 const variantStyles = {
   highlight: {
     padding: "p-8",
     titleSize: "text-2xl lg:text-3xl",
     textSize: "text-base",
     showFullContent: true,
-    maxTweets: 2,
   },
   large: {
     padding: "p-6",
     titleSize: "text-xl",
     textSize: "text-sm",
     showFullContent: true,
-    maxTweets: 1,
   },
   medium: {
     padding: "p-5",
     titleSize: "text-lg",
     textSize: "text-sm",
     showFullContent: false,
-    maxTweets: 1,
   },
   small: {
     padding: "p-4",
     titleSize: "text-base",
     textSize: "text-sm",
     showFullContent: false,
-    maxTweets: 0,
   },
 };
 
-export const NewsCard = ({ item, variant = "medium" }: NewsCardProps) => {
+export const NewsCard = ({
+  item,
+  variant = "medium",
+  embeddedTweets,
+  hasEmbeddedTweets = false,
+}: NewsCardProps) => {
   const router = useRouter();
 
   // Posts with titles should be large (only upgrade from medium, not small/highlight)
@@ -115,11 +90,6 @@ export const NewsCard = ({ item, variant = "medium" }: NewsCardProps) => {
     item.author,
   );
   const formattedDate = formatDate(item.date);
-  const twitterUrls = extractTwitterUrls(item.text);
-  const tweetIds = twitterUrls
-    .map(extractTweetId)
-    .filter((id): id is string => id !== null)
-    .slice(0, styles.maxTweets);
   const cleanedText = removeTwitterUrls(item.text);
 
   // For smaller cards, truncate the content
@@ -184,7 +154,7 @@ export const NewsCard = ({ item, variant = "medium" }: NewsCardProps) => {
           </div>
 
           {/* External link indicator */}
-          {tweetIds.length > 0 && (
+          {hasEmbeddedTweets && (
             <ExternalLink className="w-3.5 h-3.5 text-neutral-600 group-hover:text-brand-500/50 transition-colors" />
           )}
         </div>
@@ -259,15 +229,13 @@ export const NewsCard = ({ item, variant = "medium" }: NewsCardProps) => {
           </div>
         )}
 
-        {/* Embedded tweets */}
-        {tweetIds.length > 0 && (
+        {/* Embedded tweets (server-rendered, passed as slot) */}
+        {embeddedTweets ? (
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div className="mt-4 space-y-3" onClick={(e) => e.stopPropagation()}>
-            {tweetIds.map((tweetId) => (
-              <EmbeddedTweet key={tweetId} id={tweetId} />
-            ))}
+            {embeddedTweets}
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Hover accent */}

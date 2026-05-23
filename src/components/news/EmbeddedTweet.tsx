@@ -1,26 +1,25 @@
-"use client";
+import { getTweet } from "react-tweet/api";
+import { TweetNotFound } from "react-tweet";
+import "react-tweet/theme.css";
 
-import dynamic from "next/dynamic";
-import { Spinner } from "@nextui-org/spinner";
+import { normalizeTweet } from "@/lib/twitter/normalize-tweet";
 
-// Dynamically import Tweet with no SSR to avoid RSC bundler issues
-const Tweet = dynamic(() => import("react-tweet").then((mod) => mod.Tweet), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center py-8 bg-neutral-900/50 rounded-xl border border-neutral-800/50">
-      <Spinner size="sm" color="secondary" />
-    </div>
-  ),
-});
+import { TweetEmbed } from "./TweetEmbed";
 
 type EmbeddedTweetProps = {
   id: string;
 };
 
-export const EmbeddedTweet = ({ id }: EmbeddedTweetProps) => {
+export const EmbeddedTweet = async ({ id }: EmbeddedTweetProps) => {
+  const raw = await getTweet(id);
+
+  if (!raw || raw.__typename !== "Tweet") {
+    return <TweetNotFound />;
+  }
+
   return (
     <div className="rounded-xl overflow-hidden [&>div]:!max-w-full [&_.react-tweet-theme]:!max-w-full">
-      <Tweet id={id} />
+      <TweetEmbed tweet={normalizeTweet(raw)} />
     </div>
   );
 };

@@ -4,7 +4,7 @@ import { Spinner } from "@nextui-org/spinner";
 import { Sparkles } from "lucide-react";
 
 import { LoreWidget } from "@/app/(landing)/LoreWidget";
-import { NewsCard } from "@/components/news/NewsCard";
+import { NewsCardWithTweets } from "@/components/news/NewsCardWithTweets";
 import {
   fetchCultContentChronicle,
   CultContentDbItem,
@@ -71,7 +71,7 @@ const NewsGrid = ({ items }: { items: CultContentDbItem[] }) => {
       {/* Top row: Highlight card + LoreWidget side by side */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-stretch">
         <div className="lg:col-span-2 h-full">
-          <NewsCard item={highlightItem} variant="highlight" />
+          <NewsCardWithTweets item={highlightItem} variant="highlight" />
         </div>
         <div className="lg:col-span-1 h-full min-h-0 lg:relative">
           <div className="h-full min-h-0 lg:absolute lg:inset-0">
@@ -84,7 +84,10 @@ const NewsGrid = ({ items }: { items: CultContentDbItem[] }) => {
       <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 lg:gap-4">
         {regularItems.map((item, index) => (
           <div key={item.id} className="break-inside-avoid mb-3 lg:mb-4">
-            <NewsCard item={item} variant={getCardVariant(index + 1)} />
+            <NewsCardWithTweets
+              item={item}
+              variant={getCardVariant(index + 1)}
+            />
           </div>
         ))}
       </div>
