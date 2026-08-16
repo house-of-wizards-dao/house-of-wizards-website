@@ -1,3 +1,6 @@
+packages:
+  - .
+
 allowBuilds:
   '@opensea/seaport-js': false
   bufferutil: true
