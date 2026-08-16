@@ -4,11 +4,13 @@
  * POST /api/cms/upload - Upload image, audio, or video to Supabase storage
  */
 import { NextRequest, NextResponse } from "next/server";
+
+import { storageBucketNames } from "@/config/supabase";
 import { getSupabaseClient } from "@/lib/supabase";
 import { requireCMSUser, isAuthError } from "@/lib/cms-auth";
 import { logger } from "@/lib/logger";
 
-const BUCKET_NAME = "cult-content-chronicle";
+const BUCKET_NAME = storageBucketNames.IMAGES;
 
 // Allowed MIME types
 const ALLOWED_IMAGE_TYPES = [

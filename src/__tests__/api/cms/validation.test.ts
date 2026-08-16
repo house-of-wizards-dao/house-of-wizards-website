@@ -8,6 +8,8 @@
 import {
   CreateNewsInput,
   UpdateNewsInput,
+  CreateDocumentInput,
+  UpdateDocumentInput,
   CreateUserInput,
   UpdateUserInput,
 } from "@/types/cms";
@@ -173,6 +175,92 @@ describe("CMS API Input Validation", () => {
         status: "published",
       };
       expect(validateUpdateNewsInput(input)).toHaveLength(0);
+    });
+  });
+
+  describe("Document input validation", () => {
+    const validateDocumentInput = (
+      input: Partial<CreateDocumentInput> | UpdateDocumentInput,
+      requireAllFields: boolean,
+    ): string[] => {
+      const errors: string[] = [];
+      const requiredFields = ["title", "category", "text", "author"] as const;
+
+      for (const field of requiredFields) {
+        const value = input[field];
+        if (
+          (requireAllFields && value === undefined) ||
+          (value !== undefined && value.trim() === "")
+        ) {
+          errors.push(`${field} is required`);
+        }
+      }
+
+      if (
+        (requireAllFields && input.category_order === undefined) ||
+        (input.category_order !== undefined &&
+          (!Number.isInteger(input.category_order) || input.category_order < 0))
+      ) {
+        errors.push("category_order must be a non-negative integer");
+      }
+
+      if (
+        input.status !== undefined &&
+        !["draft", "published"].includes(input.status)
+      ) {
+        errors.push("Invalid status");
+      }
+
+      return errors;
+    };
+
+    it("accepts a complete document", () => {
+      const input: CreateDocumentInput = {
+        title: "DAO Charter",
+        category: "Governance",
+        category_order: 2,
+        text: "Charter content",
+        author: "@council",
+        status: "published",
+      };
+
+      expect(validateDocumentInput(input, true)).toHaveLength(0);
+    });
+
+    it.each(["title", "category", "text", "author"] as const)(
+      "requires %s when creating a document",
+      (field) => {
+        const input: Partial<CreateDocumentInput> = {
+          title: "DAO Charter",
+          category: "Governance",
+          category_order: 2,
+          text: "Charter content",
+          author: "@council",
+        };
+        delete input[field];
+
+        expect(validateDocumentInput(input, true)).toContain(
+          `${field} is required`,
+        );
+      },
+    );
+
+    it("rejects a blank category update", () => {
+      expect(validateDocumentInput({ category: "   " }, false)).toContain(
+        "category is required",
+      );
+    });
+
+    it("rejects a negative category order", () => {
+      expect(validateDocumentInput({ category_order: -1 }, false)).toContain(
+        "category_order must be a non-negative integer",
+      );
+    });
+
+    it("accepts a partial document update", () => {
+      expect(
+        validateDocumentInput({ category: "Treasury" }, false),
+      ).toHaveLength(0);
     });
   });
 

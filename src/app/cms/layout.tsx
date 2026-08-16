@@ -76,6 +76,12 @@ export default function CMSLayout({ children }: { children: ReactNode }) {
                 >
                   News
                 </button>
+                <button
+                  onClick={() => router.push("/cms/documents")}
+                  className="px-3 py-1.5 text-sm text-neutral-300 hover:text-brand-400 hover:bg-neutral-800 rounded-md transition-colors"
+                >
+                  Documents
+                </button>
                 {user?.role === "admin" && (
                   <button
                     onClick={() => router.push("/cms/users")}

@@ -110,6 +110,10 @@ const daoDropdown: NavDropdown = {
       href: "/about",
     },
     {
+      label: "Documents",
+      href: "/documents",
+    },
+    {
       label: "Vote",
       href: "https://snapshot.org/#/forgottengov.eth",
       external: true,

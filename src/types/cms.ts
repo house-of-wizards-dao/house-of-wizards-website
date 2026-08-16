@@ -39,6 +39,32 @@ export type CreateNewsInput = {
 
 export type UpdateNewsInput = Partial<CreateNewsInput>;
 
+export type DocumentItem = {
+  id: number;
+  text: string;
+  date: string;
+  author: string;
+  author_id: string | null;
+  category: string;
+  category_order: number;
+  title: string;
+  status: NewsStatus;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CreateDocumentInput = {
+  text: string;
+  title: string;
+  author: string;
+  category: string;
+  category_order: number;
+  status?: NewsStatus;
+  date?: string;
+};
+
+export type UpdateDocumentInput = Partial<CreateDocumentInput>;
+
 export type CreateUserInput = {
   eth_address: string;
   twitter_handle?: string;
