@@ -41,6 +41,8 @@ export type UpdateNewsInput = Partial<CreateNewsInput>;
 
 export type DocumentItem = {
   id: number;
+  parent_id: number | null;
+  source_url: string | null;
   text: string;
   date: string;
   author: string;
@@ -54,6 +56,8 @@ export type DocumentItem = {
 };
 
 export type CreateDocumentInput = {
+  parent_id?: number | null;
+  source_url?: string | null;
   text: string;
   title: string;
   author: string;

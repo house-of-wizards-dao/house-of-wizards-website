@@ -9,6 +9,14 @@ import type { CreateDocumentInput, DocumentItem } from "@/types/cms";
 
 const VALID_STATUSES = ["draft", "published"] as const;
 
+const isValidSourceUrl = (value: string): boolean => {
+  try {
+    return ["http:", "https:"].includes(new URL(value.trim()).protocol);
+  } catch {
+    return false;
+  }
+};
+
 export const GET = async () => {
   const authResult = await requireCMSUser();
   if (isAuthError(authResult)) {
@@ -82,6 +90,26 @@ export const POST = async (request: NextRequest) => {
   if (body.status && !VALID_STATUSES.includes(body.status)) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
+  if (
+    body.parent_id !== undefined &&
+    body.parent_id !== null &&
+    (!Number.isInteger(body.parent_id) || body.parent_id <= 0)
+  ) {
+    return NextResponse.json(
+      { error: "parent_id must be a positive integer or null" },
+      { status: 400 },
+    );
+  }
+  if (
+    body.source_url !== undefined &&
+    body.source_url !== null &&
+    !isValidSourceUrl(body.source_url)
+  ) {
+    return NextResponse.json(
+      { error: "source_url must be an HTTP(S) URL or null" },
+      { status: 400 },
+    );
+  }
 
   const now = new Date().toISOString();
   const supabase = getSupabaseClient();
@@ -91,6 +119,8 @@ export const POST = async (request: NextRequest) => {
       title: body.title.trim(),
       category: body.category.trim(),
       category_order: body.category_order,
+      parent_id: body.parent_id ?? null,
+      source_url: body.source_url?.trim() || null,
       text: body.text.trim(),
       author: body.author.trim(),
       author_id: authResult.user.id,

@@ -24,14 +24,18 @@ const DocumentPage = async ({ params }: PageProps) => {
   const document = await fetchPublishedDocumentById(documentId);
   if (!document) notFound();
 
+  const parent = document.parent_id
+    ? await fetchPublishedDocumentById(document.parent_id)
+    : null;
+
   return (
     <div className="min-h-screen px-4 py-12 lg:px-8">
       <article className="mx-auto max-w-4xl">
         <Link
-          href="/documents"
+          href={parent ? `/documents/${parent.id}` : "/documents"}
           className="mb-10 inline-flex text-sm text-brand-400 hover:text-brand-300"
         >
-          ← Back to documents
+          ← Back to {parent?.title ?? "documents"}
         </Link>
 
         <p className="mb-3 text-sm uppercase tracking-[0.2em] text-brand-400">

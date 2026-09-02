@@ -9,6 +9,14 @@ import type { DocumentItem, UpdateDocumentInput } from "@/types/cms";
 
 type RouteParams = { params: Promise<{ id: string }> };
 
+const isValidSourceUrl = (value: string): boolean => {
+  try {
+    return ["http:", "https:"].includes(new URL(value.trim()).protocol);
+  } catch {
+    return false;
+  }
+};
+
 const getDocument = async (id: number): Promise<DocumentItem | null> => {
   const { data, error } = await getSupabaseClient()
     .from(tableNames.DOCUMENTS)
@@ -110,14 +118,44 @@ export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
   ) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
   }
+  if (
+    body.parent_id !== undefined &&
+    body.parent_id !== null &&
+    (!Number.isInteger(body.parent_id) || body.parent_id <= 0)
+  ) {
+    return NextResponse.json(
+      { error: "parent_id must be a positive integer or null" },
+      { status: 400 },
+    );
+  }
+  if (body.parent_id === result.documentId) {
+    return NextResponse.json(
+      { error: "A document cannot be its own parent" },
+      { status: 400 },
+    );
+  }
+  if (
+    body.source_url !== undefined &&
+    body.source_url !== null &&
+    !isValidSourceUrl(body.source_url)
+  ) {
+    return NextResponse.json(
+      { error: "source_url must be an HTTP(S) URL or null" },
+      { status: 400 },
+    );
+  }
 
-  const updates: Record<string, string | number> = {
+  const updates: Record<string, string | number | null> = {
     updated_at: new Date().toISOString(),
   };
   if (body.title !== undefined) updates.title = body.title.trim();
   if (body.category !== undefined) updates.category = body.category.trim();
   if (body.category_order !== undefined) {
     updates.category_order = body.category_order;
+  }
+  if (body.parent_id !== undefined) updates.parent_id = body.parent_id;
+  if (body.source_url !== undefined) {
+    updates.source_url = body.source_url?.trim() || null;
   }
   if (body.text !== undefined) updates.text = body.text.trim();
   if (body.author !== undefined) updates.author = body.author.trim();

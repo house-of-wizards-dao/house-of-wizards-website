@@ -13,6 +13,7 @@ const fetchPublishedDocumentsFromDb = async (): Promise<DocumentItem[]> => {
     .from(tableNames.DOCUMENTS)
     .select("*")
     .eq("status", "published")
+    .is("parent_id", null)
     .order("category_order", { ascending: true })
     .order("category", { ascending: true })
     .order("date", { ascending: false })
