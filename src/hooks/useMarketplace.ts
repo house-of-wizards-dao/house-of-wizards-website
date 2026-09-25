@@ -85,13 +85,17 @@ const fetchSellItems = async (
  */
 const fetchNFTXListings = async (
   collection: CollectionKey,
+  fresh = false,
 ): Promise<{
   listings: MarketplaceItem[];
   vault: NFTXVaultInfo | null;
   hasVault: boolean;
 }> => {
   const params = new URLSearchParams({ collection });
-  const response = await fetch(`/api/marketplace/nftx?${params}`);
+  if (fresh) params.set("refresh", "true");
+  const response = await fetch(`/api/marketplace/nftx?${params}`, {
+    cache: fresh ? "no-store" : "default",
+  });
   const data = await response.json();
 
   if (!response.ok) {
@@ -549,23 +553,35 @@ export const useNFTXListings = (
   const { autoFetch = true } = options || {};
   const queryClient = useQueryClient();
 
-  const { data, isLoading, error, refetch, isFetched } = useQuery({
+  const { data, isFetching, error, isFetched } = useQuery({
     queryKey: ["marketplace", "nftx", collection],
     queryFn: () => fetchNFTXListings(collection!),
     enabled: autoFetch && !!collection,
     staleTime: 30_000, // Consider data fresh for 30 seconds
   });
 
-  const refresh = useCallback(() => {
-    queryClient.invalidateQueries({
-      queryKey: ["marketplace", "nftx", collection],
-    });
-    refetch();
-  }, [queryClient, collection, refetch]);
+  const refresh = useCallback(async () => {
+    if (!collection) return;
+    const queryKey = ["marketplace", "nftx", collection];
+    await queryClient.cancelQueries({ queryKey });
+    try {
+      await queryClient.fetchQuery({
+        queryKey,
+        queryFn: () => fetchNFTXListings(collection, true),
+        staleTime: 0,
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["marketplace", "nftx-quote", collection],
+      });
+    } catch (error) {
+      // React Query exposes the failure through the hook's error state.
+      logger.error("Failed to refresh NFTX listings", error);
+    }
+  }, [queryClient, collection]);
 
   return {
     items: data?.listings || [],
-    isLoading,
+    isLoading: isFetching,
     error: error?.message || null,
     vaultInfo: data?.vault || null,
     hasVault: data?.hasVault || false,

@@ -181,7 +181,7 @@ const fetchVaultTokenIds = async (
 
       const response = await fetch(
         `https://api.opensea.io/api/v2/chain/ethereum/account/${vaultAddress}/nfts?${params}`,
-        { headers },
+        { headers, cache: "no-store" },
       );
 
       if (!response.ok) {
@@ -219,63 +219,67 @@ const fetchVaultTokenIds = async (
 /**
  * Fetch vault holdings via OpenSea API (cached)
  */
-export const fetchVaultHoldings = unstable_cache(
-  async (vaultConfig: NFTXVaultConfig): Promise<NFTXVaultData | null> => {
-    try {
-      const collection = collections[vaultConfig.collectionKey];
-      if (!collection) {
-        logger.warn(`Collection not found for ${vaultConfig.collectionKey}`);
-        return null;
-      }
-
-      // Fetch token IDs via OpenSea API (filtered by collection)
-      const tokenIds = await fetchVaultTokenIds(
-        collection.slug,
-        collection.address,
-        vaultConfig.vaultAddress,
-      );
-
-      if (tokenIds.length === 0) {
-        logger.warn(`No tokens found in NFTX vault ${vaultConfig.symbol}`);
-        return null;
-      }
-
-      const holdings: NFTXHolding[] = tokenIds.map((tokenId) => ({
-        tokenId,
-        amount: 1,
-        dateAdded: 0, // Not available from OpenSea
-      }));
-      const [randomRedeemFee, targetRedeemFee] = await Promise.all([
-        ethClient.readContract({
-          address: vaultConfig.vaultAddress as `0x${string}`,
-          abi: NFTX_VAULT_ABI,
-          functionName: "randomRedeemFee",
-        }),
-        ethClient.readContract({
-          address: vaultConfig.vaultAddress as `0x${string}`,
-          abi: NFTX_VAULT_ABI,
-          functionName: "targetRedeemFee",
-        }),
-      ]);
-
-      return {
-        vault: vaultConfig,
-        holdings,
-        totalHoldings: holdings.length,
-        fees: {
-          randomRedeemFee: randomRedeemFee.toString(),
-          targetRedeemFee: targetRedeemFee.toString(),
-        },
-        usesFactoryFees: true,
-      };
-    } catch (error) {
-      logger.error(
-        `Error fetching NFTX vault holdings for ${vaultConfig.symbol}`,
-        error,
-      );
+const fetchVaultHoldingsFresh = async (
+  vaultConfig: NFTXVaultConfig,
+): Promise<NFTXVaultData | null> => {
+  try {
+    const collection = collections[vaultConfig.collectionKey];
+    if (!collection) {
+      logger.warn(`Collection not found for ${vaultConfig.collectionKey}`);
       return null;
     }
-  },
+
+    // Fetch token IDs via OpenSea API (filtered by collection)
+    const tokenIds = await fetchVaultTokenIds(
+      collection.slug,
+      collection.address,
+      vaultConfig.vaultAddress,
+    );
+
+    if (tokenIds.length === 0) {
+      logger.warn(`No tokens found in NFTX vault ${vaultConfig.symbol}`);
+      return null;
+    }
+
+    const holdings: NFTXHolding[] = tokenIds.map((tokenId) => ({
+      tokenId,
+      amount: 1,
+      dateAdded: 0, // Not available from OpenSea
+    }));
+    const [randomRedeemFee, targetRedeemFee] = await Promise.all([
+      ethClient.readContract({
+        address: vaultConfig.vaultAddress as `0x${string}`,
+        abi: NFTX_VAULT_ABI,
+        functionName: "randomRedeemFee",
+      }),
+      ethClient.readContract({
+        address: vaultConfig.vaultAddress as `0x${string}`,
+        abi: NFTX_VAULT_ABI,
+        functionName: "targetRedeemFee",
+      }),
+    ]);
+
+    return {
+      vault: vaultConfig,
+      holdings,
+      totalHoldings: holdings.length,
+      fees: {
+        randomRedeemFee: randomRedeemFee.toString(),
+        targetRedeemFee: targetRedeemFee.toString(),
+      },
+      usesFactoryFees: true,
+    };
+  } catch (error) {
+    logger.error(
+      `Error fetching NFTX vault holdings for ${vaultConfig.symbol}`,
+      error,
+    );
+    return null;
+  }
+};
+
+export const fetchVaultHoldings = unstable_cache(
+  fetchVaultHoldingsFresh,
   ["nftx-vault-holdings"],
   {
     revalidate: 300, // 5 minutes
@@ -368,34 +372,38 @@ const weiToEthString = (wei: bigint, decimals: number = 6): string => {
 /**
  * Fetch vToken price in ETH from SushiSwap (cached)
  */
-export const fetchVTokenPrice = unstable_cache(
-  async (vTokenAddress: string): Promise<string | null> => {
-    try {
-      // Get price for 1 vToken (1e18 wei) in ETH
-      const oneToken = BigInt("1000000000000000000"); // 1e18
+const fetchVTokenPriceFresh = async (
+  vTokenAddress: string,
+): Promise<string | null> => {
+  try {
+    // Get price for 1 vToken (1e18 wei) in ETH
+    const oneToken = BigInt("1000000000000000000"); // 1e18
 
-      // Path: vToken -> WETH
-      const amounts = await getAmountsOut(oneToken, [
-        vTokenAddress,
-        WETH_ADDRESS,
-      ]);
+    // Path: vToken -> WETH
+    const amounts = await getAmountsOut(oneToken, [
+      vTokenAddress,
+      WETH_ADDRESS,
+    ]);
 
-      if (!amounts || amounts.length < 2) {
-        logger.warn(`Could not get SushiSwap price for ${vTokenAddress}`);
-        return null;
-      }
-
-      // amounts[1] is the WETH amount for 1 vToken
-      const ethAmount = amounts[1];
-      // Convert to decimal string (18 decimals)
-      const ethPrice = Number(ethAmount) / 1e18;
-
-      return ethPrice.toFixed(6);
-    } catch (error) {
-      logger.error(`Error fetching vToken price for ${vTokenAddress}`, error);
+    if (!amounts || amounts.length < 2) {
+      logger.warn(`Could not get SushiSwap price for ${vTokenAddress}`);
       return null;
     }
-  },
+
+    // amounts[1] is the WETH amount for 1 vToken
+    const ethAmount = amounts[1];
+    // Convert to decimal string (18 decimals)
+    const ethPrice = Number(ethAmount) / 1e18;
+
+    return ethPrice.toFixed(6);
+  } catch (error) {
+    logger.error(`Error fetching vToken price for ${vTokenAddress}`, error);
+    return null;
+  }
+};
+
+export const fetchVTokenPrice = unstable_cache(
+  fetchVTokenPriceFresh,
   ["nftx-vtoken-price"],
   {
     revalidate: 60, // 1 minute - prices change more frequently
@@ -502,6 +510,7 @@ export const quoteNFTXBatch = async (
  */
 export const fetchNFTXListings = async (
   collectionKey: CollectionKey,
+  fresh = false,
 ): Promise<MarketplaceItem[]> => {
   const vaultConfig = getNFTXVault(collectionKey);
   if (!vaultConfig) {
@@ -515,8 +524,12 @@ export const fetchNFTXListings = async (
 
   // Fetch vault holdings and vToken price in parallel
   const [vaultData, vTokenPriceEth] = await Promise.all([
-    fetchVaultHoldings(vaultConfig),
-    fetchVTokenPrice(vaultConfig.vTokenAddress),
+    fresh
+      ? fetchVaultHoldingsFresh(vaultConfig)
+      : fetchVaultHoldings(vaultConfig),
+    fresh
+      ? fetchVTokenPriceFresh(vaultConfig.vTokenAddress)
+      : fetchVTokenPrice(vaultConfig.vTokenAddress),
   ]);
 
   if (!vaultData || !vTokenPriceEth) {

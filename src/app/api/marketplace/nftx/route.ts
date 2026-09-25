@@ -8,8 +8,8 @@ import { collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
 import { logger } from "@/lib/logger";
 
-// Revalidate every 2 minutes (NFTX pool changes less frequently)
-export const revalidate = 120;
+// Cache ordinary responses explicitly, but always execute manual refreshes.
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/marketplace/nftx
@@ -17,10 +17,12 @@ export const revalidate = 120;
  *
  * Query params:
  * - collection: CollectionKey (required)
+ * - refresh: "true" to bypass holdings and price caches
  */
 export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = request.nextUrl;
+    const fresh = searchParams.get("refresh") === "true";
     const collectionKey = searchParams.get(
       "collection",
     ) as CollectionKey | null;
@@ -48,14 +50,16 @@ export const GET = async (request: NextRequest) => {
         },
         {
           headers: {
-            "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=60",
+            "Cache-Control": fresh
+              ? "no-store"
+              : "public, s-maxage=3600, stale-while-revalidate=60",
           },
         },
       );
     }
 
     // Fetch NFTX listings (uses local wizard data for images/names)
-    const items = await fetchNFTXListings(collectionKey);
+    const items = await fetchNFTXListings(collectionKey, fresh);
 
     return NextResponse.json(
       {
@@ -71,7 +75,9 @@ export const GET = async (request: NextRequest) => {
       },
       {
         headers: {
-          "Cache-Control": "public, s-maxage=120, stale-while-revalidate=60",
+          "Cache-Control": fresh
+            ? "no-store"
+            : "public, s-maxage=120, stale-while-revalidate=60",
         },
       },
     );
