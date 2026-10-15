@@ -287,7 +287,11 @@ export const ArtGallery = ({
                       />
                     ) : (
                       <div className="art-placeholder">
-                        <span>WORDS OF MAGIC</span>
+                        <span>
+                          {work.external_url
+                            ? "WORDS OF MAGIC"
+                            : "ORIGINAL ARTWORK"}
+                        </span>
                         <strong>{work.title}</strong>
                       </div>
                     )}

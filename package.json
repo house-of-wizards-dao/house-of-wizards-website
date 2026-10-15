@@ -74,6 +74,7 @@
     "rehype-raw": "^7.0.0",
     "rehype-unwrap-images": "^1.0.0",
     "remark-breaks": "^4.0.0",
+    "sharp": "0.33.5",
     "siwe": "^3.0.0",
     "tailwind-merge": "^2.2.0",
     "uuid": "^11.0.2",

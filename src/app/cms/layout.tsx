@@ -69,7 +69,7 @@ export default function CMSLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <h1 className="text-xl font-heading text-brand-400">CMS</h1>
-              <nav className="flex items-center gap-2">
+              <nav className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => router.push("/cms")}
                   className="px-3 py-1.5 text-sm text-neutral-300 hover:text-brand-400 hover:bg-neutral-800 rounded-md transition-colors"
@@ -81,6 +81,18 @@ export default function CMSLayout({ children }: { children: ReactNode }) {
                   className="px-3 py-1.5 text-sm text-neutral-300 hover:text-brand-400 hover:bg-neutral-800 rounded-md transition-colors"
                 >
                   Documents
+                </button>
+                <button
+                  onClick={() => router.push("/cms/art/artworks")}
+                  className="px-3 py-1.5 text-sm text-neutral-300 hover:text-brand-400 hover:bg-neutral-800 rounded-md transition-colors"
+                >
+                  Artworks
+                </button>
+                <button
+                  onClick={() => router.push("/cms/art/artists")}
+                  className="px-3 py-1.5 text-sm text-neutral-300 hover:text-brand-400 hover:bg-neutral-800 rounded-md transition-colors"
+                >
+                  Artists
                 </button>
                 {user?.role === "admin" && (
                   <button

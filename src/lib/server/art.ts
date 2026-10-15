@@ -35,7 +35,8 @@ const readCatalog = async (): Promise<ArtCatalog> => {
   });
   artworks.forEach((a) =>
     a.commission_artwork_files.forEach((f) => {
-      if (f.variant !== "original") add(f.bucket_id, f.object_path);
+      if (f.variant !== "original" || /^(video|audio)\//.test(f.mime_type))
+        add(f.bucket_id, f.object_path);
     }),
   );
   const urls = new Map<string, string>();

@@ -2,7 +2,9 @@ import type { Artwork, ArtFile } from "@/types/art";
 
 export const coverFile = (artwork: Artwork): ArtFile | undefined =>
   artwork.files.find((f) => f.variant === "thumbnail" && f.url) ??
-  artwork.files.find((f) => f.variant === "web" && f.url);
+  artwork.files.find(
+    (f) => f.variant === "web" && f.url && f.mime_type.startsWith("image/"),
+  );
 
 export const filterArtworks = (
   artworks: Artwork[],

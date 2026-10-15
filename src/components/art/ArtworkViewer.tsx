@@ -28,7 +28,11 @@ export const ArtworkViewer = ({
   const preview =
     artwork.files.find(
       (f) => f.variant === "web" && f.original_file_id === original?.id,
-    ) ?? artwork.files.find((f) => f.variant === "web");
+    ) ??
+    artwork.files.find((f) => f.variant === "web") ??
+    (original && /^(video|audio)\//.test(original.mime_type)
+      ? original
+      : undefined);
   const image = preview?.url;
   return (
     <div className="art-viewer">
@@ -83,7 +87,13 @@ export const ArtworkViewer = ({
           )
         ) : (
           <div className="art-writing">
-            <span>From the Book of Lore</span>
+            <span>
+              {artwork.external_url
+                ? "From the Book of Lore"
+                : original?.mime_type === "application/pdf"
+                  ? "PDF artwork"
+                  : "Original artwork"}
+            </span>
             <h2>{artwork.title}</h2>
             {artwork.external_url && (
               <a href={artwork.external_url} target="_blank" rel="noreferrer">
