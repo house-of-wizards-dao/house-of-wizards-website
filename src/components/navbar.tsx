@@ -172,6 +172,10 @@ const navigationItems: NavItem[] = [
     label: "Characters",
     href: "/characters",
   },
+  {
+    label: "Art",
+    href: "/art",
+  },
   shopDropdown,
   magicDropdown,
   toolsDropdown,
