@@ -356,9 +356,17 @@ export const orderToOffer = (
   const params = order.protocol_data?.parameters;
   const offerItem = params?.offer?.[0];
 
-  // Prefer the Seaport offer item because it is the exact ERC20 amount that
-  // the bidder is offering. The API price object is display metadata.
-  let amount = offerItem?.startAmount || priceData?.value || "0";
+  // Seaport amounts cover the whole order, including every NFT requested by
+  // a collection bid. Cards display the amount for selling one NFT.
+  const quantity = getBidQuantity(params);
+  let amount = priceData?.value || "0";
+  if (offerItem?.startAmount && quantity !== null) {
+    try {
+      amount = (BigInt(offerItem.startAmount) / quantity).toString();
+    } catch {
+      // Keep the API price if the protocol amount is malformed.
+    }
+  }
   let currency = priceData?.currency || "WETH";
   let decimals = priceData?.decimals || 18;
 
@@ -421,8 +429,25 @@ type SeaportParametersLike = {
   consideration?: SeaportOfferLike[];
 };
 
+/** Quantity for a single NFT or criteria item; bundles have no unit quote. */
+const getBidQuantity = (
+  params: SeaportParametersLike | undefined,
+): bigint | null => {
+  const nftItems = params?.consideration?.filter(
+    (item) =>
+      item.itemType !== undefined && item.itemType >= 2 && item.itemType <= 5,
+  );
+  if (nftItems?.length !== 1) return null;
+  try {
+    const quantity = BigInt(nftItems[0].startAmount ?? "0");
+    return quantity > 0n ? quantity : null;
+  } catch {
+    return null;
+  }
+};
+
 /**
- * Estimate WETH wei the seller receives when fulfilling an offer (bid) order:
+ * Estimate WETH wei the seller receives for one NFT in an offer (bid) order:
  * gross WETH on the offer side minus WETH consideration paid to third parties
  * (platform, royalties). Matches wallet previews better than raw bid size.
  */
@@ -433,9 +458,13 @@ export const estimateSellerNetWeiFromBidOrder = (
   const seller = sellerAddress.trim().toLowerCase();
   if (!seller) return null;
 
-  const params = protocolData as SeaportParametersLike | undefined;
+  const params = (
+    protocolData as { parameters?: SeaportParametersLike } | undefined
+  )?.parameters;
   const offerItems = params?.offer;
   if (!Array.isArray(offerItems) || offerItems.length === 0) return null;
+  const quantity = getBidQuantity(params);
+  if (quantity === null) return null;
 
   let grossWeth = 0n;
   for (const item of offerItems) {
@@ -459,22 +488,22 @@ export const estimateSellerNetWeiFromBidOrder = (
     try {
       amt = BigInt(item.startAmount ?? item.endAmount ?? "0");
     } catch {
-      continue;
+      return null;
     }
     const recip = (item.recipient || "").toLowerCase();
     if (recip === seller) explicitToSeller += amt;
     else wethFeesAndRoyalties += amt;
   }
 
-  if (explicitToSeller > 0n) return explicitToSeller;
+  if (explicitToSeller > 0n) return explicitToSeller / quantity;
 
   const net = grossWeth - wethFeesAndRoyalties;
-  return net >= 0n ? net : null;
+  return net >= 0n ? net / quantity : null;
 };
 
 /**
  * Replace {@link Offer.price} amount with seller net wei when derivable; keeps
- * gross total in {@link Offer.grossBidAmount}.
+ * gross per-NFT amount in {@link Offer.grossBidAmount}.
  */
 export const offerWithSellerNetProceeds = (
   offer: Offer,

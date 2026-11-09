@@ -156,7 +156,7 @@ export type Offer = {
   isCollectionOffer?: boolean; // True if this is a collection-wide offer (floor bid)
   /**
    * When `price.amount` is adjusted to approximate seller proceeds (after fees),
-   * this holds the original bid total in wei for the same decimals/currency.
+   * this holds the original per-NFT bid in wei for the same decimals/currency.
    */
   grossBidAmount?: string;
 };
