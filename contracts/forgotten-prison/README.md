@@ -34,7 +34,8 @@ To scaffold a new test, write its tree, then run:
 ```
 
 Do not force-scaffold over implemented tests. Bulloak checks structure, not assertions.
-`make check` also checks Solidity formatting and runs unit, fuzz, and handler invariant tests.
+`make check` also checks Solidity formatting, runs unit, fuzz, and handler invariant tests,
+and verifies the committed gas snapshots.
 The separate fuzz suite explores bid/accounting amounts and VRF configuration boundaries.
 Additional bid-book fuzzing checks FIFO ties, top-ups, arbitrary cancellations, and
 amounts above 160 bits against independent expected ordering.
@@ -64,6 +65,83 @@ skipping integration coverage. A second fork test exercises the actual Warriors,
 and Imp Box contracts: ERC721 identity, safe/plain transfers, syncing, both prize claims,
 and returning a previously claimed asset. These NFT holders are impersonated only in
 local fork state. CI runs the offline suites; run the forks explicitly.
+
+## Gas optimization checklist
+
+The measured baseline is production source at `debe41a`, using the same `GasTest`
+fixtures as the optimized build. Both use Foundry 1.8.7, Solidity 0.8.30, Cancun,
+200 optimizer runs, and isolated external calls. The optimized build enables IR.
+Raw results are in [benchmarks/baseline.json](benchmarks/baseline.json) and
+[snapshots/Gas.json](snapshots/Gas.json).
+
+- [x] Measure funded success paths before changing code: 21 snapshots cover new/tied
+  bids, top-ups, cancellation, a book with 128 prices, donations/sync, VRF, settlement,
+  both claims, withdrawals, queued inventory, and terminal recovery.
+- [x] Remove redundant storage: FIFO queue order already determines tie priority,
+  so bid entries no longer store a sequence. The global sequence and `BidPlaced`
+  event remain unchanged. Amounts retain all 256 bits.
+- [x] Use transient storage for the reentrancy lock: pinned OpenZeppelin
+  `ReentrancyGuardTransient` retains the same guarded entry points and error selector.
+  Deployment requires EIP-1153 support, available on the intended Ethereum mainnet
+  target. Guard cleanup permits sequential calls within a transaction.
+- [x] Reuse already-known inventory indices: finalization passes its selected main
+  and bonus indices directly to removal. Recovery still looks up the position.
+  Mapping deletion and eligible-prefix repair remain intact.
+- [x] Compare compiler settings: IR at 200 runs reduces runtime bytecode from
+  **14,457 to 13,153 bytes (9.0%)**. Against optimized legacy codegen, some paths
+  increase by less than 1%; all measured paths still improve over the original
+  baseline. Legacy codegen at 1,000 runs was also measured and did not improve
+  these call snapshots, so the optimizer-run setting remains 200.
+- [x] Keep configuration immutable and use constants/custom errors: already in
+  place. External transfer data remains calldata; memory copies are bounded structs.
+- [x] Check storage packing and numeric bounds: preserve the public `Draw` tuple
+  layout and full-width ETH amounts/token IDs. No new narrowing casts or artificial
+  bid, token-ID, or inventory limits were introduced to pack slots.
+- [x] Keep operations bounded: Solady price operations remain O(log distinct prices),
+  FIFO updates and inventory removal O(1), and the VRF callback has no asset transfers
+  or inventory loops. No scans of bidders or inventory were introduced.
+- [x] Preserve checked arithmetic, custody checks, receiver acceptance, independent
+  claims, reentrancy protection, and separate ETH liabilities. No manual assembly
+  or unchecked arithmetic was added for marginal gas savings.
+- [x] Gate regressions: Bulloak specifies the benchmark scenarios; `make check`
+  checks their snapshots in CI. Regular tests do not overwrite the recorded values.
+
+Representative isolated-call snapshots (gas units):
+
+| Operation | Before | After | Reduction |
+| --- | ---: | ---: | ---: |
+| First bid | 216,600 | 192,068 | 11.3% |
+| New distinct bid price | 170,869 | 146,365 | 14.3% |
+| Bid at an existing tied price | 142,100 | 117,703 | 17.2% |
+| Top up into a tie | 122,453 | 114,276 | 6.7% |
+| Cancel the head of a tied queue | 60,823 | 52,621 | 13.5% |
+| Start with two bidders | 454,413 | 450,645 | 0.8% |
+| Finalize with a bonus | 197,039 | 194,373 | 1.4% |
+| Claim main prize | 85,218 | 82,362 | 3.4% |
+| Withdraw proceeds | 35,750 | 33,893 | 5.2% |
+| Withdraw refund | 36,840 | 33,293 | 9.6% |
+
+Snapshots capture only the selected call, excluding fixture setup. Donation and
+callback measurements include their mock NFT/coordinator wrapper calls. They compare
+contract changes; they are not live mainnet fee quotes or estimates of Chainlink
+subscription fees. The public contract ABI and event definitions are unchanged.
+The internal bid storage layout changes; this is a new-deployment contract, not a
+storage-compatible upgrade.
+
+Validation after optimization: all 103 local tests and both pinned mainnet fork tests
+passed, as did the repository TypeScript check. Both handler invariant campaigns
+completed 128 runs at depth 128 with zero unexpected reverts. The generated contract
+ABI matches the baseline exactly. Slither 0.11.4 returned the same 11 detector warnings
+as the baseline, with no new detector findings; dispositions are documented below.
+
+```sh
+make gas-check  # Compare with committed snapshots without rewriting them.
+make gas        # Explicitly regenerate snapshots after reviewing a change.
+```
+
+References: [ethskills gas guidance](https://ethskills.com/gas/SKILL.md),
+[OpenZeppelin transient guard](https://docs.openzeppelin.com/contracts/5.x/api/utils#ReentrancyGuardTransient),
+and [Solidity storage layout](https://docs.soliditylang.org/en/v0.8.30/internals/layout_in_storage.html).
 
 ## Auction rules
 

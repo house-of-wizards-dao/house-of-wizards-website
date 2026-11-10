@@ -1,0 +1,33 @@
+{
+  "production_commit": "debe41a",
+  "foundry": "1.8.7",
+  "solc": "0.8.30",
+  "evm_version": "cancun",
+  "optimizer_runs": 200,
+  "via_ir": false,
+  "isolated_calls": true,
+  "runtime_bytes": 14457,
+  "gas": {
+    "bid_after_128_prices": 202563,
+    "bid_first": 216600,
+    "bid_new_price": 170869,
+    "bid_tied_price": 142100,
+    "bid_top_up_into_tie": 122453,
+    "callback_no_bonus": 81803,
+    "cancel_tie_head": 60823,
+    "claim_bonus": 82706,
+    "claim_main": 85218,
+    "donate_box_safe": 203137,
+    "donate_wizard_safe": 168889,
+    "finalize_no_bonus": 139849,
+    "finalize_with_bonus": 197039,
+    "finalize_with_queued_tail": 155834,
+    "recover_unsold": 105218,
+    "shutdown_pending": 103835,
+    "start_after_128_prices": 478258,
+    "start_two_bidders": 454413,
+    "sync_warrior": 135880,
+    "withdraw_proceeds": 35750,
+    "withdraw_refund": 36840
+  }
+}

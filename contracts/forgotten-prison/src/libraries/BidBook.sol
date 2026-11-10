@@ -8,8 +8,8 @@ import {RedBlackTreeLib} from "solady/utils/RedBlackTreeLib.sol";
 /**
  * @title Standing Bid Book
  * @notice Orders funded bids by amount and preserves FIFO priority for equal amounts.
- * @dev Uses pinned Solady RedBlackTreeLib for distinct prices and indexed queues for ties; no
- *   amount/sequence packing or stale entries.
+ * @dev Uses pinned Solady RedBlackTreeLib for distinct prices and indexed queues for ties. Queue position
+ *   records tie priority without a redundant per-bid sequence slot; bid amounts retain all 256 bits.
  */
 library BidBook {
     using RedBlackTreeLib for RedBlackTreeLib.Tree;
@@ -24,12 +24,11 @@ library BidBook {
     error BidAlreadyExists();
 
     /**
-     * @notice Bidder identity, funded amount in wei, and sequence assigned when that amount was reached.
+     * @notice Bidder identity and funded amount in wei; FIFO position determines tie priority.
      */
     struct Bid {
         address bidder;
         uint256 amount;
-        uint256 sequence;
     }
 
     /**
@@ -38,7 +37,6 @@ library BidBook {
      */
     struct Entry {
         uint256 amount;
-        uint256 sequence;
         address previous;
         address next;
     }
@@ -71,7 +69,7 @@ library BidBook {
         bytes32 highest = self.prices.last();
         uint256 amount = RedBlackTreeLib.value(highest);
         address bidder = self.levels[amount].head;
-        return Bid(bidder, amount, self.entries[bidder].sequence);
+        return Bid(bidder, amount);
     }
 
     /**
@@ -95,18 +93,18 @@ library BidBook {
 
     /**
      * @notice Append a new bid to its amount's FIFO queue.
-     * @dev Reject zero bidders, zero amounts, and existing entries. The caller supplies increasing sequences
-     *   and removes a previous entry before any top-up. Creating a price level costs O(log distinct prices);
-     *   queue insertion is O(1).
+     * @dev Reject zero bidders, zero amounts, and existing entries. The caller removes a previous entry
+     *   before any top-up; appending to the tail assigns the newest priority at that amount. Creating a
+     *   price level costs O(log distinct prices); queue insertion is O(1).
      * @param self Bid book to mutate.
-     * @param bid Funded bid and new sequence to append.
+     * @param bid Funded bid to append.
      */
     function insert(Book storage self, Bid memory bid) internal {
         require(bid.bidder != address(0) && bid.amount != 0, InvalidBid());
         require(self.entries[bid.bidder].amount == 0, BidAlreadyExists());
         Level storage level = self.levels[bid.amount];
         if (level.head == address(0)) self.prices.insert(bid.amount);
-        self.entries[bid.bidder] = Entry(bid.amount, bid.sequence, level.tail, address(0));
+        self.entries[bid.bidder] = Entry(bid.amount, level.tail, address(0));
         if (level.tail == address(0)) level.head = bid.bidder;
         else self.entries[level.tail].next = bid.bidder;
         level.tail = bid.bidder;
@@ -122,8 +120,8 @@ library BidBook {
      */
     function remove(Book storage self, address bidder) internal returns (Bid memory removed) {
         Entry memory entry = self.entries[bidder];
-        if (entry.amount == 0) return Bid(address(0), 0, 0);
-        removed = Bid(bidder, entry.amount, entry.sequence);
+        if (entry.amount == 0) return Bid(address(0), 0);
+        removed = Bid(bidder, entry.amount);
         Level storage level = self.levels[entry.amount];
         if (entry.previous == address(0)) level.head = entry.next;
         else self.entries[entry.previous].next = entry.next;

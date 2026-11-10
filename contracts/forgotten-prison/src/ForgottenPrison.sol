@@ -5,7 +5,7 @@ pragma solidity 0.8.30;
 
 import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {Ownable2Step} from "@openzeppelin/contracts/access/Ownable2Step.sol";
-import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import {ReentrancyGuardTransient} from "@openzeppelin/contracts/utils/ReentrancyGuardTransient.sol";
 import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
@@ -22,7 +22,7 @@ import {BidBook} from "./libraries/BidBook.sol";
  * @dev Losing bids roll over without expiry. Anyone can supply supported NFTs and advance draws; VRF selects
  *   the prizes, winners claim them, and the owner collects completed-sale proceeds.
  */
-contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFConsumerBaseV2 {
+contract ForgottenPrison is Ownable2Step, ReentrancyGuardTransient, IERC721Receiver, VRFConsumerBaseV2 {
     using BidBook for BidBook.Book;
     /**
      * @notice Minimum time in seconds between successful daily starts, including skipped days.
@@ -394,7 +394,8 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFC
     /**
      * @notice Configure the accepted collections and VRF subscription, and open the first day of bidding.
      * @dev Collection and VRF settings are immutable. Collections must be distinct contracts; the coordinator must have
-     *   code. Subscription ID and key hash must be nonzero, callback gas must be 100,000-2,500,000, and
+     *   code. Requires an EIP-1153-compatible EVM for the transient reentrancy guard. Subscription ID and
+     *   key hash must be nonzero, callback gas must be 100,000-2,500,000, and
      *   confirmations must be 3-200. These checks do not validate subscription funding or consumer
      *   registration. The first cutoff is deployment time plus one day. V2.5 requests deliberately use
      *   VRFConsumerBaseV2 only for its identical callback ABI and immutable coordinator authentication,
@@ -448,7 +449,7 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFC
         BidBook.Bid memory previous = _bids.remove(msg.sender);
         uint256 amount = previous.amount + msg.value;
         uint256 sequence = ++_sequence;
-        _bids.insert(BidBook.Bid(msg.sender, amount, sequence));
+        _bids.insert(BidBook.Bid(msg.sender, amount));
         totalBidEscrow += msg.value;
         emit BidPlaced(msg.sender, amount, sequence);
     }
@@ -577,14 +578,14 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFC
         require(draw.status == DrawStatus.Ready, RandomnessNotReady());
         uint256 index = draw.randomWord % draw.inventorySize;
         Asset memory prize = _inventory.assets[index];
-        _removeInventory(_inventory, prize.collection, prize.tokenId);
+        _removeInventory(_inventory, index, prize.collection, prize.tokenId);
         tokenStatus[prize.collection][prize.tokenId] = TokenStatus.Assigned;
         draw.collection = prize.collection;
         draw.tokenId = prize.tokenId;
         if (draw.boxInventorySize != 0 && draw.bonusWord % 2 == 0) {
             uint256 boxIndex = (draw.bonusWord >> 1) % draw.boxInventorySize;
             uint256 boxId = _boxes.assets[boxIndex].tokenId;
-            _removeInventory(_boxes, address(impBoxCollection), boxId);
+            _removeInventory(_boxes, boxIndex, address(impBoxCollection), boxId);
             tokenStatus[address(impBoxCollection)][boxId] = TokenStatus.Assigned;
             draw.boxTokenId = boxId;
             draw.bonusAwarded = true;
@@ -723,7 +724,8 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFC
         _checkRecipient(recipient);
         require(closed, NotClosed());
         require(tokenStatus[collection][tokenId] == TokenStatus.Available, InvalidToken(collection, tokenId));
-        _removeInventory(_pool(collection), collection, tokenId);
+        Inventory storage pool = _pool(collection);
+        _removeInventory(pool, pool.position[collection][tokenId] - 1, collection, tokenId);
         tokenStatus[collection][tokenId] = TokenStatus.Claimed;
         emit UnsoldNFTRecovered(collection, tokenId, recipient);
         IERC721(collection).safeTransferFrom(address(this), recipient, tokenId);
@@ -889,11 +891,13 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuard, IERC721Receiver, VRFC
      *   occur; no inventory loops. Callers ensure the asset exists and removal cannot invalidate an
      *   unfinished draw.
      * @param pool Inventory containing the asset.
+     * @param index Known current array index, supplied by selection or the recovery position lookup.
      * @param collection Collection key in the position mapping.
      * @param tokenId NFT ID whose position and array entry are removed.
      */
-    function _removeInventory(Inventory storage pool, address collection, uint256 tokenId) private {
-        uint256 index = pool.position[collection][tokenId] - 1;
+    function _removeInventory(Inventory storage pool, uint256 index, address collection, uint256 tokenId)
+        private
+    {
         if (index < pool.eligibleCount) {
             uint256 lastEligible = --pool.eligibleCount;
             _moveAsset(pool, lastEligible, index);

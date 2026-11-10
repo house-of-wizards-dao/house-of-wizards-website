@@ -8,6 +8,8 @@ solc_version = "0.8.30"
 evm_version = "cancun"
 optimizer = true
 optimizer_runs = 200
+via_ir = true
+gas_snapshot_emit = false
 remappings = ["forge-std/=lib/forge-std/src/", "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/", "@chainlink/contracts/=lib/chainlink/", "solady/=lib/solady/src/"]
 fs_permissions = [{ access = "read", path = "./" }]
 

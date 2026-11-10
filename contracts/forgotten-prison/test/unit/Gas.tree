@@ -1,0 +1,15 @@
+GasTest
+├── When benchmarking bid updates
+│   └── It should record first bids ties top ups and cancellation.
+├── When benchmarking a populated bid book
+│   └── It should record insertion and draw start with one hundred twenty eight prices.
+├── When benchmarking donation paths
+│   └── It should record safe donations and permissionless syncing.
+├── When benchmarking a draw without a bonus
+│   └── It should record request callback finalization claim and proceeds withdrawal.
+├── When benchmarking a draw with a bonus
+│   └── It should record finalization and an independent bonus claim.
+├── When benchmarking late arrivals
+│   └── It should record finalization with both inventory moves.
+└── When benchmarking terminal exit
+    └── It should record shutdown refunds and unsold recovery.
