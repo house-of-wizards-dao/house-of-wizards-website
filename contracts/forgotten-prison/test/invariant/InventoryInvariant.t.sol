@@ -1,12 +1,22 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import {StdInvariant} from "forge-std/StdInvariant.sol";
 import {Test} from "forge-std/Test.sol";
 import {InventoryHandler} from "./InventoryHandler.sol";
 
+/**
+ * @title Mixed Inventory and Reuse Invariants
+ * @notice Stateful Foundry invariant tests driven by valid-action handlers.
+ */
 contract InventoryInvariantTest is StdInvariant, Test {
     InventoryHandler internal handler;
 
+    /**
+     * @notice Target the inventory handler and seed mixed stock, an unsynced donation, and a
+     *   claimed/returned NFT.
+     */
     function setUp() public {
         handler = new InventoryHandler();
         bytes4[] memory selectors = new bytes4[](10);
@@ -22,7 +32,7 @@ contract InventoryInvariantTest is StdInvariant, Test {
         selectors[9] = handler.recover.selector;
         targetContract(address(handler));
         targetSelector(FuzzSelector(address(handler), selectors));
-        // Begin with mixed stock, an awarded/returned NFT, and an unsafe unsynced donation.
+
         handler.donate(0, false);
         handler.donate(16, false);
         handler.donate(32, false);
@@ -36,10 +46,18 @@ contract InventoryInvariantTest is StdInvariant, Test {
         handler.donate(0, false);
     }
 
+    /**
+     * @notice Assert custody and reservations match the independent model after generated inventory actions.
+     * @dev The handler also checks timestamp-derived frozen eligibility whenever a round starts or
+     *   finalizes.
+     */
     function invariant_CustodyReservationsAndEligibleSnapshotsMatchIndependentModel() public view {
         handler.assertCustody();
     }
 
+    /**
+     * @notice Ensure the campaign includes successful settlement, multiple donations, and a returned prize.
+     */
     function afterInvariant() public view {
         assertGt(handler.finalizations(), 0);
         assertGt(handler.returnedPrizes(), 0);

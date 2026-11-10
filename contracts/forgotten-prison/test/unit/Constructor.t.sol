@@ -1,8 +1,18 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
 
+/**
+ * @title Deployment and Ownership Behavior Tests
+ * @notice Bulloak scenarios for deployment and ownership behavior.
+ */
 contract ConstructorTest is PrisonTestBase {
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when the collection or coordinator has no code.
+     */
     function test_RevertWhen_TheCollectionOrCoordinatorHasNoCode() external {
         ForgottenPrison.VRFConfig memory config = _config();
         vm.expectRevert(ForgottenPrison.InvalidConfiguration.selector);
@@ -12,6 +22,10 @@ contract ConstructorTest is PrisonTestBase {
         new ForgottenPrison(address(this), address(nft), address(wizards), address(boxes), config);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a VRF setting is outside its supported range.
+     */
     function test_RevertWhen_AVRFSettingIsOutsideItsSupportedRange() external {
         for (uint256 i; i < 7; i++) {
             ForgottenPrison.VRFConfig memory config = _config();
@@ -27,6 +41,10 @@ contract ConstructorTest is PrisonTestBase {
         }
     }
 
+    /**
+     * @notice Verify: require acceptance before proceeds control changes.
+     * @dev Scenario: when ownership changes.
+     */
     function test_WhenOwnershipChanges() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -42,6 +60,10 @@ contract ConstructorTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when collections overlap or lack code.
+     */
     function test_RevertWhen_CollectionsOverlapOrLackCode() external {
         for (uint256 i; i < 5; i++) {
             address warriorsAddress = address(nft);

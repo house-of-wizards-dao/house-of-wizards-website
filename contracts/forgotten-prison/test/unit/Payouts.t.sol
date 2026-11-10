@@ -1,8 +1,18 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
 
+/**
+ * @title Prize and ETH Payout Behavior Tests
+ * @notice Bulloak scenarios for prize and eth payout behavior.
+ */
 contract PayoutsTest is PrisonTestBase {
+    /**
+     * @notice Verify: prevent owner withdrawal of that payment.
+     * @dev Scenario: when a payment is pending.
+     */
     function test_WhenAPaymentIsPending() external {
         _bid(alice, 1 ether);
         _start();
@@ -11,6 +21,10 @@ contract PayoutsTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: preserve losing bidders funds.
+     * @dev Scenario: when the owner withdraws completed sales.
+     */
     function test_WhenTheOwnerWithdrawsCompletedSales() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -24,6 +38,10 @@ contract PayoutsTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a non owner withdraws proceeds.
+     */
     function test_RevertWhen_ANonOwnerWithdrawsProceeds() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -32,6 +50,10 @@ contract PayoutsTest is PrisonTestBase {
         prison.withdrawProceeds(payable(alice), 1 ether);
     }
 
+    /**
+     * @notice Verify: preserve the proceeds credit.
+     * @dev Scenario: when the recipient rejects proceeds.
+     */
     function test_WhenTheRecipientRejectsProceeds() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -43,6 +65,10 @@ contract PayoutsTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a non winner claims the NFT.
+     */
     function test_RevertWhen_ANonWinnerClaimsTheNFT() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -51,6 +77,10 @@ contract PayoutsTest is PrisonTestBase {
         prison.claimNFT(1, bob);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when the winner claims before assignment.
+     */
     function test_RevertWhen_TheWinnerClaimsBeforeAssignment() external {
         _bid(alice, 1 ether);
         _start();
@@ -59,6 +89,10 @@ contract PayoutsTest is PrisonTestBase {
         prison.claimNFT(1, alice);
     }
 
+    /**
+     * @notice Verify: deliver the reserved NFT once.
+     * @dev Scenario: when the winner claims to another address.
+     */
     function test_WhenTheWinnerClaimsToAnotherAddress() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -70,6 +104,10 @@ contract PayoutsTest is PrisonTestBase {
         prison.claimNFT(1, bob);
     }
 
+    /**
+     * @notice Verify: preserve the winner claim.
+     * @dev Scenario: when the NFT recipient rejects the transfer.
+     */
     function test_WhenTheNFTRecipientRejectsTheTransfer() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -82,6 +120,10 @@ contract PayoutsTest is PrisonTestBase {
         assertEq(nft.ownerOf(0), carol);
     }
 
+    /**
+     * @notice Verify: preserve the NFT claim.
+     * @dev Scenario: when the owner withdraws before the NFT is claimed.
+     */
     function test_WhenTheOwnerWithdrawsBeforeTheNFTIsClaimed() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -92,6 +134,10 @@ contract PayoutsTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: block repeated spending.
+     * @dev Scenario: when an ETH recipient reenters owner withdrawal.
+     */
     function test_WhenAnETHRecipientReentersOwnerWithdrawal() external {
         _bid(alice, 2 ether);
         _settle(0);
@@ -106,6 +152,10 @@ contract PayoutsTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when proceeds recipients or amounts are invalid.
+     */
     function test_RevertWhen_ProceedsRecipientsOrAmountsAreInvalid() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -117,6 +167,10 @@ contract PayoutsTest is PrisonTestBase {
         prison.withdrawProceeds(payable(carol), 2 ether);
     }
 
+    /**
+     * @notice Verify: not become owner proceeds.
+     * @dev Scenario: when ETH is forced into the contract.
+     */
     function test_WhenETHIsForcedIntoTheContract() external {
         _bid(alice, 1 ether);
         new ForceETH{value: 1 ether}(payable(address(prison)));

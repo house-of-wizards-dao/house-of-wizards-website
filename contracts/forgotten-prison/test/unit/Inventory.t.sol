@@ -1,9 +1,19 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
 import {SyncOnReceipt} from "../mocks/Adversaries.sol";
 
+/**
+ * @title Donation and Reuse Behavior Tests
+ * @notice Bulloak scenarios for donation and reuse behavior.
+ */
 contract InventoryTest is PrisonTestBase {
+    /**
+     * @notice Verify: register custody without approval or a deposit call.
+     * @dev Scenario: when anyone safely transfers a supported NFT.
+     */
     function test_WhenAnyoneSafelyTransfersASupportedNFT() external {
         _donate(nft, bob, 40);
         _donate(wizards, carol, 40);
@@ -14,6 +24,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(eligible, 6);
     }
 
+    /**
+     * @notice Verify: register it exactly once.
+     * @dev Scenario: when anyone syncs an unsafe transfer.
+     */
     function test_WhenAnyoneSyncsAnUnsafeTransfer() external {
         nft.mint(alice, 99);
         vm.prank(alice);
@@ -26,12 +40,20 @@ contract InventoryTest is PrisonTestBase {
         prison.syncReceivedNFT(address(nft), 99);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a token is not held by the auction.
+     */
     function test_RevertWhen_ATokenIsNotHeldByTheAuction() external {
         nft.mint(alice, 99);
         vm.expectRevert(abi.encodeWithSelector(ForgottenPrison.InvalidToken.selector, address(nft), 99));
         prison.syncReceivedNFT(address(nft), 99);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when an unrelated collection is sent.
+     */
     function test_RevertWhen_AnUnrelatedCollectionIsSent() external {
         MockERC721 other = new MockERC721();
         other.mint(alice, 0);
@@ -44,6 +66,10 @@ contract InventoryTest is PrisonTestBase {
         prison.syncReceivedNFT(address(other), 0);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a receiver callback is forged.
+     */
     function test_RevertWhen_AReceiverCallbackIsForged() external {
         vm.expectRevert(ForgottenPrison.InvalidConfiguration.selector);
         prison.onERC721Received(alice, alice, 0, "");
@@ -53,6 +79,10 @@ contract InventoryTest is PrisonTestBase {
         prison.onERC721Received(alice, alice, 99, "");
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when an assigned prize is synced.
+     */
     function test_RevertWhen_AnAssignedPrizeIsSynced() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -64,6 +94,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(nft.ownerOf(0), alice);
     }
 
+    /**
+     * @notice Verify: become eligible again without reopening its old claim.
+     * @dev Scenario: when a claimed prize is safely returned.
+     */
     function test_WhenAClaimedPrizeIsSafelyReturned() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -82,6 +116,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(nft.ownerOf(0), bob);
     }
 
+    /**
+     * @notice Verify: become eligible again only after sync.
+     * @dev Scenario: when a claimed prize is unsafely returned.
+     */
     function test_WhenAClaimedPrizeIsUnsafelyReturned() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -100,6 +138,11 @@ contract InventoryTest is PrisonTestBase {
         assertEq(nft.ownerOf(0), bob);
     }
 
+    /**
+     * @notice Verify: enter the following round only.
+     * @dev Scenario: when an NFT arrives at the cutoff. The queued wizard replaces the removed slot only
+     *   after the locked selection, so the following round can select it.
+     */
     function test_WhenAnNFTArrivesAtTheCutoff() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -112,10 +155,14 @@ contract InventoryTest is PrisonTestBase {
         prison.finalizeDraw();
         assertEq(prison.getDraw(1).collection, address(nft));
         assertEq(prison.getDraw(1).tokenId, 0);
-        _settle(0); // Queued wizard replaced the removed entry only after the locked selection.
+        _settle(0);
         assertEq(prison.getDraw(2).collection, address(wizards));
     }
 
+    /**
+     * @notice Verify: leave the locked selection unchanged.
+     * @dev Scenario: when an NFT arrives after randomness is known.
+     */
     function test_WhenAnNFTArrivesAfterRandomnessIsKnown() external {
         _bid(alice, 2 ether);
         _start();
@@ -129,6 +176,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(prison.getDraw(2).collection, address(wizards));
     }
 
+    /**
+     * @notice Verify: preserve the eligible prefix through settlement.
+     * @dev Scenario: when a late arrival remains behind the next cutoff.
+     */
     function test_WhenALateArrivalRemainsBehindTheNextCutoff() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -149,6 +200,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(prison.getDraw(3).collection, address(wizards));
     }
 
+    /**
+     * @notice Verify: use the registration time for eligibility.
+     * @dev Scenario: when a raw transfer predates cutoff but sync follows it.
+     */
     function test_WhenARawTransferPredatesCutoffButSyncFollowsIt() external {
         _bid(alice, 1 ether);
         wizards.mint(bob, 99);
@@ -162,6 +217,10 @@ contract InventoryTest is PrisonTestBase {
         assertEq(prison.getDraw(1).collection, address(nft));
     }
 
+    /**
+     * @notice Verify: promote them without charging a bidder.
+     * @dev Scenario: when an empty day has only queued prizes.
+     */
     function test_WhenAnEmptyDayHasOnlyQueuedPrizes() external {
         ForgottenPrison empty =
             new ForgottenPrison(address(this), address(nft), address(wizards), address(boxes), _config());
@@ -176,11 +235,19 @@ contract InventoryTest is PrisonTestBase {
         assertEq(empty.startDailyDraw(), 1);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when unsold recovery is attempted while open.
+     */
     function test_RevertWhen_UnsoldRecoveryIsAttemptedWhileOpen() external {
         vm.expectRevert(ForgottenPrison.NotClosed.selector);
         prison.recoverUnsoldNFT(address(nft), 0, alice);
     }
 
+    /**
+     * @notice Verify: permit sync and unsold recovery without reopening.
+     * @dev Scenario: when a closed auction receives an unsafe transfer.
+     */
     function test_WhenAClosedAuctionReceivesAnUnsafeTransfer() external {
         vm.warp(prison.nextDrawAt() + 7 days);
         prison.shutdownStalledAuction();
@@ -194,6 +261,10 @@ contract InventoryTest is PrisonTestBase {
         assertTrue(prison.closed());
     }
 
+    /**
+     * @notice Verify: reject registration inside the claim.
+     * @dev Scenario: when a recipient attempts reentrancy while claiming.
+     */
     function test_WhenARecipientAttemptsReentrancyWhileClaiming() external {
         _bid(alice, 1 ether);
         _settle(0);

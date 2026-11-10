@@ -1,8 +1,20 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "./Base.t.sol";
 
+/**
+ * @title Forgotten Prison Fuzz Tests
+ * @notice Explore bid ordering, accounting, configuration boundaries, and prize randomness over generated
+ *   inputs.
+ */
 contract PrisonFuzzTest is PrisonTestBase {
+    /**
+     * @notice Compare 64 generated bid/top-up/cancel actions against independent linear ordering and ETH
+     *   accounting.
+     * @param seed Seed expanded into actor choices, small tied prices, and operations.
+     */
     function testFuzz_BidBookMatchesReferenceAcrossTiesTopUpsAndCancellations(uint256 seed) external {
         address[8] memory actors;
         uint256[8] memory amounts;
@@ -54,6 +66,12 @@ contract PrisonFuzzTest is PrisonTestBase {
         assertEq(address(prison).balance, 0);
     }
 
+    /**
+     * @notice Verify full-width bid prices survive ordering, cancellation, and settlement without
+     *   truncation.
+     * @param firstSeed Input bounded from 2^160 through the uint192 maximum.
+     * @param secondSeed Independent input bounded to the same range.
+     */
     function testFuzz_PricesAbove160BitsPreserveOrderingAndCancellation(uint192 firstSeed, uint192 secondSeed)
         external
     {
@@ -76,6 +94,11 @@ contract PrisonFuzzTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Deploy successfully across the full supported callback-gas and confirmation domains.
+     * @param gasSeed Input bounded to 100,000-2,500,000 gas.
+     * @param confirmationSeed Input bounded to 3-200 confirmations.
+     */
     function testFuzz_ValidVRFConfigurationAcrossTheAcceptedDomain(uint32 gasSeed, uint16 confirmationSeed)
         external
     {
@@ -85,6 +108,13 @@ contract PrisonFuzzTest is PrisonTestBase {
         new ForgottenPrison(address(this), address(nft), address(wizards), address(boxes), config);
     }
 
+    /**
+     * @notice Conserve actor balances through competing bids, a top-up, loser cancellation, and owner
+     *   withdrawal.
+     * @param a First bidder's initial payment seed, bounded to positive uint128 values.
+     * @param b Competing bidder's payment seed, bounded to positive uint128 values.
+     * @param c First bidder's top-up seed, bounded to positive uint128 values.
+     */
     function testFuzz_BidsConserveETHThroughTopUpsCancellationAndSale(uint128 a, uint128 b, uint128 c)
         external
     {
@@ -109,6 +139,10 @@ contract PrisonFuzzTest is PrisonTestBase {
         assertEq(alice.balance + bob.balance + carol.balance, first + topUp + second + 100 ether);
     }
 
+    /**
+     * @notice Verify arbitrary main randomness selects and transfers exactly one escrowed NFT.
+     * @param word Unrestricted uint256 VRF output.
+     */
     function testFuzz_AnyVRFWordAssignsExactlyOneEscrowedToken(uint256 word) external {
         _bid(alice, 1 ether);
         uint256 id = _settle(word);
@@ -123,6 +157,10 @@ contract PrisonFuzzTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Reject confirmation settings outside 3-200 and accept values inside that range.
+     * @param confirmations Unrestricted uint16 confirmation setting.
+     */
     function testFuzz_RequestConfirmationsAcceptedExactlyWithinBounds(uint16 confirmations) external {
         ForgottenPrison.VRFConfig memory config = _config();
         config.requestConfirmations = confirmations;
@@ -132,6 +170,10 @@ contract PrisonFuzzTest is PrisonTestBase {
         new ForgottenPrison(address(this), address(nft), address(wizards), address(boxes), config);
     }
 
+    /**
+     * @notice Reject callback gas outside 100,000-2,500,000 and accept values inside that range.
+     * @param gasLimit Unrestricted uint32 callback-gas setting.
+     */
     function testFuzz_CallbackGasAcceptedExactlyWithinBounds(uint32 gasLimit) external {
         ForgottenPrison.VRFConfig memory config = _config();
         config.callbackGasLimit = gasLimit;
@@ -141,6 +183,12 @@ contract PrisonFuzzTest is PrisonTestBase {
         new ForgottenPrison(address(this), address(nft), address(wizards), address(boxes), config);
     }
 
+    /**
+     * @notice Conserve mixed NFT custody while excluding late donations from both locked prize selections.
+     * @param word Unrestricted main-prize randomness.
+     * @param bonus Unrestricted bonus randomness.
+     * @param afterNextCutoff Whether donations also miss the following cutoff.
+     */
     function testFuzz_MixedPrizesAndBonusExcludeAllLateArrivals(
         uint256 word,
         uint256 bonus,
@@ -179,6 +227,12 @@ contract PrisonFuzzTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Hold the main word fixed while flipping the bonus bit and verify that only the bonus outcome
+     *   changes.
+     * @param word Unrestricted main-prize randomness.
+     * @param bonus Source of the bonus word's upper bits for both runs.
+     */
     function testFuzz_MainPrizeSelectionDoesNotFixTheBonusOutcome(uint256 word, uint256 bonus) external {
         _donate(boxes, bob, 0);
         _bid(alice, 1 ether);

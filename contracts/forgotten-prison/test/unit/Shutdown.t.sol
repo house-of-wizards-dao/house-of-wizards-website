@@ -1,8 +1,18 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
 
+/**
+ * @title Terminal Shutdown Behavior Tests
+ * @notice Bulloak scenarios for terminal shutdown behavior.
+ */
 contract ShutdownTest is PrisonTestBase {
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when the timeout has not elapsed.
+     */
     function test_RevertWhen_TheTimeoutHasNotElapsed() external {
         vm.expectRevert(ForgottenPrison.CannotShutdown.selector);
         prison.shutdownStalledAuction();
@@ -13,6 +23,10 @@ contract ShutdownTest is PrisonTestBase {
         prison.shutdownStalledAuction();
     }
 
+    /**
+     * @notice Verify: close permanently and refund the locked winner.
+     * @dev Scenario: when a VRF request stalls for seven days.
+     */
     function test_WhenAVRFRequestStallsForSevenDays() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -31,6 +45,10 @@ contract ShutdownTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: unlock every standing bid.
+     * @dev Scenario: when an unstarted day stalls for seven days.
+     */
     function test_WhenAnUnstartedDayStallsForSevenDays() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -43,6 +61,10 @@ contract ShutdownTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: require finalization instead of aborting.
+     * @dev Scenario: when a random result is already available.
+     */
     function test_WhenARandomResultIsAlreadyAvailable() external {
         _bid(alice, 1 ether);
         _start();
@@ -54,6 +76,10 @@ contract ShutdownTest is PrisonTestBase {
         assertEq(prison.proceeds(), 1 ether);
     }
 
+    /**
+     * @notice Verify: ignore the callback.
+     * @dev Scenario: when a late callback follows shutdown.
+     */
     function test_WhenALateCallbackFollowsShutdown() external {
         _bid(alice, 1 ether);
         _start();
@@ -66,6 +92,10 @@ contract ShutdownTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: revert on the second withdrawal.
+     * @dev Scenario: when a refunded winner withdraws twice.
+     */
     function test_WhenARefundedWinnerWithdrawsTwice() external {
         _bid(alice, 1 ether);
         _start();
@@ -79,6 +109,10 @@ contract ShutdownTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: preserve already assigned prizes.
+     * @dev Scenario: when the owner recovers unsold inventory after shutdown.
+     */
     function test_WhenTheOwnerRecoversUnsoldInventoryAfterShutdown() external {
         _bid(alice, 1 ether);
         _settle(0);
@@ -99,6 +133,10 @@ contract ShutdownTest is PrisonTestBase {
         assertEq(nft.ownerOf(0), alice);
     }
 
+    /**
+     * @notice Verify: reject bids draws and deposits.
+     * @dev Scenario: when a closed auction receives new activity.
+     */
     function test_WhenAClosedAuctionReceivesNewActivity() external {
         vm.warp(prison.nextDrawAt() + 7 days);
         prison.shutdownStalledAuction();
@@ -113,6 +151,10 @@ contract ShutdownTest is PrisonTestBase {
         nft.safeTransferFrom(alice, address(prison), 100);
     }
 
+    /**
+     * @notice Verify: preserve the refund credit.
+     * @dev Scenario: when a refund transfer fails.
+     */
     function test_WhenARefundTransferFails() external {
         _bid(alice, 1 ether);
         _start();

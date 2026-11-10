@@ -1,14 +1,30 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
 
+/**
+ * @title Imp Box Bonus Behavior Tests
+ * @notice Bulloak scenarios for imp box bonus behavior.
+ */
 contract BonusTest is PrisonTestBase {
+    /**
+     * @dev Start, fulfill with explicit main/bonus words, and finalize a test round.
+     * @param word Mock main-prize randomness.
+     * @param bonus Mock bonus randomness.
+     * @return id Finalized draw identifier.
+     */
     function _settleBonus(uint256 word, uint256 bonus) internal returns (uint256 id) {
         id = _start();
         vrf.fulfillPair(address(prison), prison.getDraw(id).requestId, word, bonus);
         prison.finalizeDraw();
     }
 
+    /**
+     * @notice Verify: reserve a box and allow independent claims.
+     * @dev Scenario: when the bonus coin flip wins.
+     */
     function test_WhenTheBonusCoinFlipWins() external {
         _donate(boxes, bob, 0);
         _donate(wizards, carol, 0);
@@ -29,6 +45,10 @@ contract BonusTest is PrisonTestBase {
         _assertAccounting();
     }
 
+    /**
+     * @notice Verify: leave every box available.
+     * @dev Scenario: when the bonus coin flip loses.
+     */
     function test_WhenTheBonusCoinFlipLoses() external {
         _donate(boxes, bob, 0);
         _bid(alice, 1 ether);
@@ -40,6 +60,10 @@ contract BonusTest is PrisonTestBase {
         prison.claimBonus(id, alice);
     }
 
+    /**
+     * @notice Verify: not be awarded again.
+     * @dev Scenario: when the last box is awarded but unclaimed.
+     */
     function test_WhenTheLastBoxIsAwardedButUnclaimed() external {
         _donate(boxes, bob, 0);
         _bid(alice, 2 ether);
@@ -56,6 +80,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(boxes.ownerOf(0), alice);
     }
 
+    /**
+     * @notice Verify: resume the bonus on a later eligible draw.
+     * @dev Scenario: when boxes are replenished.
+     */
     function test_WhenBoxesAreReplenished() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -68,6 +96,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(boxes.ownerOf(42), bob);
     }
 
+    /**
+     * @notice Verify: not change the locked bonus.
+     * @dev Scenario: when a box arrives after cutoff or after randomness.
+     */
     function test_WhenABoxArrivesAfterCutoffOrAfterRandomness() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
@@ -83,6 +115,10 @@ contract BonusTest is PrisonTestBase {
         assertTrue(prison.getDraw(2).bonusAwarded);
     }
 
+    /**
+     * @notice Verify: preserve the bonus claim and permit the main claim.
+     * @dev Scenario: when a bonus transfer fails.
+     */
     function test_WhenABonusTransferFails() external {
         _donate(boxes, bob, 0);
         _bid(alice, 1 ether);
@@ -100,6 +136,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(boxes.ownerOf(0), alice);
     }
 
+    /**
+     * @notice Verify: revert.
+     * @dev Scenario: when a different account claims a bonus.
+     */
     function test_RevertWhen_ADifferentAccountClaimsABonus() external {
         _donate(boxes, bob, 0);
         _bid(alice, 1 ether);
@@ -109,6 +149,10 @@ contract BonusTest is PrisonTestBase {
         prison.claimBonus(1, bob);
     }
 
+    /**
+     * @notice Verify: be reusable without reopening the previous claim.
+     * @dev Scenario: when a won box returns.
+     */
     function test_WhenAWonBoxReturns() external {
         _donate(boxes, bob, 0);
         _bid(alice, 1 ether);
@@ -129,6 +173,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(boxes.ownerOf(0), bob);
     }
 
+    /**
+     * @notice Verify: draw every wizard alongside warriors without replacement.
+     * @dev Scenario: when three wizards share the prize pool.
+     */
     function test_WhenThreeWizardsShareThePrizePool() external {
         for (uint256 i; i < 3; i++) {
             _donate(wizards, bob, i);
@@ -144,6 +192,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(prison.availableTokenCount(), 0);
     }
 
+    /**
+     * @notice Verify: remain reserved while unassigned boxes are recoverable.
+     * @dev Scenario: when a finalized bonus survives shutdown.
+     */
     function test_WhenAFinalizedBonusSurvivesShutdown() external {
         _donate(boxes, bob, 0);
         _donate(boxes, bob, 1);
@@ -160,6 +212,10 @@ contract BonusTest is PrisonTestBase {
         assertEq(boxes.ownerOf(0), alice);
     }
 
+    /**
+     * @notice Verify: ignore it and accept the subsequent valid response.
+     * @dev Scenario: when the callback contains an incorrect number of words.
+     */
     function test_WhenTheCallbackContainsAnIncorrectNumberOfWords() external {
         _bid(alice, 1 ether);
         _start();

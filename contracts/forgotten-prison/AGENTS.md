@@ -3,6 +3,7 @@
 Before writing Solidity or shipping anything onchain, read https://ethskills.com/SKILL.md
 and the applicable linked guidance. Keep this as a standalone Forge project.
 
+- Use multiline NatSpec (`/** ... */`) throughout authored Solidity. Keep the contract overview high-level and document behavior, permissions, parameters, and returns on individual functions.
 - Unit tests use Bulloak: maintain `.tree` specifications alongside `.t.sol` implementations.
 - Use `require(condition, CustomError())` for validation rather than `if` / `revert` guards.
 - Reuse pinned Solady `RedBlackTreeLib` for bid price ordering; keep tie handling in the bid-book adapter.

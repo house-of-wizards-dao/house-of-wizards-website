@@ -1,10 +1,18 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {ForgottenPrison} from "../../src/ForgottenPrison.sol";
 import {MockERC721} from "../mocks/MockERC721.sol";
 import {MockVRFCoordinator} from "../mocks/MockVRFCoordinator.sol";
 
+/**
+ * @title Bid and ETH Invariant Handler
+ * @notice Execute valid auction actions while maintaining independent bidder, refund, and proceeds
+ *   accounting.
+ * @dev Inapplicable random actions return early; successful transitions have separate counters.
+ */
 contract PrisonHandler is Test {
     ForgottenPrison public prison;
     MockERC721 public nft;
@@ -31,6 +39,9 @@ contract PrisonHandler is Test {
     uint256 public successfulRefunds;
     uint256 public successfulProceedsWithdrawals;
 
+    /**
+     * @notice Deploy an auction with 32 warriors and eight funded bidding actors.
+     */
     constructor() {
         nft = new MockERC721();
         wizards = new MockERC721();
@@ -53,6 +64,11 @@ contract PrisonHandler is Test {
         }
     }
 
+    /**
+     * @notice Place a bounded valid bid and update the independent balance and tie-order model.
+     * @param who Seed selecting one of eight actors.
+     * @param value Additional payment seed bounded to 1 wei-10 ETH.
+     */
     function bid(uint256 who, uint256 value) external {
         if (prison.closed() || block.timestamp >= prison.nextDrawAt() || prison.availableTokenCount() == 0) {
             return;
@@ -67,6 +83,10 @@ contract PrisonHandler is Test {
         successfulBids++;
     }
 
+    /**
+     * @notice Cancel a selected actor's active bid when its timing allows and update ETH outflow.
+     * @param who Seed selecting the actor.
+     */
     function cancel(uint256 who) external {
         address actor = actors[who % actors.length];
         if (modelBids[actor] == 0) return;
@@ -81,10 +101,17 @@ contract PrisonHandler is Test {
         successfulCancellations++;
     }
 
+    /**
+     * @notice Move the simulated timestamp forward.
+     * @param elapsed Seed bounded to 0-2 days.
+     */
     function advance(uint256 elapsed) external {
         vm.warp(block.timestamp + bound(elapsed, 0, 2 days));
     }
 
+    /**
+     * @notice Start an eligible day and compare its locked winner and price against the linear bid model.
+     */
     function start() external {
         if (prison.closed() || prison.pendingDrawId() != 0 || block.timestamp < prison.nextDrawAt()) return;
         (address winner, uint256 price) = expectedTop();
@@ -101,12 +128,19 @@ contract PrisonHandler is Test {
         successfulDraws++;
     }
 
+    /**
+     * @notice Deliver main randomness for the pending draw with a losing bonus word.
+     * @param word Unrestricted mock main-prize randomness.
+     */
     function fulfill(uint256 word) external {
         if (prison.pendingDrawId() == 0) return;
         ForgottenPrison.Draw memory draw = prison.getDraw(prison.pendingDrawId());
         vrf.fulfill(address(prison), draw.requestId, word);
     }
 
+    /**
+     * @notice Finalize a ready draw, reject duplicate NFT awards, and update independent earned proceeds.
+     */
     function finalize() external {
         if (prison.pendingDrawId() == 0) return;
         uint256 id = prison.pendingDrawId();
@@ -121,6 +155,10 @@ contract PrisonHandler is Test {
         successfulFinalizations++;
     }
 
+    /**
+     * @notice Claim a selected finalized round to its winner and track custody leaving the auction.
+     * @param seed Seed bounded to existing draw IDs.
+     */
     function claim(uint256 seed) external {
         if (prison.drawCount() == 0) return;
         uint256 id = bound(seed, 1, prison.drawCount());
@@ -131,6 +169,10 @@ contract PrisonHandler is Test {
         claims++;
     }
 
+    /**
+     * @notice Withdraw bounded earned proceeds and update the independent ETH outflow model.
+     * @param value Amount seed bounded to positive unwithdrawn proceeds.
+     */
     function withdraw(uint256 value) external {
         uint256 available = earned - proceedsWithdrawn;
         if (available == 0) return;
@@ -141,6 +183,9 @@ contract PrisonHandler is Test {
         proceedsWithdrawn += amount;
     }
 
+    /**
+     * @notice Close only after the terminal timeout and convert any pending payment into model refunds.
+     */
     function shutdown() external {
         if (prison.closed()) return;
         uint256 id = prison.pendingDrawId();
@@ -158,6 +203,10 @@ contract PrisonHandler is Test {
         prison.shutdownStalledAuction();
     }
 
+    /**
+     * @notice Withdraw a selected actor's positive aborted-draw refund and update the model.
+     * @param who Seed selecting one of eight actors.
+     */
     function refund(uint256 who) external {
         address actor = actors[who % actors.length];
         uint256 amount = modelRefunds[actor];
@@ -169,6 +218,11 @@ contract PrisonHandler is Test {
         successfulRefunds++;
     }
 
+    /**
+     * @notice Find the expected highest and earliest bid with a linear scan independent of the tree.
+     * @return winner Leading account or zero when empty.
+     * @return amount Leading funded amount in wei or zero when empty.
+     */
     function expectedTop() public view returns (address winner, uint256 amount) {
         uint256 earliest = type(uint256).max;
         for (uint256 i; i < actors.length; i++) {
@@ -184,5 +238,8 @@ contract PrisonHandler is Test {
             }
         }
     }
+    /**
+     * @notice Accept owner proceeds withdrawn by the handler.
+     */
     receive() external payable {}
 }

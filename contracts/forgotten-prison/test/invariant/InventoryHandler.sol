@@ -1,12 +1,23 @@
-// SPDX-License-Identifier: MIT
+/**
+ * SPDX-License-Identifier: MIT
+ */
 pragma solidity 0.8.30;
 import {Test} from "forge-std/Test.sol";
 import {ForgottenPrison} from "../../src/ForgottenPrison.sol";
 import {MockERC721} from "../mocks/MockERC721.sol";
 import {MockVRFCoordinator} from "../mocks/MockVRFCoordinator.sol";
 
-/// @dev Independent per-token custody model. Eligibility uses registration timestamps, never pool indices.
+/**
+ * @title Inventory Invariant Handler
+ * @notice Exercise donations, syncing, awards, claims, returns, and recovery against a per-token custody
+ *   model.
+ * @dev Eligibility uses independent registration timestamps rather than implementation pool indices.
+ */
 contract InventoryHandler is Test {
+    /**
+     * @dev Independent model states distinguish external ownership, unsynced custody, available stock, and
+     *   reserved claims.
+     */
     enum State {
         Outside,
         Unregistered,
@@ -28,6 +39,9 @@ contract InventoryHandler is Test {
     address public bidder = address(0xB1D);
     address public donor = address(0xD00);
 
+    /**
+     * @notice Mint 16 tokens in each of three collections to a donor and fund the bidding actor.
+     */
     constructor() {
         for (uint256 c; c < 3; c++) {
             tokens[c] = new MockERC721();
@@ -46,6 +60,12 @@ contract InventoryHandler is Test {
         vm.deal(bidder, 1_000_000 ether);
     }
 
+    /**
+     * @notice Donate an externally held token using either transfer method and record its model state.
+     * @dev Claimed prizes can be donated repeatedly; closed auctions are excluded.
+     * @param seed Seed selecting one of 48 collection/token pairs.
+     * @param unsafe True for plain transferFrom; false for safeTransferFrom.
+     */
     function donate(uint256 seed, bool unsafe) public {
         uint256 key = seed % 48;
         if (states[key] != State.Outside || prison.closed()) return;
@@ -65,6 +85,10 @@ contract InventoryHandler is Test {
         if (everClaimed[key]) returnedPrizes++;
     }
 
+    /**
+     * @notice Register an unsynced model token and record the registration timestamp.
+     * @param seed Seed selecting one of 48 collection/token pairs.
+     */
     function sync(uint256 seed) public {
         uint256 key = seed % 48;
         if (states[key] != State.Unregistered) return;
@@ -73,6 +97,9 @@ contract InventoryHandler is Test {
         registeredAt[key] = block.timestamp;
     }
 
+    /**
+     * @notice Add one ETH to the actor's bid when the auction has inventory and bidding is open.
+     */
     function bid() public {
         if (prison.closed() || block.timestamp >= prison.nextDrawAt() || prison.availableTokenCount() == 0) {
             return;
@@ -81,10 +108,18 @@ contract InventoryHandler is Test {
         prison.bid{value: 1 ether}();
     }
 
+    /**
+     * @notice Move simulated time forward to exercise cutoffs and timeouts.
+     * @param elapsed Seed bounded to 0-2 days.
+     */
     function advance(uint256 elapsed) public {
         vm.warp(block.timestamp + bound(elapsed, 0, 2 days));
     }
 
+    /**
+     * @notice Snapshot eligible model assets by registration time, start a round, and compare both frozen
+     *   counts.
+     */
     function start() public {
         if (prison.closed() || prison.pendingDrawId() != 0 || block.timestamp < prison.nextDrawAt()) return;
         uint256 mainCount;
@@ -108,12 +143,21 @@ contract InventoryHandler is Test {
         frozenBoxes = boxCount;
     }
 
+    /**
+     * @notice Deliver an arbitrary pair of words to the pending request.
+     * @param word Main-prize randomness.
+     * @param bonus Bonus randomness, including the coin-flip bit.
+     */
     function fulfill(uint256 word, uint256 bonus) public {
         uint256 id = prison.pendingDrawId();
         if (id == 0) return;
         vrf.fulfillPair(address(prison), prison.getDraw(id).requestId, word, bonus);
     }
 
+    /**
+     * @notice Verify awarded assets belonged to the frozen model stock and reserve them exactly once.
+     * @dev Also checks whether the recorded bonus matches the independent stock count and coin flip.
+     */
     function finalize() public {
         uint256 id = prison.pendingDrawId();
         if (id == 0 || prison.getDraw(id).status != ForgottenPrison.DrawStatus.Ready) return;
@@ -136,6 +180,10 @@ contract InventoryHandler is Test {
         finalizations++;
     }
 
+    /**
+     * @notice Claim a reserved model asset back to the donor, enabling later return.
+     * @param seed Seed selecting the reserved main or bonus asset.
+     */
     function claim(uint256 seed) public {
         uint256 key = seed % 48;
         if (states[key] != State.Reserved) return;
@@ -147,6 +195,9 @@ contract InventoryHandler is Test {
         everClaimed[key] = true;
     }
 
+    /**
+     * @notice Permanently close only when the independent timestamp checks permit the terminal exit.
+     */
     function shutdown() public {
         if (prison.closed()) return;
         uint256 id = prison.pendingDrawId();
@@ -160,6 +211,10 @@ contract InventoryHandler is Test {
         prison.shutdownStalledAuction();
     }
 
+    /**
+     * @notice Recover unassigned model inventory after shutdown and record external custody.
+     * @param seed Seed selecting the main or bonus asset.
+     */
     function recover(uint256 seed) public {
         uint256 key = seed % 48;
         if (!prison.closed() || states[key] != State.Available) return;
@@ -167,6 +222,10 @@ contract InventoryHandler is Test {
         states[key] = State.Outside;
     }
 
+    /**
+     * @notice Assert exact agreement among token ownership, modeled custody, unique pool entries, and
+     *   reserved claims.
+     */
     function assertCustody() external view {
         uint256 mainCount;
         uint256 boxCount;
