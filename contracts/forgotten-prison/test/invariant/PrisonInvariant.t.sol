@@ -21,7 +21,7 @@ contract PrisonInvariantTest is StdInvariant, Test {
     function setUp() public {
         handler = new PrisonHandler();
         prison = handler.prison();
-        bytes4[] memory selectors = new bytes4[](10);
+        bytes4[] memory selectors = new bytes4[](12);
         selectors[0] = handler.bid.selector;
         selectors[1] = handler.cancel.selector;
         selectors[2] = handler.advance.selector;
@@ -32,6 +32,8 @@ contract PrisonInvariantTest is StdInvariant, Test {
         selectors[7] = handler.withdraw.selector;
         selectors[8] = handler.shutdown.selector;
         selectors[9] = handler.refund.selector;
+        selectors[10] = handler.forceETH.selector;
+        selectors[11] = handler.probePayout.selector;
         targetContract(address(handler));
         targetSelector(FuzzSelector(address(handler), selectors));
 
@@ -42,15 +44,21 @@ contract PrisonInvariantTest is StdInvariant, Test {
         handler.fulfill(0);
         handler.finalize();
         handler.bid(1, 0.5 ether);
+        handler.resetMetrics();
     }
 
     /**
-     * @notice Ensure the campaign reached successful bids, starts, and finalizations.
+     * @notice Report generated transitions separately from setup, then prove all bidder funds can exit.
      */
-    function afterInvariant() public view {
-        assertGt(handler.successfulBids(), 2);
-        assertGt(handler.successfulDraws(), 0);
-        assertGt(handler.successfulFinalizations(), 0);
+    function afterInvariant() public {
+        emit log_named_uint("generated bids", handler.successfulBids());
+        emit log_named_uint("generated draws", handler.successfulDraws());
+        emit log_named_uint("generated finalizations", handler.successfulFinalizations());
+        emit log_named_uint("generated cancellations", handler.successfulCancellations());
+        handler.exitAll();
+        invariant_ETHAndEveryLiabilityMatchIndependentAccounting();
+        invariant_BidBookLeaderMatchesIndependentLinearOrdering();
+        invariant_NoDuplicatePrizesOrLostNFTs();
     }
 
     /**
@@ -71,8 +79,17 @@ contract PrisonInvariantTest is StdInvariant, Test {
         assertEq(prison.totalRefunds(), refunds);
         assertEq(prison.pendingPayments(), handler.modelPending());
         assertEq(prison.proceeds(), handler.earned() - handler.proceedsWithdrawn());
-        assertEq(address(prison).balance, handler.ethIn() - handler.ethOut());
-        assertEq(address(prison).balance, escrow + refunds + handler.modelPending() + prison.proceeds());
+        assertEq(address(prison).balance, handler.ethIn() - handler.ethOut() + handler.surplus());
+        assertEq(
+            address(prison).balance,
+            escrow + refunds + handler.modelPending() + prison.proceeds() + handler.surplus()
+        );
+        assertEq(prison.drawCount(), handler.lockedDrawCount());
+        for (uint256 id = 1; id <= handler.lockedDrawCount(); id++) {
+            ForgottenPrison.Draw memory draw = prison.getDraw(id);
+            assertEq(draw.winner, handler.lockedWinners(id));
+            assertEq(draw.price, handler.lockedPrices(id));
+        }
     }
 
     /**

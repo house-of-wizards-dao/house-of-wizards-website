@@ -41,14 +41,11 @@ Additional bid-book fuzzing checks FIFO ties, top-ups, arbitrary cancellations, 
 amounts above 160 bits against independent expected ordering.
 The invariant suite compares the bid book to a linear reference model and checks ETH and NFT
 conservation across deposits, cancellations, daily draws, claims, withdrawals, and shutdown.
-A second inventory handler models custody per collection/token and uses registration
-timestamps to check frozen eligibility independently of the implementation's array indices.
-It exercises safe/plain transfers, syncing, repeated awards after returns, main and bonus
-claims, late arrivals, and shutdown recovery. VRF fuzzing covers arbitrary pairs of random
-words, the independent bonus coin flip, and exclusion of arrivals after a draw locks.
-The handlers record successful transitions separately from attempts (invalid actions
-return early). The ETH campaign starts with a completed sale and live bids; the inventory
-campaign starts with mixed stock, an unregistered transfer, and a claimed/returned NFT.
+The inventory model also tracks exact frozen draws, first-accepted randomness, historical
+claims, and ETH through safe/plain transfers, syncing, repeated awards, and terminal recovery.
+Separate continuing-auction and shutdown campaigns prevent early closure from dominating
+all exploration. Lifecycle fuzz cases guarantee multi-round progress and repeated claims.
+See the invariant properties and reproduction commands below.
 
 ```sh
 MAINNET_RPC_URL=https://YOUR_ARCHIVE_ETHEREUM_RPC make fork
@@ -65,6 +62,62 @@ skipping integration coverage. A second fork test exercises the actual Warriors,
 and Imp Box contracts: ERC721 identity, safe/plain transfers, syncing, both prize claims,
 and returning a previously claimed asset. These NFT holders are impersonated only in
 local fork state. CI runs the offline suites; run the forks explicitly.
+
+## Fuzzing and invariants
+
+The three stateful campaigns target funded handlers with `fail_on_revert = true`.
+Expected negative calls are checked inside the handler; an unexpected revert fails
+the campaign. Unsupported actions may return early, so call counts alone are not
+evidence of successful transitions.
+
+| Property | Independent check |
+| --- | --- |
+| ETH conservation and withdrawal authority | Each actor's standing bid/refund and owner earnings match ghost balances. Contract ETH equals bids + pending payment + proceeds + refunds + forced surplus. Failed cancellations roll back; nonowners and withdrawals beyond earned proceeds fail. |
+| Correct winner and immutable price | A linear eight-actor model determines the maximum bid and FIFO tie priority. Every historical winner and price remain equal to the values locked at request time. |
+| Frozen selection domain | Registration timestamps determine eligible membership/counts. The public ordered prefixes are captured before the request and must stay identical while it is pending, including through donations, sync, and returns. |
+| First response and exact prizes | The handler records the first valid supplied pair of words independently of contract storage. Exact main and bonus assets are calculated from those words and captured prefixes. Wrong-ID, malformed, unauthorized, duplicate, and stale responses cannot replace them. |
+| Exclusive reservations and permanent claims | Every collection/token pair has one modeled owner/state and at most one outstanding reservation. Every historical claim flag stays consumed across later returns and awards. Stale claims, duplicate sync, and owner recovery of reserved prizes fail. |
+| Bonus independence | Award a box exactly when frozen box stock exists and the independent coin bit wins. Both words are fuzzed across uint256, and the separate VRF fuzz test flips only the bonus bit while holding the main result fixed. No statistical exactly-50% assertion is used. |
+| Monotonic lifecycle and exits | The model independently advances deadlines and Requested/Ready/Finalized/Aborted states. Ready draws cannot time out into refunds. Closure is permanent; late callbacks cannot revive it. |
+| Transfer rollback and reentrancy | Rejected NFT claims preserve the complete model; a reentrant NFT receiver must get the exact guard error. Main/bonus claims remain independent. |
+
+The inventory model reads request-time pool order because that order defines the
+selection domain; it does not duplicate the swap-and-pop algorithm. Eligibility is
+checked separately from that order. Expected random words, prices, statuses, owners,
+awards, and claim flags are never copied from the contract's resulting draw record.
+
+After each generated sequence, teardown must finalize a ready draw or time out an
+unfulfilled request, return all bidder credits, withdraw only earned proceeds, and
+consume remaining claims. The inventory campaigns additionally sync raw gifts and
+recover all unassigned stock. Only modeled forced ETH may remain. These are bounded
+exit checks over the fixture, not a proof of production oracle availability.
+
+Successful-action counters reset after setup and are logged before teardown; they
+describe the reported sequence, not aggregate campaign coverage. The three lifecycle
+fuzz tests start without seeded sales and require actual transitions: late donations
+and duplicate responses during a second draw, 2-6 consecutive awards of the same
+wizard/box with all old claims tested, and requested-versus-ready timeout behavior.
+This keeps progress checks from being satisfied by setup alone.
+
+```sh
+make fuzz       # 512 cases per fuzz test; 128 invariant runs at depth 128.
+make fuzz-deep  # 2,048 cases per fuzz test; 256 invariant runs at depth 256.
+make fuzz-deep FUZZ_SEED=0x1234  # Explore another reproducible random stream.
+make fuzz-mutants              # Check that three deliberately faulty copies fail.
+```
+
+Both fuzz targets default to seed `0xf012`; normal `make check` retains Foundry's
+default seed selection. The mutation command uses temporary copies and verifies
+assertion failures for VRF overwrites, incorrect selection indices, and reopened
+historical claims. It does not edit production sources. Detailed mutant logs and
+results are written under ignored `.tools/`.
+
+Validated with seed `0xf012`: all 12 fuzz properties passed 2,048 cases each
+(24,576 total); all three invariant campaigns passed 256 runs at depth 256
+(196,608 handler calls, zero unexpected reverts). All three deliberate mutants were
+rejected by assertion failures. `make check` passed all 107 local tests, including
+the unchanged gas snapshots; both pinned mainnet fork tests and `pnpm type-check`
+also passed. Production Solidity was unchanged by this test expansion.
 
 ## Gas optimization checklist
 
@@ -128,7 +181,7 @@ subscription fees. The public contract ABI and event definitions are unchanged.
 The internal bid storage layout changes; this is a new-deployment contract, not a
 storage-compatible upgrade.
 
-Validation after optimization: all 103 local tests and both pinned mainnet fork tests
+Validation at gas optimization commit `be38c45`: all 103 local tests and both pinned mainnet fork tests
 passed, as did the repository TypeScript check. Both handler invariant campaigns
 completed 128 runs at depth 128 with zero unexpected reverts. The generated contract
 ABI matches the baseline exactly. Slither 0.11.4 returned the same 11 detector warnings

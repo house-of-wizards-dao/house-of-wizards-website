@@ -21,6 +21,14 @@ runs = 128
 depth = 128
 fail_on_revert = true
 
+[profile.deep.fuzz]
+runs = 2048
+
+[profile.deep.invariant]
+runs = 256
+depth = 256
+fail_on_revert = true
+
 [rpc_endpoints]
 mainnet = "${MAINNET_RPC_URL}"
 

@@ -6,6 +6,7 @@ import {Test} from "forge-std/Test.sol";
 import {ForgottenPrison} from "../../src/ForgottenPrison.sol";
 import {MockERC721} from "../mocks/MockERC721.sol";
 import {MockVRFCoordinator} from "../mocks/MockVRFCoordinator.sol";
+import {ForceETH, RejectingRecipient} from "../mocks/Adversaries.sol";
 
 /**
  * @title Bid and ETH Invariant Handler
@@ -19,6 +20,7 @@ contract PrisonHandler is Test {
     MockERC721 public wizards;
     MockERC721 public boxes;
     MockVRFCoordinator public vrf;
+    RejectingRecipient public rejector;
     address[8] public actors;
     mapping(address => uint256) public modelBids;
     mapping(address => uint256) public modelSequences;
@@ -30,6 +32,10 @@ contract PrisonHandler is Test {
     uint256 public earned;
     uint256 public proceedsWithdrawn;
     uint256 public modelPending;
+    uint256 public surplus;
+    uint256 public lockedDrawCount;
+    mapping(uint256 => address) public lockedWinners;
+    mapping(uint256 => uint256) public lockedPrices;
     uint256 public assignedCount;
     uint256 public claims;
     uint256 public successfulBids;
@@ -47,6 +53,7 @@ contract PrisonHandler is Test {
         wizards = new MockERC721();
         boxes = new MockERC721();
         vrf = new MockVRFCoordinator();
+        rejector = new RejectingRecipient();
         prison = new ForgottenPrison(
             address(this),
             address(nft),
@@ -87,7 +94,7 @@ contract PrisonHandler is Test {
      * @notice Cancel a selected actor's active bid when its timing allows and update ETH outflow.
      * @param who Seed selecting the actor.
      */
-    function cancel(uint256 who) external {
+    function cancel(uint256 who) public {
         address actor = actors[who % actors.length];
         if (modelBids[actor] == 0) return;
         if (!prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()) {
@@ -123,6 +130,9 @@ contract PrisonHandler is Test {
         }
         assertEq(prison.getDraw(id).winner, winner);
         assertEq(prison.getDraw(id).price, price);
+        assertEq(id, ++lockedDrawCount);
+        lockedWinners[id] = winner;
+        lockedPrices[id] = price;
         modelBids[winner] = 0;
         modelPending = price;
         successfulDraws++;
@@ -141,7 +151,7 @@ contract PrisonHandler is Test {
     /**
      * @notice Finalize a ready draw, reject duplicate NFT awards, and update independent earned proceeds.
      */
-    function finalize() external {
+    function finalize() public {
         if (prison.pendingDrawId() == 0) return;
         uint256 id = prison.pendingDrawId();
         if (prison.getDraw(id).status != ForgottenPrison.DrawStatus.Ready) return;
@@ -159,7 +169,7 @@ contract PrisonHandler is Test {
      * @notice Claim a selected finalized round to its winner and track custody leaving the auction.
      * @param seed Seed bounded to existing draw IDs.
      */
-    function claim(uint256 seed) external {
+    function claim(uint256 seed) public {
         if (prison.drawCount() == 0) return;
         uint256 id = bound(seed, 1, prison.drawCount());
         ForgottenPrison.Draw memory draw = prison.getDraw(id);
@@ -173,7 +183,7 @@ contract PrisonHandler is Test {
      * @notice Withdraw bounded earned proceeds and update the independent ETH outflow model.
      * @param value Amount seed bounded to positive unwithdrawn proceeds.
      */
-    function withdraw(uint256 value) external {
+    function withdraw(uint256 value) public {
         uint256 available = earned - proceedsWithdrawn;
         if (available == 0) return;
         uint256 amount = bound(value, 1, available);
@@ -186,7 +196,7 @@ contract PrisonHandler is Test {
     /**
      * @notice Close only after the terminal timeout and convert any pending payment into model refunds.
      */
-    function shutdown() external {
+    function shutdown() public {
         if (prison.closed()) return;
         uint256 id = prison.pendingDrawId();
         if (id == 0) {
@@ -207,7 +217,7 @@ contract PrisonHandler is Test {
      * @notice Withdraw a selected actor's positive aborted-draw refund and update the model.
      * @param who Seed selecting one of eight actors.
      */
-    function refund(uint256 who) external {
+    function refund(uint256 who) public {
         address actor = actors[who % actors.length];
         uint256 amount = modelRefunds[actor];
         if (amount == 0) return;
@@ -216,6 +226,74 @@ contract PrisonHandler is Test {
         modelRefunds[actor] = 0;
         ethOut += amount;
         successfulRefunds++;
+    }
+
+    /**
+     * @notice Force ETH into custody without changing any bidder or owner credit.
+     * @param value Forced donation bounded to 1 wei-10 ETH.
+     */
+    function forceETH(uint256 value) external {
+        uint256 amount = bound(value, 1, 10 ether);
+        vm.deal(address(this), address(this).balance + amount);
+        new ForceETH{value: amount}(payable(address(prison)));
+        surplus += amount;
+    }
+
+    /**
+     * @notice Probe owner-only payments, over-withdrawals, and refund-transfer rollback during sequences.
+     * @param who Seed selecting the actor whose cancellation may fail.
+     */
+    function probePayout(uint256 who) external {
+        address actor = actors[who % actors.length];
+        vm.expectRevert(abi.encodeWithSignature("OwnableUnauthorizedAccount(address)", actor));
+        vm.prank(actor);
+        prison.withdrawProceeds(payable(actor), 1);
+        vm.expectRevert(ForgottenPrison.InsufficientProceeds.selector);
+        prison.withdrawProceeds(payable(address(this)), earned - proceedsWithdrawn + 1);
+        if (modelBids[actor] == 0) return;
+        if (!prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()) {
+            return;
+        }
+        vm.expectRevert(ForgottenPrison.TransferFailed.selector);
+        vm.prank(actor);
+        prison.cancelBid(payable(address(rejector)));
+    }
+
+    /**
+     * @notice Exclude setup activity from generated-operation metrics without changing the reference model.
+     */
+    function resetMetrics() external {
+        successfulBids = 0;
+        successfulDraws = 0;
+        successfulFinalizations = 0;
+        successfulCancellations = 0;
+        successfulRefunds = 0;
+        successfulProceedsWithdrawals = 0;
+    }
+
+    /**
+     * @notice Settle or time out the final request and prove that every bidder credit can leave custody.
+     * @dev Called after measuring generated actions. Unassigned inventory stays in this fixed-stock model.
+     */
+    function exitAll() external {
+        finalize();
+        uint256 id = prison.pendingDrawId();
+        uint256 deadline = id == 0 ? prison.nextDrawAt() : prison.getDraw(id).requestedAt;
+        vm.warp(block.timestamp > deadline + 7 days ? block.timestamp : deadline + 7 days);
+        shutdown();
+        for (uint256 i; i < actors.length; i++) {
+            cancel(i);
+            refund(i);
+        }
+        for (uint256 drawId = 1; drawId <= lockedDrawCount; drawId++) {
+            claim(drawId);
+        }
+        withdraw(earned - proceedsWithdrawn);
+        assertEq(address(prison).balance, surplus);
+        assertEq(prison.totalBidEscrow(), 0);
+        assertEq(prison.pendingPayments(), 0);
+        assertEq(prison.totalRefunds(), 0);
+        assertEq(prison.proceeds(), 0);
     }
 
     /**
