@@ -23,11 +23,11 @@ export type BreadfriendPlatform = "giphy" | "klipy";
 export type BreadfriendGif = {
   /** Stable unique key (e.g. the GIPHY id or a short slug). */
   readonly id: string;
-  /** Human-friendly title shown on the card. */
+  /** Human-friendly title, used as the preview's alt text and download filename. */
   readonly title: string;
   /** Which platform hosts this GIF. */
   readonly platform: BreadfriendPlatform;
-  /** Direct image URL used to render the preview (usually the raw .gif). */
+  /** Direct image URL used to render the preview (a .gif or animated .webp). */
   readonly previewUrl: string;
   /** Direct media URL used for the download (usually the same raw .gif). */
   readonly downloadUrl: string;

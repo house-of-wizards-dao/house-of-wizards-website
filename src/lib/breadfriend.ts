@@ -16,13 +16,17 @@ const PAGE_SIZE = 50; // GIPHY search maximum.
 const MAX_GIFS = 500; // Safety cap on pagination.
 const REVALIDATE_SECONDS = 3600;
 
-const giphyImageSchema = z.object({ url: z.string().url() });
+const giphyImageSchema = z.object({
+  url: z.string().url(),
+  // Animated WebP rendition: roughly a third of the GIF's size.
+  webp: z.string().url().optional(),
+});
 
 const giphyGifSchema = z.object({
   id: z.string().min(1),
-  title: z.string().default(""),
+  title: z.string().nullish(),
   url: z.string().url(),
-  username: z.string().default(""),
+  username: z.string().nullish(),
   images: z.object({
     original: giphyImageSchema,
     fixed_width: giphyImageSchema.optional(),
@@ -30,7 +34,9 @@ const giphyGifSchema = z.object({
 });
 
 const giphyResponseSchema = z.object({
-  data: z.array(giphyGifSchema),
+  // Items are validated one by one so a single malformed GIF is skipped
+  // instead of failing the whole page.
+  data: z.array(z.unknown()),
   pagination: z.object({
     total_count: z.number(),
     count: z.number(),
@@ -48,12 +54,28 @@ const cleanTitle = (rawTitle: string): string => {
 
 const toBreadfriendGif = (gif: GiphyGif): BreadfriendGif => ({
   id: gif.id,
-  title: cleanTitle(gif.title),
+  title: cleanTitle(gif.title ?? ""),
   platform: "giphy",
-  previewUrl: gif.images.fixed_width?.url ?? gif.images.original.url,
+  previewUrl:
+    gif.images.fixed_width?.webp ??
+    gif.images.fixed_width?.url ??
+    gif.images.original.url,
   downloadUrl: gif.images.original.url,
   pageUrl: gif.url,
 });
+
+/** True when the GIF was uploaded by the House of Wizards channel itself. */
+const isChannelGif = (gif: GiphyGif): boolean =>
+  gif.username?.toLowerCase() === giphyUsername.toLowerCase();
+
+/** Validates each raw item, dropping malformed GIFs and other channels' GIFs. */
+const parseChannelGifs = (items: readonly unknown[]): BreadfriendGif[] =>
+  items.flatMap((item) => {
+    const parsed = giphyGifSchema.safeParse(item);
+    return parsed.success && isChannelGif(parsed.data)
+      ? [toBreadfriendGif(parsed.data)]
+      : [];
+  });
 
 const fetchPage = async (
   apiKey: string,
@@ -85,8 +107,9 @@ const fetchPage = async (
 
 /**
  * Fetches every GIF on the House of Wizards GIPHY channel, paginating as needed.
- * Returns an empty array (never throws) if the key is missing or a request fails,
- * so the page can fall back to its curated list.
+ * Never throws: if the key is missing or the first request fails it returns an
+ * empty array so the page can fall back to its curated list, and if a later
+ * page fails it returns the GIFs collected so far.
  */
 export const fetchGiphyChannelGifs = async (): Promise<BreadfriendGif[]> => {
   const apiKey = process.env.GIPHY_API_KEY;
@@ -94,27 +117,31 @@ export const fetchGiphyChannelGifs = async (): Promise<BreadfriendGif[]> => {
     return [];
   }
 
-  try {
-    const gifs: BreadfriendGif[] = [];
-    let offset = 0;
+  // Keyed by id: pages are cached independently, so a new upload between
+  // revalidations can shift a GIF onto two pages.
+  const gifsById = new Map<string, BreadfriendGif>();
+  let offset = 0;
 
-    while (gifs.length < MAX_GIFS) {
+  try {
+    while (gifsById.size < MAX_GIFS && offset < MAX_GIFS) {
       const page = await fetchPage(apiKey, offset);
-      gifs.push(...page.data.map(toBreadfriendGif));
+      for (const gif of parseChannelGifs(page.data)) {
+        gifsById.set(gif.id, gif);
+      }
 
       const fetchedSoFar = page.pagination.offset + page.pagination.count;
       if (
         page.data.length === 0 ||
+        fetchedSoFar <= offset ||
         fetchedSoFar >= page.pagination.total_count
       ) {
         break;
       }
       offset = fetchedSoFar;
     }
-
-    return gifs;
   } catch (error) {
     logger.error("Failed to fetch GIPHY channel GIFs", error);
-    return [];
   }
+
+  return [...gifsById.values()];
 };

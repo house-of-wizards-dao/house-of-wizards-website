@@ -24,8 +24,13 @@ const triggerBlobDownload = (blob: Blob, filename: string): void => {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
-  URL.revokeObjectURL(objectUrl);
+  // Revoke on a later tick: revoking synchronously can cancel the download in
+  // some browsers.
+  setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
 };
+
+const downloadButtonClassName =
+  "inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-brand-500/90 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-60";
 
 type BreadfriendCardProps = {
   gif: BreadfriendGif;
@@ -34,6 +39,7 @@ type BreadfriendCardProps = {
 const BreadfriendCard = ({ gif }: BreadfriendCardProps) => {
   const toast = useToast();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [directDownloadFailed, setDirectDownloadFailed] = useState(false);
 
   const handleDownload = async (): Promise<void> => {
     setIsDownloading(true);
@@ -47,10 +53,13 @@ const BreadfriendCard = ({ gif }: BreadfriendCardProps) => {
       triggerBlobDownload(blob, filename);
       toast.success(`Downloaded ${gif.title}`);
     } catch {
-      // Cross-origin hosts can block direct fetching. Fall back to opening the
-      // raw media URL so the viewer can save it manually.
-      window.open(gif.downloadUrl, "_blank", "noopener,noreferrer");
-      toast.info(`Opened ${gif.title} in a new tab — right-click to save it.`);
+      // Cross-origin hosts can block direct fetching. Swap the button for a
+      // plain link to the raw media: a real link click is never popup-blocked,
+      // unlike window.open() after an await.
+      setDirectDownloadFailed(true);
+      toast.info(
+        `Couldn't download ${gif.title} directly — use "Open GIF" and save it from the new tab.`,
+      );
     } finally {
       setIsDownloading(false);
     }
@@ -78,21 +87,34 @@ const BreadfriendCard = ({ gif }: BreadfriendCardProps) => {
         {/* GIPHY's titles aren't editable at the source, so they are kept as the
             image alt text (accessibility/SEO) but not shown on the card. */}
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleDownload}
-            disabled={isDownloading}
-            className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-brand-500/90 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            <Download className="h-4 w-4" />
-            {isDownloading ? "Downloading…" : "Download"}
-          </button>
+          {directDownloadFailed ? (
+            <a
+              href={gif.downloadUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={downloadButtonClassName}
+            >
+              <ExternalLink className="h-4 w-4" />
+              Open GIF
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className={downloadButtonClassName}
+            >
+              <Download className="h-4 w-4" />
+              {isDownloading ? "Downloading…" : "Download"}
+            </button>
+          )}
           <a
             href={gif.pageUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 rounded-md border border-content3/30 px-3 py-2 text-sm transition-colors hover:border-brand-500/60 hover:text-brand-500"
             title={`View on ${gif.platform}`}
+            aria-label={`View ${gif.title} on ${gif.platform}`}
           >
             <ExternalLink className="h-4 w-4" />
           </a>
@@ -157,6 +179,17 @@ export const BreadfriendContent = ({ gifs }: BreadfriendContentProps) => {
             ))}
           </div>
         )}
+
+        <p className="text-center font-quad text-xs uppercase tracking-wide text-gray-400">
+          <a
+            href="https://giphy.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-brand-500"
+          >
+            Powered by GIPHY
+          </a>
+        </p>
       </div>
     </div>
   );
