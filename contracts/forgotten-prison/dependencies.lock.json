@@ -1,0 +1,22 @@
+{
+  "forge-std": {
+    "version": "1.17.0",
+    "url": "https://codeload.github.com/foundry-rs/forge-std/tar.gz/refs/tags/v1.17.0",
+    "sha256": "f104cf27931254c647377aa46e308189a694dbd207f9af2e891c2547e8c03300"
+  },
+  "openzeppelin-contracts": {
+    "version": "5.7.0",
+    "url": "https://codeload.github.com/OpenZeppelin/openzeppelin-contracts/tar.gz/refs/tags/v5.7.0",
+    "sha256": "b22c8372c556d64b4f7d614e06e555e181fda90b23f7389ab9e807a5cf59d942"
+  },
+  "chainlink": {
+    "version": "1.5.0",
+    "url": "https://registry.npmjs.org/@chainlink/contracts/-/contracts-1.5.0.tgz",
+    "sha256": "24a8d510e947a74763723845d5f55405997104aecb9d45061f969d25fb917a3d"
+  },
+  "solady": {
+    "version": "0.1.26",
+    "url": "https://codeload.github.com/Vectorized/solady/tar.gz/refs/tags/v0.1.26",
+    "sha256": "2204acf84e6e8687dd3258618aa5743a6c04d75d5e64590a8c98a9c015ed50ee"
+  }
+}

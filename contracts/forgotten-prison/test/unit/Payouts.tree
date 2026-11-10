@@ -1,0 +1,25 @@
+PayoutsTest
+├── When a payment is pending
+│   └── It should prevent owner withdrawal of that payment.
+├── When the owner withdraws completed sales
+│   └── It should preserve losing bidders funds.
+├── When a non owner withdraws proceeds
+│   └── It should revert.
+├── When the recipient rejects proceeds
+│   └── It should preserve the proceeds credit.
+├── When a non winner claims the NFT
+│   └── It should revert.
+├── When the winner claims before assignment
+│   └── It should revert.
+├── When the winner claims to another address
+│   └── It should deliver the reserved NFT once.
+├── When the NFT recipient rejects the transfer
+│   └── It should preserve the winner claim.
+├── When the owner withdraws before the NFT is claimed
+│   └── It should preserve the NFT claim.
+├── When an ETH recipient reenters owner withdrawal
+│   └── It should block repeated spending.
+├── When proceeds recipients or amounts are invalid
+│   └── It should revert.
+└── When ETH is forced into the contract
+    └── It should not become owner proceeds.

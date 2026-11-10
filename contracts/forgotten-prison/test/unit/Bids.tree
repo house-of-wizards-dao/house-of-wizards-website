@@ -1,0 +1,35 @@
+BidsTest
+├── When the payment is zero
+│   └── It should revert.
+├── When the cutoff is reached
+│   └── It should reject new bids and cancellation.
+├── When there is no inventory
+│   └── It should revert.
+├── When a bidder increases their offer
+│   └── It should charge only the top up and preserve total escrow.
+├── When equal bids exist
+│   └── It should prefer the earlier accepted amount.
+├── When a losing bidder cancels
+│   └── It should refund only their funds and preserve the leader.
+├── When the leader cancels before cutoff
+│   └── It should promote the next highest bid.
+├── When the refund recipient rejects ETH
+│   └── It should revert without removing the bid.
+├── When a bid rolls into the next day
+│   └── It should remain funded without charging again.
+├── When the winner bids again
+│   └── It should create a separate funded offer.
+├── When a refund recipient attempts reentrancy
+│   └── It should block duplicate withdrawal.
+├── When the recipient is invalid
+│   └── It should revert.
+├── When the bidder has no offer
+│   └── It should revert.
+├── When middle and tail bidders at an equal price cancel
+│   └── It should preserve the remaining queue and lower price bids.
+├── When the head of an equal price queue wins
+│   └── It should roll the remaining bidders forward in their original order.
+├── When an emptied price level is reused
+│   └── It should restore ordering without retaining stale bidders.
+└── When a top up joins an occupied price level
+    └── It should join after the existing equal bids.

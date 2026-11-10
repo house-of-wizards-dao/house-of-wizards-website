@@ -1,0 +1,33 @@
+InventoryTest
+├── When anyone safely transfers a supported NFT
+│   └── It should register custody without approval or a deposit call.
+├── When anyone syncs an unsafe transfer
+│   └── It should register it exactly once.
+├── When a token is not held by the auction
+│   └── It should revert.
+├── When an unrelated collection is sent
+│   └── It should revert.
+├── When a receiver callback is forged
+│   └── It should revert.
+├── When an assigned prize is synced
+│   └── It should revert.
+├── When a claimed prize is safely returned
+│   └── It should become eligible again without reopening its old claim.
+├── When a claimed prize is unsafely returned
+│   └── It should become eligible again only after sync.
+├── When an NFT arrives at the cutoff
+│   └── It should enter the following round only.
+├── When an NFT arrives after randomness is known
+│   └── It should leave the locked selection unchanged.
+├── When a late arrival remains behind the next cutoff
+│   └── It should preserve the eligible prefix through settlement.
+├── When a raw transfer predates cutoff but sync follows it
+│   └── It should use the registration time for eligibility.
+├── When an empty day has only queued prizes
+│   └── It should promote them without charging a bidder.
+├── When unsold recovery is attempted while open
+│   └── It should revert.
+├── When a closed auction receives an unsafe transfer
+│   └── It should permit sync and unsold recovery without reopening.
+└── When a recipient attempts reentrancy while claiming
+    └── It should reject registration inside the claim.

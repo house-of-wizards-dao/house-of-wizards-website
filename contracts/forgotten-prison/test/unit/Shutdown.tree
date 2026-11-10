@@ -1,0 +1,19 @@
+ShutdownTest
+├── When the timeout has not elapsed
+│   └── It should revert.
+├── When a VRF request stalls for seven days
+│   └── It should close permanently and refund the locked winner.
+├── When an unstarted day stalls for seven days
+│   └── It should unlock every standing bid.
+├── When a random result is already available
+│   └── It should require finalization instead of aborting.
+├── When a late callback follows shutdown
+│   └── It should ignore the callback.
+├── When a refunded winner withdraws twice
+│   └── It should revert on the second withdrawal.
+├── When the owner recovers unsold inventory after shutdown
+│   └── It should preserve already assigned prizes.
+├── When a closed auction receives new activity
+│   └── It should reject bids draws and deposits.
+└── When a refund transfer fails
+    └── It should preserve the refund credit.

@@ -1,0 +1,33 @@
+DrawTest
+├── When called before the daily deadline
+│   └── It should revert.
+├── When anyone calls at the deadline
+│   └── It should lock the highest bid and request two random words.
+├── When a request is already pending
+│   └── It should revert.
+├── When the subscription request fails
+│   └── It should preserve the winner funds and deadline.
+├── When the day has no bids
+│   └── It should advance the day without requesting randomness.
+├── When the day has no inventory
+│   └── It should advance the day without requesting randomness.
+├── When an unauthorized account fulfills
+│   └── It should revert.
+├── When the wrong request is fulfilled
+│   └── It should leave the draw waiting.
+├── When zero randomness is returned
+│   └── It should select a valid token including token zero.
+├── When randomness is duplicated
+│   └── It should preserve the first result.
+├── When finalization precedes randomness
+│   └── It should revert.
+├── When anyone finalizes a ready draw
+│   └── It should reserve one token and recognize only the winning payment.
+├── When a draw is finalized twice
+│   └── It should revert.
+├── When multiple days are drawn
+│   └── It should never assign the same token twice.
+├── When a late caller starts a draw
+│   └── It should schedule the next draw a full day later.
+└── When a pending draw outlasts the next cutoff
+    └── It should freeze changes to next day bids.

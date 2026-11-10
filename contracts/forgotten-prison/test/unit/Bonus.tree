@@ -1,0 +1,23 @@
+BonusTest
+├── When the bonus coin flip wins
+│   └── It should reserve a box and allow independent claims.
+├── When the bonus coin flip loses
+│   └── It should leave every box available.
+├── When the last box is awarded but unclaimed
+│   └── It should not be awarded again.
+├── When boxes are replenished
+│   └── It should resume the bonus on a later eligible draw.
+├── When a box arrives after cutoff or after randomness
+│   └── It should not change the locked bonus.
+├── When a bonus transfer fails
+│   └── It should preserve the bonus claim and permit the main claim.
+├── When a different account claims a bonus
+│   └── It should revert.
+├── When a won box returns
+│   └── It should be reusable without reopening the previous claim.
+├── When three wizards share the prize pool
+│   └── It should draw every wizard alongside warriors without replacement.
+├── When a finalized bonus survives shutdown
+│   └── It should remain reserved while unassigned boxes are recoverable.
+└── When the callback contains an incorrect number of words
+    └── It should ignore it and accept the subsequent valid response.

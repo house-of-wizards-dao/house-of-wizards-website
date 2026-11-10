@@ -1,0 +1,9 @@
+ConstructorTest
+├── When the collection or coordinator has no code
+│   └── It should revert.
+├── When a VRF setting is outside its supported range
+│   └── It should revert.
+├── When ownership changes
+│   └── It should require acceptance before proceeds control changes.
+└── When collections overlap or lack code
+    └── It should revert.
