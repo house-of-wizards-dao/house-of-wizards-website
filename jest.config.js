@@ -14,6 +14,7 @@ const config = {
   },
   testPathIgnorePatterns: [
     "<rootDir>/node_modules/",
+    "<rootDir>/contracts/",
     "<rootDir>/.next/",
     "<rootDir>/src/__tests__/mocks/",
   ],

@@ -1,0 +1,34 @@
+name: Forgotten Prison contracts
+
+on:
+  pull_request:
+    paths:
+      - 'contracts/forgotten-prison/**'
+      - '.github/workflows/forgotten-prison.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'contracts/forgotten-prison/**'
+      - '.github/workflows/forgotten-prison.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts/forgotten-prison
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.7
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install pinned dependencies and Bulloak
+        run: |
+          make deps
+          cargo install bulloak --version '=0.8.1' --locked --root .tools
+      - name: Check Bulloak specifications and run unit, fuzz, and invariant tests
+        run: make check
