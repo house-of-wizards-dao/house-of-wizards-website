@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Download, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { PageTitle } from "@/components/PageTitle";
@@ -9,6 +9,7 @@ import {
   channelViewsLabel,
   type BreadfriendGif,
 } from "@/data/breadfriend";
+import { fetchGiphyChannelGifs } from "@/lib/breadfriend";
 
 const sanitizeFilename = (name: string): string =>
   name
@@ -124,11 +125,24 @@ const BreadfriendCard = ({ gif }: BreadfriendCardProps) => {
   );
 };
 
-type BreadfriendContentProps = {
-  gifs: readonly BreadfriendGif[];
-};
+type GalleryState =
+  | { status: "loading" }
+  | { status: "ready"; gifs: readonly BreadfriendGif[] };
 
-export const BreadfriendContent = ({ gifs }: BreadfriendContentProps) => {
+export const BreadfriendContent = () => {
+  const [gallery, setGallery] = useState<GalleryState>({ status: "loading" });
+
+  useEffect(() => {
+    const controller = new AbortController();
+    void fetchGiphyChannelGifs(controller.signal).then((gifs) => {
+      if (!controller.signal.aborted) {
+        setGallery({ status: "ready", gifs });
+      }
+    });
+
+    return () => controller.abort();
+  }, []);
+
   return (
     <div className="flex min-h-screen max-w-8xl flex-col items-center gap-4">
       <PageTitle title="Breadfriend" subtitle="My God, I'm delicious!" />
@@ -165,17 +179,21 @@ export const BreadfriendContent = ({ gifs }: BreadfriendContentProps) => {
           ))}
         </div>
 
-        {gifs.length === 0 ? (
+        {gallery.status === "loading" ? (
+          <p role="status" className="p-8 text-center text-foreground-600">
+            Loading GIFs…
+          </p>
+        ) : gallery.gifs.length === 0 ? (
           <div className="mx-auto max-w-xl rounded-lg border border-dashed border-content3/30 p-8 text-center text-foreground-600">
-            <p className="text-lg">The Breadfriend GIFs are rising. 🍞</p>
+            <p className="text-lg">GIFs are unavailable right now.</p>
             <p className="mt-2 text-sm">
-              Check back soon, or find them now on the platforms above.
+              Browse the collection on GIPHY or KLIPY using the links above.
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-            {gifs.map((gif) => (
-              <BreadfriendCard key={gif.id} gif={gif} />
+            {gallery.gifs.map((gif, index) => (
+              <BreadfriendCard key={`${gif.id}-${index}`} gif={gif} />
             ))}
           </div>
         )}

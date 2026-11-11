@@ -33,6 +33,8 @@ cp .env.example .env.local
 
 For basic local UI work, some integrations can be left blank. Wallet login and marketplace/data-backed pages require the relevant API keys and URLs.
 
+The GIFs menu opens `/breadfriend`. Configure `NEXT_PUBLIC_GIPHY_API_KEY` with a GIPHY Web API key before building or deploying. This replaces the server-only `GIPHY_API_KEY`; the web key is intentionally visible in the browser. The gallery requests GIPHY directly on each visit, preserves the returned order, and does not cache API responses or retain media URLs between visits, following [GIPHY's integration requirements](https://developers.giphy.com/docs/api/#best-practices). If the key is missing or requests fail, visitors can still open the GIPHY and KLIPY channels. An eight-second deadline covers the entire paginated request, including response bodies. Account for one API request per page of up to 50 GIFs per visit when choosing the key's quota.
+
 ### Run Locally
 
 ```bash

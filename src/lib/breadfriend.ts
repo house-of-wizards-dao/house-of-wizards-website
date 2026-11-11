@@ -1,52 +1,40 @@
-// Server-side fetch of the House of Wizards GIFs from the GIPHY API.
-//
-// GIPHY has no public "list a user's uploads" endpoint, but a username search
-// (q=@<username>) returns exactly that channel's GIFs. New uploads appear
-// automatically, so the /breadfriend page never needs a hand-maintained list.
-//
-// Requires the server-only GIPHY_API_KEY env var. If it is missing or the
-// request fails, the caller falls back to `breadfriendFallbackGifs`.
+// Called from the gallery's client effect: GIPHY requires direct browser
+// requests without response caching, filtering, or reordering.
+// https://developers.giphy.com/docs/api/#best-practices
 
 import { z } from "zod";
 import { giphyUsername, type BreadfriendGif } from "@/data/breadfriend";
-import { logger } from "@/lib/logger";
 
 const GIPHY_SEARCH_ENDPOINT = "https://api.giphy.com/v1/gifs/search";
-const PAGE_SIZE = 50; // GIPHY search maximum.
-const MAX_GIFS = 500; // Safety cap on pagination.
-const REVALIDATE_SECONDS = 3600;
+const PAGE_SIZE = 50;
+const MAX_GIFS = 500;
+const LOAD_TIMEOUT_MS = 8000;
 
-const giphyImageSchema = z.object({
-  url: z.string().url(),
-  // Animated WebP rendition: roughly a third of the GIF's size.
-  webp: z.string().url().optional(),
-});
-
+const optionalImageUrl = z.string().url().optional().catch(undefined);
 const giphyGifSchema = z.object({
   id: z.string().min(1),
   title: z.string().nullish(),
   url: z.string().url(),
-  username: z.string().nullish(),
   images: z.object({
-    original: giphyImageSchema,
-    fixed_width: giphyImageSchema.optional(),
+    original: z.object({ url: z.string().url() }),
+    fixed_width: z
+      .object({ url: optionalImageUrl, webp: optionalImageUrl })
+      .optional()
+      .catch(undefined),
   }),
 });
 
 const giphyResponseSchema = z.object({
-  // Items are validated one by one so a single malformed GIF is skipped
-  // instead of failing the whole page.
-  data: z.array(z.unknown()),
+  data: z.array(giphyGifSchema),
   pagination: z.object({
-    total_count: z.number(),
-    count: z.number(),
-    offset: z.number(),
+    total_count: z.number().int().nonnegative(),
+    count: z.number().int().nonnegative(),
+    offset: z.number().int().nonnegative(),
   }),
 });
 
 type GiphyGif = z.infer<typeof giphyGifSchema>;
 
-/** Strips GIPHY's auto-appended " GIF by <channel>" suffix from a title. */
 const cleanTitle = (rawTitle: string): string => {
   const cleaned = rawTitle.replace(/\s*GIF( by .*)?$/i, "").trim();
   return cleaned.length > 0 ? cleaned : "House of Wizards GIF";
@@ -64,22 +52,10 @@ const toBreadfriendGif = (gif: GiphyGif): BreadfriendGif => ({
   pageUrl: gif.url,
 });
 
-/** True when the GIF was uploaded by the House of Wizards channel itself. */
-const isChannelGif = (gif: GiphyGif): boolean =>
-  gif.username?.toLowerCase() === giphyUsername.toLowerCase();
-
-/** Validates each raw item, dropping malformed GIFs and other channels' GIFs. */
-const parseChannelGifs = (items: readonly unknown[]): BreadfriendGif[] =>
-  items.flatMap((item) => {
-    const parsed = giphyGifSchema.safeParse(item);
-    return parsed.success && isChannelGif(parsed.data)
-      ? [toBreadfriendGif(parsed.data)]
-      : [];
-  });
-
 const fetchPage = async (
   apiKey: string,
   offset: number,
+  signal: AbortSignal,
 ): Promise<z.infer<typeof giphyResponseSchema>> => {
   const params = new URLSearchParams({
     api_key: apiKey,
@@ -92,11 +68,8 @@ const fetchPage = async (
 
   const response = await fetch(
     `${GIPHY_SEARCH_ENDPOINT}?${params.toString()}`,
-    {
-      next: { revalidate: REVALIDATE_SECONDS },
-    },
+    { cache: "no-store", signal },
   );
-
   if (!response.ok) {
     throw new Error(`GIPHY request failed with status ${response.status}`);
   }
@@ -106,28 +79,29 @@ const fetchPage = async (
 };
 
 /**
- * Fetches every GIF on the House of Wizards GIPHY channel, paginating as needed.
- * Never throws: if the key is missing or the first request fails it returns an
- * empty array so the page can fall back to its curated list, and if a later
- * page fails it returns the GIFs collected so far.
+ * Load the channel in GIPHY's response order, with one deadline for all pages.
+ * Returns collected results on failure (or [] for the channel-link fallback).
+ * The caller's signal cancels requests when the gallery is unmounted.
  */
-export const fetchGiphyChannelGifs = async (): Promise<BreadfriendGif[]> => {
-  const apiKey = process.env.GIPHY_API_KEY;
-  if (!apiKey) {
-    return [];
-  }
+export const fetchGiphyChannelGifs = async (
+  signal?: AbortSignal,
+): Promise<BreadfriendGif[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_GIPHY_API_KEY;
+  if (!apiKey || signal?.aborted) return [];
 
-  // Keyed by id: pages are cached independently, so a new upload between
-  // revalidations can shift a GIF onto two pages.
-  const gifsById = new Map<string, BreadfriendGif>();
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  signal?.addEventListener("abort", abort, { once: true });
+  const timeout = setTimeout(abort, LOAD_TIMEOUT_MS);
+  const gifs: BreadfriendGif[] = [];
   let offset = 0;
 
   try {
-    while (gifsById.size < MAX_GIFS && offset < MAX_GIFS) {
-      const page = await fetchPage(apiKey, offset);
-      for (const gif of parseChannelGifs(page.data)) {
-        gifsById.set(gif.id, gif);
-      }
+    while (offset < MAX_GIFS && !controller.signal.aborted) {
+      const page = await fetchPage(apiKey, offset, controller.signal);
+      // Channel selection belongs in the API query. Preserve every returned
+      // entry and its media URLs, including their query parameters.
+      gifs.push(...page.data.map(toBreadfriendGif));
 
       const fetchedSoFar = page.pagination.offset + page.pagination.count;
       if (
@@ -139,9 +113,12 @@ export const fetchGiphyChannelGifs = async (): Promise<BreadfriendGif[]> => {
       }
       offset = fetchedSoFar;
     }
-  } catch (error) {
-    logger.error("Failed to fetch GIPHY channel GIFs", error);
+  } catch {
+    // Network failures, aborts and invalid responses leave channel links usable.
+  } finally {
+    clearTimeout(timeout);
+    signal?.removeEventListener("abort", abort);
   }
 
-  return [...gifsById.values()];
+  return gifs;
 };

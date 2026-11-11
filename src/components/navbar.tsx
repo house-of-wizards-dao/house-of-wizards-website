@@ -175,7 +175,7 @@ const artDropdown: NavDropdown = {
       href: "/art",
     },
     {
-      label: "Breadfriend",
+      label: "GIFs",
       href: "/breadfriend",
     },
   ],
