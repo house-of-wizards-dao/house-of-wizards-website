@@ -146,15 +146,26 @@ const shopDropdown: NavDropdown = {
   ],
 };
 
+const artDropdown: NavDropdown = {
+  label: "ART",
+  items: [
+    {
+      label: "Art",
+      href: "/art",
+    },
+    {
+      label: "GIFs",
+      href: "/breadfriend",
+    },
+  ],
+};
+
 const navigationItems: NavItem[] = [
   {
     label: "Characters",
     href: "/characters",
   },
-  {
-    label: "Art",
-    href: "/art",
-  },
+  artDropdown,
   shopDropdown,
   magicDropdown,
   toolsDropdown,
