@@ -36,6 +36,32 @@ contract BidsTest is PrisonTestBase {
     }
 
     /**
+     * @notice Verify: allow cancellation without closing.
+     * @dev Scenario: when a cutoff stalls for seven days. Frozen bidders regain an exit while the auction
+     *   stays open, and a later start still works for whoever stayed in.
+     */
+    function test_WhenACutoffStallsForSevenDays() external {
+        _bid(alice, 2 ether);
+        _bid(bob, 1 ether);
+        vm.warp(prison.nextDrawAt() + 7 days - 1);
+        vm.expectRevert(ForgottenPrison.CutoffReached.selector);
+        vm.prank(alice);
+        prison.cancelBid(payable(alice));
+        vm.warp(prison.nextDrawAt() + 7 days);
+        vm.prank(alice);
+        prison.cancelBid(payable(alice));
+        assertEq(alice.balance, 100 ether);
+        assertFalse(prison.closed());
+        vm.expectRevert(ForgottenPrison.CutoffReached.selector);
+        vm.prank(carol);
+        prison.bid{value: 3 ether}();
+        uint256 id = prison.startDailyDraw();
+        assertEq(prison.getDraw(id).winner, bob);
+        assertEq(prison.getDraw(id).price, 1 ether);
+        _assertAccounting();
+    }
+
+    /**
      * @notice Verify: revert.
      * @dev Scenario: when there is no inventory.
      */

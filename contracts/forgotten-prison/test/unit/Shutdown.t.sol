@@ -3,6 +3,7 @@
  */
 pragma solidity 0.8.30;
 import "../Base.t.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 /**
  * @title Terminal Shutdown Behavior Tests
@@ -46,14 +47,35 @@ contract ShutdownTest is PrisonTestBase {
     }
 
     /**
-     * @notice Verify: unlock every standing bid.
-     * @dev Scenario: when an unstarted day stalls for seven days.
+     * @notice Verify: revert.
+     * @dev Scenario: when a stranger closes an idle day after seven days. The oracle is healthy and a start
+     *   would succeed, so a non-owner must not be able to brick the deployment.
      */
-    function test_WhenAnUnstartedDayStallsForSevenDays() external {
+    function test_RevertWhen_AStrangerClosesAnIdleDayAfterSevenDays() external {
+        _bid(alice, 2 ether);
+        vm.warp(prison.nextDrawAt() + 7 days);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, carol));
+        vm.prank(carol);
+        prison.shutdownStalledAuction();
+        assertFalse(prison.closed());
+        uint256 id = prison.startDailyDraw();
+        assertEq(prison.getDraw(id).winner, alice);
+        _assertAccounting();
+    }
+
+    /**
+     * @notice Verify: unlock every standing bid.
+     * @dev Scenario: when the owner closes an idle day after seven days.
+     */
+    function test_WhenTheOwnerClosesAnIdleDayAfterSevenDays() external {
         _bid(alice, 2 ether);
         _bid(bob, 1 ether);
+        vm.warp(prison.nextDrawAt() + 7 days - 1);
+        vm.expectRevert(ForgottenPrison.CannotShutdown.selector);
+        prison.shutdownStalledAuction();
         vm.warp(prison.nextDrawAt() + 7 days);
         prison.shutdownStalledAuction();
+        assertTrue(prison.closed());
         vm.prank(alice);
         prison.cancelBid(payable(alice));
         vm.prank(bob);

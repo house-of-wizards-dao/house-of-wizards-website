@@ -3,7 +3,9 @@ ShutdownTest
 │   └── It should revert.
 ├── When a VRF request stalls for seven days
 │   └── It should close permanently and refund the locked winner.
-├── When an unstarted day stalls for seven days
+├── When a stranger closes an idle day after seven days
+│   └── It should revert.
+├── When the owner closes an idle day after seven days
 │   └── It should unlock every standing bid.
 ├── When a random result is already available
 │   └── It should require finalization instead of aborting.

@@ -226,6 +226,8 @@ and [Solidity storage layout](https://docs.soliditylang.org/en/v0.8.30/internals
 - `cancelBid(to)` withdraws the entire active bid; partial reductions are outside
   the MVP. Every active bid freezes at `nextDrawAt`, including the leader's bid.
   After the winner is locked, the losing bids can be cancelled until the next cutoff.
+  If a cutoff passes and no start succeeds for seven days, cancellation reopens for
+  every frozen bid while the auction stays open; a later start still works.
 - Anyone can call `startDailyDraw()` at or after the deadline. It locks the highest
   bidder, price, and the inventory registered before that cutoff, before requesting VRF.
   The caller supplies no winner, token, or seed. Only one request may be pending.
@@ -293,10 +295,14 @@ means coordinator migration requires a new deployment.
 
 ## Failure exit
 
-`shutdownStalledAuction()` is permissionless after seven days without a request
-being fulfilled, or seven days after an unstarted cutoff. It **permanently closes**
-the deployment. It never rerolls or restarts a round. This is a stalled-auction
-timeout, not a bid expiry.
+`shutdownStalledAuction()` is permissionless seven days after a request was made
+without being fulfilled; that branch exists to return the locked winner's payment.
+With no pending draw it is **owner-only**, and still requires seven days after an
+unstarted cutoff. A healthy deployment that simply went a week without a
+`startDailyDraw()` call cannot be closed by a stranger; frozen bidders instead regain
+`cancelBid` after that same timeout. Shutdown **permanently closes** the deployment.
+It never rerolls or restarts a round. This is a stalled-auction timeout, not a bid
+expiry.
 
 For an unfulfilled locked draw, its price becomes a winner-owned refund withdrawable
 through `withdrawRefund(to)`. All standing bids become cancellable. Late callbacks
@@ -322,7 +328,7 @@ decide whether a late oracle fulfillment or terminal shutdown takes effect first
 | `finalizeDraw()` | Owner wants proceeds or winner wants assigned NFT | Ready draw waits; anyone can finalize |
 | `claimNFT(id,to)` / `claimBonus(id,to)` | Winner wants their main prize / box | Each unclaimed prize stays reserved |
 | `withdrawProceeds(to,amount)` | Owner wants earned ETH | Proceeds stay credited |
-| `shutdownStalledAuction()` | Participant wants an exit from a stalled auction | Locks persist until someone calls |
+| `shutdownStalledAuction()` | Anyone, when a request is unfulfilled for seven days; owner only, for an idle unstarted cutoff | Locked payment persists until someone calls; frozen bids regain `cancelBid` after seven days regardless |
 | `withdrawRefund(to)` | Aborted winner wants their ETH | Refund stays credited |
 | `recoverUnsoldNFT(collection,id,to)` | Owner recovers unassigned stock after closure | NFTs remain in contract |
 
@@ -340,7 +346,7 @@ onchain; any future browsing UI and historical ranking should derive from events
 
 | Property | Concrete compromise, mitigation, and escape |
 | --- | --- |
-| Censorship resistance | Owner cannot block settlement, choose winners, pause withdrawals, or upgrade code. Subscription manager/Chainlink can interrupt randomness; seven-day terminal exit returns bidder funds. Call directly with any RPC; no hosted backend is required. |
+| Censorship resistance | Owner cannot block settlement, choose winners, pause withdrawals, or upgrade code. Subscription manager/Chainlink can interrupt randomness; after seven days bidders regain cancellation and any locked payment can be refunded by permissionless shutdown. Idle closure is reserved to the owner so no stranger can brick a healthy deployment. Call directly with any RPC; no hosted backend is required. |
 | Open | Sources, ABI generation (`forge build`), dependency pins, tests, and deployment script are in this directory. No UI/indexer is required for contract access. |
 | Free | Project code is MIT; installed dependencies retain their upstream licenses. Anyone can fork and operate this contract. |
 | Privacy | Wallets, bids, inventory, winners, payments and timing are public. RPC providers see requests and connection metadata. No identity data is collected here; use a chosen RPC and avoid linking wallets unnecessarily. |

@@ -456,15 +456,20 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuardTransient, IERC721Recei
 
     /**
      * @notice Cancel your entire active bid and withdraw its ETH to a chosen recipient.
-     * @dev Available before the next cutoff, or at any time after closure or exhaustion of registered main
-     *   inventory. A winning payment already locked in a draw is no longer an active bid and cannot be
-     *   cancelled. The refund uses checks-effects-interactions; a failed transfer restores the bid and
-     *   escrow.
+     * @dev Available before the next cutoff, at any time after closure or exhaustion of registered main
+     *   inventory, and again once a cutoff has gone seven days without a successful start. That last window
+     *   gives frozen bidders an exit when starts keep failing, without closing the deployment. A winning
+     *   payment already locked in a draw is no longer an active bid and cannot be cancelled. The refund
+     *   uses checks-effects-interactions; a failed transfer restores the bid and escrow.
      * @param recipient Nonzero ETH recipient other than this auction.
      */
     function cancelBid(address payable recipient) external nonReentrant {
         _checkRecipient(recipient);
-        require(closed || _inventory.assets.length == 0 || block.timestamp < nextDrawAt, CutoffReached());
+        require(
+            closed || _inventory.assets.length == 0 || block.timestamp < nextDrawAt
+                || block.timestamp >= nextDrawAt + STALL_TIMEOUT,
+            CutoffReached()
+        );
         BidBook.Bid memory removed = _bids.remove(msg.sender);
         require(removed.amount != 0, NoBid());
         totalBidEscrow -= removed.amount;
@@ -662,16 +667,20 @@ contract ForgottenPrison is Ownable2Step, ReentrancyGuardTransient, IERC721Recei
 
     /**
      * @notice Permanently close an auction that has stalled for at least seven days.
-     * @dev Anyone may close seven days after an unstarted cutoff, or seven days after the pending request
-     *   was made if randomness has not arrived. A ready draw must be finalized instead. An aborted winning
-     *   payment becomes a refund, and standing bids become cancellable. Existing finalized proceeds and
-     *   main/bonus claims remain valid. Closure enables owner recovery of unsold stock and rejects new
-     *   safe-transfer donations; it never restarts or rerolls a draw. Bids themselves have no expiry.
+     * @dev Anyone may close seven days after the pending request was made if randomness has not arrived;
+     *   that branch protects the locked winner's payment. With no pending draw, only the owner may close,
+     *   and only seven days after an unstarted cutoff; an idle but healthy deployment cannot be closed by
+     *   a stranger, and frozen bidders already regain cancellation after that same timeout. A ready draw
+     *   must be finalized instead. An aborted winning payment becomes a refund, and standing bids become
+     *   cancellable. Existing finalized proceeds and main/bonus claims remain valid. Closure enables owner
+     *   recovery of unsold stock and rejects new safe-transfer donations; it never restarts or rerolls a
+     *   draw. Bids themselves have no expiry.
      */
     function shutdownStalledAuction() external nonReentrant {
         require(!closed, AuctionClosed());
         uint256 drawId = pendingDrawId;
         if (drawId == 0) {
+            _checkOwner();
             require(block.timestamp >= nextDrawAt + STALL_TIMEOUT, CannotShutdown());
         } else {
             Draw storage draw = _draws[drawId];

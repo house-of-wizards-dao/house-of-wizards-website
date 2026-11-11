@@ -3,6 +3,8 @@ BidsTest
 │   └── It should revert.
 ├── When the cutoff is reached
 │   └── It should reject new bids and cancellation.
+├── When a cutoff stalls for seven days
+│   └── It should allow cancellation without closing.
 ├── When there is no inventory
 │   └── It should revert.
 ├── When a bidder increases their offer

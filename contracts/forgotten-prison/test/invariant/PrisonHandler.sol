@@ -97,7 +97,10 @@ contract PrisonHandler is Test {
     function cancel(uint256 who) public {
         address actor = actors[who % actors.length];
         if (modelBids[actor] == 0) return;
-        if (!prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()) {
+        if (
+            !prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()
+                && block.timestamp < prison.nextDrawAt() + 7 days
+        ) {
             return;
         }
         uint256 amount = modelBids[actor];
@@ -195,6 +198,7 @@ contract PrisonHandler is Test {
 
     /**
      * @notice Close only after the terminal timeout and convert any pending payment into model refunds.
+     * @dev This handler deployed the auction, so idle closure runs as the owner.
      */
     function shutdown() public {
         if (prison.closed()) return;
@@ -251,7 +255,10 @@ contract PrisonHandler is Test {
         vm.expectRevert(ForgottenPrison.InsufficientProceeds.selector);
         prison.withdrawProceeds(payable(address(this)), earned - proceedsWithdrawn + 1);
         if (modelBids[actor] == 0) return;
-        if (!prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()) {
+        if (
+            !prison.closed() && prison.availableTokenCount() != 0 && block.timestamp >= prison.nextDrawAt()
+                && block.timestamp < prison.nextDrawAt() + 7 days
+        ) {
             return;
         }
         vm.expectRevert(ForgottenPrison.TransferFailed.selector);

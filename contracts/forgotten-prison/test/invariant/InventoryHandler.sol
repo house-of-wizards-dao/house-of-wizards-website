@@ -164,7 +164,10 @@ contract InventoryHandler is Test {
      */
     function cancel() public {
         if (modelBid == 0) return;
-        if (!modelClosed && _available(false) != 0 && block.timestamp >= modelNextDrawAt) return;
+        if (
+            !modelClosed && _available(false) != 0 && block.timestamp >= modelNextDrawAt
+                && block.timestamp < modelNextDrawAt + 7 days
+        ) return;
         vm.prank(bidder);
         prison.cancelBid(payable(bidder));
         ethOut += modelBid;
@@ -389,6 +392,7 @@ contract InventoryHandler is Test {
 
     /**
      * @notice Close only after the independent timeout, asserting that ready draws cannot be aborted.
+     * @dev This handler deployed the auction, so idle closure runs as the owner.
      */
     function shutdown() public {
         if (modelClosed) return;
