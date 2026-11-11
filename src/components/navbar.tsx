@@ -41,27 +41,6 @@ const isDropdown = (item: NavItem): item is NavDropdown => {
   return "items" in item;
 };
 
-const gamesDropdown: NavDropdown = {
-  label: "GAMES",
-  items: [
-    {
-      label: "The Runiverse Game",
-      href: "https://game.runiverse.world/",
-      external: true,
-    },
-    {
-      label: "Shucks - Pumpkin Panic",
-      href: "https://feckless.dev/shucks/",
-      external: true,
-    },
-    {
-      label: "Runes TCG",
-      href: "https://www.runes-tcg.com/",
-      external: true,
-    },
-  ],
-};
-
 const magicDropdown: NavDropdown = {
   label: "MAGIC",
   items: [
@@ -179,7 +158,10 @@ const navigationItems: NavItem[] = [
   shopDropdown,
   magicDropdown,
   toolsDropdown,
-  gamesDropdown,
+  {
+    label: "Games",
+    href: "/gaming-hub",
+  },
   daoDropdown,
 ];
 
@@ -267,7 +249,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       {/* Desktop Navigation Links */}
-      <NavbarContent className="hidden lg:flex gap-6 justify-start ml-2 uppercase">
+      <NavbarContent className="hidden xl:flex gap-6 justify-start ml-2 uppercase">
         {navigationItems.map((item) => {
           if (isDropdown(item)) {
             return (
@@ -389,7 +371,7 @@ export const Navbar = () => {
       </NavbarContent>
 
       {/* Mobile Menu Button */}
-      <NavbarContent className="lg:hidden basis-1 pl-4" justify="end">
+      <NavbarContent className="xl:hidden basis-1 pl-4" justify="end">
         <NavbarItem>
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -409,7 +391,7 @@ export const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="bg-black/95 backdrop-blur-sm z-[9999] fixed inset-0 lg:hidden">
+        <div className="bg-black/95 backdrop-blur-sm z-[9999] fixed inset-0 xl:hidden">
           <div className="mx-4 mt-4 flex flex-col gap-2">
             {/* Close Button */}
             <div className="flex justify-end mb-4">
