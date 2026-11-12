@@ -15,6 +15,7 @@ import { artworkTitle } from "@/lib/art-titles";
 import { artFileSchema } from "@/types/art";
 import { cmsArtworkSchema } from "@/types/cms-art";
 import { logger } from "@/lib/logger";
+import { ArtUploadError, restoreArtUploads } from "./cms-art-uploads";
 
 type Kind = "artist" | "artwork";
 type ObjectRef = { bucket_id: string; object_path: string };
@@ -57,6 +58,8 @@ export const cleanArtStorage = async () => {
   const { data, error } = await db()
     .from("commission_storage_cleanup")
     .select("bucket_id,object_path")
+    // Staging uploads are queued for a future time so active uploads survive.
+    .lte("created_at", new Date().toISOString())
     .limit(500);
   if (error || !data) return;
   const objects = z
@@ -391,6 +394,12 @@ export const artCMS =
       )
         throw new ArtError("Upload no more than 120 MB at once", 413);
       const form = await request.formData();
+      await restoreArtUploads(
+        form,
+        auth.address,
+        kind === "artist" ? "artists" : "artworks",
+        param,
+      );
       const bytes = Array.from(form.values()).reduce(
         (total, value) => total + (typeof value !== "string" ? value.size : 0),
         0,
@@ -662,6 +671,8 @@ export const artCMS =
         );
       }
       await queueCleanup(uploaded);
+      if (error instanceof ArtUploadError)
+        return NextResponse.json({ error: error.message }, { status: 400 });
       if (error instanceof z.ZodError)
         return NextResponse.json(
           {
