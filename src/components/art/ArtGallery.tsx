@@ -339,12 +339,11 @@ export const ArtGallery = ({ catalog, directory = false }: Props) => {
                     {work.files.filter((f) => f.variant === "original").length >
                       1 && (
                       <span className="art-comic-label">
-                        Comic ·{" "}
                         {
                           work.files.filter((f) => f.variant === "original")
                             .length
                         }{" "}
-                        pages
+                        files
                       </span>
                     )}
                   </Link>

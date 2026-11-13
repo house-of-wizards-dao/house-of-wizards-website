@@ -510,7 +510,7 @@ export const artCMS =
             throw new ArtError("Web preview must be audio or video");
         }
         if (originals.length > 30)
-          throw new ArtError("Upload no more than 30 comic pages at once");
+          throw new ArtError("Upload no more than 30 original files at once");
         let existing: StoredFile[] = [];
         if (param) {
           const { data, error } = await db()
@@ -538,7 +538,7 @@ export const artCMS =
         );
         if (!input.comic && retained.length + originals.length > 1)
           throw new ArtError(
-            "Separate originals need separate artworks. Enable comic mode only for comic pages.",
+            "Enable multiple files to group related images or media in one artwork. Upload unrelated works as separate artworks.",
           );
         if ((poster || webPreview) && originals[0]?.type.startsWith("image/"))
           throw new ArtError(
@@ -568,7 +568,9 @@ export const artCMS =
           (page) => !input.remove_file_ids.includes(page.id),
         );
         if (input.comic && pages.length !== retained.length)
-          throw new ArtError("Set a page number for each retained comic page");
+          throw new ArtError(
+            "Set a display order for each retained original file",
+          );
         if (!input.comic) {
           for (const file of retained)
             pages.push({ id: file.id, page_number: 1 });

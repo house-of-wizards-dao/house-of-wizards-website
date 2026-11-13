@@ -72,7 +72,7 @@ export const saveEntry = async (
   });
   if (response.status === 413)
     throw new Error(
-      "The upload is too large for this server. Try a smaller file or fewer comic pages.",
+      "The upload is too large for this server. Try a smaller file or fewer files.",
     );
   const body: unknown = await response.json().catch(() => null);
   const parsed = z
