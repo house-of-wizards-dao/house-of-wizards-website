@@ -25,7 +25,7 @@ Compatibility is intentional:
 
 - Public pages have stable session/query providers. Wallet UI loads on request or for a persisted connection; wallet routes have their own stable provider sharing one browser Wagmi store. Config updates no longer remount the page tree.
 - Route providers reconnect only when a persisted or active connection exists. Anonymous visits skip Wagmi's connector-wide reconnect probe, which otherwise imports provider SDKs before any wallet interaction. The navbar and providers share the same guarded storage reader.
-- Anonymous visits also defer WalletConnect's eager `setup`. The installed connector's `connect()` initializes its provider and registers its listeners on demand; returning sessions retain normal setup. RainbowKit's default wallets, injected-wallet discovery, connector methods, and the stable shared Wagmi config are preserved.
+- Anonymous visits also defer WalletConnect's eager `setup` and MetaMask SDK setup when no injected provider is present. Both installed connectors initialize their providers and register listeners in `connect()`; returning sessions and installed injected providers retain normal setup. RainbowKit's default wallets, injected-wallet discovery, connector methods, and the stable shared Wagmi config are preserved.
 - Navigation does not prefetch wallet routes. This keeps wallet SDK downloads out of public visits.
 - Marketplace display traits and affinities are server-only. Listings carry a small numeric trait record; cached endpoints supply filter options and one selected character's detail. Character pages receive only their own metadata and backpack account address.
 - Collection browsers load on selection. Gallery and marketplace grids render at most 48 items per page.
@@ -43,19 +43,19 @@ Browser tests run against a production server on port 3100. Install Chromium wit
 
 CI runs Node 26 and uses a read-only local Supabase fixture, with no production credentials. Lighthouse checks use three mobile runs per route and retain the reports. The artifact upload explicitly includes hidden files so `.lighthouseci/` is preserved. The fixture makes CI deterministic; it does not measure production API latency or replace real-user Core Web Vitals.
 
-Gzip budgets: homepage 360 KiB, marketplace 530 KiB, characters shell 510 KiB, and each deferred chunk 500 KiB. Initial budgets conservatively include the legacy-browser polyfill. The checker fails when the expected Next build artifacts change instead of silently passing.
+Gzip budgets: homepage 360 KiB, marketplace 530 KiB, characters shell 510 KiB, and each deferred chunk 500 KiB. Initial budgets conservatively include the legacy-browser polyfill. The checker fails when the expected Next build artifacts change instead of silently passing. The desktop/mobile browser suite also caps anonymous marketplace script transfer at 550 KiB, including automatically loaded dynamic chunks before wallet interaction.
 
 Dependabot checks npm packages and GitHub Actions weekly. Review framework and wallet changes together and rerun the browser suite.
 
 ## Validation results
 
-Validated with Node 26.13.1: production build, TypeScript, ESLint (zero warnings), all 218 tests in 23 suites, six production browser tests across desktop/mobile, and bundle budgets pass. `pnpm peers check` reports no peer issues.
+Validated with Node 26.13.1: production build, TypeScript, ESLint (zero warnings), all 222 tests in 23 suites, six production browser tests across desktop/mobile, and bundle budgets pass. `pnpm peers check` reports no peer issues.
 
 | Initial route JavaScript | Gzip size | Budget  |
 | ------------------------ | --------- | ------- |
 | Home                     | 330.6 KiB | 360 KiB |
-| Marketplace              | 470.5 KiB | 530 KiB |
-| Characters shell         | 442.6 KiB | 510 KiB |
+| Marketplace              | 470.6 KiB | 530 KiB |
+| Characters shell         | 442.7 KiB | 510 KiB |
 
 These build measurements include the legacy-browser polyfill. Browser transfer measurements exclude scripts that the browser does not request.
 
@@ -71,9 +71,9 @@ The successful build retains an upstream Viem/Ox dynamic-import warning from its
 
 ### CI blocking-time follow-up (November 15, 2026)
 
-The first GitHub run on `f402804` failed the marketplace TBT gate at 514 ms against a 500 ms limit. Anonymous visits were probing all wallet connectors during reconnection, while WalletConnect also initialized its provider during connector setup. Both unnecessary startup paths are now skipped when there is no connection to restore. Persisted wallets and active shared connections retain restoration; explicit connection still uses the original connector methods.
+The first GitHub run on `f402804` failed the marketplace TBT gate at 514 ms against a 500 ms limit. Anonymous visits were probing all wallet connectors during reconnection, while WalletConnect and MetaMask also initialized their providers during connector setup. Those unnecessary startup paths are now skipped when there is no connection or installed injected provider to restore. Persisted wallets and active shared connections retain restoration; explicit connection still uses the original connector methods.
 
-On the same local production build setup, three mobile marketplace runs measured median TBT falling from **308 ms to 176.5 ms**, JavaScript transfer from **979.6 KiB to 608.2 KiB**, and performance score from **93 to 98**. These are local comparisons, not predictions of CI timing. The 500 ms limit and other Lighthouse thresholds are unchanged. Regression tests cover returning wallets, an already-connected shared store, invalid/blocked storage, and preserved connector behavior. CI now uploads its hidden Lighthouse report directory as well as browser reports.
+On the same local production build setup, three mobile marketplace runs measured median TBT falling from **308 ms to 72.5 ms**, JavaScript transfer from **979.6 KiB to 453.0 KiB**, and performance score from **93 to 100**. These are local comparisons, not predictions of CI timing. The 500 ms limit and other Lighthouse thresholds are unchanged. Regression tests cover returning wallets, an already-connected shared store, invalid/blocked storage, installed injected providers, and preserved connector behavior. CI now uploads its hidden Lighthouse report directory as well as browser reports.
 
 ## Remaining upstream dependency advisories
 

@@ -5,12 +5,16 @@ type WalletConnector = ReturnType<CreateConnectorFn>;
 export const configureConnectorStartup = (
   connector: WalletConnector,
   restoreConnection: boolean,
+  hasInjectedProvider = false,
 ): WalletConnector => {
-  if (connector.type !== "walletConnect" || restoreConnection) return connector;
+  const canDeferSetup =
+    connector.type === "walletConnect" ||
+    (connector.type === "metaMask" && !hasInjectedProvider);
+  if (!canDeferSetup || restoreConnection) return connector;
 
-  // WalletConnect's setup eagerly imports/initializes its provider just to listen
-  // for an existing session. A new visitor has no session to restore. Its normal
-  // connect() initializes the provider and installs the connection/session listeners.
+  // WalletConnect and MetaMask setup eagerly import their SDKs to listen for a
+  // session/provider. An anonymous visitor without an extension has neither.
+  // Both connectors initialize their provider and install listeners in connect().
   // Keep every interactive method and RainbowKit metadata unchanged.
   return { ...connector, setup: undefined };
 };

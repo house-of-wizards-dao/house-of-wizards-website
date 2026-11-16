@@ -36,6 +36,8 @@ let browserConfig: Config | undefined;
 export const getWeb3Config = (): Config => {
   if (typeof window !== "undefined" && browserConfig) return browserConfig;
   const restoreConnection = hasPersistedWalletConnection();
+  const hasInjectedProvider =
+    typeof window !== "undefined" && Boolean(Reflect.get(window, "ethereum"));
   const { connectors } = getDefaultWallets({
     appName: "House of Wizards DAO",
     projectId: getWalletConnectProjectId(),
@@ -46,6 +48,7 @@ export const getWeb3Config = (): Config => {
         configureConnectorStartup(
           createConnector(parameters),
           restoreConnection,
+          hasInjectedProvider,
         ),
     ),
     chains,
