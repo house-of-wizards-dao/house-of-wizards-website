@@ -50,27 +50,30 @@ type ToastProviderProps = {
 
 export const ToastProvider = ({
   children,
-}: ToastProviderProps): JSX.Element => {
+}: ToastProviderProps): React.JSX.Element => {
   const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const addToast = useCallback((toast: Omit<Toast, "id">) => {
-    const id = Math.random().toString(36).substr(2, 9);
-    const newToast: Toast = { ...toast, id };
-
-    setToasts((prev) => [...prev, newToast]);
-
-    // Auto-remove toast after duration (default 5 seconds)
-    const duration = toast.duration ?? 5000;
-    if (duration > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, duration);
-    }
-  }, []);
 
   const removeToast = useCallback((id: string) => {
     setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
+
+  const addToast = useCallback(
+    (toast: Omit<Toast, "id">) => {
+      const id = Math.random().toString(36).substr(2, 9);
+      const newToast: Toast = { ...toast, id };
+
+      setToasts((prev) => [...prev, newToast]);
+
+      // Auto-remove toast after duration (default 5 seconds)
+      const duration = toast.duration ?? 5000;
+      if (duration > 0) {
+        setTimeout(() => {
+          removeToast(id);
+        }, duration);
+      }
+    },
+    [removeToast],
+  );
 
   const success = useCallback(
     (message: string, title?: string, duration?: number) => {
@@ -131,7 +134,7 @@ type ToastContainerProps = {
 const ToastContainer = ({
   toasts,
   onRemove,
-}: ToastContainerProps): JSX.Element => {
+}: ToastContainerProps): React.JSX.Element => {
   if (toasts.length === 0) {
     return <></>;
   }

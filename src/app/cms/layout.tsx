@@ -1,14 +1,15 @@
 "use client";
+import { Web3Provider } from "@/components/Web3Provider";
 
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { ShieldAlert, LogIn } from "lucide-react";
 
 import { useCMSUser } from "@/hooks/useCMSUser";
 
-export default function CMSLayout({ children }: { children: ReactNode }) {
+function CMSLayoutContent({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isLoading, isAuthenticated, hasCMSAccess, user } = useCMSUser();
 
@@ -121,5 +122,13 @@ export default function CMSLayout({ children }: { children: ReactNode }) {
       {/* CMS Content */}
       <main className="max-w-7xl mx-auto px-4 lg:px-8 py-8">{children}</main>
     </div>
+  );
+}
+
+export default function CMSLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Web3Provider>
+      <CMSLayoutContent>{children}</CMSLayoutContent>
+    </Web3Provider>
   );
 }

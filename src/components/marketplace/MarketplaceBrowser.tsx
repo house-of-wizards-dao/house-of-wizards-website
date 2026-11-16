@@ -17,26 +17,23 @@ import type {
   CollectionInfo,
   MarketplaceSource,
 } from "@/types/marketplace";
-import {
-  wizardTraits,
-  wizardTraitParts,
-  type WizardTraitPart,
-} from "@/data/wizardTraits";
-import { wizardsWithTraits } from "@/data/wizardsWithTraits";
-import {
-  warriorTraits,
-  warriorTraitParts,
-  type WarriorTraitPart,
-} from "@/data/warriorTraits";
-import { warriorsWithTraits } from "@/data/warriorsWithTraits";
+import { usePagination } from "@/hooks/usePagination";
+import { Pagination } from "@/components/ui/Pagination";
+import dynamic from "next/dynamic";
+import { useQuery } from "@tanstack/react-query";
+import type { WizardTraitPart } from "@/data/wizardTraits";
+import type { WarriorTraitPart } from "@/data/warriorTraits";
+import type { CollectionTraitOptions } from "@/types/nft-metadata";
 import { TraitFilters } from "@/components/browser/TraitFilters";
 import { useCart } from "@/hooks/useCart";
 import { useNFTXBatchQuote } from "@/hooks/useNFTXBatchQuote";
 import type { CartItem } from "@/types/cart";
 import { cartItemKey } from "@/types/cart";
-import { collections } from "@/lib/marketplace";
+import { collections } from "@/config/marketplace";
 import { CartSidebar } from "./CartSidebar";
-import { ItemDetailOverlay } from "./ItemDetailOverlay";
+const ItemDetailOverlay = dynamic(() =>
+  import("./ItemDetailOverlay").then((module) => module.ItemDetailOverlay),
+);
 import {
   MarketplaceItemCard,
   MarketplaceItemSkeleton,
@@ -111,65 +108,25 @@ const getOfferDisplayValue = (item: MarketplaceItem): number | null => {
   return parseEthPrice(amount);
 };
 
-// Pre-compute trait lookups for wizards and warriors
-const wizardsByIdx = new Map(wizardsWithTraits.map((w) => [w.idx, w]));
-const warriorsByIdx = new Map(warriorsWithTraits.map((w) => [w.idx, w]));
-
-// Build wizard trait options by part
-const wizardTraitOptions = (() => {
-  const byPart: Record<
-    WizardTraitPart,
-    Array<{ value: number; label: string }>
-  > = {
-    prop: [],
-    rune: [],
-    familiar: [],
-    head: [],
-    body: [],
-  };
-
-  for (const t of wizardTraits) {
-    if (t.part && t.part in byPart) {
-      byPart[t.part].push({ value: t.idx, label: t.displayName });
-    }
-  }
-
-  // Sort each part's options alphabetically
-  for (const part of wizardTraitParts) {
-    byPart[part].sort((a, b) => a.label.localeCompare(b.label));
-  }
-
-  return byPart;
-})();
-
-// Build warrior trait options by part
-const warriorTraitOptions = (() => {
-  const byPart: Record<
-    WarriorTraitPart,
-    Array<{ value: number; label: string }>
-  > = {
-    background: [],
-    weapon: [],
-    rune: [],
-    companion: [],
-    head: [],
-    body: [],
-    shield: [],
-  };
-
-  for (const t of warriorTraits) {
-    if (t.part in byPart) {
-      byPart[t.part].push({ value: t.idx, label: t.displayName });
-    }
-  }
-
-  // Sort each part's options alphabetically
-  for (const part of warriorTraitParts) {
-    byPart[part].sort((a, b) => a.label.localeCompare(b.label));
-  }
-
-  return byPart;
-})();
+const wizardTraitParts: WizardTraitPart[] = [
+  "prop",
+  "rune",
+  "familiar",
+  "head",
+  "body",
+];
+const warriorTraitParts: WarriorTraitPart[] = [
+  "background",
+  "weapon",
+  "rune",
+  "companion",
+  "head",
+  "body",
+  "shield",
+];
+const emptyTraitOptions = Object.fromEntries(
+  [...wizardTraitParts, ...warriorTraitParts].map((part) => [part, []]),
+);
 
 export const MarketplaceBrowser = ({
   initialCollection = "wizards",
@@ -204,6 +161,21 @@ export const MarketplaceBrowser = ({
   const [selectedWarriorTraits, setSelectedWarriorTraits] = useState<
     Partial<Record<WarriorTraitPart, number>>
   >({});
+
+  const traitOptions = useQuery<CollectionTraitOptions>({
+    queryKey: ["collection-trait-options", selectedCollection],
+    enabled:
+      selectedCollection === "wizards" || selectedCollection === "warriors",
+    staleTime: Infinity,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(
+        `/api/characters/${selectedCollection}/traits`,
+        { signal },
+      );
+      if (!response.ok) throw new Error("Unable to load trait filters");
+      return response.json();
+    },
+  });
 
   // Chain management - marketplace only works on Ethereum mainnet
   const { address, chainId, isConnected: isWalletConnected } = useAccount();
@@ -470,8 +442,7 @@ export const MarketplaceBrowser = ({
       const hasTraitFilter = Object.keys(selectedWizardTraits).length > 0;
       if (hasTraitFilter) {
         result = result.filter((item) => {
-          const tokenId = parseInt(item.nft.identifier, 10);
-          const wizard = wizardsByIdx.get(tokenId);
+          const wizard = item.nft.localTraitIds;
           if (!wizard) return false;
 
           for (const part of wizardTraitParts) {
@@ -490,8 +461,7 @@ export const MarketplaceBrowser = ({
       const hasTraitFilter = Object.keys(selectedWarriorTraits).length > 0;
       if (hasTraitFilter) {
         result = result.filter((item) => {
-          const tokenId = parseInt(item.nft.identifier, 10);
-          const warrior = warriorsByIdx.get(tokenId);
+          const warrior = item.nft.localTraitIds;
           if (!warrior) return false;
 
           for (const part of warriorTraitParts) {
@@ -549,6 +519,21 @@ export const MarketplaceBrowser = ({
   ]);
 
   // Apply a collection change (without cart confirmation)
+  const pagination = usePagination(
+    filteredItems,
+    JSON.stringify([
+      selectedCollection,
+      marketplaceMode,
+      marketplaceSource,
+      nameQuery,
+      idQuery,
+      priceFilter,
+      sortBy,
+      selectedWizardTraits,
+      selectedWarriorTraits,
+    ]),
+  );
+
   const applyCollectionChange = useCallback(
     (key: CollectionKey) => {
       setSelectedCollection(key);
@@ -1025,6 +1010,7 @@ export const MarketplaceBrowser = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Name Search */}
             <input
+              aria-label="Search by name"
               value={nameQuery}
               onChange={(e) => setNameQuery(e.target.value)}
               placeholder="Search by name"
@@ -1033,6 +1019,7 @@ export const MarketplaceBrowser = ({
 
             {/* ID Search */}
             <input
+              aria-label="Filter by ID"
               value={idQuery}
               onChange={(e) => setIdQuery(e.target.value)}
               placeholder="Filter by ID"
@@ -1042,6 +1029,7 @@ export const MarketplaceBrowser = ({
 
             {/* Price Filter */}
             <select
+              aria-label="Price range"
               value={priceFilter}
               onChange={(e) =>
                 setPriceFilter(e.target.value as typeof priceFilter)
@@ -1058,6 +1046,7 @@ export const MarketplaceBrowser = ({
 
             {/* Sort */}
             <select
+              aria-label="Sort listings"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
               disabled={marketplaceMode === "sell"}
@@ -1073,6 +1062,11 @@ export const MarketplaceBrowser = ({
             </select>
           </div>
 
+          {traitOptions.isError && (
+            <button type="button" onClick={() => void traitOptions.refetch()}>
+              Retry trait filters
+            </button>
+          )}
           {/* Trait Filters for Wizards */}
           {selectedCollection === "wizards" && (
             <div className="border-t border-gray-800 pt-4">
@@ -1080,7 +1074,7 @@ export const MarketplaceBrowser = ({
               <TraitFilters
                 traits={wizardTraitParts}
                 selectedTraits={selectedWizardTraits}
-                partToTraitOptions={wizardTraitOptions}
+                partToTraitOptions={traitOptions.data ?? emptyTraitOptions}
                 onSelectTrait={onSelectWizardTrait}
               />
             </div>
@@ -1093,7 +1087,7 @@ export const MarketplaceBrowser = ({
               <TraitFilters
                 traits={warriorTraitParts}
                 selectedTraits={selectedWarriorTraits}
-                partToTraitOptions={warriorTraitOptions}
+                partToTraitOptions={traitOptions.data ?? emptyTraitOptions}
                 onSelectTrait={onSelectWarriorTrait}
               />
             </div>
@@ -1181,7 +1175,7 @@ export const MarketplaceBrowser = ({
                 Array.from({ length: 12 }).map((_, i) => (
                   <MarketplaceItemSkeleton key={i} />
                 ))
-              : filteredItems.map((item) => {
+              : pagination.visibleItems.map((item) => {
                   const cartCandidate = buildCartItem(item);
                   const isInCart =
                     !!cartCandidate &&
@@ -1255,6 +1249,7 @@ export const MarketplaceBrowser = ({
                   );
                 })}
           </div>
+          <Pagination {...pagination} label="Marketplace" />
 
           {/* Load More (OpenSea only - NFTX loads all at once) */}
           {hasMore &&

@@ -1,7 +1,7 @@
 "use client";
 
-import { Card } from "@nextui-org/card";
-import { Spinner } from "@nextui-org/spinner";
+import { Card } from "@/components/ui/Card";
+import { Spinner } from "@/components/ui/Spinner";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -15,9 +15,9 @@ export const LoreWidget = () => {
   return (
     <div className="flex flex-col gap-4 w-full h-full min-h-0 overflow-y-auto border border-brand-500/30 rounded-xl p-6 bg-neutral-950/80 backdrop-blur-sm">
       {/* Title */}
-      <h3 className="text-brand-500 font-atirose text-base text-center">
+      <h2 className="text-brand-500 font-atirose text-base text-center">
         Latest from the Book of Lore
-      </h3>
+      </h2>
 
       {isLoading && (
         <div className="flex items-center justify-center py-6 gap-2">
@@ -53,7 +53,7 @@ export const LoreWidget = () => {
                         <p className="text-brand-500 font-atirose text-sm">
                           {characterName}
                         </p>
-                        <span className="text-gray-600 text-xs">
+                        <span className="text-gray-400 text-xs">
                           Ch. {entry.index + 1}
                         </span>
                       </div>
@@ -61,7 +61,8 @@ export const LoreWidget = () => {
                         href={`https://www.forgottenrunes.com/lore/${getCollectionSlug(entry.token)}/${entry.tokenId}/${entry.index}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-gray-500 hover:text-brand-500 transition-colors"
+                        aria-label={`Read ${characterName}, chapter ${entry.index + 1}`}
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:text-brand-500 transition-colors"
                       >
                         <ExternalLink className="w-3.5 h-3.5" />
                       </Link>
@@ -78,7 +79,7 @@ export const LoreWidget = () => {
                           a: ({ href, children }) => (
                             <a
                               href={href}
-                              className="text-brand-400 hover:text-brand-300 hover:underline transition-colors"
+                              className="text-brand-400 hover:text-brand-300 underline transition-colors"
                               target={
                                 href?.startsWith("http") ? "_blank" : undefined
                               }
@@ -92,7 +93,7 @@ export const LoreWidget = () => {
                             </a>
                           ),
                           img: ({ src, alt }) => {
-                            if (!src) return null;
+                            if (typeof src !== "string" || !src) return null;
                             return (
                               <a
                                 href={src}
@@ -146,7 +147,7 @@ export const LoreWidget = () => {
               href="https://www.forgottenrunes.com/lore"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-brand-500 transition-colors"
+              className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-500 transition-colors"
             >
               <Scroll className="w-3 h-3" />
               View all lore
@@ -159,7 +160,7 @@ export const LoreWidget = () => {
       {loreEntries && loreEntries.length === 0 && (
         <Card className="p-4 w-full">
           <div className="flex items-center gap-2 justify-center">
-            <Scroll className="w-4 h-4 text-gray-500" />
+            <Scroll className="w-4 h-4 text-gray-400" />
             <p className="text-gray-400 text-xs">No lore found</p>
           </div>
         </Card>

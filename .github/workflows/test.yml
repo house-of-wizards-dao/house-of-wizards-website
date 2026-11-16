@@ -6,34 +6,48 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
-    name: Test & Lint
+    name: Build, test, and performance budgets
     runs-on: ubuntu-latest
-
+    timeout-minutes: 20
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      SUPABASE_PROJECT_URL: http://127.0.0.1:4319
+      SUPABASE_API_KEY: ci-only-placeholder-key-not-a-secret
+      NEXTAUTH_URL: http://127.0.0.1:3000
+      NEXTAUTH_SECRET: ci-only-placeholder-secret-not-for-deployment
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v7.0.1
+      - uses: pnpm/action-setup@v6.1.1
+      - uses: actions/setup-node@v7.1.0
         with:
-          version: 9
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm test --runInBand
+      - name: Start read-only data fixture
+        run: node scripts/ci-data-server.mjs > /tmp/how-ci-data.log 2>&1 &
+      - run: pnpm build
+      - run: pnpm type-check
+      - run: pnpm bundle:check
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
+      - run: pnpm perf:check
+      - uses: actions/upload-artifact@v7.0.2
+        if: always()
         with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Type check
-        run: pnpm type-check
-
-      - name: Lint
-        run: pnpm lint
-
-      - name: Run tests
-        run: pnpm test
+          name: browser-and-performance-reports
+          path: |
+            playwright-report/
+            test-results/
+            .lighthouseci/
+          if-no-files-found: ignore

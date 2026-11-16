@@ -20,13 +20,19 @@ const zeroAddress = "0x0000000000000000000000000000000000000000";
 const zeroHash = `0x${"0".repeat(64)}`;
 
 // Same amounts and quantity as the production collection offer for Wizard #4955.
-const makeOrder = (quantity = "2"): OpenSeaOffer => ({
-  order_hash: zeroHash,
+const makeOrder = (
+  quantity = "2",
+): OpenSeaOffer & {
+  protocolData: NonNullable<OpenSeaOffer["protocolData"]>;
+} => ({
+  orderHash: zeroHash,
   chain: "ethereum",
-  protocol_address: zeroAddress,
+  protocolAddress: zeroAddress,
   price: { value: "35600000000000000", currency: "WETH", decimals: 18 },
+  pricePerItem: { value: "35600000000000000", currency: "WETH", decimals: 18 },
+  remainingQuantity: Number(quantity),
   status: OrderStatus.ACTIVE,
-  protocol_data: {
+  protocolData: {
     signature: "0x",
     parameters: {
       offerer: bidder,
@@ -78,16 +84,16 @@ it("shows per-NFT proceeds after fees for a multi-quantity collection bid", () =
   const netOffer = offerWithSellerNetProceeds(offer, seller);
   expect(netOffer.price.amount).toBe("35244000000000000");
   expect(netOffer.grossBidAmount).toBe("35600000000000000");
-  expect(netOffer.orderHash).toBe(order.order_hash);
-  expect(netOffer.protocolData).toBe(order.protocol_data);
-  expect(order.protocol_data.parameters.offer[0].startAmount).toBe(
+  expect(netOffer.orderHash).toBe(order.orderHash);
+  expect(netOffer.protocolData).toBe(order.protocolData);
+  expect(order.protocolData.parameters.offer[0].startAmount).toBe(
     "71200000000000000",
   );
 });
 
 it("does not divide the proceeds of a single-NFT bid", () => {
   const order = makeOrder("1");
-  order.protocol_data.parameters.consideration[0].itemType = 2;
+  order.protocolData.parameters.consideration[0].itemType = 2;
   expect(orderToOffer(order).price.amount).toBe("71200000000000000");
   expect(
     offerWithSellerNetProceeds(orderToOffer(order), seller).price.amount,
@@ -96,7 +102,7 @@ it("does not divide the proceeds of a single-NFT bid", () => {
 
 it("normalizes an explicit seller payment to one NFT", () => {
   const order = makeOrder();
-  order.protocol_data.parameters.consideration.push({
+  order.protocolData.parameters.consideration.push({
     itemType: 1,
     token: weth,
     identifierOrCriteria: "0",
@@ -104,7 +110,7 @@ it("normalizes an explicit seller payment to one NFT", () => {
     endAmount: "70488000000000000",
     recipient: seller.toUpperCase(),
   });
-  expect(estimateSellerNetWeiFromBidOrder(order.protocol_data, seller)).toBe(
+  expect(estimateSellerNetWeiFromBidOrder(order.protocolData, seller)).toBe(
     35244000000000000n,
   );
 });
@@ -116,7 +122,7 @@ it.each(["0", "invalid", "-1"])(
     const offer = orderToOffer(order);
     expect(offer.price.amount).toBe(order.price.value);
     expect(
-      estimateSellerNetWeiFromBidOrder(order.protocol_data, seller),
+      estimateSellerNetWeiFromBidOrder(order.protocolData, seller),
     ).toBeNull();
   },
 );
@@ -130,8 +136,8 @@ it.each([undefined, null, {}, { parameters: {} }])(
 
 it("does not silently omit malformed fees", () => {
   const order = makeOrder();
-  order.protocol_data.parameters.consideration[1].startAmount = "invalid";
+  order.protocolData.parameters.consideration[1].startAmount = "invalid";
   expect(
-    estimateSellerNetWeiFromBidOrder(order.protocol_data, seller),
+    estimateSellerNetWeiFromBidOrder(order.protocolData, seller),
   ).toBeNull();
 });

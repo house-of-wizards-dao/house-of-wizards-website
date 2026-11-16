@@ -1,6 +1,6 @@
 import NextImage from "next/image";
 import { Suspense } from "react";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { Sparkles } from "lucide-react";
 
 import { LoreWidget } from "@/app/(landing)/LoreWidget";
@@ -133,7 +133,9 @@ export default function LandingPage() {
           src="/img/merlin_last_supper.png"
           alt="House of Wizards Banner"
           fill
-          priority={true}
+          loading="eager"
+          fetchPriority="high"
+          sizes="100vw"
           className="object-cover object-center"
         />
         {/* Gradient overlay */}
@@ -153,7 +155,7 @@ export default function LandingPage() {
       </div>
 
       {/* Main content area */}
-      <main className="relative z-10 -mt-4">
+      <div className="relative z-10 -mt-4">
         <div className="max-w-7xl mx-auto px-4 lg:px-8">
           {/* News grid section */}
           <section className="pb-16 pt-6">
@@ -162,7 +164,7 @@ export default function LandingPage() {
             </Suspense>
           </section>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

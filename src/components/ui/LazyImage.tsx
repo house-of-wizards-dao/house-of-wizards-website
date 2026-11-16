@@ -91,6 +91,7 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
       errorFallback = undefined, // undefined = use default, null = no error fallback
       alt,
       priority = false,
+      unoptimized = true, // NFT artwork may use arbitrary hosts; preserve original pixel data.
       ...props
     }: LazyImageProps,
     ref: ForwardedRef<HTMLImageElement>,
@@ -103,7 +104,6 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
     useEffect(() => {
       // Skip intersection observer if priority loading is enabled
       if (priority) {
-        setIsIntersecting(true);
         return;
       }
 
@@ -164,7 +164,7 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
     }
 
     // Determine which fallback to show
-    const showFallback = !isIntersecting || !isLoaded;
+    const showFallback = !(priority || isIntersecting) || !isLoaded;
     const shouldShowFallback = showFallback && fallback !== null;
     const fallbackContent =
       fallback !== undefined && fallback !== null ? (
@@ -186,9 +186,10 @@ export const LazyImage = forwardRef<HTMLImageElement, LazyImageProps>(
         style={containerStyle}
       >
         {shouldShowFallback && fallbackContent}
-        {isIntersecting && (
+        {(priority || isIntersecting) && (
           <Image
             {...props}
+            unoptimized={unoptimized}
             ref={ref}
             alt={alt}
             className={cn("transition-opacity duration-300", className, {

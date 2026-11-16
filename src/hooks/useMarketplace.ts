@@ -7,7 +7,6 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
-import { OpenSeaSDK, Chain } from "@opensea/sdk/viem";
 import type {
   CollectionKey,
   MarketplaceItem,
@@ -192,7 +191,7 @@ export const useMarketplaceListings = (
       }
     }
     return allItems;
-  }, [data?.pages]);
+  }, [data]);
 
   // Get collection info from the first page
   const collectionInfo = data?.pages[0]?.collection || null;
@@ -447,6 +446,7 @@ export const useMarketplaceActions = () => {
       setError(null);
 
       try {
+        const { OpenSeaSDK, Chain } = await import("@opensea/sdk/viem");
         const sdk = new OpenSeaSDK(
           { publicClient, walletClient },
           { chain: Chain.Mainnet, apiKey: openSeaApiKey },

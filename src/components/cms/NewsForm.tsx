@@ -2,13 +2,13 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import {
   Save,
   Eye,
   ArrowLeft,
   Upload,
-  Image,
+  Image as ImageIcon,
   Music,
   Video,
 } from "lucide-react";
@@ -271,7 +271,7 @@ export const NewsForm = ({ initialData, isEdit = false }: NewsFormProps) => {
             {/* Media type hints */}
             <div className="flex items-center gap-4 mb-2 text-xs text-neutral-500">
               <span className="flex items-center gap-1">
-                <Image className="w-3 h-3" /> Images (10MB)
+                <ImageIcon className="w-3 h-3" /> Images (10MB)
               </span>
               <span className="flex items-center gap-1">
                 <Music className="w-3 h-3" /> Audio (50MB)

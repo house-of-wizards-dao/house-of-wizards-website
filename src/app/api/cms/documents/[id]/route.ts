@@ -177,7 +177,7 @@ export const PATCH = async (request: NextRequest, { params }: RouteParams) => {
     );
   }
 
-  revalidateTag("documents");
+  revalidateTag("documents", { expire: 0 });
   revalidatePath("/documents");
   revalidatePath(`/documents/${result.documentId}`);
 
@@ -206,7 +206,7 @@ export const DELETE = async (
     );
   }
 
-  revalidateTag("documents");
+  revalidateTag("documents", { expire: 0 });
   revalidatePath("/documents");
 
   return NextResponse.json({ success: true });

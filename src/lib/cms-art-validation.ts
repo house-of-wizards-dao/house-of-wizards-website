@@ -109,7 +109,7 @@ export const artworkInput = z
     (value) =>
       new Set(value.pages.map((page) => page.page_number)).size ===
       value.pages.length,
-    "Page numbers must be unique",
+    "Display order numbers must be unique",
   );
 export type ArtistInput = z.infer<typeof artistInput>;
 export type ArtworkInput = z.infer<typeof artworkInput>;

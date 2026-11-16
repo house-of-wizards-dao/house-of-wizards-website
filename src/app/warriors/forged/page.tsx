@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import { useForgedWarriors } from "@/hooks/useForgedWarriors";
 import { ForgedWarriorsListView } from "@/components/warriors/ForgedWarriorsListView";
@@ -11,18 +11,11 @@ import type { WarriorGraphQLResponse } from "@/lib/frwc-graphql";
 export default function WarriorsPage() {
   const { data: warriors, loading, error } = useForgedWarriors();
   const [filteredWarriors, setFilteredWarriors] = useState<
-    WarriorGraphQLResponse[]
-  >([]);
+    WarriorGraphQLResponse[] | null
+  >(null);
 
   const pageTitle = "Forged Warriors";
   const pageDescription = `${warriors.length} warrior${warriors.length !== 1 ? "s" : ""} with forged weapons`;
-
-  // Initialize filteredWarriors when warriors data loads
-  useEffect(() => {
-    if (warriors && warriors.length > 0) {
-      setFilteredWarriors(warriors);
-    }
-  }, [warriors]);
 
   if (loading) {
     return (
@@ -52,9 +45,7 @@ export default function WarriorsPage() {
         warriors={warriors}
         onFilterChange={setFilteredWarriors}
       />
-      <ForgedWarriorsListView
-        warriors={filteredWarriors.length > 0 ? filteredWarriors : warriors}
-      />
+      <ForgedWarriorsListView warriors={filteredWarriors ?? warriors} />
     </div>
   );
 }

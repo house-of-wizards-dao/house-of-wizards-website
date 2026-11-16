@@ -11,7 +11,7 @@ import {
   useMarketplaceActions,
   useNFTXBuy,
 } from "@/hooks/useMarketplace";
-import { collections } from "@/lib/marketplace";
+import { collections } from "@/config/marketplace";
 import type { BuyCartItem, SellCartItem } from "@/types/cart";
 
 const formatEth = (wei: bigint, decimals: number = 4): string => {
@@ -128,14 +128,16 @@ export const CartSidebar = () => {
     useState(false);
   const [listingExpiryDays, setListingExpiryDays] = useState<number>(30);
 
-  useEffect(() => {
+  const [previousCount, setPreviousCount] = useState(count);
+  if (previousCount !== count) {
+    setPreviousCount(count);
     if (count === 0) {
       setPhase("idle");
       setOpenSeaTxHash(null);
       setNftxTxHash(null);
       setCheckoutError(null);
     }
-  }, [count]);
+  }
 
   const isProcessing =
     phase === "switching-chain" ||

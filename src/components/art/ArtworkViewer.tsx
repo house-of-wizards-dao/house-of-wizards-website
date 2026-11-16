@@ -81,7 +81,7 @@ export const ArtworkViewer = ({
               src={image}
               alt={
                 artwork.title +
-                (originals.length > 1 ? ` — page ${page + 1}` : "")
+                (originals.length > 1 ? ` — file ${page + 1}` : "")
               }
             />
           )
@@ -103,19 +103,19 @@ export const ArtworkViewer = ({
           </div>
         )}
         {originals.length > 1 && (
-          <nav aria-label="Comic pages" className="art-pages">
+          <nav aria-label="Artwork files" className="art-pages">
             <button
-              aria-label="Previous page"
+              aria-label="Previous file"
               disabled={page === 0}
               onClick={() => setPage((p) => p - 1)}
             >
               <ChevronLeft size={20} />
             </button>
             <span>
-              Page {page + 1} of {originals.length}
+              File {page + 1} of {originals.length}
             </span>
             <button
-              aria-label="Next page"
+              aria-label="Next file"
               disabled={page === originals.length - 1}
               onClick={() => setPage((p) => p + 1)}
             >

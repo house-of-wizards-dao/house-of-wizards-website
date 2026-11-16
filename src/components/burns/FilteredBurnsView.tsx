@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { TraitFilter } from "@/components/burns/TraitFilter";
 import { BurnsListView } from "@/components/burns/BurnsListView";
-import type { StatsData, Burn } from "@/lib/burn-stats";
+import type { StatsData } from "@/lib/burn-stats";
 
 type FilteredBurnsViewProps = {
   data: StatsData;
@@ -18,23 +18,17 @@ export const FilteredBurnsView = ({
   primaryType,
   itemLabel,
 }: FilteredBurnsViewProps) => {
-  const [filteredBurns, setFilteredBurns] = useState<Burn[]>([]);
-
-  // Initialize filteredBurns when data loads
-  useEffect(() => {
-    if (data) {
-      setFilteredBurns(data.burns);
-    }
-  }, [data]);
+  const [selectedIds, setSelectedIds] = useState<Set<string> | null>(null);
+  const filteredBurns = selectedIds
+    ? data.burns.filter((burn) => selectedIds.has(burn.tokenId))
+    : data.burns;
 
   const handleFilterChange = useCallback(
     (filtered: Array<{ tokenId: string }>) => {
       const tokenIdSet = new Set(filtered.map((f) => f.tokenId));
-      setFilteredBurns(
-        data.burns.filter((burn) => tokenIdSet.has(burn.tokenId)),
-      );
+      setSelectedIds(tokenIdSet);
     },
-    [data.burns],
+    [],
   );
 
   return (

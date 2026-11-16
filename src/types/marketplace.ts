@@ -98,18 +98,14 @@ export type NFTTrait = {
   trait_type: string;
   value: string | number;
   display_type?:
-    | "number"
-    | "boost_percentage"
-    | "boost_number"
-    | "author"
-    | "date"
-    | null;
+    "number" | "boost_percentage" | "boost_number" | "author" | "date" | null;
 };
 
 /**
  * Extended NFT data with marketplace info
  */
 export type MarketplaceNFT = OpenSeaNFT & {
+  localTraitIds?: Record<string, number>;
   traits?: NFTTrait[];
   owner?: string;
   rarity_rank?: number;
@@ -198,11 +194,7 @@ export type NFTDetailResponse = {
  * Action types for marketplace transactions
  */
 export type MarketplaceActionType =
-  | "buy"
-  | "list"
-  | "cancel_listing"
-  | "accept_offer"
-  | "make_offer";
+  "buy" | "list" | "cancel_listing" | "accept_offer" | "make_offer";
 
 /**
  * Parameters for buying an NFT

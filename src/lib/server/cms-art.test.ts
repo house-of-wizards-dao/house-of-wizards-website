@@ -3,7 +3,9 @@ import { NextRequest } from "next/server";
 import sharp from "sharp";
 import { requireCMSUser } from "@/lib/cms-auth";
 import { getSupabaseClient } from "@/lib/supabase";
+import { POST as prepareUpload } from "@/app/api/cms/art/uploads/route";
 import { artCMS } from "./cms-art";
+import { prepareArtUploads } from "./cms-art-uploads";
 
 jest.mock("server-only", () => ({}));
 jest.mock("next/cache", () => ({
@@ -20,16 +22,26 @@ jest.mock("@/lib/logger", () => ({ logger: { error: jest.fn() } }));
 const auth = jest.mocked(requireCMSUser);
 const getDB = jest.mocked(getSupabaseClient);
 const upload = jest.fn().mockResolvedValue({ error: null });
+const download = jest.fn();
+const info = jest.fn();
+const createSignedUploadUrl = jest.fn();
 const remove = jest.fn().mockResolvedValue({ error: null });
 const rpc = jest.fn().mockResolvedValue({ data: "id", error: null });
 const upsert = jest.fn().mockResolvedValue({ error: null });
 const queue = {
   select: jest.fn().mockReturnThis(),
+  lte: jest.fn().mockReturnThis(),
   limit: jest.fn().mockResolvedValue({ data: [], error: null }),
   upsert,
 };
 beforeEach(() => {
   jest.clearAllMocks();
+  process.env.NEXTAUTH_SECRET = "art-upload-test-secret";
+  createSignedUploadUrl.mockResolvedValue({
+    data: { signedUrl: "https://storage.example/upload" },
+    error: null,
+  });
+  upsert.mockResolvedValue({ error: null });
   upload.mockResolvedValue({ error: null });
   rpc.mockResolvedValue({ data: "id", error: null });
   auth.mockResolvedValue({
@@ -47,8 +59,165 @@ beforeEach(() => {
   getDB.mockReturnValue({
     from: () => queue,
     rpc,
-    storage: { from: () => ({ upload, remove }) },
+    storage: {
+      from: () => ({ upload, remove, download, info, createSignedUploadUrl }),
+    },
   } as unknown as ReturnType<typeof getSupabaseClient>);
+});
+
+describe("direct art uploads", () => {
+  const metadata = (size = 18 * 1024 * 1024) => ({
+    kind: "artworks",
+    files: [
+      { field: "originals", name: "painting.png", type: "image/png", size },
+    ],
+  });
+  const saveRequest = (receipt: string) => {
+    const form = new FormData();
+    form.set("uploads", receipt);
+    form.set(
+      "data",
+      JSON.stringify({
+        artist_id: "10000000-0000-4000-8000-000000000001",
+        title: "Large painting",
+        funded: true,
+      }),
+    );
+    return new NextRequest("http://localhost:3000/api/cms/art/artworks", {
+      method: "POST",
+      body: form,
+    });
+  };
+  const prepareRequest = (body: unknown, origin?: string) =>
+    new NextRequest("http://localhost:3000/api/cms/art/uploads", {
+      method: "POST",
+      body: JSON.stringify(body),
+      headers: {
+        "content-type": "application/json",
+        ...(origin ? { origin } : {}),
+      },
+    });
+
+  it("requires CMS authentication before issuing upload URLs", async () => {
+    auth.mockResolvedValue({ error: "Not authenticated", status: 401 });
+    expect((await prepareUpload(prepareRequest(metadata()))).status).toBe(401);
+    expect(createSignedUploadUrl).not.toHaveBeenCalled();
+  });
+  it("rejects cross-origin upload preparation", async () => {
+    expect(
+      (
+        await prepareUpload(
+          prepareRequest(metadata(), "https://untrusted.example"),
+        )
+      ).status,
+    ).toBe(403);
+    expect(createSignedUploadUrl).not.toHaveBeenCalled();
+  });
+  it("accepts exactly 50 MB and rejects larger images before signing", async () => {
+    expect(
+      (await prepareUpload(prepareRequest(metadata(50 * 1024 * 1024)))).status,
+    ).toBe(200);
+    expect(createSignedUploadUrl).toHaveBeenCalledTimes(1);
+    expect(
+      (await prepareUpload(prepareRequest(metadata(50 * 1024 * 1024 + 1))))
+        .status,
+    ).toBe(400);
+    expect(createSignedUploadUrl).toHaveBeenCalledTimes(1);
+  });
+  it("rejects a batch over 120 MB", async () => {
+    const file = metadata(50 * 1024 * 1024).files[0];
+    expect(
+      (
+        await prepareUpload(
+          prepareRequest({ kind: "artworks", files: [file, file, file] }),
+        )
+      ).status,
+    ).toBe(400);
+    expect(createSignedUploadUrl).not.toHaveBeenCalled();
+  });
+  it("saves an 18 MB original intact and generates both image previews", async () => {
+    const input = metadata();
+    const png = await sharp({
+      create: { width: 1000, height: 600, channels: 3, background: "purple" },
+    })
+      .png()
+      .toBuffer();
+    // PNG permits trailing bytes; keep the fixture small while testing the real file size.
+    const bytes = Buffer.concat([
+      new Uint8Array(png),
+      new Uint8Array(input.files[0].size - png.length),
+    ]);
+    info.mockResolvedValue({
+      data: { size: bytes.length, contentType: "image/png" },
+      error: null,
+    });
+    download.mockResolvedValue({
+      data: new Blob([new Uint8Array(bytes)], { type: "image/png" }),
+      error: null,
+    });
+    const { receipt } = await prepareArtUploads(input, "0xtest");
+    const response = await artCMS("artwork", "save")(saveRequest(receipt));
+    expect(response.status).toBe(201);
+    expect(upload).toHaveBeenCalledTimes(3);
+    expect(upload.mock.calls[0][1].equals(bytes)).toBe(true);
+    const files = rpc.mock.calls[0][1].p_files;
+    expect(files[0]).toMatchObject({
+      byte_size: bytes.length,
+      original_filename: "painting.png",
+    });
+    expect(files[1].original_file_id).toBe(files[0].id);
+    expect(files[2].original_file_id).toBe(files[0].id);
+    expect((await sharp(upload.mock.calls[1][1]).metadata()).width).toBe(640);
+    // Staging files cannot be swept by another save while these URLs remain valid.
+    expect(Date.parse(upsert.mock.calls[0][0][0].created_at)).toBeGreaterThan(
+      Date.now() + 2 * 60 * 60 * 1000,
+    );
+    expect(queue.lte).toHaveBeenCalledWith("created_at", expect.any(String));
+  });
+  it.each(["tampered", "different user", "different entry", "expired"])(
+    "rejects a %s receipt before accessing storage",
+    async (scenario) => {
+      let { receipt } = await prepareArtUploads(
+        metadata(),
+        scenario === "different user" ? "0xother" : "0xtest",
+      );
+      if (scenario === "tampered") receipt = `e30.${receipt.split(".")[1]}`;
+      const now = Date.now();
+      const clock =
+        scenario === "expired"
+          ? jest.spyOn(Date, "now").mockReturnValue(now + 3 * 60 * 60 * 1000)
+          : null;
+      try {
+        const response = await artCMS("artwork", "save")(
+          saveRequest(receipt),
+          scenario === "different entry"
+            ? {
+                params: Promise.resolve({
+                  id: "10000000-0000-4000-8000-000000000001",
+                }),
+              }
+            : undefined,
+        );
+        expect(response.status).toBe(400);
+        expect(info).not.toHaveBeenCalled();
+        expect(download).not.toHaveBeenCalled();
+        expect(rpc).not.toHaveBeenCalled();
+      } finally {
+        clock?.mockRestore();
+      }
+    },
+  );
+  it("rejects mismatched storage size before downloading bytes", async () => {
+    const { receipt } = await prepareArtUploads(metadata(), "0xtest");
+    info.mockResolvedValue({
+      data: { size: 60 * 1024 * 1024, contentType: "image/png" },
+      error: null,
+    });
+    const response = await artCMS("artwork", "save")(saveRequest(receipt));
+    expect(response.status).toBe(400);
+    expect(download).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
 });
 const request = (data: unknown, photo?: File, kind = "artist") => {
   const form = new FormData();

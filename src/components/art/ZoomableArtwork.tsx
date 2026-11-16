@@ -1,7 +1,7 @@
 "use client";
 /* Signed, pre-sized artwork is served directly. */
 /* This focusable image region supports keyboard, pointer and touch exploration. */
-/* eslint-disable @next/next/no-img-element, jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable @next/next/no-img-element */
 import { useEffect, useId, useRef, useState } from "react";
 import { Maximize, Minus, Plus } from "lucide-react";
 

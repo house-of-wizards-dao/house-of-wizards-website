@@ -1,8 +1,16 @@
 "use client";
 /* Pre-sized WebP files are generated at import; signed URLs are served directly. */
 /* eslint-disable @next/next/no-img-element */
-import { useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import {
   ArrowUpRight,
   Search,
@@ -13,44 +21,35 @@ import {
   Heart,
 } from "lucide-react";
 import { coverFile, filterArtworks, shuffleArtworks } from "@/lib/art";
-import type { ArtCatalog, Artwork } from "@/types/art";
+import type { ArtCatalog } from "@/types/art";
 import { ArtworkViewer } from "./ArtworkViewer";
 import "./art.css";
 
 type Props = {
   catalog: ArtCatalog;
   directory?: boolean;
-  initialArtist?: string;
-  initialCollection?: string;
-  initialToken?: string;
 };
-export const ArtGallery = ({
-  catalog,
-  directory = false,
-  initialArtist = "",
-  initialCollection = "",
-  initialToken = "",
-}: Props) => {
+export const ArtGallery = ({ catalog, directory = false }: Props) => {
+  const params = useSearchParams();
   const [query, setQuery] = useState("");
-  const [artist, setArtist] = useState(initialArtist);
-  const [collection, setCollection] = useState(initialCollection);
-  const [token, setToken] = useState(initialToken);
+  const artist = params.get("artist") ?? "";
+  const collection = params.get("collection") ?? "";
+  const token = params.get("token") ?? "";
   const [visible, setVisible] = useState(24);
-  const [selected, setSelected] = useState<Artwork | null>(null);
+  const selected = directory
+    ? null
+    : (catalog.artworks.find((work) => work.id === params.get("artwork")) ??
+      null);
   const viewerOpen = selected !== null;
   const [filtersOpen, setFiltersOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const search = useDeferredValue(query);
   const [randomOrder, setRandomOrder] = useState(catalog.artworks);
   useEffect(() => {
+    // Hydrate a per-visit random order after SSR, keeping the server markup deterministic.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRandomOrder(shuffleArtworks(catalog.artworks));
   }, [catalog.artworks]);
-  useEffect(() => {
-    setArtist(initialArtist);
-    setCollection(initialCollection);
-    setToken(initialToken);
-    setSelected(null);
-  }, [initialArtist, initialCollection, initialToken]);
   const artistMap = useMemo(
     () => new Map(catalog.artists.map((a) => [a.id, a])),
     [catalog.artists],
@@ -68,9 +67,12 @@ export const ArtGallery = ({
   const artists = catalog.artists.filter(
     (a) => !search || a.name.toLowerCase().includes(search.toLowerCase()),
   );
-  useEffect(() => {
+  const filterKey = JSON.stringify([search, artist, collection, token]);
+  const [previousFilterKey, setPreviousFilterKey] = useState(filterKey);
+  if (filterKey !== previousFilterKey) {
+    setPreviousFilterKey(filterKey);
     setVisible(24);
-  }, [search, artist, collection, token]);
+  }
   useEffect(() => {
     if (!viewerOpen) return;
     const modal = dialog.current;
@@ -82,16 +84,51 @@ export const ArtGallery = ({
       document.body.style.overflow = previousOverflow;
     };
   }, [viewerOpen]);
+  const updateUrl = (
+    changes: Record<string, string | null>,
+    replace = false,
+  ) => {
+    const url = new URL(window.location.href);
+    for (const [key, value] of Object.entries(changes)) {
+      if (value) url.searchParams.set(key, value);
+      else url.searchParams.delete(key);
+    }
+    if (url.href === window.location.href) return;
+    // Next.js keeps useSearchParams in sync with native history changes without
+    // refetching the catalog or moving the gallery's scroll position.
+    window.history[replace ? "replaceState" : "pushState"](
+      null,
+      "",
+      url.pathname + url.search + url.hash,
+    );
+  };
+  const artworkHref = (id: string) => {
+    const next = new URLSearchParams(params.toString());
+    next.set("artwork", id);
+    return `/art?${next.toString()}`;
+  };
+  const openArtwork = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
+    if (
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey
+    )
+      return;
+    event.preventDefault();
+    updateUrl({ artwork: id });
+  };
+  const closeArtwork = () => updateUrl({ artwork: null });
+  const selectedIndex = works.findIndex((work) => work.id === selected?.id);
   const navigate = (direction: number) => {
-    if (!selected) return;
-    const index = works.findIndex((w) => w.id === selected.id) + direction;
-    if (works[index]) setSelected(works[index]);
+    if (selectedIndex < 0) return;
+    const work = works[selectedIndex + direction];
+    if (work) updateUrl({ artwork: work.id });
   };
   const clear = () => {
     setQuery("");
-    setArtist("");
-    setCollection("");
-    setToken("");
+    updateUrl({ artist: null, collection: null, token: null, artwork: null });
   };
   return (
     <div className="art-shell">
@@ -164,7 +201,12 @@ export const ArtGallery = ({
         >
           <label>
             Artist
-            <select value={artist} onChange={(e) => setArtist(e.target.value)}>
+            <select
+              value={artist}
+              onChange={(e) =>
+                updateUrl({ artist: e.target.value, artwork: null })
+              }
+            >
               <option value="">All artists</option>
               {catalog.artists.map((a) => (
                 <option value={a.id} key={a.id}>
@@ -177,7 +219,9 @@ export const ArtGallery = ({
             Collection
             <select
               value={collection}
-              onChange={(e) => setCollection(e.target.value)}
+              onChange={(e) =>
+                updateUrl({ collection: e.target.value, artwork: null })
+              }
             >
               <option value="">All collections</option>
               {collections.map((c) => (
@@ -192,7 +236,9 @@ export const ArtGallery = ({
             <input
               inputMode="numeric"
               value={token}
-              onChange={(e) => setToken(e.target.value)}
+              onChange={(e) =>
+                updateUrl({ token: e.target.value, artwork: null }, true)
+              }
               placeholder="e.g. 6318"
             />
           </label>
@@ -269,12 +315,9 @@ export const ArtGallery = ({
               return (
                 <article className="art-card" key={work.id}>
                   <Link
-                    href={`/art/${work.id}`}
+                    href={artworkHref(work.id)}
                     className="art-card-image"
-                    onClick={(event) => {
-                      event.preventDefault();
-                      setSelected(work);
-                    }}
+                    onClick={(event) => openArtwork(event, work.id)}
                   >
                     {cover?.url ? (
                       <img
@@ -301,23 +344,19 @@ export const ArtGallery = ({
                     {work.files.filter((f) => f.variant === "original").length >
                       1 && (
                       <span className="art-comic-label">
-                        Comic ·{" "}
                         {
                           work.files.filter((f) => f.variant === "original")
                             .length
                         }{" "}
-                        pages
+                        files
                       </span>
                     )}
                   </Link>
                   <div className="art-card-caption">
                     <div>
                       <Link
-                        href={`/art/${work.id}`}
-                        onClick={(event) => {
-                          event.preventDefault();
-                          setSelected(work);
-                        }}
+                        href={artworkHref(work.id)}
+                        onClick={(event) => openArtwork(event, work.id)}
                       >
                         <h2>{work.title}</h2>
                       </Link>
@@ -374,31 +413,27 @@ export const ArtGallery = ({
           ref={dialog}
           className="art-dialog"
           aria-label={selected.title}
-          onClose={() => setSelected(null)}
+          onCancel={(event) => {
+            event.preventDefault();
+            closeArtwork();
+          }}
         >
           <div className="art-dialog-controls">
             <button
               aria-label="Previous artwork"
-              disabled={works.findIndex((w) => w.id === selected.id) === 0}
+              disabled={selectedIndex <= 0}
               onClick={() => navigate(-1)}
             >
               <ChevronLeft />
             </button>
             <button
               aria-label="Next artwork"
-              disabled={
-                works.findIndex((w) => w.id === selected.id) ===
-                works.length - 1
-              }
+              disabled={selectedIndex < 0 || selectedIndex === works.length - 1}
               onClick={() => navigate(1)}
             >
               <ChevronRight />
             </button>
-            <button
-              autoFocus
-              aria-label="Close artwork"
-              onClick={() => setSelected(null)}
-            >
+            <button autoFocus aria-label="Close artwork" onClick={closeArtwork}>
               <X />
             </button>
           </div>
@@ -406,7 +441,7 @@ export const ArtGallery = ({
             key={selected.id}
             artwork={selected}
             artist={artistMap.get(selected.artist_id)}
-            onBack={() => setSelected(null)}
+            onBack={closeArtwork}
           />
         </dialog>
       )}

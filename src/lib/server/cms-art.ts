@@ -15,6 +15,7 @@ import { artworkTitle } from "@/lib/art-titles";
 import { artFileSchema } from "@/types/art";
 import { cmsArtworkSchema } from "@/types/cms-art";
 import { logger } from "@/lib/logger";
+import { ArtUploadError, restoreArtUploads } from "./cms-art-uploads";
 
 type Kind = "artist" | "artwork";
 type ObjectRef = { bucket_id: string; object_path: string };
@@ -48,7 +49,7 @@ const check = (error: { message: string; code?: string } | null) => {
   throw new ArtError("The catalog could not be saved. Please retry.", 500);
 };
 const invalidate = () => {
-  revalidateTag("commission-art");
+  revalidateTag("commission-art", { expire: 0 });
   revalidatePath("/art", "layout");
   revalidatePath("/cms/art", "layout");
 };
@@ -57,6 +58,8 @@ export const cleanArtStorage = async () => {
   const { data, error } = await db()
     .from("commission_storage_cleanup")
     .select("bucket_id,object_path")
+    // Staging uploads are queued for a future time so active uploads survive.
+    .lte("created_at", new Date().toISOString())
     .limit(500);
   if (error || !data) return;
   const objects = z
@@ -391,6 +394,12 @@ export const artCMS =
       )
         throw new ArtError("Upload no more than 120 MB at once", 413);
       const form = await request.formData();
+      await restoreArtUploads(
+        form,
+        auth.address,
+        kind === "artist" ? "artists" : "artworks",
+        param,
+      );
       const bytes = Array.from(form.values()).reduce(
         (total, value) => total + (typeof value !== "string" ? value.size : 0),
         0,
@@ -501,7 +510,7 @@ export const artCMS =
             throw new ArtError("Web preview must be audio or video");
         }
         if (originals.length > 30)
-          throw new ArtError("Upload no more than 30 comic pages at once");
+          throw new ArtError("Upload no more than 30 original files at once");
         let existing: StoredFile[] = [];
         if (param) {
           const { data, error } = await db()
@@ -529,7 +538,7 @@ export const artCMS =
         );
         if (!input.comic && retained.length + originals.length > 1)
           throw new ArtError(
-            "Separate originals need separate artworks. Enable comic mode only for comic pages.",
+            "Enable multiple files to group related images or media in one artwork. Upload unrelated works as separate artworks.",
           );
         if ((poster || webPreview) && originals[0]?.type.startsWith("image/"))
           throw new ArtError(
@@ -559,7 +568,9 @@ export const artCMS =
           (page) => !input.remove_file_ids.includes(page.id),
         );
         if (input.comic && pages.length !== retained.length)
-          throw new ArtError("Set a page number for each retained comic page");
+          throw new ArtError(
+            "Set a display order for each retained original file",
+          );
         if (!input.comic) {
           for (const file of retained)
             pages.push({ id: file.id, page_number: 1 });
@@ -662,6 +673,8 @@ export const artCMS =
         );
       }
       await queueCleanup(uploaded);
+      if (error instanceof ArtUploadError)
+        return NextResponse.json({ error: error.message }, { status: 400 });
       if (error instanceof z.ZodError)
         return NextResponse.json(
           {

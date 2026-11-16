@@ -8,18 +8,15 @@ import {
   GetSiweMessageOptions,
 } from "@rainbow-me/rainbowkit-siwe-next-auth";
 import { useAccount, WagmiProvider } from "wagmi";
-import { SessionProvider, signOut, useSession } from "next-auth/react";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQueryClient,
-} from "@tanstack/react-query";
-import { ReactNode, useEffect, useState } from "react";
-import { getClientWeb3Config, getWeb3Config } from "@/lib/web3-config";
+import { signOut, useSession } from "next-auth/react";
+import { useQueryClient } from "@tanstack/react-query";
+import { type ReactNode, useEffect, useState } from "react";
+import { getWeb3Config } from "@/lib/web3-config";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
 type Web3ProviderProps = {
   children: ReactNode;
+  synchronizeSession?: boolean;
 };
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
@@ -28,6 +25,8 @@ const getSiweMessageOptions: GetSiweMessageOptions = () => ({
 
 const normalizeAddress = (address?: string | null) =>
   address?.toLowerCase() ?? null;
+
+let signOutInFlight: Promise<unknown> | undefined;
 
 const WalletSessionSync = () => {
   const { address: walletAddress, status: walletStatus } = useAccount();
@@ -46,7 +45,9 @@ const WalletSessionSync = () => {
     if (!isDisconnected && !isMismatchedWallet) return;
 
     queryClient.removeQueries({ queryKey: ["cms-user"] });
-    void signOut({ redirect: false });
+    signOutInFlight ??= signOut({ redirect: false }).finally(() => {
+      signOutInFlight = undefined;
+    });
   }, [
     queryClient,
     session?.address,
@@ -58,64 +59,30 @@ const WalletSessionSync = () => {
   return null;
 };
 
-export const Web3Provider = ({ children }: Web3ProviderProps) => {
-  const [config, setConfig] = useState(() => getWeb3Config());
-  const [providerInstanceKey, setProviderInstanceKey] = useState(0);
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
-          },
-        },
-      }),
-  );
-
-  useEffect(() => {
-    let active = true;
-    getClientWeb3Config()
-      .then((nextConfig) => {
-        if (active) {
-          setConfig(nextConfig);
-          // Force provider remount so connector registry refreshes to full client config.
-          setProviderInstanceKey(1);
-        }
-      })
-      .catch(() => undefined);
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
+export const Web3Provider = ({
+  children,
+  synchronizeSession = true,
+}: Web3ProviderProps) => {
+  const [config] = useState(getWeb3Config);
   return (
     <Web3ErrorBoundary>
-      <WagmiProvider
-        key={providerInstanceKey}
-        config={config}
-        reconnectOnMount={true}
-      >
-        <SessionProvider refetchInterval={0}>
-          <QueryClientProvider client={queryClient}>
-            <WalletSessionSync />
-            <RainbowKitSiweNextAuthProvider
-              getSiweMessageOptions={getSiweMessageOptions}
-            >
-              <RainbowKitProvider
-                theme={darkTheme({
-                  accentColor: "#A986D9", // Violet to match your theme
-                  accentColorForeground: "white",
-                  borderRadius: "medium",
-                  fontStack: "system",
-                  overlayBlur: "small",
-                })}
-              >
-                {children}
-              </RainbowKitProvider>
-            </RainbowKitSiweNextAuthProvider>
-          </QueryClientProvider>
-        </SessionProvider>
+      <WagmiProvider config={config} reconnectOnMount>
+        {synchronizeSession && <WalletSessionSync />}
+        <RainbowKitSiweNextAuthProvider
+          getSiweMessageOptions={getSiweMessageOptions}
+        >
+          <RainbowKitProvider
+            theme={darkTheme({
+              accentColor: "#A986D9",
+              accentColorForeground: "black",
+              borderRadius: "medium",
+              fontStack: "system",
+              overlayBlur: "small",
+            })}
+          >
+            {children}
+          </RainbowKitProvider>
+        </RainbowKitSiweNextAuthProvider>
       </WagmiProvider>
     </Web3ErrorBoundary>
   );

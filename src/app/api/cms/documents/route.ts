@@ -140,7 +140,7 @@ export const POST = async (request: NextRequest) => {
     );
   }
 
-  revalidateTag("documents");
+  revalidateTag("documents", { expire: 0 });
   revalidatePath("/documents");
 
   return NextResponse.json({ document: data as DocumentItem }, { status: 201 });

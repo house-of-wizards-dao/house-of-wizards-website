@@ -109,7 +109,7 @@ export const POST = async (request: NextRequest) => {
   }
 
   // Invalidate caches so landing page shows fresh data
-  revalidateTag("cult-content");
+  revalidateTag("cult-content", { expire: 0 });
   revalidatePath("/");
 
   return NextResponse.json({ news: data as NewsItem }, { status: 201 });

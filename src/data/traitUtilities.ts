@@ -19,13 +19,13 @@ export const getCharacterName = (
 ): string => {
   const collectionName = getCollectionName(contractAddress);
   if (collectionName === "Warriors") {
-    return warriorsWithTraitsMap[parseInt(tokenId, 10)].name;
+    return warriorsWithTraitsMap[parseInt(tokenId, 10)]?.name ?? tokenId;
   }
   if (collectionName === "Wizards") {
-    return wizardsWithTraitsMap[tokenId].name;
+    return wizardsWithTraitsMap[tokenId]?.name ?? tokenId;
   }
   if (collectionName === "Souls") {
-    return soulsWithTraitsMap[tokenId].name;
+    return soulsWithTraitsMap[tokenId]?.name ?? tokenId;
   }
   return tokenId;
 };

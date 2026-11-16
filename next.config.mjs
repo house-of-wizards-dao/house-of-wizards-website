@@ -4,14 +4,40 @@ const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  allowedDevOrigins: ["127.0.0.1"],
   experimental: {
-    esmExternals: true,
+    // The custom webpack hook disables this by default. Release compiler memory
+    // before linting and type checking on Vercel's 8 GB build machines.
+    webpackBuildWorker: true,
+    webpackMemoryOptimizations: true,
   },
   images: {
-    remotePatterns: [],
-    domains: [],
-    unoptimized: true,
-    dangerouslyAllowSVG: true,
+    remotePatterns: [
+      { protocol: "https", hostname: "pbs.twimg.com", pathname: "/media/**" },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+        pathname: "/profile_images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "nfts.forgottenrunes.com",
+        pathname: "/ipfs/**",
+      },
+      {
+        protocol: "https",
+        hostname: "portal.forgottenrunes.com",
+        pathname: "/api/**",
+      },
+      {
+        protocol: "https",
+        hostname: "nftz.forgottenrunes.com",
+        pathname: "/**",
+      },
+      { protocol: "https", hostname: "i.seadn.io", pathname: "/**" },
+      { protocol: "https", hostname: "i2c.seadn.io", pathname: "/**" },
+    ],
+    formats: ["image/webp"],
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   async rewrites() {

@@ -1,11 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import dynamic from "next/dynamic";
+import { Spinner } from "@/components/ui/Spinner";
 import { useRouter } from "next/navigation";
 import { frwcAddresses } from "@/config/addresses";
-import { WizardBrowser } from "@/components/browser/WizardBrowser";
-import { WarriorBrowser } from "@/components/browser/WarriorBrowser";
-import { SoulBrowser } from "@/components/browser/SoulBrowser";
+const WizardBrowser = dynamic(
+  () =>
+    import("@/components/browser/WizardBrowser").then(
+      (module) => module.WizardBrowser,
+    ),
+  { loading: () => <Spinner label="Loading characters" /> },
+);
+const WarriorBrowser = dynamic(
+  () =>
+    import("@/components/browser/WarriorBrowser").then(
+      (module) => module.WarriorBrowser,
+    ),
+  { loading: () => <Spinner label="Loading characters" /> },
+);
+const SoulBrowser = dynamic(
+  () =>
+    import("@/components/browser/SoulBrowser").then(
+      (module) => module.SoulBrowser,
+    ),
+  { loading: () => <Spinner label="Loading characters" /> },
+);
 
 type CollectionType = "wizards" | "warriors" | "souls";
 

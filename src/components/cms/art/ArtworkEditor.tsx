@@ -211,7 +211,7 @@ export const ArtworkEditor = ({
             checked={comic}
             onChange={(e) => setComic(e.target.checked)}
           />
-          This artwork is a comic with ordered pages
+          Multiple files in one artwork
         </label>
         {originals.length > 0 && (
           <div>
@@ -250,9 +250,9 @@ export const ArtworkEditor = ({
                   </label>
                   {comic && (
                     <label className="text-xs">
-                      Page
+                      Display order
                       <input
-                        aria-label={`Page for ${file.original_filename}`}
+                        aria-label={`Display order for ${file.original_filename}`}
                         className="ml-2 w-20 rounded bg-neutral-800 p-2"
                         type="number"
                         min={1}
@@ -289,7 +289,7 @@ export const ArtworkEditor = ({
         )}
         <label className="block text-sm">
           {comic
-            ? "Add original comic pages (in file order)"
+            ? "Add original artwork files (in display order)"
             : "Original artwork file"}
           <input
             className={fieldClass}
@@ -300,8 +300,9 @@ export const ArtworkEditor = ({
           />
           <span className="mt-2 block text-xs text-neutral-400">
             Images up to 50 MB; video, audio and PDF up to 100 MB. Images get
-            web previews automatically. Separate files are separate artworks,
-            except comic pages.
+            web previews automatically. Enable multiple files to group related
+            images or media in one artwork, such as alternate views, a series, or
+            comic pages. Upload unrelated works as separate artworks.
           </span>
         </label>
         <details>

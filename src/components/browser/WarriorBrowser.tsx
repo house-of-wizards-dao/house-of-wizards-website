@@ -11,7 +11,7 @@ const getWarriorImage = (idx: number): string => {
   return `https://portal.forgottenrunes.com/api/warriors/img/${idx}.png`;
 };
 
-const orderedWarriors = warriorsWithTraits.sort((a, b) => a.idx - b.idx);
+const orderedWarriors = [...warriorsWithTraits].sort((a, b) => a.idx - b.idx);
 
 export type WarriorBrowserProps = {
   onClick?: (v: number) => void;

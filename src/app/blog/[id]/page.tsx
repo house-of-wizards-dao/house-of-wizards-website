@@ -135,7 +135,7 @@ export default async function BlogPostPage({
                 </blockquote>
               ),
               img: ({ src, alt, ...props }) => {
-                if (!src) return null;
+                if (typeof src !== "string" || !src) return null;
 
                 const isExternal = src.startsWith("http");
 
@@ -159,6 +159,7 @@ export default async function BlogPostPage({
                   <figure className="my-6 relative w-full aspect-video max-h-[600px]">
                     <Image
                       src={imagePath}
+                      unoptimized={imagePath.startsWith("http")}
                       alt={alt || ""}
                       fill
                       className="rounded-lg object-contain"
