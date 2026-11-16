@@ -12,6 +12,7 @@ import { signOut, useSession } from "next-auth/react";
 import { useQueryClient } from "@tanstack/react-query";
 import { type ReactNode, useEffect, useState } from "react";
 import { getWeb3Config } from "@/lib/web3-config";
+import { hasPersistedWalletConnection } from "@/lib/wallet-storage";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 
 type Web3ProviderProps = {
@@ -64,9 +65,15 @@ export const Web3Provider = ({
   synchronizeSession = true,
 }: Web3ProviderProps) => {
   const [config] = useState(getWeb3Config);
+  // Reconnect probes every connector, eagerly importing their SDKs. Only restore
+  // an existing connection; new visitors can still connect through the wallet UI.
+  // Include the shared store so mounting a second provider cannot clear a live connection.
+  const [reconnectOnMount] = useState(
+    () => Boolean(config.state.current) || hasPersistedWalletConnection(),
+  );
   return (
     <Web3ErrorBoundary>
-      <WagmiProvider config={config} reconnectOnMount>
+      <WagmiProvider config={config} reconnectOnMount={reconnectOnMount}>
         {synchronizeSession && <WalletSessionSync />}
         <RainbowKitSiweNextAuthProvider
           getSiweMessageOptions={getSiweMessageOptions}
