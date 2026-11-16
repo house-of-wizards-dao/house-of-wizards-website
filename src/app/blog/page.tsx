@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Card } from "@nextui-org/card";
+import { Card } from "@/components/ui/Card";
 import { getSortedPostsData } from "@/lib/posts";
 import { PageTitle } from "@/components/PageTitle";
 

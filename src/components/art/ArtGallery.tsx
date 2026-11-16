@@ -46,6 +46,8 @@ export const ArtGallery = ({ catalog, directory = false }: Props) => {
   const search = useDeferredValue(query);
   const [randomOrder, setRandomOrder] = useState(catalog.artworks);
   useEffect(() => {
+    // Hydrate a per-visit random order after SSR, keeping the server markup deterministic.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setRandomOrder(shuffleArtworks(catalog.artworks));
   }, [catalog.artworks]);
   const artistMap = useMemo(
@@ -65,9 +67,12 @@ export const ArtGallery = ({ catalog, directory = false }: Props) => {
   const artists = catalog.artists.filter(
     (a) => !search || a.name.toLowerCase().includes(search.toLowerCase()),
   );
-  useEffect(() => {
+  const filterKey = JSON.stringify([search, artist, collection, token]);
+  const [previousFilterKey, setPreviousFilterKey] = useState(filterKey);
+  if (filterKey !== previousFilterKey) {
+    setPreviousFilterKey(filterKey);
     setVisible(24);
-  }, [search, artist, collection, token]);
+  }
   useEffect(() => {
     if (!viewerOpen) return;
     const modal = dialog.current;

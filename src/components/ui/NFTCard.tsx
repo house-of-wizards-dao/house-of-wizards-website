@@ -74,7 +74,6 @@ export const NFTCard = ({
   };
 
   return (
-    /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
     <div
       className={cn(
         "rounded-lg border border-gray-800 bg-[#0C0B10] overflow-hidden transition-all hover:border-gray-600 hover:shadow-lg text-left",
@@ -97,7 +96,7 @@ export const NFTCard = ({
       {/* Image */}
       <div className="relative w-full aspect-square bg-gradient-to-br from-gray-800 to-gray-900">
         {hasImage ? (
-          /* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/no-noninteractive-element-interactions */
+          /* eslint-disable-next-line @next/next/no-img-element */
           <img
             src={imageUrl}
             alt={name || `#${tokenId}`}

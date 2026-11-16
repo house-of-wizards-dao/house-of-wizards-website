@@ -1,15 +1,19 @@
 "use client";
 
-import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { Image } from "@nextui-org/image";
+import Image from "next/image";
 
 import { ToastProvider } from "@/hooks/useToast";
 import ErrorBoundary from "@/components/ErrorBoundary";
-import { PageLoader } from "@/components/PageLoader";
-import { Web3Provider } from "@/components/Web3Provider";
+import { SessionProvider } from "next-auth/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useState } from "react";
 import { Navbar } from "@/components/navbar";
 
 export const Providers = ({ children }: { children: React.ReactNode }) => {
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({ defaultOptions: { queries: { staleTime: 300_000 } } }),
+  );
   return (
     <ErrorBoundary
       fallback={
@@ -49,15 +53,9 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
         </div>
       }
     >
-      <NextThemesProvider
-        attribute="class"
-        defaultTheme="dark"
-        enableSystem={false}
-        forcedTheme="dark"
-      >
-        <Web3Provider>
+      <SessionProvider refetchInterval={0}>
+        <QueryClientProvider client={queryClient}>
           <ToastProvider>
-            <PageLoader />
             <div className="relative flex flex-col h-screen">
               <Navbar />
               <main className="w-full py-12">{children}</main>
@@ -68,6 +66,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
                     className="rounded-none"
                     src="/img/logo-white.png"
                     width={150}
+                    height={33}
                   />
                   <div className="flex flex-col items-center sm:w-[700px] w-full">
                     <p className="text-xs text-white uppercase">
@@ -79,8 +78,8 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
               </footer>
             </div>
           </ToastProvider>
-        </Web3Provider>
-      </NextThemesProvider>
+        </QueryClientProvider>
+      </SessionProvider>
     </ErrorBoundary>
   );
 };

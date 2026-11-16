@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 type FulfillBatchOrder = {
   orderHash: string;
-  /** Optional tokenId. Resolved from the order's protocol_data if omitted. */
+  /** Optional tokenId. Resolved from the order's protocolData if omitted. */
   tokenId?: string;
 };
 
@@ -24,16 +24,16 @@ type Tx = { to: string; data: string; value: string };
 type SDK = ReturnType<typeof getOpenSeaSDK>;
 
 /**
- * Resolve the on-chain tokenId for an order from its protocol_data.
+ * Resolve the on-chain tokenId for an order from its protocolData.
  * For our marketplace listings the offer is always a single ERC721/ERC1155
  * item, so the identifier of `offer[0]` is what we need.
  */
 const getTokenIdFromOrder = (order: {
-  protocol_data?: {
+  protocolData?: {
     parameters?: { offer?: Array<{ identifierOrCriteria?: unknown }> };
   };
 }): string | null => {
-  const id = order.protocol_data?.parameters?.offer?.[0]?.identifierOrCriteria;
+  const id = order.protocolData?.parameters?.offer?.[0]?.identifierOrCriteria;
   if (id === undefined || id === null) return null;
   return String(id);
 };
@@ -41,7 +41,7 @@ const getTokenIdFromOrder = (order: {
 /**
  * Resolve the tokenId to use when calling `generateFulfillmentData`.
  * Prefers an explicit hint from the cart, otherwise pulls it out of the
- * order's protocol_data (one round-trip to OpenSea per order).
+ * order's protocolData (one round-trip to OpenSea per order).
  */
 const resolveTokenId = async (
   sdk: SDK,
@@ -49,8 +49,8 @@ const resolveTokenId = async (
   hint: string | undefined,
 ): Promise<string> => {
   if (hint) return hint;
-  const order = await sdk.api.getOrderByHash(orderHash, SEAPORT_ADDRESS);
-  if (!order || !order.protocol_data) {
+  const order = await sdk.api.orders.getOrderByHash(orderHash, SEAPORT_ADDRESS);
+  if (!order || !order.protocolData) {
     throw new Error(`Missing protocol data for order ${orderHash}`);
   }
   const resolved = getTokenIdFromOrder(order);
@@ -78,7 +78,7 @@ const buildSingleOrderTransaction = async (
   const collectionInfo = collections[collectionKey];
   const tokenId = await resolveTokenId(sdk, order.orderHash, order.tokenId);
 
-  const fulfillmentResponse = await sdk.api.generateFulfillmentData(
+  const fulfillmentResponse = await sdk.api.orders.generateFulfillmentData(
     accountAddress,
     order.orderHash,
     SEAPORT_ADDRESS,
@@ -86,7 +86,7 @@ const buildSingleOrderTransaction = async (
     collectionInfo.address,
     tokenId,
   );
-  const fulfillmentData = fulfillmentResponse.fulfillment_data;
+  const fulfillmentData = fulfillmentResponse.fulfillmentData;
   if (!fulfillmentData?.transaction) {
     throw new Error(
       `Invalid fulfillment response from OpenSea for order ${order.orderHash}`,
@@ -95,7 +95,7 @@ const buildSingleOrderTransaction = async (
   const txInfo = fulfillmentData.transaction;
   const data = encodeSeaportCall(
     txInfo.function,
-    txInfo.input_data as Record<string, unknown>,
+    txInfo.inputData as Record<string, unknown>,
   );
   return {
     to: txInfo.to,
@@ -109,7 +109,7 @@ const buildSingleOrderTransaction = async (
  *
  * Strategy:
  *  1. Call OpenSea's `generateFulfillmentData` for every order. The response
- *     includes `fulfillment_data.orders[0]` — a fully signed
+ *     includes `fulfillmentData.orders[0]` — a fully signed
  *     {@link https://github.com/ProjectOpenSea/seaport seaport} order
  *     (`OrderWithCounter` with a non-empty signature). Crucially this is
  *     the canonical way to retrieve a fulfillable signed order; reading via
@@ -135,7 +135,7 @@ const buildAtomicBatchTransaction = async (
   const fulfillmentResponses = await Promise.all(
     ordersInput.map(async (o) => {
       const tokenId = await resolveTokenId(sdk, o.orderHash, o.tokenId);
-      return sdk.api.generateFulfillmentData(
+      return sdk.api.orders.generateFulfillmentData(
         accountAddress,
         o.orderHash,
         SEAPORT_ADDRESS,
@@ -147,11 +147,11 @@ const buildAtomicBatchTransaction = async (
   );
 
   const signedOrders = fulfillmentResponses.map((res, i) => {
-    const orders = res.fulfillment_data?.orders;
+    const orders = res.fulfillmentData?.orders;
     const order = orders?.[0];
     if (!order || !order.signature) {
       throw new Error(
-        `Order ${ordersInput[i].orderHash} did not return a signed protocol_data from OpenSea`,
+        `Order ${ordersInput[i].orderHash} did not return a signed protocolData from OpenSea`,
       );
     }
     return order;

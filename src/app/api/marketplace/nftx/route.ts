@@ -1,3 +1,4 @@
+import { withLocalTraitIds } from "@/lib/server/character-metadata";
 import { NextRequest, NextResponse } from "next/server";
 import {
   fetchNFTXListings,
@@ -69,7 +70,7 @@ export const GET = async (request: NextRequest) => {
           symbol: vault.symbol,
           name: vault.name,
         },
-        listings: items,
+        listings: items.map(withLocalTraitIds),
         count: items.length,
         hasVault: true,
       },

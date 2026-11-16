@@ -30,7 +30,7 @@ test("reset Escape stays inside the viewer; Escape at fit can close the parent",
   const parentKey = jest.fn();
   render(
     // Test the key bubbling contract with the containing gallery.
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+
     <div onKeyDown={parentKey}>
       <ZoomableArtwork src="/art.webp" alt="A wizard" />
     </div>,

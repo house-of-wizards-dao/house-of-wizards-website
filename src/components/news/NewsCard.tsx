@@ -144,10 +144,10 @@ export const NewsCard = ({
               {authorDisplay}
             </a>
 
-            <span className="text-neutral-600">•</span>
+            <span className="text-neutral-400">•</span>
 
             {/* Date */}
-            <span className="inline-flex items-center gap-1 text-neutral-500">
+            <span className="inline-flex items-center gap-1 text-neutral-400">
               <Calendar className="w-3 h-3" />
               <time dateTime={item.date}>{formattedDate}</time>
             </span>
@@ -155,17 +155,17 @@ export const NewsCard = ({
 
           {/* External link indicator */}
           {hasEmbeddedTweets && (
-            <ExternalLink className="w-3.5 h-3.5 text-neutral-600 group-hover:text-brand-500/50 transition-colors" />
+            <ExternalLink className="w-3.5 h-3.5 text-neutral-400 group-hover:text-brand-500/50 transition-colors" />
           )}
         </div>
 
         {/* Optional title */}
         {item.title && (
-          <h3
+          <h2
             className={`${styles.titleSize} font-semibold text-neutral-100 mb-3 font-heading leading-tight group-hover:text-brand-300 transition-colors`}
           >
             {item.title}
-          </h3>
+          </h2>
         )}
 
         {/* Content */}
@@ -182,7 +182,7 @@ export const NewsCard = ({
                 a: ({ href, children }) => (
                   <a
                     href={href}
-                    className="text-brand-400 hover:text-brand-300 hover:underline transition-colors"
+                    className="text-brand-400 hover:text-brand-300 underline transition-colors"
                     target={href?.startsWith("http") ? "_blank" : undefined}
                     rel={
                       href?.startsWith("http")
@@ -231,7 +231,6 @@ export const NewsCard = ({
 
         {/* Embedded tweets (server-rendered, passed as slot) */}
         {embeddedTweets ? (
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
           <div className="mt-4 space-y-3" onClick={(e) => e.stopPropagation()}>
             {embeddedTweets}
           </div>

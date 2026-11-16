@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { ArrowLeft, Eye, Save, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";

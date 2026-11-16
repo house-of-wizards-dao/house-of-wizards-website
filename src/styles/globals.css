@@ -1,8 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @font-face {
+  font-display: swap;
   font-family: "Mona Sans";
   src: url("/fonts/mona-sans/Mona-Sans.woff2") format("woff2");
   font-weight: 200 900;
@@ -10,6 +11,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: "Atirose";
   src: url("/fonts/atirose.ttf") format("opentype");
   font-weight: normal;
@@ -17,6 +19,7 @@
 }
 
 @font-face {
+  font-display: swap;
   font-family: "OCRAStd";
   src: url("/fonts/OCRAStd.otf") format("opentype");
   font-weight: normal;
@@ -201,4 +204,15 @@
   height: auto !important;
   min-height: 720px;
   overflow: visible !important;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+  :focus-visible {
+    outline: 2px solid #c287ff;
+    outline-offset: 3px;
+  }
 }

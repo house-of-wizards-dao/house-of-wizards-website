@@ -157,3 +157,9 @@ lib-cov
 *-temp.sql
 *-debug.sql
 *.sql.bak
+# Browser and performance reports
+/playwright-report/
+/test-results/
+/.lighthouseci/
+
+/.pnpm-store/

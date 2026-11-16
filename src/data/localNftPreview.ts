@@ -1,3 +1,9 @@
+import "server-only";
+import type {
+  LocalNftCollection,
+  LocalNftTrait,
+  LocalNftAffinity,
+} from "@/types/nft-metadata";
 import { warriorAffinities } from "./warriorAffinity";
 import { warriorTraits, type Trait as WarriorTrait } from "./warriorTraits";
 import { warriorsWithTraitsMap } from "./warriorsWithTraitsMap";
@@ -38,24 +44,6 @@ const wizardTraitsById = new Map<number, WizardTrait>(
 const warriorTraitsById = new Map<number, WarriorTrait>(
   warriorTraits.map((trait) => [trait.idx, trait]),
 );
-
-export type LocalNftCollection = "wizards" | "warriors";
-
-export type LocalNftTrait = {
-  part: string;
-  displayName: string;
-  description?: string;
-};
-
-export type LocalNftAffinity = {
-  affinityName: string;
-  collectionLabel: LocalNftCollection;
-  traitsInAffinity: number;
-  numberOfTraits: number;
-  attunement: number;
-  maxTraitCount: number;
-  isMaxAffinity: boolean;
-};
 
 const formatTraitPart = (part: string): string =>
   part === "companion"
@@ -158,11 +146,3 @@ export const getLocalNftAffinity = (
  * Narrow a marketplace collection key to the subset of collections that have
  * locally-shipped trait + affinity data. Returns null otherwise.
  */
-export const asLocalNftCollection = (
-  collectionKey: string,
-): LocalNftCollection | null => {
-  if (collectionKey === "wizards" || collectionKey === "warriors") {
-    return collectionKey;
-  }
-  return null;
-};

@@ -66,16 +66,11 @@ export const Browser = <TPart extends string, TItem extends BrowserItem>({
   const { address, isConnected } = useAccount();
   const selectItemHandler = (idx: number) => {
     if (selectedTokens == null || setSelectedTokens == null) return;
-    if (selectedTokens.includes(idx)) {
-      const s = new Set(selectedTokens);
-      s.delete(idx);
-      setSelectedTokens(Array.from(s));
-    } else {
-      setSelectedTokens((prev) => {
-        prev.push(idx);
-        return [...prev];
-      });
-    }
+    setSelectedTokens((prev) =>
+      prev.includes(idx)
+        ? prev.filter((token) => token !== idx)
+        : [...prev, idx],
+    );
   };
   const onClickHandler = onClick ?? selectItemHandler;
 

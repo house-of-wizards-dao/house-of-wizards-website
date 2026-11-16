@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

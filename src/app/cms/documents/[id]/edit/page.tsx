@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Spinner } from "@nextui-org/spinner";
+import { Spinner } from "@/components/ui/Spinner";
 import { use } from "react";
 
 import { DocumentForm } from "@/components/cms/DocumentForm";

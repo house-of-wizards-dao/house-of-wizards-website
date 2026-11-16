@@ -1,3 +1,4 @@
+import { toOpenSeaNFT } from "@/lib/opensea-nfts";
 import { NextRequest, NextResponse } from "next/server";
 import { OpenSeaSDK, Chain } from "@opensea/sdk";
 import { JsonRpcProvider } from "ethers";
@@ -65,17 +66,17 @@ export const GET = async (request: NextRequest) => {
 
     // Fetch NFTs owned by the account on both Base and Ethereum mainnet
     const [baseData, ethereumData] = await Promise.all([
-      sdk.api.getNFTsByAccount(
+      sdk.api.nfts.getNFTsByAccount(
         address,
         limitNum,
         next || undefined,
-        "base" as any,
+        Chain.Base,
       ),
-      sdk.api.getNFTsByAccount(
+      sdk.api.nfts.getNFTsByAccount(
         address,
         limitNum,
         next || undefined,
-        "ethereum" as any,
+        Chain.Mainnet,
       ),
     ]);
 
@@ -87,7 +88,7 @@ export const GET = async (request: NextRequest) => {
     // Return the NFTs data with cache headers
     return NextResponse.json(
       {
-        nfts,
+        nfts: nfts.map(toOpenSeaNFT),
         next: baseData.next || ethereumData.next || null,
       },
       {

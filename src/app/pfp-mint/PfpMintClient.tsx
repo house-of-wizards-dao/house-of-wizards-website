@@ -131,27 +131,22 @@ export function PfpMintClient({ initialMintedTokenIds }: PfpMintClientProps) {
   }, [isConnected, chainId, switchChain]);
 
   useEffect(() => {
-    const snowflake1 = document.createElement("img");
-    snowflake1.src = "/img/snow/1.svg";
-    const snowflake2 = document.createElement("img");
-    snowflake2.src = "/img/snow/2.svg";
-    const snowflake3 = document.createElement("img");
-    snowflake3.src = "/img/snow/3.svg";
-    const snowflake4 = document.createElement("img");
-    snowflake4.src = "/img/snow/4.svg";
-    const snowflake5 = document.createElement("img");
-    snowflake5.src = "/img/snow/5.svg";
-    const snowflake6 = document.createElement("img");
-    snowflake6.src = "/img/snow/6.svg";
-
-    setSnowflakes([
-      snowflake1,
-      snowflake2,
-      snowflake3,
-      snowflake4,
-      snowflake5,
-      snowflake6,
-    ]);
+    let cancelled = false;
+    const images = [1, 2, 3, 4, 5, 6].map((number) => {
+      const image = document.createElement("img");
+      image.src = `/img/snow/${number}.svg`;
+      return image;
+    });
+    void Promise.all(images.map((image) => image.decode()))
+      .then(() => {
+        if (!cancelled) setSnowflakes(images);
+      })
+      .catch(() => {
+        /* Snow is decorative; leave it off when assets fail. */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (

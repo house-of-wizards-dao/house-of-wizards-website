@@ -169,10 +169,6 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
   // Hydrate from sessionStorage on mount
   useEffect(() => {
-    if (typeof window === "undefined") {
-      setHydrated(true);
-      return;
-    }
     try {
       const raw = window.sessionStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -184,6 +180,8 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     } catch {
       // ignore corrupted storage
     } finally {
+      // Synchronize persisted browser state after SSR before enabling writes.
+
       setHydrated(true);
     }
   }, []);

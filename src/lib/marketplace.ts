@@ -1,3 +1,5 @@
+import "server-only";
+import { withLocalTraitIds } from "@/lib/server/character-metadata";
 /**
  * Marketplace utilities for OpenSea integration
  * Handles listings, offers, and order fulfillment
@@ -6,10 +8,6 @@
 /**
  * Marketplace feature configuration
  */
-export const marketplaceConfig = {
-  /** Enable/disable offers functionality (fetching and UI) */
-  offersEnabled: false,
-} as const;
 
 import {
   OpenSeaSDK,
@@ -41,85 +39,12 @@ import type {
  * Collection configuration with OpenSea slugs
  * Slugs verified from https://opensea.io/category/forgottenrunes
  */
-export const collections: Record<CollectionKey, CollectionInfo> = {
-  wizards: {
-    key: "wizards",
-    name: "Forgotten Runes Wizards Cult",
-    address: frwcAddresses.wizards,
-    slug: "forgottenruneswizardscult",
-    hasLocalMetadata: true,
-  },
-  warriors: {
-    key: "warriors",
-    name: "Forgotten Runes Warriors Guild",
-    address: frwcAddresses.warriors,
-    slug: "forgottenruneswarriorsguild",
-    hasLocalMetadata: true,
-  },
-  souls: {
-    key: "souls",
-    name: "Forgotten Souls",
-    address: frwcAddresses.souls,
-    slug: "forgottensouls",
-    hasLocalMetadata: false,
-  },
-  beasts: {
-    key: "beasts",
-    name: "Forgotten Runes Beasts",
-    address: frwcAddresses.beasts,
-    slug: "forgottenrunesbeasts",
-    hasLocalMetadata: false,
-  },
-  ponies: {
-    key: "ponies",
-    name: "Forgotten Runes Ponies",
-    address: frwcAddresses.ponies,
-    slug: "forgottenrunesponies",
-    hasLocalMetadata: false,
-  },
-  spawn: {
-    key: "spawn",
-    name: "Forgotten Runes Beast Spawn",
-    address: frwcAddresses.spawn,
-    slug: "forgottenrunesbeastspawn",
-    hasLocalMetadata: false,
-  },
-  veil: {
-    key: "veil",
-    name: "The Forgotten Runes Infinity Veil",
-    address: frwcAddresses.veil,
-    slug: "infinityveil",
-    hasLocalMetadata: false,
-  },
-  locks: {
-    key: "locks",
-    name: "Forgotten Runes Gate To The Seventh Realm",
-    address: frwcAddresses.locks,
-    slug: "forgottenrunesgatetotheseventhrealm",
-    hasLocalMetadata: false,
-  },
-  athenaeum: {
-    key: "athenaeum",
-    name: "Forgotten Runes Athenaeum",
-    address: frwcAddresses.athenaeum,
-    slug: "athenaeum",
-    hasLocalMetadata: false,
-  },
-  impBox: {
-    key: "impBox",
-    name: "Nightmare Imp's Treat Boxes",
-    address: frwcAddresses.impBox,
-    slug: "nightmareimpstreatboxes",
-    hasLocalMetadata: false,
-  },
-};
-
-/**
- * Get collection info by key
- */
-export const getCollection = (key: CollectionKey): CollectionInfo => {
-  return collections[key];
-};
+export {
+  collections,
+  getCollection,
+  marketplaceConfig,
+} from "@/config/marketplace";
+import { collections, getCollection } from "@/config/marketplace";
 
 /**
  * Race a promise against a timeout. If the timeout fires first, rejects
@@ -221,38 +146,16 @@ export const getOpenSeaSDK = (accountAddress?: string) => {
  * `/api/v2/orders/{chain}/seaport/offers` (405); the SDK's `getNFTOffers` still
  * calls that path, so we use the collection NFT offers route instead.
  */
-const fetchOffersForCollectionNft = async (
+const fetchOffersForCollectionNft = (
   collectionSlug: string,
   tokenId: string,
   limit: number,
-): Promise<GetOffersResponse> => {
-  const capped = Math.min(Math.max(limit, 1), 100);
-  const url = new URL(
-    `https://api.opensea.io/api/v2/offers/collection/${encodeURIComponent(collectionSlug)}/nfts/${encodeURIComponent(String(tokenId))}`,
+): Promise<GetOffersResponse> =>
+  getOpenSeaSDK().api.offers.getOffersByNFT(
+    collectionSlug,
+    tokenId,
+    Math.min(Math.max(limit, 1), 100),
   );
-  url.searchParams.set("limit", String(capped));
-
-  const headers = new Headers({ Accept: "application/json" });
-  const apiKey = process.env.OPENSEA_API_KEY;
-  if (apiKey) headers.set("X-API-KEY", apiKey);
-
-  const res = await fetch(url);
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(
-      `OpenSea NFT offers HTTP ${res.status}: ${body.slice(0, 240)}`,
-    );
-  }
-  const data: unknown = await res.json();
-  if (
-    typeof data !== "object" ||
-    data === null ||
-    !Array.isArray((data as { offers?: unknown }).offers)
-  ) {
-    throw new Error("OpenSea NFT offers: unexpected response shape");
-  }
-  return data as GetOffersResponse;
-};
 
 /**
  * Cached NFT metadata fetcher
@@ -262,7 +165,7 @@ const fetchOffersForCollectionNft = async (
 export const getCachedNFT = unstable_cache(
   async (contractAddress: string, tokenId: string) => {
     const sdk = getOpenSeaSDK();
-    const response = await sdk.api.getNFT(
+    const response = await sdk.api.nfts.getNFT(
       contractAddress,
       tokenId,
       Chain.Mainnet,
@@ -326,10 +229,10 @@ const toISOTimestamp = (
  */
 const orderToListing = (order: OpenSeaListing): Listing => {
   const priceData = order.price.current;
-  const params = order.protocol_data?.parameters;
+  const params = order.protocolData?.parameters;
 
   return {
-    orderHash: order.order_hash,
+    orderHash: order.orderHash ?? "",
     chain: order.chain || "ethereum",
     protocol: "seaport",
     price: {
@@ -341,7 +244,7 @@ const orderToListing = (order: OpenSeaListing): Listing => {
     expirationTime: toISOTimestamp(params?.endTime, true),
     maker: params?.offerer || "",
     taker: params?.consideration?.[0]?.recipient,
-    protocolData: order.protocol_data,
+    protocolData: order.protocolData,
   };
 };
 
@@ -353,7 +256,7 @@ export const orderToOffer = (
   order: OpenSeaOffer | OpenSeaCollectionOffer,
 ): Offer => {
   const priceData = order.price;
-  const params = order.protocol_data?.parameters;
+  const params = order.protocolData?.parameters;
   const offerItem = params?.offer?.[0];
 
   // Seaport amounts cover the whole order, including every NFT requested by
@@ -379,7 +282,7 @@ export const orderToOffer = (
   }
 
   return {
-    orderHash: order.order_hash,
+    orderHash: order.orderHash ?? "",
     chain: order.chain || "ethereum",
     protocol: "seaport",
     price: {
@@ -391,7 +294,7 @@ export const orderToOffer = (
     expirationTime: toISOTimestamp(params?.endTime, true),
     maker: params?.offerer || "",
     status: order.status,
-    protocolData: order.protocol_data,
+    protocolData: order.protocolData,
   };
 };
 
@@ -549,7 +452,7 @@ const isActiveOpenSeaOffer = (
   order: OpenSeaOffer | OpenSeaCollectionOffer,
 ): boolean => {
   if (order.status && order.status.toLowerCase() !== "active") return false;
-  const endTime = order.protocol_data?.parameters?.endTime;
+  const endTime = order.protocolData?.parameters?.endTime;
   const expiration =
     typeof endTime === "string" || typeof endTime === "number"
       ? Number(endTime) * 1000
@@ -563,9 +466,9 @@ const isOpenSeaOfferPayload = (
 ): value is OpenSeaOffer | OpenSeaCollectionOffer =>
   typeof value === "object" &&
   value !== null &&
-  "order_hash" in value &&
-  typeof (value as { order_hash: unknown }).order_hash === "string" &&
-  (value as { order_hash: string }).order_hash.length > 0 &&
+  "orderHash" in value &&
+  typeof (value as { orderHash: unknown }).orderHash === "string" &&
+  (value as { orderHash: string }).orderHash.length > 0 &&
   "price" in value &&
   typeof (value as { price: unknown }).price === "object" &&
   (value as { price: Record<string, unknown> }).price !== null &&
@@ -579,17 +482,17 @@ const openSeaNFTToMarketplaceNFT = (
   identifier: nftData.identifier || tokenId,
   collection: collection.slug,
   contract: nftData.contract || collection.address,
-  token_standard: nftData.token_standard || "erc721",
+  token_standard: nftData.tokenStandard || "erc721",
   name: nftData.name || `${collection.name} #${tokenId}`,
   description: nftData.description || "",
-  image_url: nftData.image_url || "",
-  metadata_url: nftData.metadata_url || "",
+  image_url: nftData.imageUrl || "",
+  metadata_url: nftData.metadataUrl || "",
   opensea_url:
-    nftData.opensea_url ||
+    nftData.openseaUrl ||
     `https://opensea.io/assets/ethereum/${collection.address}/${tokenId}`,
-  updated_at: nftData.updated_at || new Date().toISOString(),
-  is_disabled: nftData.is_disabled || false,
-  is_nsfw: nftData.is_nsfw || false,
+  updated_at: nftData.updatedAt || new Date().toISOString(),
+  is_disabled: nftData.isDisabled || false,
+  is_nsfw: nftData.isNsfw || false,
   traits: parseTraits(nftData.traits || []),
 });
 
@@ -601,13 +504,16 @@ export const parseTraits = (
 ): NFTTrait[] => {
   if (!Array.isArray(traits)) return [];
   return traits.map((t) => ({
-    trait_type: t.trait_type,
-    value: t.value instanceof Date ? t.value.toISOString() : t.value,
+    trait_type: t.traitType,
+    value:
+      typeof t.value === "string" || typeof t.value === "number"
+        ? t.value
+        : String(t.value ?? ""),
     // Cast display_type: OpenSea enum values match our string literals
     display_type:
-      t.display_type === "None"
+      t.displayType === "None"
         ? null
-        : (t.display_type as NFTTrait["display_type"]),
+        : (t.displayType as NFTTrait["display_type"]),
   }));
 };
 
@@ -625,7 +531,7 @@ export const fetchCollectionListings = async (
 
   try {
     // Fetch listings using collection slug via getAllListings
-    const response = await sdk.api.getAllListings(
+    const response = await sdk.api.listings.getAllListings(
       collection.slug,
       limit,
       next || undefined,
@@ -642,7 +548,7 @@ export const fetchCollectionListings = async (
     // First pass: collect unique tokens and their best listings
     for (const listing of listings) {
       // Extract token info from protocol data (SDK uses snake_case)
-      const protocolData = listing.protocol_data;
+      const protocolData = listing.protocolData;
       const offerItem = protocolData?.parameters?.offer?.[0];
 
       // Get token ID from the offer item
@@ -687,17 +593,17 @@ export const fetchCollectionListings = async (
             identifier: tokenId,
             collection: collection.slug,
             contract: collection.address,
-            token_standard: nftData?.token_standard || "erc721",
+            token_standard: nftData?.tokenStandard || "erc721",
             name: nftData?.name || `${collection.name} #${tokenId}`,
             description: nftData?.description || "",
-            image_url: nftData?.image_url || "",
-            metadata_url: nftData?.metadata_url || "",
+            image_url: nftData?.imageUrl || "",
+            metadata_url: nftData?.metadataUrl || "",
             opensea_url:
-              nftData?.opensea_url ||
+              nftData?.openseaUrl ||
               `https://opensea.io/assets/ethereum/${collection.address}/${tokenId}`,
-            updated_at: nftData?.updated_at || new Date().toISOString(),
-            is_disabled: nftData?.is_disabled || false,
-            is_nsfw: nftData?.is_nsfw || false,
+            updated_at: nftData?.updatedAt || new Date().toISOString(),
+            is_disabled: nftData?.isDisabled || false,
+            is_nsfw: nftData?.isNsfw || false,
             traits: parseTraits(nftData?.traits || []),
             owner: nftData?.owners?.[0]?.address,
           };
@@ -740,7 +646,7 @@ export const fetchCollectionListings = async (
     }
 
     return {
-      listings: items,
+      listings: items.map(withLocalTraitIds),
       next: response.next || undefined,
     };
   } catch (error) {
@@ -761,7 +667,7 @@ export const fetchCollectionNFTs = async (
   const collection = getCollection(collectionKey);
 
   try {
-    const response = await sdk.api.getNFTsByCollection(
+    const response = await sdk.api.nfts.getNFTsByCollection(
       collection.slug,
       limit,
       next || undefined,
@@ -771,17 +677,17 @@ export const fetchCollectionNFTs = async (
       identifier: nft.identifier,
       collection: collection.slug,
       contract: nft.contract || collection.address,
-      token_standard: nft.token_standard || "erc721",
+      token_standard: nft.tokenStandard || "erc721",
       name: nft.name || `${collection.name} #${nft.identifier}`,
       description: nft.description || "",
-      image_url: nft.image_url || "",
-      metadata_url: nft.metadata_url || "",
+      image_url: nft.imageUrl || "",
+      metadata_url: nft.metadataUrl || "",
       opensea_url:
-        nft.opensea_url ||
+        nft.openseaUrl ||
         `https://opensea.io/assets/ethereum/${collection.address}/${nft.identifier}`,
-      updated_at: nft.updated_at || new Date().toISOString(),
-      is_disabled: nft.is_disabled || false,
-      is_nsfw: nft.is_nsfw || false,
+      updated_at: nft.updatedAt || new Date().toISOString(),
+      is_disabled: nft.isDisabled || false,
+      is_nsfw: nft.isNsfw || false,
       traits: parseTraits(nft.traits || []),
     }));
 
@@ -814,7 +720,7 @@ export const fetchWalletSellItems = async (
 
   try {
     do {
-      const response = await sdk.api.getNFTsByAccount(
+      const response = await sdk.api.nfts.getNFTsByAccount(
         ownerAddress,
         200,
         next || undefined,
@@ -842,7 +748,7 @@ export const fetchWalletSellItems = async (
 
           let bestOffer: Offer | undefined;
           try {
-            const bestRaw = await sdk.api.getBestOffer(
+            const bestRaw = await sdk.api.offers.getBestOffer(
               collection.slug,
               tokenId,
             );
@@ -909,7 +815,7 @@ export const fetchWalletSellItems = async (
       }
     }
 
-    return items.sort((a, b) => {
+    return items.map(withLocalTraitIds).sort((a, b) => {
       const offerA = a.bestOffer ? getOfferAmount(a.bestOffer) : 0n;
       const offerB = b.bestOffer ? getOfferAmount(b.bestOffer) : 0n;
       if (offerA !== offerB) return offerA > offerB ? -1 : 1;

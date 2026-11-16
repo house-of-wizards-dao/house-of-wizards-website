@@ -1,11 +1,11 @@
 import { Suspense } from "react";
 import { GalleryProvider } from "@/contexts/GalleryContext";
-import { PageLoader } from "@/components/PageLoader";
+import { Spinner } from "@/components/ui/Spinner";
 import { GalleryContent } from "./GalleryContent";
 
 export default function GalleryPage() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <Suspense fallback={<Spinner />}>
       <GalleryProvider>
         <GalleryContent />
       </GalleryProvider>

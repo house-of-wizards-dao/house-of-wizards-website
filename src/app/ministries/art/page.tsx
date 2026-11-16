@@ -1,5 +1,5 @@
-import { Image } from "@nextui-org/image";
-import { Link } from "@nextui-org/link";
+import Image from "next/image";
+import { Link } from "@/components/ui/Link";
 
 export default function MinistryOfArtPage() {
   return (
@@ -48,6 +48,9 @@ export default function MinistryOfArtPage() {
         className="px-4"
         loading="lazy"
         src="/img/cultcontent.png"
+        width={1133}
+        height={642}
+        sizes="(max-width: 768px) 100vw, 768px"
       />
       <p className="max-w-5xl mx-auto sm:text-md text-sm text-center">
         To request funding please fill out the{" "}

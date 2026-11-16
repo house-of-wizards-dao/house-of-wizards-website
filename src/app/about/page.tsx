@@ -1,7 +1,7 @@
 import NextImage from "next/image";
-import { Card } from "@nextui-org/card";
-import { Image } from "@nextui-org/image";
-import { Link } from "@nextui-org/link";
+import { Card } from "@/components/ui/Card";
+import Image from "next/image";
+import { Link } from "@/components/ui/Link";
 import { LazyImage } from "@/components/ui/LazyImage";
 import { PageTitle } from "@/components/PageTitle";
 import { ScrollToTeamButton } from "@/components/ScrollToTeamButton";
@@ -163,6 +163,9 @@ export default function IndexPage() {
                 alt="Ministry of Art illustration"
                 loading="lazy"
                 src="/img/ministry_art.png"
+                width={328}
+                height={328}
+                sizes="(max-width: 768px) 100vw, 768px"
               />
               <span className="font-atirose text-brand-500 text-2xl">
                 Ministry of Art

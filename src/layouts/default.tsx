@@ -1,4 +1,4 @@
-import { Image } from "@nextui-org/image";
+import Image from "next/image";
 
 import { Navbar } from "@/components/navbar";
 import { Head } from "./head";
@@ -20,6 +20,7 @@ export default function DefaultLayout({
             className="rounded-none"
             src="/img/logo-white.png"
             width={150}
+            height={33}
           />
           <div className="flex flex-col items-center sm:w-[700px] w-full">
             <p className="text-xs text-white uppercase">

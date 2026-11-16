@@ -46,7 +46,7 @@ export const POST = async () => {
     }
 
     // Invalidate the cult-content cache so the landing page shows fresh data
-    revalidateTag("cult-content");
+    revalidateTag("cult-content", { expire: 0 });
 
     return NextResponse.json({
       success: true,

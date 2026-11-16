@@ -1,6 +1,8 @@
 import type { QuotedTweet, Tweet, TweetEntities } from "react-tweet/api";
 
-const normalizeEntities = (entities: TweetEntities): TweetEntities => ({
+const normalizeEntities = (
+  entities: Partial<TweetEntities> = {},
+): TweetEntities => ({
   hashtags: entities.hashtags ?? [],
   urls: entities.urls ?? [],
   user_mentions: entities.user_mentions ?? [],
@@ -14,7 +16,9 @@ const normalizeQuotedTweet = (tweet: QuotedTweet): QuotedTweet => ({
 });
 
 /** Ensures entity arrays exist for react-tweet's enrichTweet (X API omits empty arrays). */
-export const normalizeTweet = (tweet: Tweet): Tweet => ({
+export const normalizeTweet = (
+  tweet: Tweet,
+): Tweet & { entities: TweetEntities } => ({
   ...tweet,
   entities: normalizeEntities(tweet.entities),
   quoted_tweet: tweet.quoted_tweet

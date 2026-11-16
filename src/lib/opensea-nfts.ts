@@ -2,7 +2,7 @@
  * OpenSea API utilities for fetching NFTs from all contracts
  */
 
-import { OpenSeaSDK, Chain } from "@opensea/sdk";
+import { OpenSeaSDK, Chain, type NFT } from "@opensea/sdk";
 import { JsonRpcProvider } from "ethers";
 
 type OpenSeaSignerOrProvider = ConstructorParameters<typeof OpenSeaSDK>[0];
@@ -61,11 +61,11 @@ export const fetchNFTsByContract = async (
   const sdk = getOpenSeaSDK();
 
   try {
-    const data = await sdk.api.getNFTsByAccount(
+    const data = await sdk.api.nfts.getNFTsByAccount(
       walletAddress,
       limit,
       next || undefined,
-      "ethereum" as any,
+      Chain.Mainnet,
     );
 
     // Filter NFTs by contract address
@@ -74,7 +74,7 @@ export const fetchNFTsByContract = async (
     );
 
     return {
-      nfts: filteredNFTs,
+      nfts: filteredNFTs.map(toOpenSeaNFT),
       next: data.next || null,
     };
   } catch (error) {
@@ -108,14 +108,14 @@ export const fetchNFTsForAllContracts = async (
     let pageCount = 0;
 
     do {
-      const data = await sdk.api.getNFTsByAccount(
+      const data = await sdk.api.nfts.getNFTsByAccount(
         walletAddress,
         maxLimit,
         next || undefined,
-        "ethereum" as any,
+        Chain.Mainnet,
       );
 
-      allNFTs.push(...data.nfts);
+      allNFTs.push(...data.nfts.map(toOpenSeaNFT));
       next = data.next || null;
       pageCount++;
 
@@ -174,3 +174,19 @@ export const fetchNFTsForWallets = async (
 
   return walletMap;
 };
+
+/** Keep the application API stable across the SDK's camelCase response migration. */
+export const toOpenSeaNFT = (nft: NFT): OpenSeaNFT => ({
+  identifier: nft.identifier,
+  collection: nft.collection,
+  contract: nft.contract,
+  token_standard: nft.tokenStandard,
+  name: nft.name ?? "",
+  description: nft.description ?? "",
+  image_url: nft.imageUrl ?? "",
+  metadata_url: nft.metadataUrl ?? "",
+  opensea_url: nft.openseaUrl ?? "",
+  updated_at: nft.updatedAt ?? "",
+  is_disabled: nft.isDisabled ?? false,
+  is_nsfw: nft.isNsfw ?? false,
+});

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { Spinner } from "@/components/ui/Spinner";
 import { Metadata } from "next";
 import { MarketplaceBrowser } from "@/components/marketplace";
 import { PageTitle } from "@/components/PageTitle";
@@ -24,7 +26,7 @@ export const metadata: Metadata = {
 // Revalidate the page every 60 seconds
 export const revalidate = 60;
 
-export default async function MarketplacePage() {
+const InitialListings = async () => {
   // Pre-fetch initial listings on the server
   // This eliminates the loading spinner on first page load
   let initialListings;
@@ -56,6 +58,18 @@ export default async function MarketplacePage() {
   }
 
   return (
+    <CartProvider>
+      <MarketplaceBrowser
+        initialCollection="wizards"
+        initialListings={initialListings}
+        initialCollectionInfo={initialCollectionInfo}
+      />
+    </CartProvider>
+  );
+};
+
+export default function MarketplacePage() {
+  return (
     <div className="container mx-auto px-4 py-8">
       <PageTitle
         title="Marketplace"
@@ -68,13 +82,15 @@ export default async function MarketplacePage() {
       </p>
 
       <div className="mt-8">
-        <CartProvider>
-          <MarketplaceBrowser
-            initialCollection="wizards"
-            initialListings={initialListings}
-            initialCollectionInfo={initialCollectionInfo}
-          />
-        </CartProvider>
+        <Suspense
+          fallback={
+            <div className="min-h-96 flex justify-center py-12">
+              <Spinner label="Loading marketplace" />
+            </div>
+          }
+        >
+          <InitialListings />
+        </Suspense>
       </div>
     </div>
   );

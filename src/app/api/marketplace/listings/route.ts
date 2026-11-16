@@ -3,8 +3,8 @@ import { fetchCollectionListings, collections } from "@/lib/marketplace";
 import type { CollectionKey } from "@/types/marketplace";
 import { logger } from "@/lib/logger";
 
-// Revalidate listings every 60 seconds (dynamic data)
-export const revalidate = 60;
+// Query-dependent route; shared HTTP caching remains 60 seconds below.
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/marketplace/listings

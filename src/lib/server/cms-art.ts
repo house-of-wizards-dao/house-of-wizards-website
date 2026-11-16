@@ -49,7 +49,7 @@ const check = (error: { message: string; code?: string } | null) => {
   throw new ArtError("The catalog could not be saved. Please retry.", 500);
 };
 const invalidate = () => {
-  revalidateTag("commission-art");
+  revalidateTag("commission-art", { expire: 0 });
   revalidatePath("/art", "layout");
   revalidatePath("/cms/art", "layout");
 };

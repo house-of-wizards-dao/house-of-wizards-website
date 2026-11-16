@@ -65,7 +65,7 @@ export const POST = async (request: NextRequest) => {
     const orderSide = side === "offer" ? OrderSide.OFFER : OrderSide.LISTING;
 
     // Get the order fulfillment data from OpenSea
-    const fulfillmentResponse = await sdk.api.generateFulfillmentData(
+    const fulfillmentResponse = await sdk.api.orders.generateFulfillmentData(
       accountAddress,
       orderHash,
       SEAPORT_ADDRESS,
@@ -74,8 +74,8 @@ export const POST = async (request: NextRequest) => {
       tokenId,
     );
 
-    // The response structure is: { protocol, fulfillment_data: { transaction, orders } }
-    const fulfillmentData = fulfillmentResponse.fulfillment_data;
+    // The response structure is: { protocol, fulfillmentData: { transaction, orders } }
+    const fulfillmentData = fulfillmentResponse.fulfillmentData;
     if (!fulfillmentData?.transaction) {
       logger.error("Unexpected fulfillment response structure", {
         fulfillmentResponse,
@@ -91,7 +91,7 @@ export const POST = async (request: NextRequest) => {
     // Encode the transaction calldata
     const encodedData = encodeSeaportCall(
       txInfo.function,
-      txInfo.input_data as Record<string, unknown>,
+      txInfo.inputData as Record<string, unknown>,
     );
 
     // Return the transaction in a format ready for wallet signing

@@ -1,20 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { cn, formatTimeRemaining } from "@/lib/utils";
-import { marketplaceConfig } from "@/lib/marketplace";
+import { marketplaceConfig } from "@/config/marketplace";
 import type { MarketplaceItem, Offer } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 import { useMarketplaceActions, useNFTOwnership } from "@/hooks/useMarketplace";
 import {
   asLocalNftCollection,
-  getLocalNftAffinity,
-  getLocalNftTraits,
-  type LocalNftAffinity,
-  type LocalNftTrait,
-} from "@/data/localNftPreview";
+  type LocalNftMetadata,
+} from "@/types/nft-metadata";
 
 /** Unified buy (OpenSea + NFTX) from marketplace browser — matches grid `handleBuy` and card price. */
 export type ItemDetailMarketplaceBuy = {
@@ -55,15 +53,21 @@ export const ItemDetailOverlay = ({
   // surface that metadata themselves.
   const isNftxPreview = !!item.nftxListing && !!localCollection;
 
-  const localTraits = useMemo<LocalNftTrait[]>(() => {
-    if (!isNftxPreview || !localCollection) return [];
-    return getLocalNftTraits(localCollection, item.nft.identifier);
-  }, [isNftxPreview, localCollection, item.nft.identifier]);
-
-  const localAffinity = useMemo<LocalNftAffinity | null>(() => {
-    if (!isNftxPreview || !localCollection) return null;
-    return getLocalNftAffinity(localCollection, item.nft.identifier);
-  }, [isNftxPreview, localCollection, item.nft.identifier]);
+  const metadata = useQuery<LocalNftMetadata>({
+    queryKey: ["character-metadata", localCollection, item.nft.identifier],
+    enabled: isOpen && isNftxPreview,
+    staleTime: Infinity,
+    queryFn: async ({ signal }) => {
+      const response = await fetch(
+        `/api/characters/${localCollection}/${item.nft.identifier}`,
+        { signal },
+      );
+      if (!response.ok) throw new Error("Unable to load character metadata");
+      return response.json();
+    },
+  });
+  const localTraits = metadata.data?.traits ?? [];
+  const localAffinity = metadata.data?.affinity ?? null;
 
   if (!isOpen) return null;
 
@@ -303,6 +307,17 @@ export const ItemDetailOverlay = ({
                     )
                   )}
 
+                  {isNftxPreview && metadata.isPending && (
+                    <p role="status">Loading character details…</p>
+                  )}
+                  {metadata.isError && (
+                    <button
+                      type="button"
+                      onClick={() => void metadata.refetch()}
+                    >
+                      Retry character details
+                    </button>
+                  )}
                   {/* Affinity (NFTX wizards/warriors only — derived from
                       local affinity data) */}
                   {isNftxPreview && localAffinity && (

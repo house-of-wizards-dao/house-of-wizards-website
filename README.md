@@ -4,9 +4,9 @@ House of Wizards is the website for the House of Wizards DAO, a Forgotten Runes 
 
 ## Tech Stack
 
-- Next.js 15 with the App Router
-- React 18 and TypeScript
-- Tailwind CSS and NextUI
+- Next.js 16 with the App Router
+- React 19 and TypeScript 6
+- Tailwind CSS 4 and small local UI components
 - Wagmi, RainbowKit, SIWE, and NextAuth for wallet authentication
 - Supabase, OpenSea, and GraphQL integrations for dynamic content and marketplace data
 
@@ -14,8 +14,8 @@ House of Wizards is the website for the House of Wizards DAO, a Forgotten Runes 
 
 ### Prerequisites
 
-- Node.js 20 or newer
-- pnpm
+- Node.js 26.x (the highest Node major currently supported by Vercel; run `nvm use`)
+- pnpm 11.5.0 (pinned in `packageManager`)
 
 ### Install Dependencies
 
@@ -49,11 +49,15 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 pnpm dev              # Start the development server
 pnpm build            # Build the production app
 pnpm start            # Start the production server after building
-pnpm lint             # Run ESLint with fixes
+pnpm lint             # Check ESLint without modifying files
+pnpm lint:fix         # Apply ESLint fixes
 pnpm type-check       # Run TypeScript checks
 pnpm test             # Run Jest tests
 pnpm test:watch       # Run Jest in watch mode
 pnpm test:coverage    # Run Jest with coverage
+pnpm test:e2e         # Production browser checks (build first)
+pnpm bundle:check     # Enforce initial/deferred gzip budgets (build first)
+pnpm perf:check       # Run mobile Lighthouse with budgets (build first)
 ```
 
 ## Project Structure
@@ -71,3 +75,5 @@ pnpm test:coverage    # Run Jest with coverage
 - `NEXTAUTH_URL` should be `http://localhost:3000` when running locally.
 - Generate a strong `NEXTAUTH_SECRET` for wallet authentication.
 - Marketplace data depends on the configured external APIs, so pages may fall back or show partial data when those values are missing.
+
+See [performance and dependency maintenance](docs/performance.md) for upgrade constraints, architecture decisions, and verification.
