@@ -4,6 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
+    "prison:local": "tsx scripts/forgotten-prison-local.ts",
+    "prison:setup": "tsx scripts/setup-forgotten-prison.ts",
+    "prison:dev": "FORGOTTEN_PRISON_LOCAL_ENABLED=1 next dev --webpack --hostname 127.0.0.1 --port 3000",
+    "prison:test": "tsx scripts/test-forgotten-prison.ts",
+    "prison:test-bidding": "tsx scripts/test-prison-bidding.ts",
     "guard:sync-assets": "node ./scripts/sync-guard-game-assets.mjs",
     "build": "next build --webpack",
     "start": "next start",

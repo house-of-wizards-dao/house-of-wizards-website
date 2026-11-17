@@ -40,6 +40,10 @@ const isDropdown = (item: NavItem): item is NavDropdown => {
 const magicDropdown: NavDropdown = {
   label: "MAGIC",
   items: [
+    { label: "Forgotten Prison", href: "/magic/forgotten-prison" },
+    ...(process.env.NODE_ENV === "development"
+      ? [{ label: "Prison Test", href: "/magic/prison-test" }]
+      : []),
     {
       label: "The Guard",
       href: "/guard",

@@ -1,0 +1,45 @@
+{
+  "chainId": 1,
+  "contract": "ForgottenPrison",
+  "address": "0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8",
+  "initialOwner": "0x991c0FF5179c9788C01A9682Fd345804dB19B9F9",
+  "deploymentTransaction": "0xfa79404160fcea00ed9d79316cc9694efe52bfc01dc50515c144bd0f5d5221ff",
+  "deploymentBlock": 26428270,
+  "deploymentTimestamp": 1794840275,
+  "initialNextDrawAt": 1794926675,
+  "initCodeHash": "0x5c62425e65339f9c944d2f71634134d4a65d01d9bb68db76d9c966aa62888b26",
+  "compiler": "0.8.30+commit.73712a01",
+  "evmVersion": "cancun",
+  "optimizerRuns": 200,
+  "viaIR": true,
+  "sourceVerification": {
+    "sourcify": {
+      "creationMatch": "exact_match",
+      "runtimeMatch": "exact_match",
+      "verifiedAt": "2026-11-16T16:18:26Z",
+      "verificationId": "5269e9b0-dc37-4592-8ab3-0c4736c68ef3",
+      "matchId": "59366320",
+      "url": "https://repo.sourcify.dev/1/0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8"
+    },
+    "etherscan": {
+      "status": "exact_match",
+      "confirmedAt": "2026-11-16T17:10:55Z",
+      "url": "https://etherscan.io/address/0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8#code"
+    }
+  },
+  "collections": {
+    "warriors": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+    "wizards": "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42",
+    "impBoxes": "0x59775fD5F266C216D7566eB216153aB8863C9c84"
+  },
+  "vrf": {
+    "coordinator": "0xD7f86b4b8Cae7D942340FF628F82735b7a20893a",
+    "subscriptionId": "113858095252487102745145734579357540560253101107414735367340393035487077596465",
+    "subscriptionCreationTransaction": "0x6208d9e66746caadcb0098543fbd9a92162d86d0120caa8c42909aaaadf4291e",
+    "consumerRegistrationTransaction": "0x05dbcb10132cc328dd09d28a7d4a1bc8c49d2dc97d789c3c66de40d3857e2603",
+    "keyHash": "0x8077df514608a09f83e4e8d300645594e5d7234665448ba83f51a50f842bd3d9",
+    "callbackGasLimit": 150000,
+    "requestConfirmations": 10,
+    "nativePayment": true
+  }
+}

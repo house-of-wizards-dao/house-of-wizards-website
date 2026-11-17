@@ -1,0 +1,2679 @@
+{
+  "chainId": 1,
+  "safe": "0x6EAb2d42FEf9aad0036Bc145b5F451799e3FB3F7",
+  "prison": "0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8",
+  "safeVersion": "1.3.0",
+  "threshold": 5,
+  "ownerCount": 9,
+  "safeNonceAtCheck": "169",
+  "ownershipCheckedAtBlock": "26432013",
+  "blockHash": "0xffbe8b9036b389058033668a346a8db86fc2436f96a61c201aef8581a7da42e6",
+  "blockTimestamp": "1794885311",
+  "generatedAt": "2026-11-17T03:15:23.349Z",
+  "nextDrawAt": "1794926675",
+  "pendingDrawId": "0",
+  "startingInventory": {
+    "mainPrizes": "0",
+    "impBoxes": "0"
+  },
+  "totalNFTs": 469,
+  "totals": {
+    "Imp boxes": 114,
+    "Wizards": 3,
+    "Warriors": 352
+  },
+  "batches": [
+    {
+      "number": 1,
+      "file": "batch-01-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 50,
+        "Wizards": 0,
+        "Warriors": 0
+      },
+      "safeChecksum": "0xbf0e0058d004771fa8e066f42d2518972790d3e52536662928a5d33076cd4939",
+      "sha256": "7d2b6a8d70afb4aa38278ecc11ac93cf90570a47c7efbcf5abc287876c9fd869",
+      "simulation": {
+        "batch": 1,
+        "file": "batch-01-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "7251206",
+        "suggestedGasLimit": "9114008",
+        "safeNonceOnFork": "169",
+        "localTransactionHash": "0x93a84ef148957ba4cda379e75f12c8af1e9471eb1674180892bde41a0715674d",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 0,
+        "impBoxCountAfter": 50,
+        "encodedCallsSha256": "927a7a50385b93e5ffdcbffcf8cc38b07913b2cf1de56cbcde038a27a969fef7"
+      },
+      "encodedCallsSha256": "927a7a50385b93e5ffdcbffcf8cc38b07913b2cf1de56cbcde038a27a969fef7"
+    },
+    {
+      "number": 2,
+      "file": "batch-02-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 50,
+        "Wizards": 0,
+        "Warriors": 0
+      },
+      "safeChecksum": "0x94ab091823ba6c4148e322cbca866788ee2b40e5393cc75535a6c7633bde6072",
+      "sha256": "a3c36321a5203315b1ce53add5ddb503eab8deefa58024144ee00484ba2f44a2",
+      "simulation": {
+        "batch": 2,
+        "file": "batch-02-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "7137002",
+        "suggestedGasLimit": "8971253",
+        "safeNonceOnFork": "170",
+        "localTransactionHash": "0xe92f9479b2b9fdc74611fda4993b40fb8906b4632cf38e5427f982e8d4e77011",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 0,
+        "impBoxCountAfter": 100,
+        "encodedCallsSha256": "4ca6588c99a60d1587c2dd501c524f3f64fef76615f9cbc5b8243b1fe69a1323"
+      },
+      "encodedCallsSha256": "4ca6588c99a60d1587c2dd501c524f3f64fef76615f9cbc5b8243b1fe69a1323"
+    },
+    {
+      "number": 3,
+      "file": "batch-03-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 14,
+        "Wizards": 3,
+        "Warriors": 33
+      },
+      "safeChecksum": "0xd460781fe0d9c29e42ba9ddd606425bff794e614b5c95562eaa2786b5449f074",
+      "sha256": "a028b1988e032e4b9e74ba59601521b0c3a0ca00cfb87ecdc667bfdb0ce3f07c",
+      "simulation": {
+        "batch": 3,
+        "file": "batch-03-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "6360308",
+        "suggestedGasLimit": "8000385",
+        "safeNonceOnFork": "171",
+        "localTransactionHash": "0x2539d8f3a06749f7e4f54ddbe90358b99bd0f7da094fc7e59b7ee4acb2617da1",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 36,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "c0db7c0bb6fe2e0096d8c662d6abd4aaf073e78f317d5ecc82bb523edf012708"
+      },
+      "encodedCallsSha256": "c0db7c0bb6fe2e0096d8c662d6abd4aaf073e78f317d5ecc82bb523edf012708"
+    },
+    {
+      "number": 4,
+      "file": "batch-04-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0x81ea2cda78d83c12fe4647ccec5c63014da1bfe5a82549a62da2a4295768daab",
+      "sha256": "53c988f61f86eee5f93195dd184306f6b16faa5741d7f6b9080976cebefe77f9",
+      "simulation": {
+        "batch": 4,
+        "file": "batch-04-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687838",
+        "suggestedGasLimit": "7159798",
+        "safeNonceOnFork": "172",
+        "localTransactionHash": "0xa88abb466ff1cc26ffdde72920d20fe64daa8bdbf7fbf89e2cb7e3f995e07460",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 86,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "6696d45f22dc29b504a2967ec7f3313e316fc398bc3ebeda3f0a9ace6b807a6a"
+      },
+      "encodedCallsSha256": "6696d45f22dc29b504a2967ec7f3313e316fc398bc3ebeda3f0a9ace6b807a6a"
+    },
+    {
+      "number": 5,
+      "file": "batch-05-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0x8039e0ac6018a264d43741e000497326a973cf74aaf90354413a6b6f8591bf7c",
+      "sha256": "717c74192b64529be012434e56d96631a239cfeb9b5b0fae9d88ecc5bb36cb37",
+      "simulation": {
+        "batch": 5,
+        "file": "batch-05-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687838",
+        "suggestedGasLimit": "7159798",
+        "safeNonceOnFork": "173",
+        "localTransactionHash": "0xde769b075e5ce1748e199aca7de0a4e6533ab47b7284fba41199a7b4f516b673",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 136,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "b179c823d2f60ec10873188a546131d16800a1cbd5512a8c9914e0505f422b04"
+      },
+      "encodedCallsSha256": "b179c823d2f60ec10873188a546131d16800a1cbd5512a8c9914e0505f422b04"
+    },
+    {
+      "number": 6,
+      "file": "batch-06-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0xf2ff49466b3f4376d0758f06d37ba0bae76ed8f0fe09196423b7a448cb0eca9a",
+      "sha256": "cff3ef072ddfce01dac71f5d074836d29a6b860d5e65a95fdabc411d88e9df86",
+      "simulation": {
+        "batch": 6,
+        "file": "batch-06-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687826",
+        "suggestedGasLimit": "7159783",
+        "safeNonceOnFork": "174",
+        "localTransactionHash": "0xe54d27e04bd0d938df8ef80862a99fb21ef1ea517d5e9d60c41b4b25d0dc3b3d",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 186,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "b5b2394a34e40c9d685df242a4132e19ec1039ce1aed0de60862595d584570bb"
+      },
+      "encodedCallsSha256": "b5b2394a34e40c9d685df242a4132e19ec1039ce1aed0de60862595d584570bb"
+    },
+    {
+      "number": 7,
+      "file": "batch-07-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0x0b48878b7cb2e0315112d2cf8616afa6445aa44c97f2366c89d0d15efacb73f6",
+      "sha256": "9d72fc13ef9b79d180048e4f2cf89ce6b430d6758903f20e3d5ce4f8998efb52",
+      "simulation": {
+        "batch": 7,
+        "file": "batch-07-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687838",
+        "suggestedGasLimit": "7159798",
+        "safeNonceOnFork": "175",
+        "localTransactionHash": "0xc0e8e52655feeb780e93ec10efce08f86142eedfff583736a20fcfd1e4fa6182",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 236,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "f07ce3fa0cd4960d4e859bdc20163634baf38c3f17cc7d32b9706896989a6bc7"
+      },
+      "encodedCallsSha256": "f07ce3fa0cd4960d4e859bdc20163634baf38c3f17cc7d32b9706896989a6bc7"
+    },
+    {
+      "number": 8,
+      "file": "batch-08-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0x73a35585cc90785602566225a5206a26bd853a70de567f1e1fdca1eec45118c2",
+      "sha256": "b2eb752c5bba545f1d9c56b8a24696383a8c6b8c36b912689345d3bc22d580ff",
+      "simulation": {
+        "batch": 8,
+        "file": "batch-08-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687838",
+        "suggestedGasLimit": "7159798",
+        "safeNonceOnFork": "176",
+        "localTransactionHash": "0x04cdf5145f647641456b54189da7b4134c2aaebd965b7d738b8ec2c9b5aefa29",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 286,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "51af846472205795630a808c71fd23eacddd8fe17c47ccca8b83c4322badac5d"
+      },
+      "encodedCallsSha256": "51af846472205795630a808c71fd23eacddd8fe17c47ccca8b83c4322badac5d"
+    },
+    {
+      "number": 9,
+      "file": "batch-09-of-10.json",
+      "nftCount": 50,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 50
+      },
+      "safeChecksum": "0x85bfc65b295ce493143cc7d3bc74604e57b9efc8ee7d3001ba56724863b326a6",
+      "sha256": "f91d6202c2928abad9abc418fb82ae0fdcecd12db4eb2578a07342fc897d19e9",
+      "simulation": {
+        "batch": 9,
+        "file": "batch-09-of-10.json",
+        "result": "passed",
+        "nftCount": 50,
+        "gasUsed": "5687838",
+        "suggestedGasLimit": "7159798",
+        "safeNonceOnFork": "177",
+        "localTransactionHash": "0x7f3802f11820f4531ce1cbe704f919ace28a5467bd92c3e6654181a2dd5c49e3",
+        "registeredPrizes": 50,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 336,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "f93e0be845ed5df5291b21871a584f8d80b501909c0f3907a0ce978fd5398fe0"
+      },
+      "encodedCallsSha256": "f93e0be845ed5df5291b21871a584f8d80b501909c0f3907a0ce978fd5398fe0"
+    },
+    {
+      "number": 10,
+      "file": "batch-10-of-10.json",
+      "nftCount": 19,
+      "counts": {
+        "Imp boxes": 0,
+        "Wizards": 0,
+        "Warriors": 19
+      },
+      "safeChecksum": "0x84949ed26a8207d84f849f047f8ba72fad81e28cb1def512053f4d8db99cbd9d",
+      "sha256": "7d3b0fb18a95ef197afadb8d41166adfa611ec6cf9dceb2f9b738cb9b586149a",
+      "simulation": {
+        "batch": 10,
+        "file": "batch-10-of-10.json",
+        "result": "passed",
+        "nftCount": 19,
+        "gasUsed": "2218170",
+        "suggestedGasLimit": "2822713",
+        "safeNonceOnFork": "178",
+        "localTransactionHash": "0xb050341113ec0cba5832d93e25ac15540f02ee3127f190c7a6f7d594179a6df9",
+        "registeredPrizes": 19,
+        "allEligibleForNextDraw": true,
+        "mainPrizeCountAfter": 355,
+        "impBoxCountAfter": 114,
+        "encodedCallsSha256": "896089d3821dadbd65620ce5a8981e5aa026dc807bd2b13229fe9e2766becbe2"
+      },
+      "encodedCallsSha256": "896089d3821dadbd65620ce5a8981e5aa026dc807bd2b13229fe9e2766becbe2"
+    }
+  ],
+  "inventory": [
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16534"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16535"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16536"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16537"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16538"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16539"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16540"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16541"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16542"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16543"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16544"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16545"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16546"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16547"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16548"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16549"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16550"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16551"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16553"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16554"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16555"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16556"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16557"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16558"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16559"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16560"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16561"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16562"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16563"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16564"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16565"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16566"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16567"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16569"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16570"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16571"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16572"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16573"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16574"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16575"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16576"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16577"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16578"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16579"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16580"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16581"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16582"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16583"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16584"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16585"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16586"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16587"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16588"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16589"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16590"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16591"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16592"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16593"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16594"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16595"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16597"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16598"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16599"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16600"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16601"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16602"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16603"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16604"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16606"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16607"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16608"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16609"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16610"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16611"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16612"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16613"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16614"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16615"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16616"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16617"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16618"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16619"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16620"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16621"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16622"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16623"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16624"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16625"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16626"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16627"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16628"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16629"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16630"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16631"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16632"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16633"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16634"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16635"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16636"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16637"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16638"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16639"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16640"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16641"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16642"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16643"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16644"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16645"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16646"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16647"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16648"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16649"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16650"
+    },
+    {
+      "collection": "0x59775fD5F266C216D7566eB216153aB8863C9c84",
+      "collectionName": "Imp boxes",
+      "tokenId": "16651"
+    },
+    {
+      "collection": "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42",
+      "collectionName": "Wizards",
+      "tokenId": "951"
+    },
+    {
+      "collection": "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42",
+      "collectionName": "Wizards",
+      "tokenId": "2031"
+    },
+    {
+      "collection": "0x521f9C7505005CFA19A8E5786a9c3c9c9F5e6f42",
+      "collectionName": "Wizards",
+      "tokenId": "6947"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5437"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5442"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5446"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5447"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5448"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5449"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5450"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5451"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5452"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5454"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5455"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5456"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5458"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5459"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5460"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5461"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5462"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5463"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5464"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5467"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5469"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5471"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5473"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5474"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5475"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5476"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5477"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5478"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5479"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5480"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5481"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5482"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5483"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5484"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5485"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5486"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5487"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5488"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5490"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5491"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5492"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5493"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5494"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5495"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5496"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5497"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5498"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5499"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5500"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5501"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5503"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5505"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5506"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5507"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5508"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5509"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5510"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5511"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5512"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5513"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5515"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5516"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5518"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5519"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5520"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5521"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5522"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5525"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5527"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5529"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5530"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5532"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5533"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5534"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5536"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5537"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5539"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5541"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5542"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5543"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5544"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5545"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5549"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5552"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5553"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5554"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5555"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5556"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5558"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5559"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5560"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5561"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5562"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5563"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5564"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5565"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5566"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5569"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5570"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5571"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5572"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5573"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5574"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5575"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5576"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5577"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5578"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5579"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5580"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5581"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5582"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5583"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5585"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5587"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5588"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5589"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5590"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5591"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5592"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5594"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5595"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5597"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5598"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5599"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5600"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5601"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5602"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5603"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5604"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5605"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5606"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5607"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5609"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5611"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5612"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5613"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5614"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5615"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5618"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5619"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5620"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5621"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5622"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5623"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5624"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5625"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5626"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5627"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5628"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5631"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5632"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5633"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5634"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5635"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5636"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5637"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5638"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5639"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5640"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5641"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5642"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5643"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5645"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5646"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5647"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5649"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5650"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5651"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5653"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5655"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5657"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5658"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5659"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5661"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5662"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5663"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5664"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5665"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5666"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5668"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5670"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5671"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5672"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5673"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5674"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5677"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5678"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5680"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5681"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5682"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5683"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5684"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5685"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5686"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5687"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5689"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5691"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5692"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5693"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5694"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5695"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5697"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5698"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5699"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5700"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5701"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5703"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5704"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5705"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5707"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5708"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5709"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5710"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5711"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5712"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5713"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5714"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5715"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5716"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5718"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5720"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5721"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5722"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5723"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5724"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5725"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5728"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5729"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5730"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5732"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5733"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5734"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5735"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5737"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5739"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5740"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5741"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5742"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5745"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5746"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5747"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5748"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5749"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5750"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5751"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5752"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5753"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5754"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5755"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5756"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5757"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5758"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5759"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5760"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5761"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5762"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5764"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5765"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "5767"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7076"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7077"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7078"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7079"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7081"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7082"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7083"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7084"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7085"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7086"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7087"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7088"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7089"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7090"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7091"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7092"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7093"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7094"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7095"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7096"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7097"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7098"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7099"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7100"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7101"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7102"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7103"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7105"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7107"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7108"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7109"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7110"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7112"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7113"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7114"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7116"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7118"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7119"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7121"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7122"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7123"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7124"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7125"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7126"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7127"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7128"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7129"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7130"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7131"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7132"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7133"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7137"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7138"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7139"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7140"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7141"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7142"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7144"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7145"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7147"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7148"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7149"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7150"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7151"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7153"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7154"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7155"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7156"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7157"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7158"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7161"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7162"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7163"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7164"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7165"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7166"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7167"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7170"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7171"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7172"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7173"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7174"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7175"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7176"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7177"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7178"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7180"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7181"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7182"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7183"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7184"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7185"
+    },
+    {
+      "collection": "0x9690b63Eb85467BE5267A3603f770589Ab12Dc95",
+      "collectionName": "Warriors",
+      "tokenId": "7186"
+    }
+  ],
+  "simulation": {
+    "status": "passed",
+    "completedAt": "2026-11-17T03:24:25.725Z",
+    "forkChainId": 31338,
+    "forkBlock": "26432013",
+    "multisend": "0x40A2aCCbd92BCA938b02010E17A5b8929b49130D",
+    "multisendRuntimeCodeHash": "0xa9865ac2d9c7a1591619b188c4d88167b50df6cc0c5327fcbd1c8c75f7c066ad",
+    "transactionGasCap": "16777216",
+    "totalBatchGasUsed": "57093702",
+    "finalMainPrizeCount": 355,
+    "finalImpBoxCount": 114,
+    "ownerAndTokenStatusChecks": 469,
+    "safeCollectionBalancesAfter": "0 for all three collections",
+    "authorization": "Actual Safe owners impersonated only on the isolated fork; each batch approved with approveHash and executed through Safe.execTransaction and MultiSendCallOnly. No production signatures were obtained. Gas uses pre-approved-hash signatures; actual signature and execution fees can differ.",
+    "note": "No mainnet transaction submitted. Re-simulate in Safe before actual execution if state has changed."
+  },
+  "safeImportValidation": {
+    "status": "passed",
+    "format": "1.0",
+    "checksums": "Validated with the official Safe checksum serialization using ethers.",
+    "inputValidation": "Every transaction value and function input is a string.",
+    "readableCalls": "Uses contractMethod and contractInputsValues, omitting data so Safe renders safeTransferFrom arguments.",
+    "calldataValidation": "All 469 calls were independently encoded with ethers using the Safe import path; byte-for-byte equal to the viem calldata executed on the fork.",
+    "formatSource": "https://github.com/safe-global/safe-wallet-monorepo/blob/main/apps/tx-builder/src/store/transactionLibraryContext.tsx"
+  }
+}

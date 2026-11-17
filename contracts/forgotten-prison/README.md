@@ -385,7 +385,58 @@ python3 -m venv .tools/slither-venv
 VIRTUAL_ENV="$PWD/.tools/slither-venv" .tools/slither-venv/bin/slither . --filter-paths 'lib/|test/|script/' --exclude-dependencies
 ```
 
-## Mainnet deployment runbook (not executed)
+## Mainnet deployment
+
+Forgotten Prison was deployed on Ethereum mainnet at
+[`0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8`](https://etherscan.io/address/0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8),
+in block **26,428,270**. The initial owner is the user's Ledger address,
+`0x991c0FF5179c9788C01A9682Fd345804dB19B9F9`. The contract is registered as a
+consumer of its VRF subscription. See [the deployment record](deployments/mainnet.json)
+for transaction hashes, collection addresses, and immutable VRF settings. Event
+indexing should begin at the deployment block.
+
+At the funding check in block **26,428,527**, the prize pool was empty and the VRF
+subscription held **0.05 ETH** and no LINK. The source is publicly verified on
+[Sourcify](https://repo.sourcify.dev/1/0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8)
+with exact creation and runtime matches, and on
+[Etherscan](https://etherscan.io/address/0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8#code)
+with **Source Code Verified — Exact Match**. Etherscan exposes the source, ABI,
+and Read Contract / Write Contract interfaces.
+
+The first cutoff is November 17, 2026 at 08:44:35 America/Costa_Rica; subsequent
+cutoffs follow the contract's `nextDrawAt()`. The local `prison:dev` page continues
+to use the saved fork, while `FORGOTTEN_PRISON_ADDRESS` selects this deployment
+when local-preview mode is disabled.
+
+Prepared [Safe prize-deposit batches](deployments/mainnet-prize-deposits/README.md)
+cover the vault's 352 Warriors, 3 Wizards, and 114 Imp Boxes, verified at block
+26,432,013. All ten batches passed on a separate mainnet fork; these files have
+not been submitted or executed on mainnet.
+
+### Top up VRF from another account
+
+Any Ethereum mainnet account can fund the subscription. Its owner remains the
+Ledger address. This deployment uses **native ETH** for VRF billing.
+
+1. Open the [coordinator's Write Contract page](https://etherscan.io/address/0xD7f86b4b8Cae7D942340FF628F82735b7a20893a#writeContract)
+   and connect the funding wallet on Ethereum mainnet.
+2. Expand `fundSubscriptionWithNative` and enter this `subId`:
+
+   ```text
+   113858095252487102745145734579357540560253101107414735367340393035487077596465
+   ```
+
+3. Enter the amount of ETH to deposit in the payable amount field, then submit and
+   confirm the transaction in the funding wallet. The wallet also pays gas.
+4. Read `getSubscription(subId)` and check that `nativeBalance` increased. That
+   value is in wei; divide by `10^18` to display ETH.
+
+The top-up transaction must call `fundSubscriptionWithNative(subId)` on the
+coordinator so the ETH is credited to this specific subscription. The bidder's
+contract address is not the VRF funding destination. Funding does not transfer
+subscription ownership to the funding account.
+
+## Mainnet deployment runbook
 
 Use the intended production Safe as `PRISON_OWNER`; do not leave proceeds authority
 on a temporary deployer. No private key belongs in `.env` or Git. Use an encrypted

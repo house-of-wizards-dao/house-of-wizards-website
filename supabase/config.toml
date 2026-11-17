@@ -1,0 +1,6 @@
+project_id = "house-of-wizards"
+
+[functions.prison-indexer]
+# A single-use signature derived from a Vault secret is checked before indexing.
+verify_jwt = false
+entrypoint = "./functions/prison-indexer/index.ts"

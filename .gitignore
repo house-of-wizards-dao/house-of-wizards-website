@@ -163,3 +163,4 @@ lib-cov
 /.lighthouseci/
 
 /.pnpm-store/
+/.local/

@@ -17,6 +17,7 @@ import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
 type Web3ProviderProps = {
   children: ReactNode;
   synchronizeSession?: boolean;
+  authenticate?: boolean;
 };
 
 const getSiweMessageOptions: GetSiweMessageOptions = () => ({
@@ -62,27 +63,35 @@ const WalletSessionSync = () => {
 export const Web3Provider = ({
   children,
   synchronizeSession = true,
+  authenticate = true,
 }: Web3ProviderProps) => {
   const [config] = useState(getWeb3Config);
+  const walletUi = (
+    <RainbowKitProvider
+      theme={darkTheme({
+        accentColor: "#A986D9",
+        accentColorForeground: "black",
+        borderRadius: "medium",
+        fontStack: "system",
+        overlayBlur: "small",
+      })}
+    >
+      {children}
+    </RainbowKitProvider>
+  );
   return (
     <Web3ErrorBoundary>
       <WagmiProvider config={config} reconnectOnMount>
         {synchronizeSession && <WalletSessionSync />}
-        <RainbowKitSiweNextAuthProvider
-          getSiweMessageOptions={getSiweMessageOptions}
-        >
-          <RainbowKitProvider
-            theme={darkTheme({
-              accentColor: "#A986D9",
-              accentColorForeground: "black",
-              borderRadius: "medium",
-              fontStack: "system",
-              overlayBlur: "small",
-            })}
+        {authenticate ? (
+          <RainbowKitSiweNextAuthProvider
+            getSiweMessageOptions={getSiweMessageOptions}
           >
-            {children}
-          </RainbowKitProvider>
-        </RainbowKitSiweNextAuthProvider>
+            {walletUi}
+          </RainbowKitSiweNextAuthProvider>
+        ) : (
+          walletUi
+        )}
       </WagmiProvider>
     </Web3ErrorBoundary>
   );

@@ -1,16 +1,25 @@
 // Web3 Configuration for House of Wizards DAO
 import { http } from "wagmi";
 import { getDefaultConfig } from "@rainbow-me/rainbowkit";
-import type { Config } from "wagmi";
-import { base, baseSepolia, mainnet } from "wagmi/chains";
+import type { Config, Transport } from "wagmi";
+import { base, baseSepolia, mainnet, foundry } from "wagmi/chains";
 
-const chains = [mainnet, base, baseSepolia] as const;
+const chains = [
+  mainnet,
+  base,
+  baseSepolia,
+  ...(process.env.NODE_ENV === "development"
+    ? [{ ...foundry, name: "Local prison fork" }]
+    : []),
+] as const;
 
-const transports = {
+const transports: Record<number, Transport> = {
   [mainnet.id]: http(process.env.NEXT_PUBLIC_RPC_URL),
   [base.id]: http(),
   [baseSepolia.id]: http(),
-} as const;
+};
+if (process.env.NODE_ENV === "development")
+  transports[foundry.id] = http("http://127.0.0.1:8545");
 
 // Get WalletConnect Project ID with validation
 const getWalletConnectProjectId = () => {
