@@ -1,6 +1,7 @@
 "use client";
 
 import { useHydrated } from "@/hooks/useHydrated";
+import { hasPersistedWalletConnection } from "@/lib/wallet-storage";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -34,13 +35,7 @@ export const WalletButton = ({
 
   useEffect(() => {
     const checkWallet = () => {
-      try {
-        const stored = localStorage.getItem("wagmi.store");
-        const state = stored ? JSON.parse(stored)?.state : null;
-        setReturningWallet(Boolean(state?.current));
-      } catch {
-        setReturningWallet(false);
-      }
+      setReturningWallet(hasPersistedWalletConnection());
     };
     checkWallet();
     window.addEventListener("storage", checkWallet);

@@ -102,6 +102,20 @@ test("marketplace paginates and filters without shipping the character database"
     }),
   );
   await page.goto("/marketplace");
+  await page.waitForLoadState("networkidle");
+  const scriptTransferBytes = await page.evaluate(() =>
+    performance.getEntriesByType("resource").reduce((total, entry) => {
+      if (
+        entry instanceof PerformanceResourceTiming &&
+        entry.name.includes("/_next/static/chunks/")
+      )
+        return total + entry.transferSize;
+      return total;
+    }, 0),
+  );
+  // Include automatic dynamic imports, which the initial-HTML bundle budget misses.
+  expect(scriptTransferBytes).toBeGreaterThan(0);
+  expect(scriptTransferBytes).toBeLessThan(550 * 1024);
   await page.getByRole("button", { name: "Warriors", exact: true }).click();
   await expect(page.getByText("Page 1 of 3", { exact: true })).toBeVisible();
   await page
