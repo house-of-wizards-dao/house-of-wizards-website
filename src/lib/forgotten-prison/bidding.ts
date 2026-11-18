@@ -157,6 +157,12 @@ export const canCancel = (auction: Auction) =>
     auction.timestamp < auction.nextDrawAt);
 
 const errorMessages: Record<string, string> = {
+  TooEarly:
+    "The bidding cutoff has not been reached yet. Please wait for the countdown.",
+  DrawPending:
+    "Someone has already started the draw. Refresh to see its progress.",
+  NoPendingDraw:
+    "This draw has already been settled. Refresh to see the result.",
   CutoffReached:
     "Bidding has closed for this draw. Please wait for the next round to open.",
   AuctionClosed:
@@ -216,7 +222,7 @@ export const waitForBidderReceipt = async (
       );
     if (receipt.status !== "success")
       throw new Error(
-        "The transaction reverted. Your bid or claim was not completed.",
+        "The transaction reverted. Your action was not completed. Refresh the auction before trying again.",
       );
     return receipt;
   }
@@ -226,7 +232,7 @@ export const waitForBidderReceipt = async (
       const receipt = await client.getTransactionReceipt({ hash });
       if (receipt.status !== "success")
         throw new Error(
-          "The transaction reverted. Your bid or claim was not completed.",
+          "The transaction reverted. Your action was not completed. Refresh the auction before trying again.",
         );
       return receipt;
     } catch (error) {

@@ -1,6 +1,14 @@
 import { getSupabaseClient } from "@/lib/supabase";
 import { getPrisonTarget } from "@/lib/forgotten-prison/target";
 import { prisonIndexSchema } from "@/lib/forgotten-prison/index-types";
+import { z } from "zod";
+
+const readinessSchema = z.array(
+  z.object({
+    args: z.object({ drawId: z.string(), requestId: z.string() }),
+    block_timestamp: z.string().datetime({ offset: true }),
+  }),
+);
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -34,6 +42,31 @@ export const GET = async (request: Request) => {
       ...result.data,
       source: "supabase",
     });
+    // The existing event index already contains the callback timestamps. Keep
+    // the index RPC compatible while exposing them to the automation timer.
+    if (data.history.length) {
+      const readiness = await getSupabaseClient()
+        .from("prison_events")
+        .select("args, block_timestamp")
+        .eq("chain_id", target.chainId)
+        .eq("contract", target.address.toLowerCase())
+        .eq("event_name", "RandomnessReceived")
+        .in(
+          "args->>drawId",
+          data.history.map((draw) => draw.id),
+        );
+      const events = readinessSchema.safeParse(readiness.data);
+      if (!readiness.error && events.success) {
+        for (const draw of data.history) {
+          const event = events.data.find(
+            (event) =>
+              event.args.drawId === draw.id &&
+              event.args.requestId === draw.requestId,
+          );
+          draw.readyAt = event?.block_timestamp ?? null;
+        }
+      }
+    }
     return Response.json(data, {
       headers: {
         "Cache-Control": "public, s-maxage=10, stale-while-revalidate=10",

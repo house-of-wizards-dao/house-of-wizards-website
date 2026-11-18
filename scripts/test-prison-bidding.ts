@@ -235,6 +235,7 @@ try {
   );
   await page.getByTestId("place-bid").click();
   await expect(page.getByTestId("place-bid")).not.toContainText("Switch");
+  await expect(page.getByTestId("speed-up-draw")).toBeDisabled();
   assert.equal(
     await page.evaluate(() =>
       (
@@ -293,11 +294,18 @@ try {
   await page.getByRole("button", { name: "Refresh", exact: true }).click();
   await expect(page.getByTestId("place-bid")).toBeDisabled();
   await expect(page.getByTestId("withdraw-bid")).toBeDisabled();
-  await call("startDailyDraw");
+  await expect(page.getByTestId("automation-countdown")).toContainText("Eligible in 00h 30m");
+  await expect(page.getByTestId("speed-up-draw")).toBeEnabled();
+  await page.screenshot({ path: ".local/prison-speed-up-start.png", fullPage: true });
+  await clickAction("speed-up-draw", "The draw step is confirmed.");
   const drawId = (await state()).pendingDrawId;
+  await expect(page.getByTestId("speed-up-draw")).toHaveCount(0);
   await command({ action: "fulfill", words: ["0", "2"] });
-  await call("finalizeDraw");
   await page.getByRole("button", { name: "Refresh", exact: true }).click();
+  await expect(page.getByTestId("speed-up-draw")).toHaveText("Speed up · reveal prize");
+  await expect(page.getByTestId("automation-countdown")).toContainText("Eligible in 00h");
+  await page.screenshot({ path: ".local/prison-speed-up-finalize.png", fullPage: true });
+  await clickAction("speed-up-draw", "The draw is finalized.");
   await expect(page.getByTestId(`claim-prize-${drawId}`)).toBeVisible({
     timeout: 15_000,
   });
@@ -337,7 +345,7 @@ try {
     );
   }
   console.log(
-    "PASS: cutoff disables bidding/cancellation; finalized wins appear; NFT and bonus claims transfer to the connected wallet",
+    "PASS: cutoff locks bids; both speed-up actions work before automation with a countdown; VRF wait hides the action; NFT and bonus claims transfer to the connected wallet",
   );
 
   await page.getByLabel("ETH to add to your bid").fill("0.2");

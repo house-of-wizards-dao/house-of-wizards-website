@@ -10,6 +10,7 @@ export const indexedDrawSchema = z.object({
   price: uint,
   status: z.enum(["requested", "ready", "finalized", "aborted"]),
   startedAt: date,
+  readyAt: date.nullable().default(null),
   finalizedAt: date.nullable(),
   startTx: hash,
   finalizeTx: hash.nullable(),

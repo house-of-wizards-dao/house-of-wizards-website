@@ -8,6 +8,7 @@ import {
   type TransactionSerializedEIP1559,
 } from "viem";
 import { prisonAbi } from "../_shared/abi.ts";
+import { automationDelaySeconds } from "../_shared/draw-timing.ts";
 
 export const prisonAddress =
   "0x7a258a7ed776d88ec7e19a03019a632c4f097ef8" as const;
@@ -43,6 +44,7 @@ export type Snapshot = {
   pendingDrawId: bigint;
   pendingStatus: number;
   requestedAt: bigint;
+  readyAt: bigint | null;
   balance: bigint;
   latestNonce: number;
   pendingNonce: number;
@@ -90,11 +92,16 @@ export const decide = (
 ): { action: Action; intent: string } | { wait: string } => {
   if (state.closed) return { wait: "closed" };
   if (state.pendingDrawId !== 0n) {
-    if (state.pendingStatus === 2)
+    if (state.pendingStatus === 2) {
+      if (state.readyAt === null)
+        return { wait: "waiting_for_randomness_index" };
+      if (state.timestamp < state.readyAt + automationDelaySeconds)
+        return { wait: "waiting_for_finalize_delay" };
       return {
         action: "finalizeDraw",
         intent: `finalize:${state.pendingDrawId}`,
       };
+    }
     if (state.pendingStatus === 1)
       return {
         wait:
@@ -106,6 +113,8 @@ export const decide = (
   }
   if (state.available === 0n) return { wait: "no_inventory" };
   if (state.timestamp < state.nextDrawAt) return { wait: "waiting_for_cutoff" };
+  if (state.timestamp < state.nextDrawAt + automationDelaySeconds)
+    return { wait: "waiting_for_start_delay" };
   // Empty-day starts also promote newly deposited inventory for the next round.
   // Never call shutdown, recovery, claims, withdrawals, or a VRF callback.
   return { action: "startDailyDraw", intent: `start:${state.nextDrawAt}` };

@@ -7,7 +7,13 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { type Hex } from "viem";
 import Link from "next/link";
 import { ClaimIntro } from "./claim-intro";
-import { BidLeaderboard, DrawProgress, indexQueryKey } from "./indexed-auction";
+import {
+  BidLeaderboard,
+  DrawProgress,
+  indexQueryKey,
+  usePrisonIndex,
+} from "./indexed-auction";
+import { drawTiming } from "@/lib/forgotten-prison/draw-timing";
 import { biddingStatus } from "@/lib/forgotten-prison/index-types";
 import { Web3Provider } from "@/components/Web3Provider";
 import { prisonAbi } from "@/lib/forgotten-prison/abi";
@@ -34,6 +40,7 @@ const secondary =
 type PlayerAction =
   | { kind: "bid"; value: bigint }
   | { kind: "cancelBid" | "withdrawRefund" }
+  | { kind: "startDailyDraw" | "finalizeDraw" }
   | { kind: "claimNFT" | "claimBonus"; drawId: bigint };
 const countdown = (seconds: number) => {
   if (seconds <= 0) return "Awaiting the draw";
@@ -83,6 +90,23 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
     retry: 1,
   });
   const data = auction.data;
+  const index = usePrisonIndex(target);
+  const timing = data
+    ? drawTiming(
+        data,
+        index.data?.history.find(
+          (draw) => draw.id === data.pendingDrawId.toString(),
+        ),
+      )
+    : null;
+  const estimatedTimestamp = data
+    ? data.timestamp +
+      BigInt(Math.max(0, Math.floor((now - auction.dataUpdatedAt) / 1000)))
+    : 0n;
+  const automationRemaining =
+    timing?.automationAt !== null && timing?.automationAt !== undefined
+      ? Math.max(0, Number(timing.automationAt - estimatedTimestamp))
+      : null;
   const prizes = useQuery({
     queryKey: [
       ...queryPrefix,
@@ -163,6 +187,31 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
         account: address,
       } as const;
       switch (action.kind) {
+        case "startDailyDraw":
+        case "finalizeDraw": {
+          const fresh = await readAuction(client, target, address);
+          const available = drawTiming(fresh);
+          if (
+            !available?.canExecute ||
+            available.action !== action.kind ||
+            (action.kind === "finalizeDraw" &&
+              fresh.pendingDrawId !== data?.pendingDrawId)
+          )
+            throw new Error(
+              "The draw has changed or is not ready yet. Refresh and try again.",
+            );
+          await client.simulateContract({
+            address: target.address,
+            abi: prisonAbi,
+            account: address,
+            functionName: action.kind,
+          });
+          hash = await writeContractAsync({
+            ...base,
+            functionName: action.kind,
+          });
+          break;
+        }
         case "bid":
           hash = await writeContractAsync({
             ...base,
@@ -209,7 +258,7 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
       setFeedback({ error: false, message: success, hash });
     } catch (error) {
       setFeedback({ error: true, message: bidderError(error), hash });
-      if (hash) await refresh();
+      await refresh();
     } finally {
       lock.current = false;
       setPending(null);
@@ -369,6 +418,54 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
             </div>
           </div>
           {data ? <DrawProgress auction={data} remaining={remaining} /> : null}
+          {timing ? (
+            <div
+              className="mt-5 rounded-xl border border-violet-300/20 bg-violet-300/5 p-4"
+              data-testid="draw-automation"
+            >
+              <p className="text-xs uppercase tracking-widest text-violet-300/70">
+                {timing.action === "startDailyDraw"
+                  ? "Automatic draw"
+                  : "Automatic prize reveal"}
+              </p>
+              <p
+                className="mt-2 font-mono text-lg text-violet-100"
+                data-testid="automation-countdown"
+                role="timer"
+              >
+                {automationRemaining === null
+                  ? "Syncing countdown…"
+                  : automationRemaining === 0
+                    ? "Automation eligible now"
+                    : `Eligible in ${countdown(automationRemaining)}`}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-violet-200/65">
+                {timing.action === "startDailyDraw"
+                  ? "Automation waits 30 minutes after bidding closes. Once the cutoff is reached, anyone can start the draw sooner."
+                  : "Automation waits 30 minutes after randomness arrives. Anyone can reveal the prize now."}{" "}
+                Speeding up costs the network fee and does not change the winner
+                or your chances.
+              </p>
+              <div className="mt-3">
+                {actionButton(
+                  { kind: timing.action },
+                  "speed-up-draw",
+                  timing.action === "startDailyDraw"
+                    ? "Speed up · start draw"
+                    : "Speed up · reveal prize",
+                  timing.canExecute && !auction.isError,
+                  timing.action === "startDailyDraw"
+                    ? "The draw step is confirmed. The next bidding window is open."
+                    : "The draw is finalized. The winner can claim their prize.",
+                )}
+              </div>
+              {!timing.canExecute ? (
+                <p className="mt-2 text-xs text-violet-300/65">
+                  Available after the bidding cutoff.
+                </p>
+              ) : null}
+            </div>
+          ) : null}
         </section>
         <section className={panel} aria-labelledby="bid-heading">
           <h2 id="bid-heading" className="text-xl font-semibold">

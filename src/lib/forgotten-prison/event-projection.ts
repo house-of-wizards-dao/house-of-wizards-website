@@ -49,6 +49,7 @@ export const projectPrisonEvents = (events: PrisonEvent[]) => {
         requestId: field(event, "requestId"),
         status: "requested",
         startedAt: event.timestamp,
+        readyAt: null,
         startTx: event.transactionHash,
         finalizedAt: null,
         finalizeTx: null,
@@ -72,6 +73,7 @@ export const projectPrisonEvents = (events: PrisonEvent[]) => {
       switch (event.eventName) {
         case "RandomnessReceived":
           draw.status = "ready";
+          draw.readyAt = event.timestamp;
           break;
         case "DrawFinalized":
           Object.assign(draw, {

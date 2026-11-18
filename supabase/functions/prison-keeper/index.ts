@@ -128,6 +128,33 @@ const makeChain = (key: Hex): Chain => {
       const draw = pendingDrawId
         ? await prison.read.getDraw([pendingDrawId], at)
         : null;
+      let readyAt: bigint | null = null;
+      if (draw?.status === 2) {
+        // Anchor the delay to the actual callback block, not the first cron run
+        // that notices it. Missing or reorged index data fails closed.
+        const { data, error } = await db
+          .from("prison_events")
+          .select("block_number, block_hash")
+          .eq("chain_id", 1)
+          .eq("contract", prisonAddress)
+          .eq("event_name", "RandomnessReceived")
+          .contains("args", {
+            drawId: pendingDrawId.toString(),
+            requestId: draw.requestId.toString(),
+          })
+          .maybeSingle();
+        if (error) throw new Error("Randomness index unavailable");
+        if (data && BigInt(data.block_number) <= block.number) {
+          const callbackBlock = await client.getBlock({
+            blockNumber: BigInt(data.block_number),
+          });
+          if (
+            callbackBlock.hash === data.block_hash &&
+            callbackBlock.timestamp >= draw.requestedAt
+          )
+            readyAt = callbackBlock.timestamp;
+        }
+      }
       if (block.baseFeePerGas === null) throw new Error("Missing base fee");
       return {
         chainId,
@@ -140,6 +167,7 @@ const makeChain = (key: Hex): Chain => {
         pendingDrawId,
         pendingStatus: draw?.status ?? 0,
         requestedAt: draw?.requestedAt ?? 0n,
+        readyAt,
         balance,
         latestNonce,
         pendingNonce,

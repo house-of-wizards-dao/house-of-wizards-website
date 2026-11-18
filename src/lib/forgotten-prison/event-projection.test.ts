@@ -56,6 +56,11 @@ describe("Forgotten Prison event projections", () => {
   it("tracks requested, ready, finalized, and independent main/bonus claims including token zero", () => {
     const started = start(1);
     const ready = event(2, "RandomnessReceived", { drawId: "1" });
+    ready.timestamp = "2026-11-17T12:03:00Z";
+    expect(projectPrisonEvents([started]).history[0].readyAt).toBeNull();
+    expect(projectPrisonEvents([started, ready]).history[0].readyAt).toBe(
+      ready.timestamp,
+    );
     expect(projectPrisonEvents([started]).history[0].status).toBe("requested");
     expect(projectPrisonEvents([started, ready]).history[0].status).toBe(
       "ready",

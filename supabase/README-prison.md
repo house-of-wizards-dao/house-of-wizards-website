@@ -129,9 +129,18 @@ The first successful check pins the public address in `keeper_state`.
 
 The only allowed transactions are zero-value Ethereum-mainnet calls to
 `startDailyDraw()` and `finalizeDraw()` on the fixed deployed contract. The keeper
-starts at/after `nextDrawAt`, including empty days while inventory exists, so new
+starts at/after `nextDrawAt + 30 minutes`, including empty days while inventory exists, so new
 deposits become eligible and the daily cutoff advances. It waits for VRF status
-`Ready` before finalizing. It stops creating transactions when the contract is
+`Ready` and 30 minutes after the `RandomnessReceived` block timestamp before
+finalizing. The callback event comes from the existing event index and its block
+hash is checked against the live chain. Missing or reorged event data defers the
+call until indexing catches up. Cron checks every minute, so submissions can
+occur up to a minute after these thresholds, or later when gas caps intervene.
+The bidding page shows these countdowns and lets any wallet call either eligible
+step immediately by paying its network fee. Bidding still closes at the original
+cutoff; this is not a bidding extension. The next cutoff remains 24 hours after
+the actual start transaction, so automatic-only starts drift 30 minutes each day.
+It stops creating transactions when the contract is
 closed or main inventory is exhausted, and does not perform catch-up rounds.
 It never claims prizes, withdraws proceeds, closes the auction, or fulfills VRF.
 

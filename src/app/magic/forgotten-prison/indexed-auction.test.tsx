@@ -13,6 +13,7 @@ const draw: IndexedDraw = {
   price: "123456789012345678",
   status: "finalized",
   startedAt: "2026-11-17T12:00:00Z",
+  readyAt: "2026-11-17T12:00:30Z",
   finalizedAt: "2026-11-17T12:01:00Z",
   startTx: hash,
   finalizeTx: hash,

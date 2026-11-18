@@ -33,7 +33,7 @@ const config = (): Settings => ({
 const snapshot = (): Snapshot => ({
   chainId: 1,
   blockNumber: 100n,
-  timestamp: 200n,
+  timestamp: 2000n,
   baseFee: 100_000_000n,
   closed: false,
   available: 355n,
@@ -41,6 +41,7 @@ const snapshot = (): Snapshot => ({
   pendingDrawId: 0n,
   pendingStatus: 0,
   requestedAt: 0n,
+  readyAt: null,
   balance: 10n ** 18n,
   latestNonce: 0,
   pendingNonce: 0,
@@ -144,10 +145,50 @@ test("only due starts and VRF-ready finalizations are selected", () => {
     }),
     { wait: "vrf_delayed" },
   );
-  assert.deepEqual(decide({ ...state, pendingDrawId: 1n, pendingStatus: 2 }), {
-    action: "finalizeDraw",
-    intent: "finalize:1",
-  });
+  assert.deepEqual(
+    decide({ ...state, pendingDrawId: 1n, pendingStatus: 2, readyAt: 200n }),
+    {
+      action: "finalizeDraw",
+      intent: "finalize:1",
+    },
+  );
+});
+test("both actions wait the full 30 minutes, measured from cutoff and callback respectively", async () => {
+  const f = fixture();
+  for (const timestamp of [200n, 1999n]) {
+    f.state.timestamp = timestamp;
+    assert.equal(
+      (await runKeeper(f.settings, f.chain, f.store)).status,
+      "waiting_for_start_delay",
+    );
+  }
+  assert.deepEqual(f.events, []);
+  f.state.pendingDrawId = 1n;
+  f.state.pendingStatus = 2;
+  f.state.requestedAt = 100n;
+  f.state.readyAt = 500n;
+  f.state.timestamp = 2299n;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store)).status,
+    "waiting_for_finalize_delay",
+  );
+  assert.deepEqual(f.events, []);
+  f.state.timestamp = 2300n;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store)).status,
+    "submitted",
+  );
+  assert.equal(f.saved().action, "finalizeDraw");
+});
+test("a ready draw without a canonical indexed timestamp never signs", async () => {
+  const f = fixture();
+  f.state.pendingDrawId = 1n;
+  f.state.pendingStatus = 2;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store)).status,
+    "waiting_for_randomness_index",
+  );
+  assert.deepEqual(f.events, []);
 });
 test("wrong chain and unexpected wallet cannot sign", async () => {
   const f = fixture();
