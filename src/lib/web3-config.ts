@@ -1,9 +1,12 @@
 // Web3 Configuration for House of Wizards DAO
-import { createConfig, http } from "wagmi";
+import { createConfig, createStorage, http } from "wagmi";
 import { getDefaultWallets } from "@rainbow-me/rainbowkit";
 import type { Config, Transport } from "wagmi";
 import { base, baseSepolia, mainnet, foundry } from "wagmi/chains";
-import { hasPersistedWalletConnection } from "@/lib/wallet-storage";
+import {
+  createWalletStorage,
+  hasPersistedWalletConnection,
+} from "@/lib/wallet-storage";
 import { configureConnectorStartup } from "@/lib/wallet-connectors";
 
 const chains = [
@@ -51,7 +54,9 @@ export const getWeb3Config = (): Config => {
     appName: "House of Wizards DAO",
     projectId: getWalletConnectProjectId(),
   });
+  const walletStorage = createWalletStorage();
   const config = createConfig({
+    storage: createStorage({ storage: walletStorage.storage }),
     connectors: connectors.map(
       (createConnector) => (parameters) =>
         configureConnectorStartup(
@@ -64,6 +69,7 @@ export const getWeb3Config = (): Config => {
     ssr: true,
     transports,
   });
+  walletStorage.enablePersistence();
   if (typeof window !== "undefined") browserConfig = config;
   return config;
 };

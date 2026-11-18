@@ -1,7 +1,10 @@
 "use client";
 
 import { useHydrated } from "@/hooks/useHydrated";
-import { hasPersistedWalletConnection } from "@/lib/wallet-storage";
+import {
+  hasPersistedWalletConnection,
+  walletConnectionChanged,
+} from "@/lib/wallet-storage";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -35,11 +38,16 @@ export const WalletButton = ({
 
   useEffect(() => {
     const checkWallet = () => {
-      setReturningWallet(hasPersistedWalletConnection());
+      // Once mounted, keep session synchronization alive for explicit disconnects.
+      setReturningWallet((active) => active || hasPersistedWalletConnection());
     };
     checkWallet();
     window.addEventListener("storage", checkWallet);
-    return () => window.removeEventListener("storage", checkWallet);
+    window.addEventListener(walletConnectionChanged, checkWallet);
+    return () => {
+      window.removeEventListener("storage", checkWallet);
+      window.removeEventListener(walletConnectionChanged, checkWallet);
+    };
   }, [pathname]);
 
   if (requests > 0 || returningWallet) {

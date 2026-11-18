@@ -332,6 +332,7 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
               type="button"
               className={secondary}
               onClick={openAccountModal}
+              disabled={isReconnecting || !openAccountModal}
               aria-label="Manage connected wallet"
             >
               {shortAddress(address)}
