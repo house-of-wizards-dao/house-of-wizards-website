@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { getPrisonTarget } from "@/lib/forgotten-prison/target";
 import { BidderEntry } from "./bidder-entry";
+import { PrisonHeader } from "./prison-header";
 
 export const metadata = {
   title: "Forgotten Prison | House of Wizards",
@@ -12,45 +12,12 @@ export const dynamic = "force-dynamic";
 const ForgottenPrisonPage = async () => {
   const { target, local } = await getPrisonTarget();
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top_left,#25153b_0%,#100b1c_55%,#080610_100%)] text-[#f1eaff]">
+    <div className="-mt-12 min-h-screen bg-[radial-gradient(ellipse_at_top_left,#25153b_0%,#100b1c_55%,#080610_100%)] text-[#f1eaff]">
+      <PrisonHeader local={local} />
       <div className="mx-auto max-w-6xl space-y-12 px-5 py-10 sm:px-8 sm:py-14">
-        <header className="grid grid-cols-[minmax(0,1fr)_112px] items-center gap-x-4 gap-y-5 sm:grid-cols-[minmax(0,1fr)_220px] sm:gap-x-8 lg:grid-cols-[minmax(0,1fr)_260px]">
-          <div className="space-y-5">
-            <p className="text-xs uppercase tracking-[0.3em] text-violet-300">
-              House of Wizards / Magic
-            </p>
-            <h1 className="text-[clamp(1.25rem,6vw,1.875rem)] leading-tight sm:text-5xl lg:text-6xl">
-              Forgotten
-              <br />
-              <span className="text-violet-300">Prison</span>
-            </h1>
-          </div>
-          <figure className="overflow-hidden rounded-xl border border-violet-300/20 bg-[#0b090d] shadow-[0_16px_60px_-25px_rgba(224,92,61,0.4)] sm:row-span-2">
-            <Image
-              src="/img/forgotten-prison/dread-tower.webp"
-              alt="The Dread Tower beneath a crowned skull, with prisoners trapped inside."
-              width={720}
-              height={1018}
-              sizes="(max-width: 639px) 112px, (max-width: 1023px) 220px, 260px"
-              preload
-              className="h-auto w-full"
-            />
-          </figure>
-          <div className="col-span-2 space-y-4 sm:col-span-1">
-            <p className="max-w-xl font-sans text-lg leading-relaxed text-violet-100/75">
-              One winning bid. One prisoner freed.
-              <br />
-              Bid for a warrior or wizard, with a chance to take home an Imp Box
-              too.
-            </p>
-            {local ? (
-              <p className="inline-flex rounded-full border border-amber-300/25 bg-amber-200/5 px-3 py-1 font-sans text-xs text-amber-200">
-                Local preview · test ETH and NFTs
-              </p>
-            ) : null}
-          </div>
-        </header>
-        <BidderEntry target={target} local={local} />
+        <div id="prison-auction" className="scroll-mt-6">
+          <BidderEntry target={target} local={local} />
+        </div>
         <section className="border-t border-violet-300/15 pt-8">
           <h2 className="text-xl">How the prison works</h2>
           <div className="mt-6 grid gap-7 font-sans md:grid-cols-3">

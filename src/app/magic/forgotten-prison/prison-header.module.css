@@ -1,0 +1,142 @@
+.header {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 36rem;
+  background: #0b090e;
+  border-bottom: 1px solid rgb(196 181 253 / 15%);
+}
+
+.glow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 75% 45%, #69281e 0%, transparent 65%);
+  opacity: 0.55;
+}
+
+.artwork {
+  position: absolute;
+  inset: -4rem -15% 0;
+  transform: translate3d(0, calc(var(--prison-scroll, 0px) * 0.24), 0);
+  will-change: transform;
+}
+
+.image {
+  object-fit: contain;
+  object-position: center top;
+  mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+}
+
+.shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgb(11 9 14 / 5%) 0%,
+    rgb(11 9 14 / 15%) 25%,
+    rgb(11 9 14 / 88%) 58%,
+    #100b1c 100%
+  );
+}
+
+.content {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 72rem;
+  min-height: inherit;
+  margin-inline: auto;
+  padding: 15rem 1.25rem 2.5rem;
+}
+
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.title {
+  font-size: clamp(2rem, 9vw, 4.5rem);
+  line-height: 1.06;
+  letter-spacing: -0.04em;
+  text-shadow: 0 4px 30px rgb(0 0 0 / 40%);
+}
+
+.enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+  padding-block: 0.65rem;
+  border-bottom: 1px solid rgb(196 181 253 / 40%);
+  color: #ddd0ef;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition:
+    color 150ms,
+    border-color 150ms;
+}
+
+.enter:hover {
+  color: #fff;
+  border-color: #fff;
+}
+
+.enter:focus-visible {
+  outline: 2px solid #c4b5fd;
+  outline-offset: 6px;
+}
+
+@media (min-width: 768px) {
+  .header {
+    min-height: clamp(32rem, 72svh, 42rem);
+  }
+
+  .artwork {
+    inset: -3rem -5% -6rem 35%;
+  }
+
+  .image {
+    object-position: center;
+    mask-image: linear-gradient(to bottom, #000 75%, transparent 100%);
+  }
+
+  .shade {
+    background:
+      linear-gradient(to top, #100b1c, transparent 32%),
+      linear-gradient(
+        to right,
+        #0b090e 10%,
+        rgb(11 9 14 / 90%) 32%,
+        transparent 64%
+      );
+  }
+
+  .content {
+    align-items: center;
+    padding: 4rem 2rem;
+  }
+
+  .copy {
+    max-width: 52%;
+    gap: 1.5rem;
+  }
+
+  .title {
+    font-size: clamp(2.75rem, 5.6vw, 4.5rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .artwork {
+    transform: none;
+    will-change: auto;
+  }
+
+  .enter {
+    transition: none;
+  }
+}
