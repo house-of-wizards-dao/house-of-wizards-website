@@ -3,62 +3,18 @@
 // Web3 Provider Component
 import "@rainbow-me/rainbowkit/styles.css";
 import { RainbowKitProvider, darkTheme } from "@rainbow-me/rainbowkit";
-import {
-  RainbowKitSiweNextAuthProvider,
-  GetSiweMessageOptions,
-} from "@rainbow-me/rainbowkit-siwe-next-auth";
-import { useAccount, WagmiProvider } from "wagmi";
-import { signOut, useSession } from "next-auth/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { WagmiContext } from "wagmi";
 import { type ReactNode, useEffect, useState } from "react";
 import { getWeb3Config } from "@/lib/web3-config";
-import { hasPersistedWalletConnection } from "@/lib/wallet-storage";
+import { startWallet } from "@/lib/wallet-startup";
+import { logger } from "@/lib/logger";
 import Web3ErrorBoundary from "@/components/Web3ErrorBoundary";
+import { WalletSessionProvider } from "@/components/WalletSessionProvider";
 
 type Web3ProviderProps = {
   children: ReactNode;
   synchronizeSession?: boolean;
   authenticate?: boolean;
-};
-
-const getSiweMessageOptions: GetSiweMessageOptions = () => ({
-  statement: "Put thy rune on the door to Sign in",
-});
-
-const normalizeAddress = (address?: string | null) =>
-  address?.toLowerCase() ?? null;
-
-let signOutInFlight: Promise<unknown> | undefined;
-
-const WalletSessionSync = () => {
-  const { address: walletAddress, status: walletStatus } = useAccount();
-  const { data: session, status: sessionStatus } = useSession();
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (sessionStatus !== "authenticated") return;
-
-    const sessionAddress = normalizeAddress(session.address);
-    const connectedAddress = normalizeAddress(walletAddress);
-    const isDisconnected = walletStatus === "disconnected";
-    const isMismatchedWallet =
-      walletStatus === "connected" && sessionAddress !== connectedAddress;
-
-    if (!isDisconnected && !isMismatchedWallet) return;
-
-    queryClient.removeQueries({ queryKey: ["cms-user"] });
-    signOutInFlight ??= signOut({ redirect: false }).finally(() => {
-      signOutInFlight = undefined;
-    });
-  }, [
-    queryClient,
-    session?.address,
-    sessionStatus,
-    walletAddress,
-    walletStatus,
-  ]);
-
-  return null;
 };
 
 export const Web3Provider = ({
@@ -67,12 +23,11 @@ export const Web3Provider = ({
   authenticate = true,
 }: Web3ProviderProps) => {
   const [config] = useState(getWeb3Config);
-  // Reconnect probes every connector, eagerly importing their SDKs. Only restore
-  // an existing connection; new visitors can still connect through the wallet UI.
-  // Include the shared store so mounting a second provider cannot clear a live connection.
-  const [reconnectOnMount] = useState(
-    () => Boolean(config.state.current) || hasPersistedWalletConnection(),
-  );
+  useEffect(() => {
+    void startWallet(config).catch((error: unknown) => {
+      logger.error("Wallet initialization failed", { error });
+    });
+  }, [config]);
   const walletUi = (
     <RainbowKitProvider
       theme={darkTheme({
@@ -88,18 +43,18 @@ export const Web3Provider = ({
   );
   return (
     <Web3ErrorBoundary>
-      <WagmiProvider config={config} reconnectOnMount={reconnectOnMount}>
-        {synchronizeSession && <WalletSessionSync />}
-        {authenticate ? (
-          <RainbowKitSiweNextAuthProvider
-            getSiweMessageOptions={getSiweMessageOptions}
+      <WagmiContext.Provider value={config}>
+        {authenticate || synchronizeSession ? (
+          <WalletSessionProvider
+            authenticate={authenticate}
+            synchronizeSession={synchronizeSession}
           >
             {walletUi}
-          </RainbowKitSiweNextAuthProvider>
+          </WalletSessionProvider>
         ) : (
           walletUi
         )}
-      </WagmiProvider>
+      </WagmiContext.Provider>
     </Web3ErrorBoundary>
   );
 };

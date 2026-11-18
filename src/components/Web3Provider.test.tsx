@@ -1,19 +1,16 @@
-import type { ReactNode } from "react";
-import { render } from "@testing-library/react";
-import { WagmiProvider } from "wagmi";
+import { type ReactNode, useContext } from "react";
+import { render, screen } from "@testing-library/react";
+import { WagmiContext } from "wagmi";
+import { startWallet } from "@/lib/wallet-startup";
 import { Web3Provider } from "./Web3Provider";
 
-const mockConfig: { state: { current: string | null } } = {
-  state: { current: null },
-};
-
-jest.mock("@/lib/web3-config", () => ({
-  getWeb3Config: () => mockConfig,
+const mockConfig = { state: { current: null as string | null } };
+jest.mock("@/lib/web3-config", () => ({ getWeb3Config: () => mockConfig }));
+jest.mock("@/lib/wallet-startup", () => ({
+  startWallet: jest.fn(async () => {}),
 }));
 jest.mock("wagmi", () => ({
-  WagmiProvider: jest.fn(({ children }: { children: ReactNode }) => (
-    <>{children}</>
-  )),
+  WagmiContext: jest.requireActual("react").createContext(undefined),
 }));
 jest.mock("@rainbow-me/rainbowkit", () => ({
   RainbowKitProvider: ({ children }: { children: ReactNode }) => (
@@ -21,51 +18,41 @@ jest.mock("@rainbow-me/rainbowkit", () => ({
   ),
   darkTheme: jest.fn(),
 }));
-jest.mock("@rainbow-me/rainbowkit-siwe-next-auth", () => ({
-  RainbowKitSiweNextAuthProvider: ({ children }: { children: ReactNode }) => (
+jest.mock("@/components/WalletSessionProvider", () => ({
+  WalletSessionProvider: ({ children }: { children: ReactNode }) => (
     <>{children}</>
   ),
 }));
-jest.mock("next-auth/react", () => ({ signOut: jest.fn() }));
-
 beforeEach(() => {
   jest.clearAllMocks();
-  localStorage.clear();
   mockConfig.state.current = null;
 });
-
-const renderProvider = () =>
+const Connection = () => {
+  const config = useContext(WagmiContext);
+  return <span>{config?.state.current ?? "No connection"}</span>;
+};
+it("provides the shared config and requests initialization after mount", () => {
   render(
-    <Web3Provider synchronizeSession={false}>
-      <div>Marketplace</div>
+    <Web3Provider>
+      <Connection />
     </Web3Provider>,
   );
-
-test("does not probe all wallet connectors for a new visitor", () => {
-  renderProvider();
-  expect(WagmiProvider).toHaveBeenCalledWith(
-    expect.objectContaining({ reconnectOnMount: false }),
-    undefined,
-  );
+  expect(startWallet).toHaveBeenCalledWith(mockConfig);
+  expect(screen.getByText("No connection")).toBeInTheDocument();
 });
-
-test("restores a returning visitor's wallet", () => {
-  localStorage.setItem(
-    "wagmi.store",
-    JSON.stringify({ state: { current: "persisted-connection" }, version: 2 }),
+it("shares a live connection across navbar and page islands", () => {
+  mockConfig.state.current = "live-wallet";
+  render(
+    <>
+      <Web3Provider>
+        <Connection />
+      </Web3Provider>
+      <Web3Provider authenticate={false} synchronizeSession={false}>
+        <Connection />
+      </Web3Provider>
+    </>,
   );
-  renderProvider();
-  expect(WagmiProvider).toHaveBeenCalledWith(
-    expect.objectContaining({ reconnectOnMount: true }),
-    undefined,
-  );
-});
-
-test("preserves an active shared connection when another provider mounts", () => {
-  mockConfig.state.current = "live-connection";
-  renderProvider();
-  expect(WagmiProvider).toHaveBeenCalledWith(
-    expect.objectContaining({ reconnectOnMount: true }),
-    undefined,
-  );
+  expect(screen.getAllByText("live-wallet")).toHaveLength(2);
+  expect(startWallet).toHaveBeenNthCalledWith(1, mockConfig);
+  expect(startWallet).toHaveBeenNthCalledWith(2, mockConfig);
 });

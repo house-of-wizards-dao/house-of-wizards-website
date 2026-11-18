@@ -42,6 +42,9 @@ importers:
       '@tokenbound/sdk':
         specifier: 0.5.5
         version: 0.5.5(bufferutil@4.2.0)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@4.6.7)
+      '@wagmi/core':
+        specifier: 2.22.1
+        version: 2.22.1(@tanstack/query-core@5.107.1)(@types/react@19.3.0)(react@19.3.1)(typescript@6.0.3)(use-sync-external-store@1.7.0(react@19.3.1))(viem@2.57.19(bufferutil@4.2.0)(typescript@6.0.3)(utf-8-validate@5.0.10)(zod@4.6.7))
       '@x402/core':
         specifier: 2.31.0
         version: 2.31.0
