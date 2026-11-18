@@ -4,3 +4,9 @@ project_id = "house-of-wizards"
 # A single-use signature derived from a Vault secret is checked before indexing.
 verify_jwt = false
 entrypoint = "./functions/prison-indexer/index.ts"
+
+[functions.prison-keeper]
+# Independent, expiring, single-use HMAC authentication is checked in the handler.
+# Cron and the transaction switch are initially disabled in Postgres.
+verify_jwt = false
+entrypoint = "./functions/prison-keeper/index.ts"

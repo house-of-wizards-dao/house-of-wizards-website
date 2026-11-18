@@ -5,8 +5,9 @@ contract `0x7a258A7ed776d88Ec7E19a03019a632c4F097EF8`, from deployment block
 `26428270`. The deployed Edge Function is `prison-indexer`; the cron job is
 `forgotten-prison-index` and runs once per minute.
 
-This is **read-only on Ethereum**. It has no signer, sends no transactions, and
-does not automate `startDailyDraw` or `finalizeDraw`. RPC reads consume no gas.
+The **indexer is read-only on Ethereum**. It has no signer and sends no transactions.
+RPC reads consume no gas. The separate, initially paused `prison-keeper` function
+below handles draw transactions when explicitly enabled.
 
 ## Data and pages
 
@@ -112,3 +113,108 @@ transaction and never appear to other sessions. Application tests:
 pnpm test --runInBand src/lib/forgotten-prison/event-projection.test.ts src/app/magic/forgotten-prison/indexed-auction.test.tsx
 pnpm type-check
 ```
+
+## Draw keeper (initially paused)
+
+`prison-keeper` uses the `PRISON_KEEPER_PRIVATE_KEY` Edge Function secret. Add the
+key directly in Supabase; never put it in website environment variables, source,
+database rows, CLI arguments, or logs. It belongs to a separate gas-only wallet,
+not the Ledger owner. Project Edge Functions share access to project secrets.
+
+The deployment creates the `forgotten-prison-keeper` cron with `active=false` and
+`prison_private.keeper_state.enabled=false`. Both must be enabled deliberately.
+A signed manual invocation while paused derives and reports only the public
+address, balance, and proposed next action; it never simulates, signs, or sends.
+The first successful check pins the public address in `keeper_state`.
+
+The only allowed transactions are zero-value Ethereum-mainnet calls to
+`startDailyDraw()` and `finalizeDraw()` on the fixed deployed contract. The keeper
+starts at/after `nextDrawAt`, including empty days while inventory exists, so new
+deposits become eligible and the daily cutoff advances. It waits for VRF status
+`Ready` before finalizing. It stops creating transactions when the contract is
+closed or main inventory is exhausted, and does not perform catch-up rounds.
+It never claims prizes, withdraws proceeds, closes the auction, or fulfills VRF.
+
+Initial transaction limits (review before enabling):
+
+| Limit | Value |
+| --- | --- |
+| Maximum fee per gas | 5 gwei |
+| Maximum priority fee | 1 gwei |
+| Maximum gas limit | 750,000 |
+| Maximum worst-case gas cost per transaction | 0.003 ETH |
+| Rolling 24-hour worst-case gas budget | 0.01 ETH |
+| Receipt confirmation depth | 12 blocks |
+
+These are ceilings, not expected costs. Gas is estimated with a 20% + 10,000
+buffer. Fees above the caps defer the call. The rolling budget conservatively
+counts each transaction's reserved maximum fee, including failed ones, for 24
+hours. Chainlink VRF fees are separate and still come from the VRF subscription.
+The keeper wallet must have enough ETH for the maximum fee of the proposed call.
+
+Each invocation uses a three-minute database lease. Before broadcasting, it
+persists the signed bytes, nonce, and hash in a private outbox. A timeout or crash
+reuses those exact bytes, preventing duplicate spending. The database also
+enforces a single outstanding transaction, a unique signer/nonce, the spending
+budget, and the enabled switch. Request authentication has its own Vault secret
+and a `keeper:v1` HMAC domain, with two-minute expiry and single-use nonces.
+
+The outbox contains broadcastable signed transactions, not private keys. Treat
+it as private operational data. Anyone possessing already signed bytes can
+broadcast them; pausing stops new keeper submissions but cannot revoke an
+already signed or pending Ethereum transaction. A pause racing the RPC send can
+still leave the one in-flight transaction. No automatic fee increases occur.
+
+A confirmed revert or unknown consumed nonce disables transactions. A pending
+transaction older than 30 minutes, changed intended round, or delayed VRF is
+reported for operator attention. No automatic shutdown or cancellation occurs.
+Status is recorded in Postgres; notification delivery is not configured.
+
+Read status without reading the private key or signed bytes:
+
+```sql
+select enabled,wallet_address,balance_wei,last_checked_at,last_status,last_detail,
+  pause_reason from prison_private.keeper_state;
+select hash,action,nonce,status,created_at,receipt_block,actual_cost_wei
+  from prison_private.keeper_transactions order by created_at desc limit 10;
+```
+
+Invoke a paused check (or run one enabled tick) without exposing the signing token:
+
+```sql
+do $$ declare job_command text;
+begin
+  select command into strict job_command from cron.job
+    where jobname='forgotten-prison-keeper';
+  execute job_command;
+end $$;
+```
+
+After funding the verified wallet and approving the limits, enable the keeper:
+
+```sql
+begin;
+update prison_private.keeper_state set enabled=true,pause_reason=null
+  where singleton and wallet_address is not null;
+select cron.alter_job((select jobid from cron.job
+  where jobname='forgotten-prison-keeper'),active:=true);
+commit;
+```
+
+To pause, set `enabled=false` and alter this cron job to `active:=false`. Keep the
+indexer cron running. To rotate the key, pause first, resolve any outstanding
+transaction, replace the Edge Function secret, clear `wallet_address`, and run a
+paused check to pin the new address before funding/enabling it. Never discard a
+pending outbox entry merely because an RPC call timed out. Inspect its hash and
+nonce on Ethereum before replacing/cancelling it or changing the outbox.
+
+Validation:
+
+```sh
+pnpm prison:keeper-check
+pnpm prison:keeper-test
+```
+
+`tests/forgotten_prison_keeper.sql` checks private access, HMAC replay/expiry,
+exclusive leases, persisted crash recovery, spending caps, pause checks, and
+automatic revert shutdown inside a rolled-back transaction, without chain calls.

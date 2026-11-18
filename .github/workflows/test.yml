@@ -34,6 +34,8 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm test --runInBand
+      - run: pnpm prison:keeper-check
+      - run: pnpm prison:keeper-test
       - name: Start read-only data fixture
         run: node scripts/ci-data-server.mjs > /tmp/how-ci-data.log 2>&1 &
       - run: pnpm build
