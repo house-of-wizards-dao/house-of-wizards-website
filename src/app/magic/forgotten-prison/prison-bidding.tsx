@@ -768,11 +768,27 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
                       {displayEth(draw.price)} ETH
                     </td>
                     <td className="whitespace-nowrap p-4 text-violet-200/75">
-                      {draw.status === 3
-                        ? `${prizeMetadata.get(prizeKey(draw.collection, draw.tokenId))?.name ?? `${prizeName(draw.collection)} #${draw.tokenId}`}${draw.bonusAwarded ? " + Imp Box" : ""}`
-                        : draw.status === 4
-                          ? "Aborted · payment refundable"
-                          : "Result pending"}
+                      {draw.status === 3 ? (
+                        <>
+                          <a
+                            href={`/characters/${draw.collection}/${draw.tokenId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            title="View character (opens in a new tab)"
+                            className="rounded-sm hover:underline focus-visible:outline-2 focus-visible:outline-violet-300"
+                          >
+                            {prizeMetadata.get(
+                              prizeKey(draw.collection, draw.tokenId),
+                            )?.name ??
+                              `${prizeName(draw.collection)} #${draw.tokenId}`}
+                          </a>
+                          {draw.bonusAwarded ? " + Imp Box" : ""}
+                        </>
+                      ) : draw.status === 4 ? (
+                        "Aborted · payment refundable"
+                      ) : (
+                        "Result pending"
+                      )}
                     </td>
                   </tr>
                 ))}

@@ -16,8 +16,12 @@ export const CharacterPreview = ({
 }) => {
   const label = `${prizeKind(collection)} #${tokenId}`;
   return (
-    <div
-      className="flex min-w-0 items-center gap-3"
+    <a
+      href={`/characters/${collection}/${tokenId}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      title="View character (opens in a new tab)"
+      className="group flex min-w-0 items-center gap-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
       data-testid="prize-character"
     >
       {prize?.imageUrl ? (
@@ -31,14 +35,14 @@ export const CharacterPreview = ({
         />
       ) : null}
       <div className="min-w-0">
-        <p className="break-words font-medium text-violet-100">
+        <p className="break-words font-medium text-violet-100 group-hover:underline">
           {prize?.name ?? label}
         </p>
         {prize?.name ? (
           <p className="mt-1 text-xs text-violet-300/65">{label}</p>
         ) : null}
       </div>
-    </div>
+    </a>
   );
 };
 
