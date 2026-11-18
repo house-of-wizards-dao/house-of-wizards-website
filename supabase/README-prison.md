@@ -114,6 +114,36 @@ pnpm test --runInBand src/lib/forgotten-prison/event-projection.test.ts src/app/
 pnpm type-check
 ```
 
+## Prize inventory and character metadata
+
+`prison_inventory` projects each Warrior/Wizard's latest canonical lifecycle
+event. A deposit makes it `available`; `DrawFinalized` changes it to `awarded`
+before claim, followed by `claimed` or `recovered` when appropriate. Returning a
+claimed NFT creates a new available entry for the same collection/token identity.
+Replay and reorg handling come from the existing atomic event index. A plain
+ERC-721 transfer enters the registered pool only after the contract's sync call.
+
+`prison_nft_metadata` stores the name and image URL separately and keeps them
+after award or claim. The public page gets both in its existing index response,
+including historical prizes. It does not request NFT metadata per card. The
+browser still loads the actual image from its stored URL. Metadata is publicly
+readable with RLS; only the server role can write it.
+
+After catching up, the indexer fills up to 50 missing characters per run through
+the site's bounded `/api/forgotten-prison/characters` catalog endpoint. This uses
+the existing local character catalog. Lookup failures retry on the next tick
+without stopping event indexing. Already cached characters are not fetched again.
+To backfill the existing pool from a checkout with Supabase server credentials:
+
+```sh
+node --env-file=.env --env-file=.env.local --import tsx scripts/backfill-prison-metadata.ts --write
+```
+
+`tests/forgotten_prison_inventory.sql` exercises lifecycle transitions, returns,
+reorg restoration, collection/token identity, cache retention, and RLS within a
+rolled-back transaction. `pnpm prison:indexer-check` and
+`pnpm prison:metadata-test` validate the indexer and bounded metadata lookup.
+
 ## Draw keeper (initially paused)
 
 `prison-keeper` uses the `PRISON_KEEPER_PRIVATE_KEY` Edge Function secret. Add the

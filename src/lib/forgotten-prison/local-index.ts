@@ -1,4 +1,6 @@
 import "server-only";
+import { projectPrisonInventory, prizeKey, prizeKind } from "./inventory";
+import { prisonCharacter } from "./character-catalog";
 import { decodeEventLog, getContract } from "viem";
 import { prisonAbi } from "./abi";
 import { localChain, loadDeployment } from "./local-chain";
@@ -34,6 +36,8 @@ export const readLocalPrisonIndex = async (page: number) => {
         "BonusAwarded",
         "BonusClaimed",
         "Shutdown",
+        "InventoryDeposited",
+        "UnsoldNFTRecovered",
       ].includes(log.decoded.eventName),
     );
   const timestamps = new Map<bigint, string>();
@@ -89,6 +93,47 @@ export const readLocalPrisonIndex = async (page: number) => {
   ]);
   const pending =
     pendingDrawId > 0n ? await prison.read.getDraw([pendingDrawId], at) : null;
+  // A preview can start from a fork of the already-funded mainnet contract.
+  // Read its current inventory too, including deposits before the fork baseline.
+  const available = await localChain.multicall({
+    ...at,
+    allowFailure: false,
+    contracts: Array.from(
+      { length: Number(prizeCount) },
+      (_, i) =>
+        ({
+          address: deployment.address,
+          abi: prisonAbi,
+          functionName: "availableTokenAt",
+          args: [BigInt(i)],
+        }) as const,
+    ),
+  });
+  const inventory = new Map(
+    projectPrisonInventory(events).map((prize) => [
+      prizeKey(prize.collection, prize.tokenId),
+      prize,
+    ]),
+  );
+  for (const asset of available) {
+    const key = prizeKey(asset.collection, asset.tokenId);
+    inventory.set(key, {
+      collection: asset.collection.toLowerCase(),
+      tokenId: String(asset.tokenId),
+      kind: prizeKind(asset.collection),
+      status: "available",
+      drawId: null,
+      updatedAt:
+        inventory.get(key)?.updatedAt ??
+        new Date(Number(block.timestamp) * 1000).toISOString(),
+      name: null,
+      imageUrl: null,
+    });
+  }
+  const prizes = [...inventory.values()].map((prize) => ({
+    ...prize,
+    ...prisonCharacter(prize.collection, prize.tokenId),
+  }));
   if (
     (await localChain.getBlock({ blockNumber: block.number })).hash !==
     block.hash
@@ -114,6 +159,7 @@ export const readLocalPrisonIndex = async (page: number) => {
       pendingStatus: pending?.status ?? 0,
     },
     ...projection,
+    prizes,
     leaderboard: projection.leaderboard.slice(0, 50),
     history: projection.history.slice(page * 20, page * 20 + 20),
   });

@@ -4,6 +4,17 @@ const uint = z.string().regex(/^\d+$/);
 const address = z.string().regex(/^0x[\da-fA-F]{40}$/);
 const hash = z.string().regex(/^0x[\da-fA-F]{64}$/);
 const date = z.string().datetime({ offset: true });
+export const indexedPrizeSchema = z.object({
+  collection: address,
+  tokenId: uint,
+  kind: z.enum(["Warrior", "Wizard"]),
+  status: z.enum(["available", "awarded", "claimed", "recovered"]),
+  drawId: uint.nullable(),
+  updatedAt: date,
+  name: z.string().nullable(),
+  imageUrl: z.string().url().nullable(),
+});
+export type IndexedPrize = z.infer<typeof indexedPrizeSchema>;
 export const indexedDrawSchema = z.object({
   id: uint,
   winner: address,
@@ -52,6 +63,7 @@ export const prisonIndexSchema = z.object({
   finalizedCount: z.number().int().nonnegative(),
   totalWonWei: uint,
   history: z.array(indexedDrawSchema),
+  prizes: z.array(indexedPrizeSchema).default([]),
 });
 export type PrisonIndex = z.infer<typeof prisonIndexSchema>;
 export type IndexedDraw = z.infer<typeof indexedDrawSchema>;

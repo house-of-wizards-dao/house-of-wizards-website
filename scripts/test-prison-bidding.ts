@@ -52,7 +52,12 @@ const context = await browser.newContext({
 });
 const page = await context.newPage();
 const errors: string[] = [];
+const metadataRequests: string[] = [];
 page.on("pageerror", (error) => errors.push(error.message));
+page.on("request", request => {
+  if (/\/api\/(characters\/|forgotten-prison\/characters)/.test(request.url()))
+    metadataRequests.push(request.url());
+});
 
 try {
   assert.equal(
@@ -208,6 +213,8 @@ try {
     page.getByRole("heading", { name: "Forgotten Prison", exact: true }),
   ).toBeVisible();
   await expect(page.getByTestId("remaining-prizes")).not.toContainText("—", { timeout: 30_000 });
+  await expect(page.getByTestId("prize-pool-count")).toContainText(`${initial.prizeCount} prizes`, {timeout:30_000});
+  await expect(page.getByTestId("prize-pool").getByRole("img").first()).toBeVisible();
   assert.equal(
     await page
       .getByRole("button", { name: "Callback with VRF", exact: true })
@@ -311,6 +318,7 @@ try {
   });
   const won = (await state()).draws.find((draw) => draw.id === drawId);
   assert.ok(won);
+  await expect(page.getByTestId("prize-pool-count")).toContainText(`${BigInt(initial.prizeCount)-1n} prizes`);
   assert.equal(won.winner.toLowerCase(), testAccount.toLowerCase());
   await clickAction(
     `claim-prize-${drawId}`,
@@ -347,6 +355,15 @@ try {
   console.log(
     "PASS: cutoff locks bids; both speed-up actions work before automation with a countdown; VRF wait hides the action; NFT and bonus claims transfer to the connected wallet",
   );
+  await command({ action: "donate", account: testAccount, collection: won.collection, tokenId: won.tokenId, safe: true });
+  await page.getByRole("button", {name:"Refresh",exact:true}).click();
+  await expect(page.getByTestId("prize-pool-count")).toContainText(`${initial.prizeCount} prizes`);
+  const indexed = await (await fetch(`${base}/api/forgotten-prison/index`)).json();
+  const returned = indexed.prizes.find((prize: {collection:string;tokenId:string}) => prize.collection.toLowerCase()===won.collection.toLowerCase() && prize.tokenId===won.tokenId);
+  assert.equal(returned.status,"available");
+  assert.ok(returned.name && returned.imageUrl);
+  assert.deepEqual(metadataRequests,[]);
+  console.log("PASS: cached names/images, immediate award removal, returned NFT re-entry, and no browser metadata requests");
 
   await page.getByLabel("ETH to add to your bid").fill("0.2");
   await clickAction("place-bid", "Your bid is confirmed.");

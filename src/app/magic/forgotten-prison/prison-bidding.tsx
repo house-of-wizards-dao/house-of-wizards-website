@@ -7,6 +7,8 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { type Hex } from "viem";
 import Link from "next/link";
 import { ClaimIntro } from "./claim-intro";
+import { CharacterPreview, PrizePool } from "./prize-pool";
+import { prizeKey } from "@/lib/forgotten-prison/inventory";
 import {
   BidLeaderboard,
   DrawProgress,
@@ -91,6 +93,16 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
   });
   const data = auction.data;
   const index = usePrisonIndex(target);
+  const prizeMetadata = useMemo(
+    () =>
+      new Map(
+        index.data?.prizes.map((prize) => [
+          prizeKey(prize.collection, prize.tokenId),
+          prize,
+        ]),
+      ),
+    [index.data?.prizes],
+  );
   const timing = data
     ? drawTiming(
         data,
@@ -670,9 +682,15 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
                     <p className="text-xs uppercase tracking-wide text-violet-300">
                       Round #{String(draw.id)}
                     </p>
-                    <h4 className="mt-2 text-lg font-semibold">
-                      {prizeName(draw.collection)} #{String(draw.tokenId)}
-                    </h4>
+                    <div className="mt-3 text-sm">
+                      <CharacterPreview
+                        prize={prizeMetadata.get(
+                          prizeKey(draw.collection, draw.tokenId),
+                        )}
+                        collection={draw.collection}
+                        tokenId={String(draw.tokenId)}
+                      />
+                    </div>
                     <div className="mt-4 flex flex-wrap gap-3">
                       {!draw.claimed ? (
                         actionButton(
@@ -751,7 +769,7 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
                     </td>
                     <td className="whitespace-nowrap p-4 text-violet-200/75">
                       {draw.status === 3
-                        ? `${prizeName(draw.collection)} #${draw.tokenId}${draw.bonusAwarded ? " + Imp Box" : ""}`
+                        ? `${prizeMetadata.get(prizeKey(draw.collection, draw.tokenId))?.name ?? `${prizeName(draw.collection)} #${draw.tokenId}`}${draw.bonusAwarded ? " + Imp Box" : ""}`
                         : draw.status === 4
                           ? "Aborted · payment refundable"
                           : "Result pending"}
@@ -763,6 +781,11 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
           </div>
         </section>
       ) : null}
+      <PrizePool
+        prizes={index.data?.prizes ?? []}
+        loading={!index.data && !index.isError}
+        error={index.isError}
+      />
       <p className="break-all text-xs leading-5 text-violet-300/45">
         {network} contract:{" "}
         {target.chainId === 1 ? (

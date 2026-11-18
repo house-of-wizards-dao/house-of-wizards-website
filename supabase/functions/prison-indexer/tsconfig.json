@@ -1,0 +1,4 @@
+{
+  "extends": "../prison-keeper/tsconfig.json",
+  "include": ["./*.ts", "../../tests/metadata.test.ts"]
+}

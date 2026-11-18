@@ -2,6 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 import { createPublicClient, decodeEventLog, getContract, http } from "viem";
 import { mainnet } from "viem/chains";
 import { prisonAbi } from "../_shared/abi.ts";
+import { fetchPrisonCharacters, missingMetadataSchema } from "./metadata.ts";
+
+declare const Deno: {
+  env: { get: (name: string) => string | undefined };
+  serve: (handler: (request: Request) => Promise<Response>) => unknown;
+};
 
 // This function has no signing key and never sends an Ethereum transaction.
 const contract = "0x7a258a7ed776d88ec7e19a03019a632c4f097ef8" as const;
@@ -40,17 +46,53 @@ type State = {
   revision: number;
 };
 
+const syncMetadata = async () => {
+  // A catalog outage must not stop auction indexing. Missing rows are retried
+  // on the next scheduled run; known metadata is never fetched on page views.
+  try {
+    const missing = await db
+      .from("prison_inventory")
+      .select("collection,token_id")
+      .eq("chain_id", 1)
+      .eq("contract", contract)
+      .is("name", null)
+      .order("collection")
+      .order("token_id")
+      .limit(50);
+    if (missing.error) throw new Error("Inventory unavailable");
+    const tokens = missingMetadataSchema.parse(missing.data);
+    const rows = await fetchPrisonCharacters(tokens);
+    if (rows.length) {
+      const saved = await db.from("prison_nft_metadata").upsert(rows, {
+        onConflict: "chain_id,collection,token_id",
+      });
+      if (saved.error) throw new Error("Metadata write failed");
+    }
+    return { saved: rows.length, pending: tokens.length - rows.length };
+  } catch {
+    return { status: "retry_next_run" };
+  }
+};
+
 Deno.serve(async (request: Request) => {
   if (request.method !== "POST")
     return json({ error: "Method not allowed" }, 405);
   const timestamp = request.headers.get("x-prison-timestamp");
   const nonce = request.headers.get("x-prison-nonce");
   const signature = request.headers.get("x-prison-signature");
-  if (!timestamp || !/^\d{10}$/.test(timestamp) || !nonce || !/^[a-f0-9]{32}$/.test(nonce)
-    || !signature || !/^[a-f0-9]{64}$/.test(signature))
+  if (
+    !timestamp ||
+    !/^\d{10}$/.test(timestamp) ||
+    !nonce ||
+    !/^[a-f0-9]{32}$/.test(nonce) ||
+    !signature ||
+    !/^[a-f0-9]{64}$/.test(signature)
+  )
     return json({ error: "Unauthorized" }, 401);
   const auth = await db.rpc("prison_authorize_indexer", {
-    p_timestamp: Number(timestamp), p_nonce: nonce, p_signature: signature,
+    p_timestamp: Number(timestamp),
+    p_nonce: nonce,
+    p_signature: signature,
   });
   if (auth.error || auth.data !== true)
     return json({ error: "Unauthorized" }, 401);
@@ -206,6 +248,7 @@ Deno.serve(async (request: Request) => {
           block: Number(to),
           batches,
           events: indexed,
+          metadata: await syncMetadata(),
         });
     }
     return json({ status: "catching_up", batches, events: indexed });

@@ -11,6 +11,8 @@
     "prison:test-bidding": "tsx scripts/test-prison-bidding.ts",
     "prison:keeper-check": "tsc -p supabase/functions/prison-keeper/tsconfig.json",
     "prison:keeper-test": "node --import tsx --test supabase/tests/keeper.test.ts",
+    "prison:indexer-check": "tsc -p supabase/functions/prison-indexer/tsconfig.json",
+    "prison:metadata-test": "node --import tsx --test supabase/tests/metadata.test.ts",
     "guard:sync-assets": "node ./scripts/sync-guard-game-assets.mjs",
     "build": "next build --webpack",
     "start": "next start",

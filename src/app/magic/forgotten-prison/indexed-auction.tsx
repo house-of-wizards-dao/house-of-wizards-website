@@ -12,8 +12,9 @@ import {
   drawStatusLabel,
   type PrisonIndex,
   type IndexedDraw,
+  type IndexedPrize,
 } from "@/lib/forgotten-prison/index-types";
-import { COLLECTIONS } from "@/lib/forgotten-prison/config";
+import { CharacterPreview } from "./prize-pool";
 
 export const indexQueryKey = (target: PrisonTarget) =>
   ["prison-index", target.chainId, target.address.toLowerCase()] as const;
@@ -260,16 +261,14 @@ export const DrawProgress = ({
   );
 };
 
-const nftName = (draw: IndexedDraw) =>
-  draw.collection?.toLowerCase() === COLLECTIONS.Wizards.toLowerCase()
-    ? "Wizard"
-    : "Warrior";
 export const WinningRound = ({
   draw,
   target,
+  prize,
 }: {
   draw: IndexedDraw;
   target: PrisonTarget;
+  prize?: IndexedPrize;
 }) => (
   <article
     className="rounded-2xl border border-violet-300/20 bg-[#180f27]/80 p-5 sm:p-7"
@@ -315,11 +314,19 @@ export const WinningRound = ({
           Prisoner freed
         </dt>
         <dd className="mt-2">
-          {draw.status === "finalized"
-            ? `${nftName(draw)} #${draw.tokenId}`
-            : draw.status === "aborted"
-              ? "No prize awarded"
-              : "Selection pending"}
+          {draw.status === "finalized" &&
+          draw.collection &&
+          draw.tokenId !== null ? (
+            <CharacterPreview
+              prize={prize}
+              collection={draw.collection}
+              tokenId={draw.tokenId}
+            />
+          ) : draw.status === "aborted" ? (
+            "No prize awarded"
+          ) : (
+            "Selection pending"
+          )}
         </dd>
       </div>
     </dl>

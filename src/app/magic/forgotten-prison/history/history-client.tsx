@@ -56,7 +56,17 @@ export const PrisonHistory = ({ target }: { target: PrisonTarget }) => {
           {data.history.length ? (
             <div className="space-y-5">
               {data.history.map((draw) => (
-                <WinningRound key={draw.id} draw={draw} target={target} />
+                <WinningRound
+                  key={draw.id}
+                  draw={draw}
+                  target={target}
+                  prize={data.prizes.find(
+                    (prize) =>
+                      prize.collection.toLowerCase() ===
+                        draw.collection?.toLowerCase() &&
+                      prize.tokenId === draw.tokenId,
+                  )}
+                />
               ))}
             </div>
           ) : (
