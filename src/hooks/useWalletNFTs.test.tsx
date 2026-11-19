@@ -15,6 +15,22 @@ const setup = () => {
 
 afterEach(() => jest.restoreAllMocks());
 
+it("exposes a failed inventory request instead of an empty collection", async () => {
+  global.fetch = jest.fn().mockResolvedValue({
+    ok: false,
+    statusText: "Internal Server Error",
+  });
+  const { wrapper, client } = setup();
+  const { result, unmount } = renderHook(() => useWalletNFTs(["a.eth"]), {
+    wrapper,
+  });
+  await waitFor(() => expect(result.current.error).toBeInstanceOf(Error));
+  expect(result.current.data).toBeNull();
+  expect(result.current.loading).toBe(false);
+  unmount();
+  client.clear();
+});
+
 it("normalizes and deduplicates wallets without refetching for equivalent arrays", async () => {
   const fetchMock = jest
     .fn()

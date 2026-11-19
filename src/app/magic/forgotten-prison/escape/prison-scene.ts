@@ -9,7 +9,7 @@ const ASSET = "/img/forgotten-prison/game/";
 const FLOOR = 214;
 const GUARD = 408;
 export type PrisonGameBridge = {
-  approach: () => void;
+  talk: () => void;
   release: (character: EscapeCharacter, bonus: boolean) => void;
   destroy: () => void;
 };
@@ -19,12 +19,13 @@ export const createPrisonGame = (
   character: EscapeCharacter,
   callbacks: {
     arrive: () => void;
+    proximity: (near: boolean) => void;
     revealed: () => void;
     warning: (message: string) => void;
   },
 ): PrisonGameBridge => {
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let approachRequested = false;
+  let talkRequested = false;
   let releaseRequested: { character: EscapeCharacter; bonus: boolean } | null =
     null;
 
@@ -33,7 +34,8 @@ export const createPrisonGame = (
     private gate?: Phaser.GameObjects.Container;
     private guard?: Phaser.GameObjects.Sprite;
     private destination = 60;
-    private arrived = false;
+    private nearGuard = false;
+    private guardLabel?: Phaser.GameObjects.Text;
     private freeing = false;
     private cursors?: {
       left: Phaser.Input.Keyboard.Key;
@@ -95,7 +97,10 @@ export const createPrisonGame = (
     }
 
     create() {
-      this.add.tileSprite(0, 0, 608, 240, "sky").setOrigin(0).setTileScale(2);
+      // TileSprite resamples this 300×150 image to a power-of-two texture,
+      // baking blur into the pixels. Plain images preserve the native artwork.
+      for (const x of [0, 600])
+        this.add.image(x, 0, "sky").setOrigin(0).setScale(2);
       for (const x of [0, 497]) {
         this.add.image(x, 65, "mountains").setOrigin(0).setAlpha(0.7);
         this.add.image(x, 91, "ground").setOrigin(0).setDepth(2);
@@ -175,6 +180,8 @@ export const createPrisonGame = (
           duration: 6000,
           yoyo: true,
           repeat: -1,
+          onYoyo: () => bat.setFlipX(true),
+          onRepeat: () => bat.setFlipX(false),
         });
       }
       if (!this.textures.exists(this.playerKey)) {
@@ -187,7 +194,7 @@ export const createPrisonGame = (
         this.player = this.actor(60, this.playerKey);
       if (this.textures.exists("stank"))
         this.guard = this.actor(GUARD, "stank");
-      this.add
+      this.guardLabel = this.add
         .text(GUARD, 153, "STANK", {
           fontFamily: "monospace",
           fontSize: "8px",
@@ -197,7 +204,8 @@ export const createPrisonGame = (
         .setOrigin(0.5)
         .setDepth(8);
       if (this.input.keyboard) {
-        // Do not capture page-level arrow keys when the canvas is unfocused.
+        const keyboard = this.input.keyboard;
+        // Capture movement keys only while playing, leaving page controls alone.
         this.cursors = {
           left: this.input.keyboard.addKey("LEFT", false),
           right: this.input.keyboard.addKey("RIGHT", false),
@@ -207,12 +215,23 @@ export const createPrisonGame = (
           right: this.input.keyboard.addKey("D", false),
           interact: this.input.keyboard.addKey("E", false),
         };
+        // Latch the down event: a short tap can begin and end between frames.
+        // Key emits this once per press, so holding E outside range won't talk
+        // automatically when the visitor later reaches Stank.
+        this.keys.interact.on("down", () => {
+          if (document.activeElement === this.game.canvas && this.nearGuard)
+            talkRequested = true;
+        });
         this.input.keyboard.enabled = false;
         const enable = () => {
-          if (this.input.keyboard) this.input.keyboard.enabled = true;
+          keyboard.enabled = true;
+          keyboard.addCapture("LEFT,RIGHT,A,D,E");
         };
         const disable = () => {
-          if (this.input.keyboard) this.input.keyboard.enabled = false;
+          keyboard.enabled = false;
+          keyboard.removeCapture("LEFT,RIGHT,A,D,E");
+          keyboard.resetKeys();
+          this.destination = this.player?.x ?? 60;
         };
         this.game.canvas.tabIndex = 0;
         this.game.canvas.setAttribute(
@@ -222,6 +241,7 @@ export const createPrisonGame = (
         this.game.canvas.addEventListener("focus", enable);
         this.game.canvas.addEventListener("blur", disable);
         this.events.once("shutdown", () => {
+          disable();
           this.game.canvas.removeEventListener("focus", enable);
           this.game.canvas.removeEventListener("blur", disable);
         });
@@ -231,7 +251,10 @@ export const createPrisonGame = (
         if (!this.freeing)
           this.destination = Phaser.Math.Clamp(pointer.x, 24, GUARD - 34);
       });
-      this.destination = GUARD - 34;
+      // Selecting a visitor removes the focused selector button. Hand focus to
+      // the game once it loads, unless the user has already focused something else.
+      if (document.activeElement === document.body)
+        this.game.canvas.focus({ preventScroll: true });
     }
 
     private freePrisoner(prisoner: EscapeCharacter, bonus: boolean) {
@@ -304,10 +327,6 @@ export const createPrisonGame = (
         releaseRequested = null;
       }
       if (this.freeing) return;
-      if (approachRequested) {
-        this.destination = GUARD - 34;
-        approachRequested = false;
-      }
       const speed = Math.min(delta, 50) * 0.065;
       const focus = document.activeElement === this.game.canvas;
       if (focus && (this.cursors?.left.isDown || this.keys?.left.isDown))
@@ -325,18 +344,22 @@ export const createPrisonGame = (
               true,
             );
         } else this.player.anims.stop();
-        if (this.player.x >= GUARD - 36 && !this.arrived) {
-          this.arrived = true;
-          this.player.setFrame("12");
-          this.guard?.setFrame("4");
-          callbacks.arrive();
-        }
-      } else if (!this.arrived) {
-        this.arrived = true;
+      }
+      const near = !this.player || this.player.x >= GUARD - 56;
+      if (near !== this.nearGuard) {
+        this.nearGuard = near;
+        this.guardLabel?.setText(near ? "[E] TALK" : "STANK");
+        callbacks.proximity(near);
+      }
+      if (near && talkRequested) {
+        this.destination = this.player?.x ?? 60;
+        this.player?.anims.stop();
+        this.player?.setFrame("12");
+        this.guard?.setFrame("4");
+        this.guardLabel?.setVisible(false);
         callbacks.arrive();
       }
-      if (focus && this.keys?.interact.isDown && this.arrived)
-        callbacks.arrive();
+      talkRequested = false;
     }
   }
   const game = new Phaser.Game({
@@ -349,12 +372,13 @@ export const createPrisonGame = (
     roundPixels: true,
     render: { antialias: false },
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+    input: { mouse: { preventDefaultWheel: false } },
     scene: PrisonScene,
     audio: { noAudio: true },
   });
   return {
-    approach: () => {
-      approachRequested = true;
+    talk: () => {
+      talkRequested = true;
     },
     release: (rescued, bonus) => {
       releaseRequested = { character: rescued, bonus };

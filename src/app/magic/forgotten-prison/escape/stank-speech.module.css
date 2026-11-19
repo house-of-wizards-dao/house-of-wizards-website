@@ -1,0 +1,60 @@
+.bubble {
+  position: relative;
+  border: 8px solid transparent;
+  border-image: url("/img/forgotten-prison/game/speech-frame.png") 4 fill
+    stretch;
+  padding: 10px 14px 12px;
+  image-rendering: pixelated;
+  color: #eee6ca;
+  font-family: "OCRAStd", monospace;
+}
+
+.speaker {
+  display: block;
+  margin-bottom: 9px;
+  color: #c8b97c;
+  font-size: 9px;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.message {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.8;
+  outline: none;
+}
+
+.tail {
+  position: absolute;
+  bottom: -24px;
+  left: 67%;
+  width: 24px;
+  height: 24px;
+  background: #c8b97c;
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 100%,
+    66.67% 100%,
+    66.67% 66.67%,
+    33.33% 66.67%,
+    33.33% 33.33%,
+    0 33.33%
+  );
+}
+
+.tail::after {
+  content: "";
+  position: absolute;
+  inset: -4px 4px 4px;
+  background: #101110;
+  clip-path: inherit;
+}
+
+@media (min-width: 768px) {
+  .message {
+    font-size: 14px;
+  }
+}

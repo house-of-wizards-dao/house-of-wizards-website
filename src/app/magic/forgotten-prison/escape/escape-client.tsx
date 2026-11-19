@@ -154,6 +154,33 @@ const EscapeSession = ({
   const draw = drawQuery.data;
   const winner =
     !!address && draw?.winner.toLowerCase() === address.toLowerCase();
+  const dialogue = !arrived
+    ? null
+    : result
+      ? "Fine. A deal’s a deal. Take them and get out before I change my mind."
+      : progress
+        ? "Keep your voice down. I’m getting the release papers in order…"
+        : error
+          ? "A little snag with the papers. What’s already yours stays yours. Let’s finish the rest."
+          : !address
+            ? "Oh, trying to free someone from the Forgotten Prison? Show me the wallet that won."
+            : !target
+              ? "The prison isn’t open for business yet. Come back when the auction begins."
+              : wins.isError || drawQuery.isError
+                ? "My ledger’s gone missing. Give me a moment, then try again."
+                : wins.isPending || (activeId && drawQuery.isPending)
+                  ? "Oh, trying to free someone from the Forgotten Prison? Let me check my ledger…"
+                  : !draw
+                    ? "No winning bribe in your name. Come back when you’ve won a daily auction."
+                    : !winner
+                      ? "Those papers belong to somebody else. Bring me the winning wallet."
+                      : draw.status !== 3
+                        ? "Patience. The draw hasn’t settled yet."
+                        : claimsComplete(draw)
+                          ? "We’ve already done this deal. Want to hear how the escape went again?"
+                          : draw.claimed
+                            ? "Your prisoner’s already out. There’s still an Imp Box with your name on it."
+                            : "Oh, trying to free someone from the Forgotten Prison? Your bribe’s already in my pocket. Sign the release and I’ll look the other way.";
   const release = useMemo(
     () =>
       result
@@ -311,6 +338,7 @@ const EscapeSession = ({
             release={release}
             onArrive={() => setArrived(true)}
             onRevealed={() => setRevealed(true)}
+            dialogue={dialogue}
           />
           <div className="p-5 font-sans sm:p-7">
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -329,20 +357,18 @@ const EscapeSession = ({
                 </button>
               ) : null}
             </div>
-            <p className="mt-4 max-w-2xl text-xl leading-8 text-violet-100">
-              {result
-                ? "“Fine. A deal’s a deal. Take them and get out before I change my mind.”"
-                : arrived
-                  ? "“Oh, trying to free someone from the Forgotten Prison?”"
-                  : "The Dread Tower looms ahead. A goblin watches you approach."}
-            </p>
+            {!arrived ? (
+              <p className="mt-4 text-sm text-violet-200/65">
+                The Dread Tower looms ahead. Walk up to Stank and press E to
+                talk.
+              </p>
+            ) : null}
             {arrived && !result ? (
               <>
                 {!address ? (
                   <div className="mt-5">
                     <p className="mb-4 text-sm leading-6 text-violet-200/65">
-                      “I don’t open the gate for just anyone. Show me the wallet
-                      that won.”
+                      Connect the winning wallet to collect your prizes.
                     </p>
                     <button
                       className={primary}
@@ -376,8 +402,7 @@ const EscapeSession = ({
                 ) : !draw ? (
                   <div className="mt-5">
                     <p className="text-sm leading-6 text-violet-200/65">
-                      “No winning bribe in your name. Come back when you’ve won
-                      a daily auction.”
+                      No claimable winning rounds were found for this wallet.
                     </p>
                     <Link
                       className="mt-4 inline-block text-violet-300 underline"
@@ -432,7 +457,7 @@ const EscapeSession = ({
                         ? "You already paid your dues. The prisoner and any awarded Imp Box have been claimed. Relive the escape without another transaction."
                         : draw.claimed
                           ? "Your prisoner is already safe. Stank still has your Imp Box. Finish collecting it to complete this escape."
-                          : "“Your bribe’s already in my pocket. Just sign the release and I’ll look the other way.” Your winning bid already paid Stank. This step only transfers your winnings; you pay the network fee."}
+                          : "Your winning bid already paid Stank. This step only transfers your winnings; you pay the network fee."}
                     </p>
                     {!claimsComplete(draw) &&
                     pendingClaims(draw).length === 2 ? (

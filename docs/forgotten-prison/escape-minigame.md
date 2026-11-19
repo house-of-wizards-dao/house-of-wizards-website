@@ -4,7 +4,7 @@ Public route: `/magic/forgotten-prison/escape`, optionally `?draw=<round>`.
 
 The auction's single **Claim winnings** link opens the character selector. It uses the existing wallet NFT API, filters to Wizards/Souls/Warriors, and offers a labelled guest avatar. Avatar selection grants no claim rights and never transfers or burns the avatar.
 
-Phaser is imported only after selecting a visitor. The visitor walks to Stank Death (Warrior #9662); clicking the path, arrow keys, A/D, and the DOM “Talk to Stank” control are supported. Keyboard input is active only while the canvas has focus. Reduced-motion preferences disable ambient loops and shorten the reveal. Text and claim controls remain accessible outside the canvas, including if assets fail.
+Phaser is imported only after selecting a visitor. The visitor stays at the entrance until the player moves using the arrow keys, A/D, or clicking/tapping the path. Selecting a visitor focuses the loaded game automatically, unless the user has moved focus elsewhere. Keyboard input is active only while the canvas has focus; leaving it stops movement and releases held keys. Near Stank Death (Warrior #9662), an E prompt appears and the DOM “Talk to Stank” button becomes available. E or that button opens and focuses the dialogue; walking into range alone does not. Reduced-motion preferences disable ambient loops and shorten the reveal. Text and claim controls remain accessible outside the canvas, including if assets fail.
 
 ## Claim behavior
 
@@ -26,5 +26,7 @@ Phaser is imported only after selecting a visitor. The visitor walks to Stank De
 - The prison masonry and bonus-box symbol are provisional Phaser graphics. The main building's native-canvas replacement brief and RetroDiffusion prompt are in `retrodiffusion-prison-prompt.md`. No paid generation was run.
 
 ## Verification
+
+Stank's speech uses the supplied `burn_ux_scene_01_bubble.png` frame, with a stepped pixel tail. The bubble sits above Stank on desktop and above the scene on narrow screens to preserve readable text and the play area.
 
 Claim orchestration and the React claim flow test wrong winners, unsettled rounds, interrupted bonus claims, wallet changes, completed/no-bonus draws, and concealment until confirmed. Browser checks exercised guest approach/dialogue, a Soul walkcycle, both Wizard and Warrior rescue animations, the box reveal, and the mobile layout. Sprite proxy checks returned the official Wizard, Soul, and Warrior atlases. No mainnet claim was sent during implementation.

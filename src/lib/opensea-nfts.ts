@@ -33,12 +33,13 @@ export type OpenSeaNFTsResponse = {
  * Initialize OpenSea SDK
  */
 const getOpenSeaSDK = () => {
-  const apiKey = process.env.OPENSEA_API_KEY;
+  const apiKey = process.env.OPENSEA_API_KEY?.trim();
+  if (!apiKey) throw new Error("OpenSea API key is not configured.");
   const provider = new JsonRpcProvider("https://eth.llamarpc.com");
   return new OpenSeaSDK(
     provider as unknown as OpenSeaSignerOrProvider,
     {
-      apiKey: apiKey || undefined,
+      apiKey,
       chain: Chain.Mainnet,
     },
     (arg: string) => {
@@ -137,6 +138,7 @@ export const fetchNFTsForAllContracts = async (
     });
   } catch (error) {
     logger.error(`Failed to fetch NFTs for wallet ${walletAddress}`, error);
+    throw error;
   }
 
   return contractMap;
@@ -159,7 +161,7 @@ export const fetchNFTsForWallets = async (
       return { walletAddress, contractMap };
     } catch (error) {
       logger.error(`Failed to fetch NFTs for wallet ${walletAddress}`, error);
-      return { walletAddress, contractMap: new Map<string, OpenSeaNFT[]>() };
+      throw error;
     }
   });
 

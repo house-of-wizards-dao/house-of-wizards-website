@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import type { PrizeDraw } from "@/lib/forgotten-prison/bidding";
 import { VISITOR } from "@/lib/forgotten-prison/escape";
 import EscapeClient from "./escape-client";
+import { StankSpeech } from "./stank-speech";
 
 const account = "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" as const;
 const target = { chainId: 1 as const, address: account };
@@ -64,13 +65,16 @@ jest.mock("./prison-game", () => ({
     release,
     onArrive,
     onRevealed,
+    dialogue,
   }: {
     release: unknown;
     onArrive: () => void;
     onRevealed: () => void;
+    dialogue?: string | null;
   }) => (
     <>
       <button onClick={onArrive}>Meet Stank</button>
+      {dialogue ? <StankSpeech message={dialogue} /> : null}
       {release ? (
         <button onClick={onRevealed}>Finish rescue animation</button>
       ) : null}
@@ -81,6 +85,7 @@ jest.mock("./prison-game", () => ({
 beforeEach(() => {
   localStorage.clear();
   jest.clearAllMocks();
+  Element.prototype.scrollIntoView = jest.fn();
   mockRejectBonus = false;
   mockDraw = {
     id: 1n,
@@ -119,6 +124,7 @@ const enter = async () => {
 
 it("keeps the prisoner hidden until the single claim flow and reveal finish", async () => {
   const claim = await enter();
+  expect(screen.getByText(/Oh, trying to free someone/)).toHaveFocus();
   expect(screen.queryByTestId("prize-character")).not.toBeInTheDocument();
   fireEvent.click(claim);
   await screen.findByRole("button", { name: "Finish rescue animation" });
