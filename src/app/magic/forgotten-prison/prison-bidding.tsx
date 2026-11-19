@@ -7,7 +7,7 @@ import { useAccountModal, useConnectModal } from "@rainbow-me/rainbowkit";
 import { type Hex } from "viem";
 import Link from "next/link";
 import { ClaimIntro } from "./claim-intro";
-import { CharacterPreview, PrizePool } from "./prize-pool";
+import { PrizePool } from "./prize-pool";
 import { prizeKey } from "@/lib/forgotten-prison/inventory";
 import {
   BidLeaderboard,
@@ -42,8 +42,7 @@ const secondary =
 type PlayerAction =
   | { kind: "bid"; value: bigint }
   | { kind: "cancelBid" | "withdrawRefund" }
-  | { kind: "startDailyDraw" | "finalizeDraw" }
-  | { kind: "claimNFT" | "claimBonus"; drawId: bigint };
+  | { kind: "startDailyDraw" | "finalizeDraw" };
 const countdown = (seconds: number) => {
   if (seconds <= 0) return "Awaiting the draw";
   const hours = Math.floor(seconds / 3600),
@@ -243,20 +242,6 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
             ...base,
             functionName: "withdrawRefund",
             args: [address],
-          });
-          break;
-        case "claimNFT":
-          hash = await writeContractAsync({
-            ...base,
-            functionName: "claimNFT",
-            args: [action.drawId, address],
-          });
-          break;
-        case "claimBonus":
-          hash = await writeContractAsync({
-            ...base,
-            functionName: "claimBonus",
-            args: [action.drawId, address],
           });
           break;
       }
@@ -683,39 +668,20 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
                     <p className="text-xs uppercase tracking-wide text-violet-300">
                       Round #{String(draw.id)}
                     </p>
-                    <div className="mt-3 text-sm">
-                      <CharacterPreview
-                        prize={prizeMetadata.get(
-                          prizeKey(draw.collection, draw.tokenId),
-                        )}
-                        collection={draw.collection}
-                        tokenId={String(draw.tokenId)}
-                      />
-                    </div>
-                    <div className="mt-4 flex flex-wrap gap-3">
-                      {!draw.claimed ? (
-                        actionButton(
-                          { kind: "claimNFT", drawId: draw.id },
-                          `claim-prize-${draw.id}`,
-                          "Claim prisoner",
-                          true,
-                          "Your prisoner has been transferred to your wallet.",
-                        )
-                      ) : (
-                        <span className="text-sm text-emerald-200">
-                          Prisoner claimed
-                        </span>
-                      )}
-                      {draw.bonusAwarded && !draw.bonusClaimed
-                        ? actionButton(
-                            { kind: "claimBonus", drawId: draw.id },
-                            `claim-box-${draw.id}`,
-                            `Claim Imp Box #${draw.boxTokenId}`,
-                            true,
-                            "Your Imp Box has been transferred to your wallet.",
-                          )
-                        : null}
-                    </div>
+                    <p className="mt-3 text-lg font-semibold text-violet-100">
+                      Someone is waiting behind the gate.
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-violet-200/65">
+                      Stank has accepted your bribe. Visit the prison to
+                      discover who you’re freeing and collect all your winnings.
+                    </p>
+                    <Link
+                      href={`/magic/forgotten-prison/escape?draw=${draw.id}`}
+                      className={`${secondary} mt-4 inline-block`}
+                      data-testid={`claim-winnings-${draw.id}`}
+                    >
+                      Claim winnings →
+                    </Link>
                   </div>
                 ))}
               </div>
@@ -769,7 +735,9 @@ const AuctionView = ({ target }: { target: PrisonTarget }) => {
                       {displayEth(draw.price)} ETH
                     </td>
                     <td className="whitespace-nowrap p-4 text-violet-200/75">
-                      {draw.status === 3 ? (
+                      {draw.status === 3 && !draw.claimed ? (
+                        "Waiting behind the gate"
+                      ) : draw.status === 3 ? (
                         <>
                           <a
                             href={`/characters/${draw.collection}/${draw.tokenId}`}

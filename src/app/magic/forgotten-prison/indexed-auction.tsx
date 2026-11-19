@@ -314,9 +314,11 @@ export const WinningRound = ({
           Prisoner freed
         </dt>
         <dd className="mt-2">
-          {draw.status === "finalized" &&
-          draw.collection &&
-          draw.tokenId !== null ? (
+          {draw.status === "finalized" && !draw.claimed ? (
+            "Waiting behind the gate"
+          ) : draw.status === "finalized" &&
+            draw.collection &&
+            draw.tokenId !== null ? (
             <CharacterPreview
               prize={prize}
               collection={draw.collection}
@@ -353,7 +355,9 @@ export const WinningRound = ({
         <div className="text-sm text-violet-200/75">
           <p>
             {draw.boxTokenId !== null
-              ? `Imp Box #${draw.boxTokenId} · ${draw.bonusClaimed ? "Claimed" : "Ready to claim"}`
+              ? draw.bonusClaimed
+                ? `Imp Box #${draw.boxTokenId} · Claimed`
+                : "Bonus waiting behind the gate"
               : "No Imp Box bonus this round"}
           </p>
           {draw.bonusRecipient ? (

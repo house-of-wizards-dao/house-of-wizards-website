@@ -45,10 +45,10 @@ const auction: Auction = {
 };
 
 it("renders exact winning ETH, zero token IDs, and independent claim status with explorer links", () => {
-  render(<WinningRound draw={draw} target={target} />);
+  render(<WinningRound draw={{ ...draw, claimed: true }} target={target} />);
   expect(screen.getByText("0.123456789012345678 ETH")).toBeInTheDocument();
   expect(screen.getByText("Wizard #0")).toBeInTheDocument();
-  expect(screen.getByText("Main prize · Ready to claim")).toBeInTheDocument();
+  expect(screen.getByText("Main prize · Claimed")).toBeInTheDocument();
   expect(screen.getByText("Imp Box #0 · Claimed")).toBeInTheDocument();
   expect(
     screen.getByRole("link", { name: "Bonus claim transaction" }),
@@ -121,4 +121,13 @@ it("shows a ready previous draw while the next bidding window remains open", () 
       "New bids enter the following round while this draw settles.",
     ),
   ).toBeInTheDocument();
+});
+
+it("keeps unclaimed prisoner identities out of the winnings trail", () => {
+  render(
+    <WinningRound draw={{ ...draw, bonusClaimed: false }} target={target} />,
+  );
+  expect(screen.getByText("Waiting behind the gate")).toBeInTheDocument();
+  expect(screen.queryByTestId("prize-character")).not.toBeInTheDocument();
+  expect(screen.queryByText("Imp Box #0")).not.toBeInTheDocument();
 });
