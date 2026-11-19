@@ -45,6 +45,11 @@ The function defaults to `https://ethereum-rpc.publicnode.com`. An optional
 is needed. Supabase supplies `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` to the
 function. Keep service credentials out of `NEXT_PUBLIC_*` variables.
 
+The hosted indexer uses the Alchemy Ethereum Mainnet URL supplied in that
+Supabase secret. Setting `PRISON_RPC_URL` in Vercel does not configure the Edge
+Function. PublicNode can reject older logs without a personal token, so use an
+endpoint that permits historical event reads for recovery.
+
 Gateway JWT verification is disabled; the function instead requires an HMAC
 signature over a timestamp and random nonce. Postgres verifies the signature,
 rejects requests older than two minutes, and consumes the nonce atomically so a
@@ -64,6 +69,13 @@ cannot overwrite newer work. Replayed ranges replace old logs and remove
 orphaned events. Failures preserve the last committed checkpoint and retry on
 the next invocation. Historical backfills read logs only; contract storage is
 read at the current head so a paid archive endpoint is not required.
+
+If Alchemy advertises a smaller log range (10 blocks on its Free tier), the
+reader splits the batch on the same configured endpoint, with bounded concurrency
+and pacing. All chunks must succeed before committing; unrelated RPC failures
+still preserve the checkpoint. A temporarily stale RPC head cannot trigger a
+destructive replay. `node --import tsx --test supabase/tests/indexer-logs.test.ts`
+checks range coverage, provider limits, and failure handling.
 
 Useful read-only checks in Supabase SQL Editor:
 

@@ -3,6 +3,7 @@ import { createPublicClient, decodeEventLog, getContract, http } from "viem";
 import { mainnet } from "viem/chains";
 import { prisonAbi } from "../_shared/abi.ts";
 import { fetchPrisonCharacters, missingMetadataSchema } from "./metadata.ts";
+import { createLogReader } from "./logs.ts";
 
 declare const Deno: {
   env: { get: (name: string) => string | undefined };
@@ -25,6 +26,7 @@ const rpc = createPublicClient({
   ),
   cacheTime: 0,
 });
+const readLogs = createLogReader((range) => rpc.getLogs(range));
 const db = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
@@ -117,6 +119,10 @@ Deno.serve(async (request: Request) => {
       const head = await rpc.getBlock({ blockTag: "latest" });
       if (head.number < deploymentBlock)
         throw new Error("RPC head predates deployment");
+      // A temporarily stale RPC head is not evidence of a reorg. Preserve the
+      // checkpoint instead of deleting newer indexed events and starting over.
+      if (head.number < BigInt(state.cursor_block))
+        throw new Error("RPC head is behind the index cursor");
       let from = BigInt(state.cursor_block) + 1n;
       if (state.cursor_hash) {
         // Check the cursor itself, including deeper reorgs. If it changed, rebuild
@@ -138,7 +144,7 @@ Deno.serve(async (request: Request) => {
           : head.number;
       const end = await rpc.getBlock({ blockNumber: to });
       stage = "read_logs";
-      const logs = await rpc.getLogs({
+      const logs = await readLogs({
         address: contract,
         fromBlock: from,
         toBlock: to,
