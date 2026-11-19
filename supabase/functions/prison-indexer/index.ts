@@ -1,9 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import { createPublicClient, decodeEventLog, getContract, http } from "viem";
+import { createPublicClient, decodeEventLog, http } from "viem";
 import { mainnet } from "viem/chains";
 import { prisonAbi } from "../_shared/abi.ts";
 import { fetchPrisonCharacters, missingMetadataSchema } from "./metadata.ts";
 import { createLogReader } from "./logs.ts";
+import { planScan, verifyScan } from "./scan.ts";
+import { readSnapshot } from "./snapshot.ts";
 
 declare const Deno: {
   env: { get: (name: string) => string | undefined };
@@ -14,7 +16,6 @@ declare const Deno: {
 const contract = "0x7a258a7ed776d88ec7e19a03019a632c4f097ef8" as const;
 const deploymentBlock = 26428270n;
 const rangeSize = 2000n;
-const overlap = 64n;
 const rpc = createPublicClient({
   chain: mainnet,
   transport: http(
@@ -34,7 +35,6 @@ const db = createClient(
     auth: { persistSession: false, autoRefreshToken: false },
   },
 );
-const prison = getContract({ address: contract, abi: prisonAbi, client: rpc });
 const json = (value: unknown, status = 200) => Response.json(value, { status });
 const serializable = (value: unknown): unknown =>
   JSON.parse(
@@ -117,32 +117,24 @@ Deno.serve(async (request: Request) => {
       const state = stateResult.data;
       stage = "read_blocks";
       const head = await rpc.getBlock({ blockTag: "latest" });
-      if (head.number < deploymentBlock)
-        throw new Error("RPC head predates deployment");
-      // A temporarily stale RPC head is not evidence of a reorg. Preserve the
-      // checkpoint instead of deleting newer indexed events and starting over.
-      if (head.number < BigInt(state.cursor_block))
-        throw new Error("RPC head is behind the index cursor");
-      let from = BigInt(state.cursor_block) + 1n;
-      if (state.cursor_hash) {
-        // Check the cursor itself, including deeper reorgs. If it changed, rebuild
-        // from deployment in bounded batches; the UI labels catch-up explicitly.
-        const cursor =
-          BigInt(state.cursor_block) <= head.number
-            ? await rpc.getBlock({ blockNumber: BigInt(state.cursor_block) })
-            : null;
-        from =
-          cursor?.hash === state.cursor_hash
-            ? from - overlap > deploymentBlock
-              ? from - overlap
-              : deploymentBlock
-            : deploymentBlock;
-      }
-      const to =
-        from + rangeSize - 1n < head.number
-          ? from + rangeSize - 1n
-          : head.number;
-      const end = await rpc.getBlock({ blockNumber: to });
+      const readBlock = (blockNumber: bigint) => rpc.getBlock({ blockNumber });
+      const scan = await planScan(
+        state,
+        head,
+        readBlock,
+        deploymentBlock,
+        rangeSize,
+      );
+      if (!scan)
+        return json({
+          status: "caught_up",
+          block: Number(head.number),
+          batches,
+          events: indexed,
+          metadata: await syncMetadata(),
+        });
+      const { from, end } = scan;
+      const to = end.number;
       stage = "read_logs";
       const logs = await readLogs({
         address: contract,
@@ -192,43 +184,10 @@ Deno.serve(async (request: Request) => {
       let snapshot: unknown = null;
       if (to === head.number) {
         stage = "read_current_snapshot";
-        const at = { blockNumber: to };
-        const [
-          closed,
-          nextDrawAt,
-          pendingDrawId,
-          drawCount,
-          prizeCount,
-          boxCount,
-          highestBid,
-        ] = await Promise.all([
-          prison.read.closed(at),
-          prison.read.nextDrawAt(at),
-          prison.read.pendingDrawId(at),
-          prison.read.drawCount(at),
-          prison.read.availableTokenCount(at),
-          prison.read.availableBoxCount(at),
-          prison.read.highestBid(at),
-        ]);
-        const pendingDraw =
-          pendingDrawId > 0n
-            ? await prison.read.getDraw([pendingDrawId], at)
-            : null;
-        snapshot = serializable({
-          closed,
-          nextDrawAt,
-          pendingDrawId,
-          drawCount,
-          prizeCount,
-          boxCount,
-          highestBidder: highestBid[0],
-          highestBid: highestBid[1],
-          pendingStatus: pendingDraw?.status ?? 0,
-        });
+        snapshot = serializable(await readSnapshot(rpc, contract, to));
       }
       // Discard a batch if the chain changed while logs and state were read.
-      if ((await rpc.getBlock({ blockNumber: to })).hash !== end.hash)
-        throw new Error("Chain changed during scan; retry next run");
+      await verifyScan(scan, readBlock);
       stage = "commit_checkpoint";
       const commit = await db.rpc("prison_commit_index", {
         p_chain_id: 1,

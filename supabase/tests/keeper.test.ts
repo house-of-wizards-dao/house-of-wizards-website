@@ -120,6 +120,55 @@ test("paused verification cannot simulate, sign, reserve, or broadcast", async (
   assert.equal(result.detail.nextAction, "startDailyDraw");
   assert.deepEqual(f.events, []);
 });
+test("a deferral skips all chain calls, but absence of a deferral still requires live state", async () => {
+  const f = fixture();
+  f.chain.inspect = async () => {
+    throw new Error("No RPC calls allowed while deferred");
+  };
+  const deferred = async () => ({
+    status: "waiting_for_cutoff",
+    detail: { rpcSkipped: true },
+  });
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store, deferred)).status,
+    "waiting_for_cutoff",
+  );
+  assert.deepEqual(f.events, []);
+  await assert.rejects(
+    runKeeper(f.settings, f.chain, f.store, async () => null),
+    /No RPC calls allowed/,
+  );
+});
+test("pending transactions, paused checks, and uninitialized or mismatched wallets bypass deferral", async () => {
+  const f = fixture();
+  await runKeeper(f.settings, f.chain, f.store);
+  const pending = f.saved();
+  const mustNotDefer = async () => {
+    throw new Error("Deferral must not run");
+  };
+  f.settings.pending = pending;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store, mustNotDefer)).status,
+    "rebroadcast",
+  );
+  f.settings.pending = null;
+  f.settings.enabled = false;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store, mustNotDefer)).status,
+    "paused",
+  );
+  f.settings.enabled = true;
+  f.settings.walletAddress = null;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store, mustNotDefer)).status,
+    "wallet_not_initialized",
+  );
+  f.settings.walletAddress = prisonAddress;
+  assert.equal(
+    (await runKeeper(f.settings, f.chain, f.store, mustNotDefer)).status,
+    "wallet_mismatch",
+  );
+});
 test("only due starts and VRF-ready finalizations are selected", () => {
   const state = snapshot();
   assert.deepEqual(decide(state), {

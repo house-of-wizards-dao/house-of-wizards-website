@@ -61,9 +61,13 @@ public grants, which the project role cannot reliably revoke. Public clients
 cannot write index rows or call the commit/auth functions. Public blockchain
 tables have read-only RLS policies.
 
-Each scan covers at most 2,000 blocks, rereads a 64-block overlap, and checks the
-cursor's hash. A changed cursor hash triggers a bounded replay from deployment.
-The end-block hash is checked again before committing. Events and the snapshot
+Each scan covers at most 2,000 **new** blocks and checks the cursor's hash instead
+of downloading an overlapping range on every tick. A changed cursor hash triggers
+a bounded replay from deployment. An unchanged head needs no log or snapshot read.
+The end-block hash and the original matching checkpoint hash are checked again
+before committing, including a reorg that occurs between initial boundary reads.
+The seven snapshot fields use one Multicall, with one additional read only when
+a draw is pending. Events and the snapshot
 are committed atomically with a revision comparison, so concurrent cron runs
 cannot overwrite newer work. Replayed ranges replace old logs and remove
 orphaned events. Failures preserve the last committed checkpoint and retry on
@@ -75,7 +79,8 @@ reader splits the batch on the same configured endpoint, with bounded concurrenc
 and pacing. All chunks must succeed before committing; unrelated RPC failures
 still preserve the checkpoint. A temporarily stale RPC head cannot trigger a
 destructive replay. `node --import tsx --test supabase/tests/indexer-logs.test.ts`
-checks range coverage, provider limits, and failure handling.
+checks range coverage, provider limits, and failure handling. The scan and snapshot
+tests cover reorg races, unchanged/stale heads, and actual viem RPC aggregation.
 
 Useful read-only checks in Supabase SQL Editor:
 
@@ -185,6 +190,35 @@ the actual start transaction, so automatic-only starts drift 30 minutes each day
 It stops creating transactions when the contract is
 closed or main inventory is exhausted, and does not perform catch-up rounds.
 It never claims prizes, withdraws proceeds, closes the auction, or fulfills VRF.
+
+During quiet periods the keeper reads the existing index first. A complete snapshot
+whose sync time and block timestamp are both at most three minutes old can defer
+RPC work until one minute before the action is due. Finalization uses the indexed
+callback timestamp; it is still verified on-chain before any transaction. Every
+15 minutes the keeper bypasses this optimization for a live audit. Missing, stale,
+malformed, future-dated, or unavailable index data also falls back to live checks.
+Pending transactions, paused wallet verification, and wallet initialization/mismatch
+checks always bypass the cache. Deferral can only postpone a check; only the existing
+live runner can authorize a transaction. The last known balance is preserved on
+deferred runs. Contract reads during live checks are combined using Multicall.
+
+### RPC usage estimate
+
+At a one-minute schedule and roughly five new Ethereum blocks per tick, a normal
+index update uses one `eth_getLogs`, one aggregated `eth_call`, four block reads,
+and a zero-billed-CU `eth_chainId`. At Alchemy's current method rates this is
+166 CU/tick, or **7.17M CU per 30 days**. Fifty bids/day add roughly 0.03M CU for
+event timestamps; draw activity, retries and recovery add more. With a healthy
+index, an enabled keeper's 15-minute audits are about 0.31M CU/month, plus action,
+receipt, and exceptional checks. Budget **8–10M CU/month for the backend** under
+normal operation; prolonged index outages, gas-cap retries, and large replays can
+increase this. This is a code-derived estimate, not measured account billing.
+
+The website's existing direct RPC reads are unchanged and additional. If they use
+the same Alchemy account, each active visitor-hour costs roughly 0.09–0.12M CU at
+the current ten-second refresh interval. Other apps on that account also count
+toward its quota. References: [Alchemy method costs](https://www.alchemy.com/docs/reference/compute-unit-costs)
+and [pricing](https://www.alchemy.com/pricing).
 
 Initial transaction limits (review before enabling):
 

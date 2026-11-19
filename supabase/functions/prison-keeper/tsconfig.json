@@ -10,5 +10,9 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["./*.ts", "../../tests/keeper.test.ts"]
+  "include": [
+    "./*.ts",
+    "../../tests/keeper.test.ts",
+    "../../tests/keeper-defer.test.ts"
+  ]
 }

@@ -3,6 +3,8 @@
   "include": [
     "./*.ts",
     "../../tests/metadata.test.ts",
-    "../../tests/indexer-logs.test.ts"
+    "../../tests/indexer-logs.test.ts",
+    "../../tests/indexer-scan.test.ts",
+    "../../tests/indexer-snapshot.test.ts"
   ]
 }

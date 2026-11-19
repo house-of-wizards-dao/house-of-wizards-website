@@ -11,6 +11,7 @@ import { privateKeyToAccount } from "viem/accounts";
 import { mainnet } from "viem/chains";
 import { z } from "zod";
 import { prisonAbi } from "../_shared/abi.ts";
+import { readKeeperDeferral } from "./defer.ts";
 import {
   callData,
   prisonAddress,
@@ -84,6 +85,7 @@ const makeChain = (key: Hex): Chain => {
   const account = privateKeyToAccount(key);
   const client = createPublicClient({
     chain: mainnet,
+    batch: { multicall: true },
     cacheTime: 0,
     transport: http(
       Deno.env.get("PRISON_RPC_URL") ?? "https://ethereum-rpc.publicnode.com",
@@ -292,7 +294,36 @@ Deno.serve(async (request) => {
         }).then((value) => value === true),
     };
     stage = "run";
-    const report = await runKeeper(settings, chain, store);
+    const report = await runKeeper(settings, chain, store, () =>
+      readKeeperDeferral(
+        async () => {
+          const { data, error } = await db
+            .from("prison_index_state")
+            .select(
+              "cursor_block,head_block,indexed_at,block_timestamp,snapshot",
+            )
+            .eq("chain_id", 1)
+            .eq("contract", prisonAddress)
+            .single();
+          if (error) throw new Error("Index unavailable");
+          return data;
+        },
+        async (drawId) => {
+          const { data, error } = await db
+            .from("prison_events")
+            .select("block_number,block_timestamp,args")
+            .eq("chain_id", 1)
+            .eq("contract", prisonAddress)
+            .eq("event_name", "RandomnessReceived")
+            .contains("args", { drawId })
+            .order("block_number", { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (error) throw new Error("Callback index unavailable");
+          return data;
+        },
+      ),
+    );
     await rpcCall("prison_keeper_finish", {
       p_lease: lease,
       p_status: report.status,

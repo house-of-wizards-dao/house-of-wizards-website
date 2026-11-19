@@ -162,7 +162,23 @@ export const runKeeper = async (
   settings: Settings,
   chain: Chain,
   store: Store,
+  loadDeferral?: () => Promise<Report | null>,
 ): Promise<Report> => {
+  // Never defer paused verification, key initialization/mismatch checks, or
+  // reconciliation of an already prepared/broadcast transaction.
+  if (
+    settings.enabled &&
+    !settings.pending &&
+    settings.walletAddress?.toLowerCase() === chain.address.toLowerCase() &&
+    loadDeferral
+  ) {
+    const deferred = await loadDeferral();
+    if (deferred)
+      return {
+        ...deferred,
+        detail: { ...deferred.detail, wallet: chain.address.toLowerCase() },
+      };
+  }
   const state = await chain.inspect();
   const summary = {
     wallet: chain.address.toLowerCase(),
