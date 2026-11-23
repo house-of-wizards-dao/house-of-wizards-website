@@ -1,7 +1,5 @@
 "use client";
 
-import { usePagination } from "@/hooks/usePagination";
-import { Pagination } from "@/components/ui/Pagination";
 import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 import type { WalletNFTsByCollection } from "@/hooks/useWalletNFTs";
 import { useGallery } from "@/contexts/GalleryContext";
@@ -20,10 +18,6 @@ const CollectionGrid = ({
   title?: string;
 }) => {
   const { imagesOnly, imageSize } = useGallery();
-  const pagination = usePagination(
-    nfts,
-    `${title}:${nfts[0]?.identifier}:${nfts.at(-1)?.identifier}`,
-  );
   // Gap is constant relative to image size (4% of image size)
   const gapRatio = 0.06;
   const gapSize = Math.round(imageSize * gapRatio);
@@ -39,7 +33,7 @@ const CollectionGrid = ({
         className="flex flex-row flex-wrap items-start justify-stretch"
         style={{ gap: `${gapSize}px` }}
       >
-        {pagination.visibleItems.map((nft, index) => (
+        {nfts.map((nft, index) => (
           <NFTCard
             nft={nft}
             contract={nft.contract}
@@ -49,7 +43,6 @@ const CollectionGrid = ({
           />
         ))}
       </div>
-      <Pagination {...pagination} label={title ?? "Gallery"} />
     </div>
   );
 };
