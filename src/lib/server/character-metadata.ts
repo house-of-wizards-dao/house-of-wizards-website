@@ -8,6 +8,9 @@ import { soulsWithTraitsMap } from "@/data/soulsWithTraitsMap";
 import { traitRarity } from "@/data/traitRarity";
 import { getLocalNftTraits, getLocalNftAffinity } from "@/data/localNftPreview";
 import { withTraitRarity } from "@/lib/with-trait-rarity";
+import { localCharacterCollection } from "@/lib/local-character-contract";
+import type { OpenSeaNFT } from "@/lib/opensea-nfts";
+import type { GalleryNFT } from "@/types/gallery";
 import {
   asLocalNftCollection,
   type LocalNftCollection,
@@ -93,5 +96,23 @@ export const getLocalNftMetadata = (
       collection,
     ),
     affinity: getLocalNftAffinity(collection, tokenId),
+  };
+};
+
+export const withLocalCharacter = (nft: OpenSeaNFT): GalleryNFT => {
+  const collection = localCharacterCollection(nft.contract);
+  const metadata = collection
+    ? getLocalNftMetadata(collection, nft.identifier)
+    : null;
+  if (!metadata) return { ...nft, character: null };
+
+  return {
+    ...nft,
+    character: {
+      ...metadata,
+      traits: metadata.traits.map(
+        ({ description: _description, ...trait }) => trait,
+      ),
+    },
   };
 };

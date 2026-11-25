@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchNFTsForWallets, type OpenSeaNFT } from "@/lib/opensea-nfts";
+import { fetchNFTsForWallets } from "@/lib/opensea-nfts";
+import { withLocalCharacter } from "@/lib/server/character-metadata";
+import type { GalleryNFT } from "@/types/gallery";
 import { resolveAddressesOrENS } from "@/lib/ens";
 import { frwcAddresses } from "@/config/addresses";
 import { getCollectionName } from "@/data/traitUtilities";
@@ -74,7 +76,7 @@ export const GET = async (request: NextRequest) => {
     );
 
     // Group NFTs by collection name using our lookup table
-    const nftsByCollection: Record<string, OpenSeaNFT[]> = {};
+    const nftsByCollection: Record<string, GalleryNFT[]> = {};
 
     // Flatten and categorize all NFTs by contract address, then map to friendly names
     walletNFTMap.forEach((contractMap) => {
@@ -90,13 +92,15 @@ export const GET = async (request: NextRequest) => {
             nftsByCollection[collectionName] = [];
           }
 
-          nftsByCollection[collectionName].push(...nfts);
+          nftsByCollection[collectionName].push(
+            ...nfts.map(withLocalCharacter),
+          );
         }
       });
     });
 
     // Sort each collection by tokenId (identifier) numerically
-    const sortByTokenId = (a: OpenSeaNFT, b: OpenSeaNFT): number => {
+    const sortByTokenId = (a: GalleryNFT, b: GalleryNFT): number => {
       const tokenIdA = parseInt(a.identifier, 10);
       const tokenIdB = parseInt(b.identifier, 10);
       if (isNaN(tokenIdA) || isNaN(tokenIdB)) {

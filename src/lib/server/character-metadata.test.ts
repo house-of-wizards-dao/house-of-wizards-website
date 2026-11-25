@@ -2,9 +2,12 @@ jest.mock("server-only", () => ({}));
 import {
   getLocalNftMetadata,
   getCollectionTraitOptions,
+  withLocalCharacter,
   withLocalTraitIds,
 } from "./character-metadata";
+import { frwcAddresses } from "@/config/addresses";
 import { collections } from "@/config/marketplace";
+import type { OpenSeaNFT } from "@/lib/opensea-nfts";
 import { traitRarity } from "@/data/traitRarity";
 import type { MarketplaceItem } from "@/types/marketplace";
 import { asLocalNftCollection } from "@/types/nft-metadata";
@@ -119,4 +122,54 @@ it("labels affinity with the singular collection name", () => {
   expect(getLocalNftMetadata("souls", "10")?.affinity?.collectionLabel).toBe(
     "soul",
   );
+});
+
+const walletNft = (contract: string, identifier: string): OpenSeaNFT => ({
+  identifier,
+  collection: "test",
+  contract,
+  token_standard: "erc721",
+  name: "Character",
+  description: "",
+  image_url: "",
+  metadata_url: "",
+  opensea_url: "",
+  updated_at: "",
+  is_disabled: false,
+  is_nsfw: false,
+});
+
+it("attaches local traits without descriptions to gallery NFTs", () => {
+  const wizard = withLocalCharacter(walletNft(frwcAddresses.wizards, "0"));
+  const head = wizard.character?.traits.find(
+    (trait) => trait.partKey === "head",
+  );
+
+  expect(head).toEqual({
+    part: "Head",
+    partKey: "head",
+    traitId: 170,
+    displayName: "Illuminatus",
+    count: traitRarity.wizards.parts.head["170"],
+    total: traitRarity.wizards.total,
+  });
+  expect(wizard.character?.traits.some((trait) => "description" in trait)).toBe(
+    false,
+  );
+  expect(wizard.character?.affinity?.affinityName).toBe("Wraith");
+});
+
+it("leaves non-local and unknown tokens without a character", () => {
+  expect(
+    withLocalCharacter(walletNft(frwcAddresses.beasts, "0")).character,
+  ).toBeNull();
+  expect(
+    withLocalCharacter(walletNft(frwcAddresses.wizards, "999999")).character,
+  ).toBeNull();
+});
+
+it("keeps a warrior's gallery character small", () => {
+  const warrior = withLocalCharacter(walletNft(frwcAddresses.warriors, "0"));
+
+  expect(JSON.stringify(warrior.character).length).toBeLessThan(1500);
 });
