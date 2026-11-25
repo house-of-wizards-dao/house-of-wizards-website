@@ -1,9 +1,9 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import type { OpenSeaNFT } from "@/lib/opensea-nfts";
+import type { GalleryNFT } from "@/types/gallery";
 
-export type WalletNFTsByCollection = Record<string, OpenSeaNFT[]>;
+export type WalletNFTsByCollection = Record<string, GalleryNFT[]>;
 
 export const useWalletNFTs = (walletInputs: string[]) => {
   const wallets = [

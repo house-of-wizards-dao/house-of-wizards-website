@@ -9,6 +9,7 @@ import { marketplaceConfig } from "@/config/marketplace";
 import type { MarketplaceItem, Offer } from "@/types/marketplace";
 import { formatEthFromWei } from "@/types/marketplace";
 import { useMarketplaceActions, useNFTOwnership } from "@/hooks/useMarketplace";
+import { TraitRarityChip } from "@/components/characters/TraitRarityChip";
 import {
   asLocalNftCollection,
   type LocalNftMetadata,
@@ -48,24 +49,25 @@ export const ItemDetailOverlay = ({
 
   const localCollection = asLocalNftCollection(item.collection.key);
 
-  // For NFTX listings of wizards/warriors, derive traits + affinity from
-  // local trait/affinity maps since the NFTX subgraph and pool do not
-  // surface that metadata themselves.
-  const isNftxPreview = !!item.nftxListing && !!localCollection;
+  // Wizards, warriors, and souls have local trait ids, whichever market listed them.
+  const usesLocalTraits = localCollection !== null;
 
-  const metadata = useQuery<LocalNftMetadata>({
+  const metadata = useQuery<LocalNftMetadata | null>({
     queryKey: ["character-metadata", localCollection, item.nft.identifier],
-    enabled: isOpen && isNftxPreview,
+    enabled: isOpen && usesLocalTraits,
     staleTime: Infinity,
     queryFn: async ({ signal }) => {
       const response = await fetch(
         `/api/characters/${localCollection}/${item.nft.identifier}`,
         { signal },
       );
+      // Souls minted after the last metadata sync are not in the local maps.
+      if (response.status === 404) return null;
       if (!response.ok) throw new Error("Unable to load character metadata");
       return response.json();
     },
   });
+  const showsLocalTraits = usesLocalTraits && metadata.data !== null;
   const localTraits = metadata.data?.traits ?? [];
   const localAffinity = metadata.data?.affinity ?? null;
 
@@ -259,27 +261,49 @@ export const ItemDetailOverlay = ({
                   )}
 
                   {/* Traits */}
-                  {isNftxPreview && localTraits.length > 0 ? (
+                  {showsLocalTraits ? (
                     <div>
                       <span className="text-gray-400 text-sm block mb-2">
                         Traits
                       </span>
-                      <div className="grid grid-cols-2 gap-2">
-                        {localTraits.map((trait) => (
-                          <div
-                            key={`${trait.part}-${trait.displayName}`}
-                            className="bg-gray-800/50 rounded-lg px-3 py-2"
-                            title={trait.description}
+                      {localTraits.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {localTraits.map((trait) => (
+                            <div
+                              key={`${trait.partKey}-${trait.traitId}`}
+                              className="bg-gray-800/50 rounded-lg px-3 py-2"
+                              title={trait.description}
+                            >
+                              <span className="text-gray-400 text-xs block">
+                                {trait.part}
+                              </span>
+                              <span className="text-white text-sm block">
+                                {trait.displayName}
+                              </span>
+                              <TraitRarityChip
+                                count={trait.count}
+                                total={trait.total}
+                                className="mt-2"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {metadata.isPending && (
+                        <p role="status">Loading character details…</p>
+                      )}
+                      {metadata.isError && (
+                        <div role="alert" className="text-sm text-red-400">
+                          <p>Couldn't load character details.</p>
+                          <button
+                            type="button"
+                            onClick={() => void metadata.refetch()}
+                            className="mt-1 underline hover:text-white"
                           >
-                            <span className="text-gray-400 text-xs block">
-                              {trait.part}
-                            </span>
-                            <span className="text-white text-sm">
-                              {trait.displayName}
-                            </span>
-                          </div>
-                        ))}
-                      </div>
+                            Retry character details
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     nft.traits &&
@@ -307,20 +331,7 @@ export const ItemDetailOverlay = ({
                     )
                   )}
 
-                  {isNftxPreview && metadata.isPending && (
-                    <p role="status">Loading character details…</p>
-                  )}
-                  {metadata.isError && (
-                    <button
-                      type="button"
-                      onClick={() => void metadata.refetch()}
-                    >
-                      Retry character details
-                    </button>
-                  )}
-                  {/* Affinity (NFTX wizards/warriors only — derived from
-                      local affinity data) */}
-                  {isNftxPreview && localAffinity && (
+                  {showsLocalTraits && localAffinity && (
                     <div>
                       <span className="text-gray-400 text-sm block mb-2">
                         Affinity
@@ -346,8 +357,7 @@ export const ItemDetailOverlay = ({
                         </div>
                         {localAffinity.isMaxAffinity && (
                           <p className="mt-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs font-medium text-amber-100">
-                            Max affinity{" "}
-                            {localAffinity.collectionLabel.slice(0, -1)}:{" "}
+                            Max affinity {localAffinity.collectionLabel}:{" "}
                             {localAffinity.maxTraitCount}/
                             {localAffinity.maxTraitCount} traits and 100%
                             attuned.

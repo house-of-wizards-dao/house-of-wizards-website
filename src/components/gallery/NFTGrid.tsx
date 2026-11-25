@@ -1,6 +1,6 @@
 "use client";
 
-import type { OpenSeaNFT } from "@/lib/opensea-nfts";
+import type { GalleryNFT } from "@/types/gallery";
 import type { WalletNFTsByCollection } from "@/hooks/useWalletNFTs";
 import { useGallery } from "@/contexts/GalleryContext";
 import { frwcAddresses } from "@/config/addresses";
@@ -14,7 +14,7 @@ const CollectionGrid = ({
   nfts,
   title,
 }: {
-  nfts: OpenSeaNFT[];
+  nfts: GalleryNFT[];
   title?: string;
 }) => {
   const { imagesOnly, imageSize } = useGallery();

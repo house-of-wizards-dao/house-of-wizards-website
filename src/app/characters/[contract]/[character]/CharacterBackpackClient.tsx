@@ -7,6 +7,8 @@ import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAccount } from "wagmi";
 import type { CharacterPageData } from "@/types/character";
+import { TraitRarityChip } from "@/components/characters/TraitRarityChip";
+import { getCharacterImageUrl } from "@/lib/character-image";
 type NFT = {
   identifier: string;
   collection: string;
@@ -90,22 +92,6 @@ const getLoreCollectionPath = (collectionName: string) => {
   if (collectionName === "Wizards") return "wizards";
   if (collectionName === "Warriors") return "warriors";
   if (collectionName === "Souls") return "souls";
-  return null;
-};
-
-const getCharacterImageUrl = (collectionName: string, tokenId: string) => {
-  if (collectionName === "Wizards") {
-    return `https://nfts.forgottenrunes.com/ipfs/QmbtiPZfgUzHd79T1aPcL9yZnhGFmzwar7h4vmfV6rV8Kq/${tokenId}.png`;
-  }
-
-  if (collectionName === "Warriors") {
-    return `https://portal.forgottenrunes.com/api/warriors/img/${tokenId}.png`;
-  }
-
-  if (collectionName === "Souls") {
-    return `https://portal.forgottenrunes.com/api/souls/img/${tokenId}`;
-  }
-
   return null;
 };
 
@@ -218,7 +204,7 @@ export default function CharacterBackpackClient({
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
                 {characterTraits.map((trait) => (
                   <div
-                    key={`${trait.part}-${trait.displayName}`}
+                    key={`${trait.partKey}-${trait.traitId}`}
                     className="bg-gray-800 border border-gray-700 rounded-md p-3"
                   >
                     <p className="text-[11px] uppercase tracking-wide text-gray-500 mb-1">
@@ -237,6 +223,11 @@ export default function CharacterBackpackClient({
                         </div>
                       </div>
                     )}
+                    <TraitRarityChip
+                      count={trait.count}
+                      total={trait.total}
+                      className="mt-2"
+                    />
                   </div>
                 ))}
               </div>
