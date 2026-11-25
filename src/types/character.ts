@@ -1,7 +1,14 @@
 export type CharacterTrait = {
   part: string;
+  partKey: string;
+  traitId: number;
   displayName: string;
   description?: string;
+};
+
+export type CountedCharacterTrait = CharacterTrait & {
+  count: number;
+  total: number;
 };
 
 export type CharacterAffinity = {
@@ -20,6 +27,6 @@ export type CharacterPageData = {
   tokenId: string;
   collectionName: string;
   characterName: string;
-  characterTraits: CharacterTrait[];
+  characterTraits: CountedCharacterTrait[];
   characterAffinity: CharacterAffinity | null;
 };

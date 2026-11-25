@@ -347,7 +347,7 @@ export const ItemDetailOverlay = ({
                         {localAffinity.isMaxAffinity && (
                           <p className="mt-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs font-medium text-amber-100">
                             Max affinity{" "}
-                            {localAffinity.collectionLabel.slice(0, -1)}:{" "}
+                            {localAffinity.collectionLabel}:{" "}
                             {localAffinity.maxTraitCount}/
                             {localAffinity.maxTraitCount} traits and 100%
                             attuned.

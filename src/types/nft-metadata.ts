@@ -1,25 +1,22 @@
-export type LocalNftCollection = "wizards" | "warriors";
+import type {
+  CharacterAffinity,
+  CountedCharacterTrait,
+} from "@/types/character";
 
-export type LocalNftTrait = {
-  part: string;
-  displayName: string;
-  description?: string;
-};
+export type LocalNftCollection = "wizards" | "warriors" | "souls";
 
-export type LocalNftAffinity = {
-  affinityName: string;
-  collectionLabel: LocalNftCollection;
-  traitsInAffinity: number;
-  numberOfTraits: number;
-  attunement: number;
-  maxTraitCount: number;
-  isMaxAffinity: boolean;
-};
+export type LocalNftTrait = CountedCharacterTrait;
+
+export type LocalNftAffinity = CharacterAffinity;
 
 export const asLocalNftCollection = (
   collectionKey: string,
 ): LocalNftCollection | null => {
-  if (collectionKey === "wizards" || collectionKey === "warriors") {
+  if (
+    collectionKey === "wizards" ||
+    collectionKey === "warriors" ||
+    collectionKey === "souls"
+  ) {
     return collectionKey;
   }
   return null;
